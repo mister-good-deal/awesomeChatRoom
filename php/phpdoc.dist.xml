@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+  <title>Utilities</title>
+  <parser>
+    <target>./.phpDoc</target>
+    <markers>
+        <item>TODO</item>
+        <item>FIXME</item>
+    </markers>
+    <extensions>
+        <extension>php</extension>
+    </extensions>
+  </parser>
+  <transformer>
+    <target>../utilities-gh-pages</target>
+  </transformer>
+  <files>
+    <file>autoloader.php</file>
+    <directory>abstracts</directory>
+    <directory>classes</directory>
+    <directory>examples</directory>
+    <directory>interfaces</directory>
+    <directory>tests</directory>
+    <directory>traits</directory>
+  </files>
+</phpdoc>
