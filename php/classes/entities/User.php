@@ -62,6 +62,8 @@ class User extends Entity
         parent::__set($columnName, $value);
     }
 
+    /*-----  End of Magic methods  ------*/
+
     /*=========================================
     =            Setters / getters            =
     =========================================*/
@@ -75,10 +77,6 @@ class User extends Entity
     }
     
     /*-----  End of Setters / getters  ------*/
-    
-    
-
-    /*-----  End of Magic methods  ------*/
 
     /*=======================================
     =            Private methods            =
@@ -94,11 +92,16 @@ class User extends Entity
     private function validateField($columnName, $value)
     {
         $this->errors[$columnName] = array();
+        $value                     = trim($value);
 
         switch ($columnName) {
             case 'lastName':
             case 'firstName':
-                if (strlen($value) > 64) {
+                $length = strlen($value);
+
+                if ($length === 0) {
+                    $this->errors[$columnName][] = _('The last / first name can\'t be empty');
+                } elseif ($length > 64) {
                     $this->errors[$columnName][] = _('The last / first name size can\'t exceed 64 characters');
                 }
 
@@ -112,11 +115,11 @@ class User extends Entity
                 break;
         }
 
-        if (count($this->errors[$columnName] === 0)) {
+        if (count($this->errors[$columnName]) === 0) {
             unset($this->errors[$columnName]);
         }
 
-        return trim($value);
+        return $value;
     }
     
     /*-----  End of Private methods  ------*/

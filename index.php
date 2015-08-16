@@ -16,7 +16,11 @@
     <body>
         <h1>Test websocket</h1>
 
-        <form action="user/register" method="get" accept-charset="utf-8">
+        <form action="user/register" method="post" accept-charset="utf-8">
+            <input type="text" name="firstName" value="" placeholder="First name">
+            <input type="text" name="lastName" value="" placeholder="Last name">
+            <input type="text" name="pseudonym" value="test" placeholder="Pseudo">
+            <input type="email" name="email" value="" placeholder="Email">
             <input type="submit" value="submit">
         </form>
     </body>

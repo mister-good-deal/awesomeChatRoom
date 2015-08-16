@@ -23,34 +23,34 @@ try {
     $userStatistics              = new UserStatistics();
     $collection                  = new Collection();
 
-    for ($i = 1; $i < 11; $i++) {
-        $user        = new User();
-        $user->id    = $i;
-        $user->name  = 'User_' . $i;
-        $user->email = 'user_' . $i . '@hotmail.com';
-        $collection->add($user);
-    }
+    // for ($i = 1; $i < 11; $i++) {
+    //     $user        = new User();
+    //     $user->id    = $i;
+    //     $user->name  = 'User_' . $i;
+    //     $user->email = 'user_' . $i . '@hotmail.com';
+    //     $collection->add($user);
+    // }
 
     // echo $collection . PHP_EOL;
 
-    $userEntityManager->setEntityCollection($collection);
+    // $userEntityManager->setEntityCollection($collection);
 
-    if (!$userEntityManager->saveCollection()) {
-        echo 'Insertion failed' . PHP_EOL;
-    } else {
-        echo 'Insertion succeeded' . PHP_EOL;
-    }
+    // if (!$userEntityManager->saveCollection()) {
+    //     echo 'Insertion failed' . PHP_EOL;
+    // } else {
+    //     echo 'Insertion succeeded' . PHP_EOL;
+    // }
 
-    // $userEntityManager->setEntity($user);
-    // $userStatisticsEntityManager->setEntity($userStatistics);
+    $userEntityManager->setEntity($user);
+    $userStatisticsEntityManager->setEntity($userStatistics);
     
-    // $userStatisticsEntityManager->dropEntityTable();
-    // $userEntityManager->dropEntityTable();
+    $userStatisticsEntityManager->dropEntityTable();
+    $userEntityManager->dropEntityTable();
 
     // DB::setPrintSQL(true);
     
-    // $userEntityManager->createEntityTable();
-    // $userStatisticsEntityManager->createEntityTable();
+    $userEntityManager->createEntityTable();
+    $userStatisticsEntityManager->createEntityTable();
 } catch (Exception $e) {
 } finally {
     exit(0);

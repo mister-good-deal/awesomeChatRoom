@@ -28,7 +28,7 @@ class UserEntityManager extends EntityManager
     public function register($data)
     {
         $user         = new User($data);
-        $user->id     = DB::query('SELECT MAX(' . $user->getIdKey()[0] . ') FROM ' . $user->getTableName())->fetchColumn();
+        $user->id     = DB::query('SELECT MAX(' . $user->getIdKey()[0] . ') FROM ' . $user->getTableName())->fetchColumn() + 1;
         $this->entity = $user;
         $errors       = $user->getErrors();
         $success      = false;

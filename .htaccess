@@ -1,3 +1,3 @@
 Options +FollowSymlinks
 RewriteEngine On
-RewriteRule ^user/register$ router.php?action=User/register [L]
+RewriteRule ^user/register$ php/router.php?action=User/register [L]

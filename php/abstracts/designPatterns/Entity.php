@@ -395,10 +395,10 @@ abstract class Entity
                 $this->tableName  = $columnAttributes['name'];
                 $this->engine     = $columnAttributes['engine'];
 
-                static::setIfIsSet($this->charset, $columnAttributes['charSet']);
-                static::setIfIsSet($this->collation, $columnAttributes['collate']);
-                static::setIfIsSet($this->comment, $columnAttributes['comment']);
-                static::setIfIsSet($constraints['unique'], $columnAttributes['unique']);
+                @static::setIfIsSet($this->charset, $columnAttributes['charSet']);
+                @static::setIfIsSet($this->collation, $columnAttributes['collate']);
+                @static::setIfIsSet($this->comment, $columnAttributes['comment']);
+                @static::setIfIsSet($constraints['unique'], $columnAttributes['unique']);
 
                 if (isset($columnAttributes['primary'])) {
                     $constraints['primary']            = array();
