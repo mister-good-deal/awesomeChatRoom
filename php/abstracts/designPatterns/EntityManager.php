@@ -24,11 +24,11 @@ abstract class EntityManager
     /**
      * @var Entity $entity An Entity object
      */
-    private $entity;
+    protected $entity;
     /**
      * @var Collection $entityCollection An EntityCollection object
      */
-    private $entityCollection;
+    protected $entityCollection;
 
     /*=====================================
     =            Magic methods            =
@@ -126,7 +126,7 @@ abstract class EntityManager
         $sucess = true;
 
         if ($this->entityAlreadyExists()) {
-            $this->updateInDatabase();
+            $sucess = $this->updateInDatabase() === 1;
         } else {
             $sucess = $this->saveInDatabase();
         }

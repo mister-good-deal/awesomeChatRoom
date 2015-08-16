@@ -23,7 +23,7 @@ class IniManager
     /**
      * ini file path (can be only the file name if the path is under the include_path of php ini conf)
      */
-    private static $INI_FILE_NAME = 'conf.ini';
+    private static $INI_FILE_NAME = 'C:\prog\web\php\conf.ini';
 
     /**
      * @var array $iniValues The INI params name => value
