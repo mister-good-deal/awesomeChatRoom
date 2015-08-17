@@ -6,6 +6,10 @@ RewriteEngine On
 RewriteCond  %{REQUEST_URI} !^\/$
 RewriteCond  %{REQUEST_URI} !^\/index\.php$
 RewriteCond  %{REQUEST_URI} !^\/static\/js\/.*$
+RewriteCond  %{REQUEST_URI} !^\/static\/html\/.*$
 
 # Redirect all the left urls to the router
 RewriteRule ^(.*)$ php/router.php?action=$1 [B,NE,QSA,L]
+
+# Custom 404 not found error page
+ErrorDocument 404 /static/html/404NotFound.html

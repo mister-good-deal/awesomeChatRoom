@@ -4,12 +4,6 @@ include_once 'autoloader.php';
 
 function route($route)
 {
-    if (!is_string($route)) {
-        die('The route must be a string');
-    }
-
-    echo $route . PHP_EOL;
-    
     $path            = explode('/', $route);
     $method          = array_pop($path);
     $controller      = ucfirst(array_pop($path)) . 'Controller';
@@ -21,14 +15,16 @@ function route($route)
         $route .= DIRECTORY_SEPARATOR . $path[$currentDeep++];
 
         if (!is_dir($route)) {
-            die('The route "' . $route . '" is undefined');
+            header($_SERVER['SERVER_PROTOCOL'] . ' 400 Bad Request', true, 400);
+            die();
         }
     }
 
     $route .= DIRECTORY_SEPARATOR . $controller . '.php';
 
     if (!is_file($route)) {
-        die('The controller "' . $controller . '" is undefined');
+        header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
+        die();
     }
 
     require_once($route);
