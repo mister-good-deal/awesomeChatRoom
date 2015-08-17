@@ -1,3 +1,11 @@
+# Enabled url rewritting
 Options +FollowSymlinks
 RewriteEngine On
-RewriteRule ^user/register$ php/router.php?action=User/register [L]
+
+# Exclude url that will not be interpreted by the router
+RewriteCond  %{REQUEST_URI} !^\/$
+RewriteCond  %{REQUEST_URI} !^\/index\.php$
+RewriteCond  %{REQUEST_URI} !^\/static\/js\/.*$
+
+# Redirect all the left urls to the router
+RewriteRule ^(.*)$ php/router.php?action=$1 [B,NE,QSA,L]

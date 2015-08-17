@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -17,10 +16,10 @@
         <h1>Test websocket</h1>
 
         <form action="user/register" method="post" accept-charset="utf-8">
-            <input type="text" name="firstName" value="" placeholder="First name">
-            <input type="text" name="lastName" value="" placeholder="Last name">
-            <input type="text" name="pseudonym" value="test" placeholder="Pseudo">
-            <input type="email" name="email" value="" placeholder="Email">
+            <input type="text" name="firstName" placeholder="<?=_('First name')?>">
+            <input type="text" name="lastName" placeholder="<?=_('Last name')?>">
+            <input type="text" name="pseudonym" placeholder="<?=_('Pseudo')?>">
+            <input type="email" name="email" placeholder="<?=_('Email')?>">
             <input type="submit" value="submit">
         </form>
     </body>

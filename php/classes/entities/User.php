@@ -25,6 +25,11 @@ use \classes\ExceptionManager as Exception;
 class User extends Entity
 {
     /**
+     * @var string[] $mustDefinedFields Fields that must be defined when instanciate the User object
+     */
+    public static $mustDefinedFields = array('firstName', 'lastName', 'email');
+
+    /**
      * @var array $errors An array containing the occured errors when fields are set
      */
     private $errors = array();
@@ -93,22 +98,29 @@ class User extends Entity
     {
         $this->errors[$columnName] = array();
         $value                     = trim($value);
+        $length                    = strlen($value);
 
         switch ($columnName) {
             case 'lastName':
-            case 'firstName':
-                $length = strlen($value);
-
                 if ($length === 0) {
-                    $this->errors[$columnName][] = _('The last / first name can\'t be empty');
+                    $this->errors[$columnName][] = _('The last name can\'t be empty');
                 } elseif ($length > 64) {
-                    $this->errors[$columnName][] = _('The last / first name size can\'t exceed 64 characters');
+                    $this->errors[$columnName][] = _('The last name size can\'t exceed 64 characters');
+                }
+
+                break;
+
+            case 'firstName':
+                if ($length === 0) {
+                    $this->errors[$columnName][] = _('The first name can\'t be empty');
+                } elseif ($length > 64) {
+                    $this->errors[$columnName][] = _('The first name size can\'t exceed 64 characters');
                 }
 
                 break;
 
             case 'pseudonym':
-                if (strlen($value) > 32) {
+                if ($length > 32) {
                     $this->errors[$columnName][] = _('The pseudonym size can\'t exceed 32 characters');
                 }
 

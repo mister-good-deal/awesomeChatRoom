@@ -11,5 +11,6 @@ class UserController
         $userEntityManager = new UserEntityManager();
 
         echo json_encode($userEntityManager->register($_POST), true);
+        unset($_POST);
     }
 }
