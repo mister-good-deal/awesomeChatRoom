@@ -24,7 +24,12 @@ function route($route)
 
     if (!is_file($route)) {
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
-        die();
+        die(file_get_contents(
+            dirname(__DIR__) . DIRECTORY_SEPARATOR .
+            'static' . DIRECTORY_SEPARATOR .
+            'html' . DIRECTORY_SEPARATOR .
+            '404NotFound.html'
+        ));
     }
 
     require_once($route);

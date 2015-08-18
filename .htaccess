@@ -5,6 +5,7 @@ RewriteEngine On
 # Exclude url that will not be interpreted by the router
 RewriteCond  %{REQUEST_URI} !^\/$
 RewriteCond  %{REQUEST_URI} !^\/index\.php$
+RewriteCond  %{REQUEST_URI} !^\/static\/?$
 RewriteCond  %{REQUEST_URI} !^\/static\/js\/.*$
 RewriteCond  %{REQUEST_URI} !^\/static\/html\/.*$
 
