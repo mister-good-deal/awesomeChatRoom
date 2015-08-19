@@ -373,7 +373,21 @@ abstract class Entity
         return $this->entityName;
     }
 
-    /*-----  End of Getters and setter  ------*/
+    /**
+     * Get a column max size
+     *
+     * @param  string $columnName The column name
+     * @throws Exception          If the column name does not a exist
+     * @return integer            The column max size
+     */
+    public function getColumnMaxSize($columnName)
+    {
+        if (!$this->__isset($columnName)) {
+            throw new Exception('The attribute ' . $columnName . ' is undefined', Exception::$PARAMETER);
+        }
+
+        return $this->columnsAttributes[$columnName]['size'];
+    }
 
     /*=======================================
     =            Private methods            =

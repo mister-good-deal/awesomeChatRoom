@@ -1,16 +1,31 @@
 <?php
+/**
+ * User controller
+ *
+ * @category Controller
+ * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ */
 
 namespace controllers;
 
+use \abstracts\AbstractController as Controller;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
 
-class UserController
+/**
+ * User controller
+ *
+ * @class UserController
+ */
+class UserController extends Controller
 {
+    /**
+     * Register a user from $_POST values and return the result of the process as a JSON
+     */
     public function register()
     {
         $userEntityManager = new UserEntityManager();
 
-        echo json_encode($userEntityManager->register($_POST), true);
+        $this->JSONresponse($userEntityManager->register($_POST));
         unset($_POST);
     }
 }

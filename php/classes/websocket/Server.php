@@ -1,6 +1,6 @@
 <?php
 
-namespace classes\socket;
+namespace classes\websocket;
 
 use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
@@ -12,33 +12,44 @@ class Server
     /**
      * @var resource $server The server socket resource
      */
-    private $server;
+    protected $server;
     /**
      * @var string $protocol The server socket protocol
      */
-    private $protocol;
+    protected $protocol;
     /**
      * @var string $address The server socket address
      */
-    private $address;
+    protected $address;
     /**
      * @var integer $port The server socket port
      */
-    private $port;
+    protected $port;
     /**
      * @var boolean $verbose True to print info in console else false
      */
-    private $verbose;
+    protected $verbose;
     /**
      * @var integer $errorNum The error code if an error occured
      */
-    private $errorNum;
+    protected $errorNum;
     /**
      * @var string $errorString The error string if an error occured
      */
-    private $errorString;
-    private $clients = array();
+    protected $errorString;
+    /**
+     * @var resource[] $clients The clients socket stream
+     */
+    protected $clients = array();
+    /**
+     * @var callable[] $services The services functions / methods implemented
+     */
+    protected $services = array();
 
+    /*=====================================
+    =            Magic methods            =
+    =====================================*/
+    
     /**
      * Constructor that load parameters in the ini conf file and run the socket server
      */
@@ -63,9 +74,69 @@ class Server
 
         $this->run();
     }
+    
+    /*=====  End of Magic methods  ======*/
+
+    /*======================================
+    =            Public methods            =
+    ======================================*/
+    
+    /**
+     * Add a service to the server
+     * The service function must take 2 arguments: the first is the client socket, the second is the data sent
+     *
+     * @param  function $service     The service method / function
+     * @param  string   $serviceName The service name
+     * @throws Exception             If the service name already exist
+     * @throws Exception             If the service is not a method / function
+     */
+    public function addService($service, $serviceName)
+    {
+        if (in_array($serviceName, $this->services)) {
+            throw new Exception('This service name is already set', Exception::$ERROR);
+        }
+
+        if (!is_callable($service)) {
+            throw new Exception('This service must be a method / function', Exception::$ERROR);
+        }
+
+        static::out('Service ' . $serviceName . ' added' . PHP_EOL);
+        $this->services[$serviceName] = $service;
+    }
 
     /**
-     * Run the server
+     * Remove a service from the server
+     *
+     * @param  string    $serviceName The service name
+     * @throws Exception              If the service name doeas not exist
+     */
+    public function removeService($serviceName)
+    {
+        if (!in_array($serviceName, $this->services)) {
+            throw new Exception('This service name does not exist', Exception::$ERROR);
+        }
+        
+        unset($this->services[$serviceName]);
+    }
+
+    /**
+     * List all the service name implemented
+     *
+     * @return string[] The service name list
+     */
+    public function listServices()
+    {
+        return array_keys($this->services);
+    }
+    
+    /*=====  End of Public methods  ======*/
+
+    /*=======================================
+    =            Private methods            =
+    =======================================*/
+    
+    /**
+     * Run the server, accept connections and handle them
      */
     private function run()
     {
@@ -88,13 +159,14 @@ class Server
                 foreach ($sockets as $socket) {
                     if ($socket === $this->server) {
                         $client     = stream_socket_accept($this->server, 30);
-                        $clientName = md5(stream_socket_get_name($client, true));
+                        $clientName = $this->getClientName($client);
 
                         if (!in_array($clientName, $this->clients)) {
                             $this->clients[$clientName] = $client;
                             $this->handshake($client);
                         }
                     } else {
+                        var_dump($this->listServices());
                         $this->treatDataRecieved($socket);
                     }
                 }
@@ -102,28 +174,30 @@ class Server
         }
     }
 
+    /**
+     * Treat recieved data from a client socket and perform actions depending on data recieved and services implemented
+     * The ping / pong protocol is handled
+     *
+     * @param resource $socket The client socket
+     */
     private function treatDataRecieved($socket)
     {
-        $clientName = md5(stream_socket_get_name($socket, true));
-        $data       = $this->unmask(stream_socket_recvfrom($socket, 1500));
+        $clientName = $this->getClientName($socket);
+        $data       = stream_socket_recvfrom($socket, 1500);
 
-        if (trim(strtolower($data)) === 'ping') {
-            static::out('PONG' . PHP_EOL);
-            stream_socket_sendto($socket, $this->encode('PONG', 'pong'));
+        if (strlen($data) < 2) {
+            $this->disconnect($socket, $clientName);
         } else {
-            $data = json_decode($data, true);
+            $data = $this->unmask(stream_socket_recvfrom($socket, 1500));
 
-            switch ($data['action']) {
-                case 'chat':
-                    static::out($clientName . ': ' . PHP_EOL .  $data['message'] . PHP_EOL);
-                    break;
-
-                case 'connect':
-                    // connect the client
-                    break;
-
-                default:
-                    stream_socket_sendto($socket, $this->encode('Unknown action'));
+            if (trim(strtolower($data)) === 'ping') {
+                static::out('PONG' . PHP_EOL);
+                stream_socket_sendto($socket, $this->encode('PONG', 'pong'));
+            } else {
+                foreach ($this->services as $service) {
+                    static::out('Flag 1' . PHP_EOL);
+                    $service($socket, json_decode($data, true));
+                }
             }
         }
     }
@@ -131,7 +205,7 @@ class Server
     /**
      * Perform an handshake with the remote client by sending a specific HTTP response
      *
-     * @param  resource $client The client socket
+     * @param resource $client The client socket
      */
     private function handshake($client)
     {
@@ -146,6 +220,24 @@ class Server
         "\r\n\r\n";
 
         stream_socket_sendto($client, $upgrade);
+
+        if ($this->verbose) {
+            static::out(
+                '[' . date('Y-m-d H:i:s') . '] New client added : ' . stream_socket_get_name($client, true) . PHP_EOL
+            );
+        }
+    }
+
+    /**
+     * Disconnect a client
+     *
+     * @param resource $socket     The client socket
+     * @param string   $clientName The client name
+     */
+    private function disconnect($socket, $clientName)
+    {
+        stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
+        unset($this->clients[$clientName]);
     }
 
     /**
@@ -250,4 +342,17 @@ class Server
 
         return $text;
     }
+        
+    /**
+     * Get the client name from his socket stream
+     *
+     * @param resource $socket The client socket
+     * @return string          The client name
+     */
+    private function getClientName($socket)
+    {
+        return md5(stream_socket_get_name($socket, true));
+    }
+
+    /*=====  End of Private methods  ======*/
 }
