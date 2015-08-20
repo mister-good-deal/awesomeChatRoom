@@ -15,8 +15,8 @@ try {
     $server      = new Server();
     $chatService = new ChatService();
 
-    sleep(2);
-    $server->addService($chatService->chatService, 'chatService');
+    $server->addService($chatService, 'chatService', 'chatService');
+    $server->run();
 } catch (Exception $e) {
 } finally {
     exit(0);

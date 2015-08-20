@@ -12,10 +12,10 @@ class ChatService extends Server
 
     public function chatService($socket, $data)
     {
-        static::out('Flag 2' . PHP_EOL);
         switch ($data['action']) {
             case 'chat':
-                static::out(': ' . PHP_EOL .  $data['message'] . PHP_EOL);
+                echo $this->getClientName($socket) . ': ' . $data['message'] . PHP_EOL;
+                // static::out($this->getClientName($socket) . ': ' . $data['message'] . PHP_EOL);
                 break;
 
             case 'connect':
