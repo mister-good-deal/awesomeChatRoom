@@ -470,7 +470,7 @@ abstract class EntityManager
      *
      * @return string The SQL formated string
      */
-    private function sqlFormater()
+    protected function sqlFormater()
     {
         return call_user_func_array('sprintf', func_get_args());
     }

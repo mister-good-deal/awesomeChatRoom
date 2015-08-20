@@ -14,11 +14,17 @@ use \classes\ExceptionManager as Exception;
 /**
  * User entity that extends the Entity abstact class
  *
- * @property integer $id         The user id
- * @property string  $firstName  The user first name
- * @property string  $lastName   The user last name
- * @property string  $pseudonym  The user pseudonym
- * @property string  $email      The user email
+ * @property integer $id                    The user id
+ * @property string  $firstName             The user first name
+ * @property string  $lastName              The user last name
+ * @property string  $pseudonym             The user pseudonym
+ * @property string  $email                 The user email
+ * @property string  $password              The user password
+ * @property integer $connectionAttempt     The user number of failed connection attempt
+ * @property integer $ipAttempt             The user last ip connection attempt
+ * @property integer $ip                    The user last ip connection
+ * @property string  $lastConnectionAttempt The user last time connection attempt
+ * @property string  $lastConnection        The user last time connection
  *
  * @class User
  */
@@ -27,7 +33,7 @@ class User extends Entity
     /**
      * @var string[] $mustDefinedFields Fields that must be defined when instanciate the User object
      */
-    public static $mustDefinedFields = array('firstName', 'lastName', 'email');
+    public static $mustDefinedFields = array('firstName', 'lastName', 'email', 'password');
 
     /**
      * @var string[] $pseudoBlackList List of unwanted pseudonyms

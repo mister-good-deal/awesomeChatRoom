@@ -14,12 +14,15 @@ class ChatService extends Server
     {
         switch ($data['action']) {
             case 'chat':
-                echo $this->getClientName($socket) . ': ' . $data['message'] . PHP_EOL;
-                // static::out($this->getClientName($socket) . ': ' . $data['message'] . PHP_EOL);
+                static::out($this->getClientName($socket) . ': ' . $data['message'] . PHP_EOL);
                 break;
 
             case 'connect':
                 // connect the client
+                break;
+
+            case 'disconnect':
+                $this->disconnect($socket);
                 break;
 
             default:

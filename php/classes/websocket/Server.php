@@ -181,12 +181,56 @@ class Server
     {
         return md5(stream_socket_get_name($socket, true));
     }
+
+    /**
+     * Send data to a client via stream socket
+     *
+     * @param resource $socket The client stream socket
+     * @param string   $data   The data to send
+     */
+    protected function send($socket, $data)
+    {
+        stream_socket_sendto($socket, $data);
+    }
+
+    /**
+     * Disconnect a client
+     *
+     * @param resource $socket     The client socket
+     * @param string   $clientName OPTIONAL the client name
+     */
+    protected function disconnect($socket, $clientName = null)
+    {
+        if ($clientName === null) {
+            $clientName = $this->getClientName($socket);
+        }
+
+        stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
+        unset($this->clients[$clientName]);
+
+        if ($this->verbose) {
+            static::out(
+                '[' . date('Y-m-d H:i:s') . '] Client disconnected : ' . $clientName . PHP_EOL
+            );
+        }
+    }
     
     /*=====  End of Protected methods  ======*/
 
     /*=======================================
     =            Private methods            =
     =======================================*/
+
+    /**
+     * Get data from a client via stream socket
+     *
+     * @param  resource $socket The client stream socket
+     * @return string           The client data
+     */
+    private function get($socket)
+    {
+        return stream_socket_recvfrom($socket, 1500);
+    }
 
     /**
      * Treat recieved data from a client socket and perform actions depending on data recieved and services implemented
@@ -197,16 +241,16 @@ class Server
     private function treatDataRecieved($socket)
     {
         $clientName = $this->getClientName($socket);
-        $data       = stream_socket_recvfrom($socket, 1500);
+        $data       = $this->get($socket);
 
         if (strlen($data) < 2) {
             $this->disconnect($socket, $clientName);
         } else {
-            $data = $this->unmask(stream_socket_recvfrom($socket, 1500));
+            $data = $this->unmask($data);
 
             if (trim(strtolower($data)) === 'ping') {
                 static::out('PONG' . PHP_EOL);
-                stream_socket_sendto($socket, $this->encode('PONG', 'pong'));
+                $this->send($socket, $this->encode('PONG', 'pong'));
             } else {
                 foreach ($this->services as $service) {
                     call_user_func_array($service, array($socket, json_decode($data, true)));
@@ -223,7 +267,7 @@ class Server
     private function handshake($client)
     {
         // Retrieves the header and get the WebSocket-Key
-        preg_match('/Sec-WebSocket-Key\: (.*)/', stream_socket_recvfrom($client, 1500), $match);
+        preg_match('/Sec-WebSocket-Key\: (.*)/', $this->get($client), $match);
 
         // Send the accept key built on the base64 encode of the WebSocket-Key, concated with the magic key, sha1 hash
         $upgrade  = "HTTP/1.1 101 Switching Protocols\r\n" .
@@ -232,25 +276,13 @@ class Server
         "Sec-WebSocket-Accept: " . base64_encode(sha1(trim($match[1]) . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true)) .
         "\r\n\r\n";
 
-        stream_socket_sendto($client, $upgrade);
+        $this->send($client, $upgrade);
 
         if ($this->verbose) {
             static::out(
-                '[' . date('Y-m-d H:i:s') . '] New client added : ' . stream_socket_get_name($client, true) . PHP_EOL
+                '[' . date('Y-m-d H:i:s') . '] New client added : ' . $this->getClientName($client) . PHP_EOL
             );
         }
-    }
-
-    /**
-     * Disconnect a client
-     *
-     * @param resource $socket     The client socket
-     * @param string   $clientName The client name
-     */
-    private function disconnect($socket, $clientName)
-    {
-        stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
-        unset($this->clients[$clientName]);
     }
 
     /**

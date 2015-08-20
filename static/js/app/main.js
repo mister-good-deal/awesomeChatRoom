@@ -41,6 +41,12 @@ define(['jquery'], function($) {
             }
         },
 
+        disconnect: function () {
+            this.socket.send(JSON.stringify({
+                "action": "disconnect"
+            }));
+        },
+
         sendMessage: function (message) {
             this.socket.send(JSON.stringify({
                 "action": "chat",
