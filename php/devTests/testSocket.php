@@ -12,11 +12,7 @@ use \classes\websocket\ChatService as ChatService;
 include_once '../autoloader.php';
 
 try {
-    $server      = new Server();
-    $chatService = new ChatService();
-
-    $server->addService($chatService, 'chatService', 'chatService');
-    $server->run();
+    $server = new Server();
 } catch (Exception $e) {
 } finally {
     exit(0);

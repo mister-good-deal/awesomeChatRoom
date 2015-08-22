@@ -1,16 +1,23 @@
 <?php
 
-namespace classes\websocket;
+namespace classes\websocket\services;
 
 use \classes\websocket\Server as Server;
+use \interfaces\ServiceInterface as Service;
 
-class ChatService extends Server
+class ChatService extends Server implements Service
 {
     public function __construct()
     {
     }
 
-    public function chatService($socket, $data)
+    /**
+     * Method to recieves data from the WebSocket server
+     *
+     * @param  resource $socket The client socket
+     * @param  array    $data   JSON decoded client data
+     */
+    public function service($socket, $data)
     {
         switch ($data['action']) {
             case 'chat':

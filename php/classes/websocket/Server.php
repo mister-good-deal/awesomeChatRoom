@@ -51,7 +51,7 @@ class Server
     =====================================*/
     
     /**
-     * Constructor that load parameters in the ini conf file
+     * Constructor that load parameters in the ini conf file and run the WebSocket server
      */
     public function __construct()
     {
@@ -71,6 +71,8 @@ class Server
         if ($this->server === false) {
             throw new Exception('Error ' . $this->errorNum . '::' . $this->errorString, Exception::$ERROR);
         }
+
+        $this->run();
     }
     
     /*=====  End of Magic methods  ======*/
@@ -78,59 +80,11 @@ class Server
     /*======================================
     =            Public methods            =
     ======================================*/
-    
-    /**
-     * Add a service to the server
-     * The service function must take 2 arguments: the first is the client socket, the second is the data sent
-     *
-     * @param  object    $serviceInstance The service instancied object
-     * @param  string    $serviceMethod   The service method name
-     * @param  string    $serviceName     The service name
-     * @throws Exception                  If the service name already exist
-     * @throws Exception                  If the service method does not exist
-     */
-    public function addService($serviceInstance, $serviceMethod, $serviceName)
-    {
-        if (array_key_exists($serviceName, $this->services)) {
-            throw new Exception('This service name is already set', Exception::$ERROR);
-        }
-
-        if (!method_exists($serviceInstance, $serviceMethod)) {
-            throw new Exception('This service does not exist in the object sent', Exception::$ERROR);
-        }
-
-        $this->services[$serviceName] = array($serviceInstance, $serviceMethod);
-    }
-
-    /**
-     * Remove a service from the server
-     *
-     * @param  string    $serviceName The service name
-     * @throws Exception              If the service name doeas not exist
-     */
-    public function removeService($serviceName)
-    {
-        if (!array_key_exists($serviceName, $this->services)) {
-            throw new Exception('This service name does not exist', Exception::$ERROR);
-        }
-        
-        unset($this->services[$serviceName]);
-    }
-
-    /**
-     * List all the service name implemented
-     *
-     * @return string[] The service name list
-     */
-    public function listServices()
-    {
-        return array_keys($this->services);
-    }
 
     /**
      * Run the server, accept connections and handle them
      */
-    public function run()
+    private function run()
     {
         if ($this->verbose) {
             static::out(
@@ -309,6 +263,7 @@ class Server
     /**
      * Treat recieved data from a client socket and perform actions depending on data recieved and services implemented
      * The ping / pong protocol is handled
+     * Server management is processing here (add / remove / list services)
      *
      * @param resource $socket The client socket
      */
@@ -323,11 +278,30 @@ class Server
             $data = $this->unmask($data);
 
             if (trim(strtolower($data)) === 'ping') {
-                static::out('PONG' . PHP_EOL);
                 $this->send($socket, $this->encode('PONG', 'pong'));
             } else {
-                foreach ($this->services as $service) {
-                    call_user_func_array($service, array($socket, json_decode($data, true)));
+                $data = json_decode($data, true);
+
+                if (isset($data['action']) && $data['action'] === 'manageServer') {
+                    $errors = array();
+
+                    if (!$this->checkAuthentication($data)) {
+                        $errors[] = _('Authentication failed');
+                    } else {
+                        if (isset($data['addService'])) {
+                            $errors = $this->addService($data['addService']);
+                        } elseif (isset($data['removeService'])) {
+                            $errors = $this->removeService($data['removeService']);
+                        } elseif (isset($data['listServices'])) {
+                            $errors = $this->listServices($data['listServices']);
+                        }
+                    }
+
+                    $this->send($socket, $this->encode(json_encode(array('errors' => $errors)));
+                } else {
+                    foreach ($this->services as $service) {
+                        call_user_func_array($service, array($socket, $data));
+                    }
                 }
             }
         }
@@ -370,13 +344,13 @@ class Server
 
         if ($length === 126) {
             $masks = substr($payload, 4, 4);
-            $data = substr($payload, 8);
+            $data  = substr($payload, 8);
         } elseif ($length == 127) {
             $masks = substr($payload, 10, 4);
-            $data = substr($payload, 14);
+            $data  = substr($payload, 14);
         } else {
             $masks = substr($payload, 2, 4);
-            $data = substr($payload, 6);
+            $data  = substr($payload, 6);
         }
         
         $text = '';
@@ -386,6 +360,82 @@ class Server
         }
 
         return $text;
+    }
+
+    /**
+     * Add a service to the server
+     *
+     * @param  string   $serviceName The service name
+     * @return string[]              Array containing errors or empty array if success
+     */
+    private function addService($serviceName)
+    {
+        $errors = array();
+
+        if (array_key_exists($serviceName, $this->services)) {
+            $errors[] = _('The service "' . $serviceName . '" is already running');
+        } else {
+            $servicePath = Ini::getParam('Socket', 'servicesPath') . DIRECTORY_SEPARATOR . $serviceName;
+
+            if (!(class_exists($servicePath))) {
+                $errors[] = _('The service "' . $serviceName . '" does not exist');
+            } else {
+                $service                      = new $servicePath();
+                $this->services[$serviceName] = array($service, 'service');
+
+                static::out('[' . date('Y-m-d H:i:s') . '] Service "' . $serviceName . '" is now running' . PHP_EOL);
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * Remove a service from the server
+     *
+     * @param  string   $serviceName The service name
+     * @return string[]              Array containing errors or empty array if success
+     */
+    private function removeService($serviceName)
+    {
+        $errors = array();
+
+        if (!array_key_exists($serviceName, $this->services)) {
+            $errors[] = _('The service "' . $serviceName . '" is not running');
+        } else {
+            unset($this->services[$serviceName]);
+
+            static::out('[' . date('Y-m-d H:i:s') . '] Service "' . $serviceName . '" is now stopped' . PHP_EOL);
+        }
+        
+        return $errors;
+    }
+
+    /**
+     * List all the service name which are currently running
+     *
+     * @return string[] The service name list
+     */
+    private function listServices()
+    {
+        return array_keys($this->services);
+    }
+
+    /**
+     * Check the authentication to perform administration action on the WebSocket server
+     *
+     * @param  array   $data JSON decoded client data
+     * @return boolean       True if the authentication succeed else false
+     */
+    private function checkAuthentication($data)
+    {
+        $authenticated = false;
+
+        if (isset($data['password']) && $data['password'] === Ini::getParam('Socket', 'adminPassword')) {
+            $authenticated = true;
+        }
+
+        return $authenticated;
     }
 
     /*=====  End of Private methods  ======*/

@@ -154,6 +154,13 @@ class User extends Entity
 
                 break;
 
+            case 'email':
+                if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
+                    $this->errors[$columnName][] = _('This is not a valid email address');
+                }
+
+                break;
+
             case 'password':
                 Ini::setIniFileName(Ini::INI_CONF_FILE);
                 $minPasswordLength = Ini::getParam('User', 'minPasswordLength');
