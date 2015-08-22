@@ -10,6 +10,8 @@ namespace classes\console;
 
 use \classes\DataBase as DB;
 use \classes\IniManager as Ini;
+use \classes\entitiesManager\GlobalEntityManager as EntityManager;
+use \abstracts\designPatterns\Entity as Entity;
 use \classes\console\ConsoleColors as ConsoleColors;
 
 /**
@@ -52,15 +54,17 @@ GODDBYE;
      * @var string[] $COMMANDS List of all commands with their description
      */
     private static $COMMANDS = array(
-        'exit'                                          => 'Exit the ORM console',
-        'last cmd'                                      => 'Get the last command written',
-        'all cmd'                                       => 'Get all the commands written',
-        'tables'                                        => 'Get all the tables name',
-        'clean -t tableName'                            => 'Delete all the row of the given table name',
-        'drop -t tableName'                             => 'Drop the given table name',
-        'show -t tableName [-s startIndex -e endIndex]' => 'Show table data begin at startIndex and stop at endIndex',
-        'desc -t tableName'                             => 'Show table structure',
-        'help'                                          => 'Display all the commands'
+        'exit'                                              => 'Exit the ORM console',
+        'last cmd'                                          => 'Get the last command written',
+        'all cmd'                                           => 'Get all the commands written',
+        'tables'                                            => 'Get all the tables name',
+        'entites'                                           => 'Get all the entites name',
+        'entity -n entityName --clean|drop|show|desc|create' => 'Perform action on entity table',
+        'clean -t tableName'                                => 'Delete all the row of the given table name',
+        'drop -t tableName'                                 => 'Drop the given table name',
+        'show -t tableName [-s startIndex -e endIndex]'     => 'Show table data begin at startIndex and stop at endIndex',
+        'desc -t tableName'                                 => 'Show table structure',
+        'help'                                              => 'Display all the commands'
     );
 
     /**
@@ -167,6 +171,14 @@ GODDBYE;
                 static::out('Tables name: ' . PHP_EOL . $this->tablePrettyPrint(DB::getAllTables()) . PHP_EOL);
                 break;
 
+            case 'entities':
+                static::out('Tables name: ' . PHP_EOL . $this->tablePrettyPrint(DB::getAllEntites()) . PHP_EOL);
+                break;
+
+            case 'entity':
+                $this->entityProcess($command);
+                break;
+
             case 'clean':
                 $this->cleanTable($command);
                 break;
@@ -206,6 +218,39 @@ GODDBYE;
         }
     }
 
+    /**
+     * Process the command called on the entity
+     *
+     * @param  string $command The command passed with its arguments
+     */
+    private function entityProcess($command)
+    {
+        $args = $this->getArgs($command);
+
+        if ($this->checkEntityName($args)) {
+            /**
+             * @var Entity $entity An entity
+             */
+            $entityClassPath = Ini::getParam('Entities', 'entitiesClassPath') . DIRECTORY_SEPARATOR . $args['n'];
+            $entity         = new $entityClassPath;
+            $command       .= ' -t ' . strtolower($entity->getTableName()); // todo bug SQL table name with uppercase
+
+            if (isset($args['clean'])) {
+                $this->cleanTable($command);
+            } elseif (isset($args['drop'])) {
+                $this->dropTable($command);
+            } elseif (isset($args['show'])) {
+                $this->showTable($command);
+            } elseif (isset($args['desc'])) {
+                $this->descTable($command);
+            } elseif (isset($args['create'])) {
+                $entityManager = new EntityManager();
+                $entityManager->setEntity($entity);
+                $entityManager->createEntityTable();
+                static::out(static::ACTION_DONE . PHP_EOL);
+            }
+        }
+    }
     /**
      * Delete all the data in a table
      *
@@ -327,6 +372,27 @@ GODDBYE;
     }
 
     /**
+     * Check if the entity exists
+     *
+     * @param  string[] $args The command arguments
+     * @return boolean        True if the entity exists else false
+     */
+    private function checkEntityName($args)
+    {
+        $check = true;
+
+        if (!isset($args['n'])) {
+            static::out('You need to specify an entity name with -n parameter' . PHP_EOL);
+            $check = false;
+        } elseif (!in_array($args['n'], DB::getAllEntites())) {
+            static::out('The entity "' . $args['n'] . '" does not exist' . PHP_EOL);
+            $check = false;
+        }
+
+        return $check;
+    }
+
+    /**
      * Ask the user to confirm the action
      *
      * @param  string $message The message to prompt
@@ -347,9 +413,15 @@ GODDBYE;
      */
     private function getArgs($command)
     {
-        preg_match_all('/\-(?P<argKey>[a-zA-Z]+) (?P<argValue>[a-zA-Z0-9 _]+)/', $command, $matches);
+        // -argument = value
+        preg_match_all('/\-(?P<argKey>[a-zA-Z]+) (?P<argValue>[a-zA-Z0-9 _]+)/', $command, $matches1);
+        // --argument
+        preg_match_all('/\-\-(?P<argKey>[a-zA-Z]+)(?P<argValue>.*)/', $command, $matches2);
 
-        return $this->filterPregMatchAllWithFlags($matches, 'argKey', 'argValue');
+        $args1 = $this->filterPregMatchAllWithFlags($matches1, 'argKey', 'argValue');
+        $args2 = $this->filterPregMatchAllWithFlags($matches2, 'argKey', 'argValue');
+
+        return $args1 + $args2;
     }
 
     /**

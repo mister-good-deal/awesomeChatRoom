@@ -31,7 +31,7 @@ class UserEntityManager extends EntityManager
         $success = false;
         $errors  = $this->checkMustDefinedField(array_keys($fields));
 
-        if (count($errors) === 0) {
+        if (count($errors['SERVER']) === 0) {
             $user         = new User($fields);
             $query        = 'SELECT MAX(id) FROM ' . $user->getTableName();
             $user->id     = DB::query($query)->fetchColumn() + 1;
@@ -61,37 +61,47 @@ class UserEntityManager extends EntityManager
         $userParams = DB::query($sql)->fetch();
         $now        = new \DateTime();
         $success    = false;
+        $continue   = false;
         $errors     = array();
 
         if (count($userParams) > 0) {
             $user = new User($userParams);
 
-            if (hash_equals($userParams['password'], crypt($password, $userParams['password']))) {
-                $success                 = true;
-                $user->lastConnection    = $now->format('Y-m-d H:i:s');
-                $user->connectionAttempt = 0;
-                $user->ip                = $_SERVER['REMOTE_ADDR'];
-            } else {
-                if ((int) $user->connectionAttempt === -1) {
-                    $lastConnectionAttempt = new \DateTime($user->lastConnectionAttempt);
-                    $intervalInSec         = (int) $lastConnectionAttempt->diff($now)->format('%s');
-                    $minInterval           = (int) Ini::getParam('User', 'minTimeAttempt');
+            if ((int) $user->connectionAttempt === -1) {
+                $lastConnectionAttempt = new \DateTime($user->lastConnectionAttempt);
+                $intervalInSec         = (int) $lastConnectionAttempt->diff($now)->format('%s');
+                $minInterval           = (int) Ini::getParam('User', 'minTimeAttempt');
 
-                    if ($intervalInSec < $minInterval) {
-                        $errors[] = _('You have to wait ' . $minInterval - $intervalInSec . ' sec to try to reconnect');
-                    } else {
-                        $user->connectionAttempt = 1;
-                    }
+                if ($intervalInSec < $minInterval) {
+                    $errors[] = _('You have to wait ' . $minInterval - $intervalInSec . ' sec to try to reconnect');
+                } else {
+                    $user->connectionAttempt = 1;
+                    $continue                = true;
+                }
+            }
+
+            if ($continue) {
+                if (hash_equals($userParams['password'], crypt($password, $userParams['password']))) {
+                    $success                 = true;
+                    $user->lastConnection    = $now->format('Y-m-d H:i:s');
+                    $user->connectionAttempt = 0;
+                    $user->ip                = $_SERVER['REMOTE_ADDR'];
                 } else {
                     $user->lastConnectionAttempt = $now->format('Y-m-d H:i:s');
 
                     if ($user->ipAttempt === $_SERVER['REMOTE_ADDR']) {
-                        $user->connectionAttempt++;
+                        if (++$user->connectionAttempt === (int) Ini::getParam('User', 'maxFailConnectAttempt')) {
+                            $user->connectionAttempt = -1;
+                        }
                     } else {
                         $user->connectionAttempt = 0;
                         $user->ipAttempt         = $_SERVER['REMOTE_ADDR'];
                     }
                 }
+            }
+
+            if ($this->saveEntity($user) === false) {
+                $errors[] = _('Error with the server, please try later');
             }
         }
 
@@ -111,11 +121,12 @@ class UserEntityManager extends EntityManager
      */
     private function checkMustDefinedField($fields)
     {
-        $errors = array();
+        $errors           = array();
+        $errors['SERVER'] = array();
 
         foreach (User::$mustDefinedFields as $field) {
             if (!in_array($field, $fields)) {
-                $errors[] = _($field . ' must be defined');
+                $errors['SERVER'][] = _($field . ' must be defined');
             }
         }
 

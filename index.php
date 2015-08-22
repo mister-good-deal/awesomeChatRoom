@@ -20,6 +20,7 @@
             <input type="text" name="lastName" placeholder="<?=_('Last name')?>">
             <input type="text" name="pseudonym" placeholder="<?=_('Pseudo')?>">
             <input type="email" name="email" placeholder="<?=_('Email')?>">
+            <input type="password" name="password" placeholder="<?=_('Password')?>">
             <input type="submit" value="submit">
         </form>
     </body>

@@ -119,10 +119,16 @@ abstract class EntityManager
     /**
      * Save the entity in the database
      *
-     * @return boolean True if the entity has been saved or updated else false
+     * @param  Entity $entity OPTIONAL If an entity is passed, this entity becomes the EntityManager Entity DEFAULT null
+     * @throws Exception      If the entity is not a subclass of Entity
+     * @return boolean        True if the entity has been saved or updated else false
      */
-    public function saveEntity()
+    public function saveEntity($entity = null)
     {
+        if ($entity !== null) {
+            $this->setEntity($entity);
+        }
+
         $sucess = true;
 
         if ($this->entityAlreadyExists()) {
@@ -137,10 +143,17 @@ abstract class EntityManager
     /**
      * Save the entity colection in the database
      *
-     * @return boolean True if the entity collection has been saved else false
+     * @param  Collection $collection OPTIONAL If an collection is passed, this collection becomes
+     *                                the EntityManager Collection DEFAULT null
+     * @throws Exception              If the entityCollection is not a subclass of Collection
+     * @return boolean                True if the entity collection has been saved else false
      */
-    public function saveCollection()
+    public function saveCollection($collection = null)
     {
+        if ($collection !== null) {
+            $this->setEntityCollection($collection);
+        }
+
         $currentEntity = $this->entity;
         $success       = true;
 

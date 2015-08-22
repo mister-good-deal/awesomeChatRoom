@@ -214,6 +214,80 @@ class Server
             );
         }
     }
+
+    /**
+     * Encode a text to send to client via ws://
+     *
+     * @param $text
+     * @param $messageType
+     */
+    protected function encode($message, $messageType = 'text')
+    {
+        switch ($messageType) {
+            case 'continuous':
+                $b1 = 0;
+                break;
+            case 'text':
+                $b1 = 1;
+                break;
+            case 'binary':
+                $b1 = 2;
+                break;
+            case 'close':
+                $b1 = 8;
+                break;
+            case 'ping':
+                $b1 = 9;
+                break;
+            case 'pong':
+                $b1 = 10;
+                break;
+        }
+        
+        $b1 += 128;
+        $length = strlen($message);
+        $lengthField = "";
+
+        if ($length < 126) {
+            $b2 = $length;
+        } elseif ($length <= 65536) {
+            $b2 = 126;
+            $hexLength = dechex($length);
+
+            if (strlen($hexLength)%2 == 1) {
+                $hexLength = '0' . $hexLength;
+            }
+
+            $n = strlen($hexLength) - 2;
+
+            for ($i = $n; $i >= 0; $i = $i - 2) {
+                $lengthField = chr(hexdec(substr($hexLength, $i, 2))) . $lengthField;
+            }
+
+            while (strlen($lengthField) < 2) {
+                $lengthField = chr(0) . $lengthField;
+            }
+        } else {
+            $b2 = 127;
+            $hexLength = dechex($length);
+
+            if (strlen($hexLength) % 2 == 1) {
+                $hexLength = '0' . $hexLength;
+            }
+
+            $n = strlen($hexLength) - 2;
+
+            for ($i = $n; $i >= 0; $i = $i - 2) {
+                $lengthField = chr(hexdec(substr($hexLength, $i, 2))) . $lengthField;
+            }
+
+            while (strlen($lengthField) < 8) {
+                $lengthField = chr(0) . $lengthField;
+            }
+        }
+
+        return chr($b1) . chr($b2) . $lengthField . $message;
+    }
     
     /*=====  End of Protected methods  ======*/
 
@@ -283,80 +357,6 @@ class Server
                 '[' . date('Y-m-d H:i:s') . '] New client added : ' . $this->getClientName($client) . PHP_EOL
             );
         }
-    }
-
-    /**
-     * Encode a text to send to client via ws://
-     *
-     * @param $text
-     * @param $messageType
-     */
-    private function encode($message, $messageType = 'text')
-    {
-        switch ($messageType) {
-            case 'continuous':
-                $b1 = 0;
-                break;
-            case 'text':
-                $b1 = 1;
-                break;
-            case 'binary':
-                $b1 = 2;
-                break;
-            case 'close':
-                $b1 = 8;
-                break;
-            case 'ping':
-                $b1 = 9;
-                break;
-            case 'pong':
-                $b1 = 10;
-                break;
-        }
-        
-        $b1 += 128;
-        $length = strlen($message);
-        $lengthField = "";
-
-        if ($length < 126) {
-            $b2 = $length;
-        } elseif ($length <= 65536) {
-            $b2 = 126;
-            $hexLength = dechex($length);
-
-            if (strlen($hexLength)%2 == 1) {
-                $hexLength = '0' . $hexLength;
-            }
-
-            $n = strlen($hexLength) - 2;
-
-            for ($i = $n; $i >= 0; $i = $i - 2) {
-                $lengthField = chr(hexdec(substr($hexLength, $i, 2))) . $lengthField;
-            }
-
-            while (strlen($lengthField) < 2) {
-                $lengthField = chr(0) . $lengthField;
-            }
-        } else {
-            $b2 = 127;
-            $hexLength = dechex($length);
-
-            if (strlen($hexLength) % 2 == 1) {
-                $hexLength = '0' . $hexLength;
-            }
-
-            $n = strlen($hexLength) - 2;
-
-            for ($i = $n; $i >= 0; $i = $i - 2) {
-                $lengthField = chr(hexdec(substr($hexLength, $i, 2))) . $lengthField;
-            }
-
-            while (strlen($lengthField) < 8) {
-                $lengthField = chr(0) . $lengthField;
-            }
-        }
-
-        return chr($b1) . chr($b2) . $lengthField . $message;
     }
 
     /**

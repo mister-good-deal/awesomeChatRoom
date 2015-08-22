@@ -41,11 +41,6 @@ class DataBase
     use \traits\EchoTrait;
 
     /**
-     * @const INI_CONF_FILE The path of the ini configuration file
-     */
-    const INI_CONF_FILE = 'conf.ini';
-
-    /**
      * @var \PDO $PDO A PDO object DEFAULT null
      */
     private static $PDO = null;
@@ -133,6 +128,18 @@ class DataBase
     /*======================================
     =            Public methods            =
     ======================================*/
+
+    /**
+     * Get a list of all existing entities
+     *
+     * @return string[] List of all existing entities
+     */
+    public static function getAllEntites()
+    {
+        Ini::setIniFileName(Ini::INI_CONF_FILE);
+
+        return Ini::getParam('Entities', 'entitesList');
+    }
 
     /**
      * Get all the table name of he current database
@@ -240,7 +247,7 @@ class DataBase
      */
     private static function initialize($dsn = '', $username = '', $password = '', $options = array())
     {
-        Ini::setIniFileName(static::INI_CONF_FILE);
+        Ini::setIniFileName(Ini::INI_CONF_FILE);
 
         if (static::$printSQL === null) {
             // Load default printSQL value

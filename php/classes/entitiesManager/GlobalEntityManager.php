@@ -1,6 +1,6 @@
 <?php
 /**
- * Entity manager for the entity UserStatistics
+ * Entity manager for any entity
  *
  * @category EntityManager
  * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -11,10 +11,10 @@ namespace classes\entitiesManager;
 use \abstracts\designPatterns\EntityManager as EntityManager;
 
 /**
- * Performed database action relative to the UserStatistics entity class
+ * Performed database action relative to the any entity class
  *
- * @class UserEntityManager
+ * @class GlobalEntityManager
  */
-class UserStatisticsEntityManager extends EntityManager
+class GlobalEntityManager extends EntityManager
 {
 }

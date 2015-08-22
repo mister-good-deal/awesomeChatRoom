@@ -10,6 +10,7 @@ namespace classes\entities;
 
 use \abstracts\designPatterns\Entity as Entity;
 use \classes\ExceptionManager as Exception;
+use \classes\IniManager as Ini;
 
 /**
  * User entity that extends the Entity abstact class
@@ -112,10 +113,10 @@ class User extends Entity
         $value                     = trim($value);
         $length                    = strlen($value);
         $maxLength                 = $this->getColumnMaxSize($columnName);
-        $name                      = _(preg_replace('/([A-Z])/', ' ' . strtolower('$1'), $columnName));
+        $name                      = _(strtolower(preg_replace('/([A-Z])/', ' $0', $columnName)));
 
         if (in_array($columnName, static::$mustDefinedFields) && $length === 0) {
-            $this->errors[$columnName][] = _('The ' . $name . 'can\'t be empty');
+            $this->errors[$columnName][] = _('The ' . $name . ' can\'t be empty');
         } elseif ($length > $maxLength) {
             $this->errors[$columnName][] = _('The ' . $name . ' size can\'t exceed ' . $maxLength . ' characters');
         }
@@ -123,13 +124,13 @@ class User extends Entity
         switch ($columnName) {
             case 'lastName':
                 $value = ucwords(strtolower($value));
-                $value = preg_replace(' ( )*/', ' ', $value);
+                $value = preg_replace('/ ( )*/', ' ', $value);
 
                 break;
 
             case 'firstName':
                 $value = ucfirst(strtolower($value));
-                $value = preg_replace(' ( )*(.)?/', '-' . strtoupper('$2'), $value);
+                $value = preg_replace('/ ( )*(.)?/', '-' . strtoupper('$2'), $value);
 
                 break;
 
@@ -137,6 +138,18 @@ class User extends Entity
                 if (in_array(strtolower($value), static::$pseudoBlackList)) {
                     $this->errors[$columnName][] = _('The pseudonym "' . $value . '" is not accepted');
                 }
+
+                break;
+
+            case 'password':
+                Ini::setIniFileName(Ini::INI_CONF_FILE);
+                $minPasswordLength = Ini::getParam('User', 'minPasswordLength');
+
+                if ($length < $minPasswordLength) {
+                    $this->errors[$columnName][] = _('The password length must be at least ' . $minPasswordLength);
+                }
+
+                $value = crypt($value, Ini::getParam('User', 'passwordCryptSalt'));
 
                 break;
         }

@@ -21,6 +21,11 @@ use \classes\LoggerManager as Logger;
 class IniManager
 {
     /**
+     * @const INI_CONF_FILE The path of the ini configuration file
+     */
+    const INI_CONF_FILE = 'conf.ini';
+
+    /**
      * ini file path (can be only the file name if the path is under the include_path of php ini conf)
      */
     private static $INI_FILE_NAME = 'C:\prog\web\php\conf.ini';
