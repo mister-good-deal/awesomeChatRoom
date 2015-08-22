@@ -214,6 +214,18 @@ abstract class EntityManager
         }
     }
 
+    /**
+     * Format a sql query with sprintf function
+     * First arg must be the sql string with markers (%s, %d, ...)
+     * Others args should be the values for the markers
+     *
+     * @return string The SQL formated string
+     */
+    public static function sqlFormater()
+    {
+        return call_user_func_array('sprintf', func_get_args());
+    }
+    
     /*-----  End of Public methods  ------*/
 
     /*=======================================
@@ -229,7 +241,7 @@ abstract class EntityManager
     {
         $sqlMarks = " SELECT COUNT(*)\n FROM %s\n WHERE %s";
 
-        $sql = $this->sqlFormater(
+        $sql = static::sqlFormater(
             $sqlMarks,
             $this->entity->getTableName(),
             $this->getEntityPrimaryKeysWhereClause()
@@ -247,7 +259,7 @@ abstract class EntityManager
     {
         $sqlMarks = " INSERT INTO %s\n VALUES %s";
 
-        $sql = $this->sqlFormater(
+        $sql = static::sqlFormater(
             $sqlMarks,
             $this->entity->getTableName(),
             $this->getEntityAttributesMarks($this->entity)
@@ -265,7 +277,7 @@ abstract class EntityManager
     {
         $sqlMarks = " UPDATE %s\n SET %s\n WHERE %s";
 
-        $sql = $this->sqlFormater(
+        $sql = static::sqlFormater(
             $sqlMarks,
             $this->entity->getTableName(),
             $this->getEntityUpdateMarksValue(),
@@ -284,7 +296,7 @@ abstract class EntityManager
     {
         $sqlMarks = " DELETE FROM %s\n WHERE %s";
 
-        $sql = $this->sqlFormater(
+        $sql = static::sqlFormater(
             $sqlMarks,
             $this->entity->getTableName(),
             $this->getEntityPrimaryKeysWhereClause()
@@ -363,7 +375,13 @@ abstract class EntityManager
         $marks = array();
 
         foreach ($this->entity->getColumnsKeyValueNoPrimary() as $columnName => $columnValue) {
-            $marks[] = $columnName . ' = ' . DB::quote($columnValue);
+            if ($columnValue === null) {
+                $columnValue = 'NULL';
+            } else {
+                $columnValue = DB::quote($columnValue);
+            }
+
+            $marks[] = $columnName . ' = ' . $columnValue;
         }
 
         return implode(', ', $marks);
@@ -379,7 +397,13 @@ abstract class EntityManager
         $columnsValue = array();
 
         foreach ($this->entity->getIdKeyValue() as $columnName => $columnValue) {
-            $columnsValue[] = $columnName . ' = ' . DB::quote($columnValue);
+            if ($columnValue === null) {
+                $columnValue = 'NULL';
+            } else {
+                $columnValue = DB::quote($columnValue);
+            }
+
+            $columnsValue[] = $columnName . ' = ' . $columnValue;
         }
 
         return implode($columnsValue, 'AND ');
@@ -474,18 +498,6 @@ abstract class EntityManager
         }
 
         return $sql;
-    }
-
-    /**
-     * Format a sql query with sprintf function
-     * First arg must be the sql string with markers (%s, %d, ...)
-     * Others args should be the values for the markers
-     *
-     * @return string The SQL formated string
-     */
-    protected function sqlFormater()
-    {
-        return call_user_func_array('sprintf', func_get_args());
     }
 
     /*-----  End of Private methods  ------*/

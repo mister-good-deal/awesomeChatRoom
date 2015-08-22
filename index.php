@@ -23,5 +23,11 @@
             <input type="password" name="password" placeholder="<?=_('Password')?>">
             <input type="submit" value="submit">
         </form>
+
+        <form action="user/connect" method="post" accept-charset="utf-8">
+            <input type="text" name="login" placeholder="<?=_('Login (Pseudonym or email')?>">
+            <input type="password" name="password" placeholder="<?=_('Password')?>">
+            <input type="submit" value="submit">
+        </form>
     </body>
 </html>

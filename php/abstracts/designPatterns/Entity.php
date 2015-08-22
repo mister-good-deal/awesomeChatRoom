@@ -11,6 +11,7 @@ namespace abstracts\designPatterns;
 use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
 use \classes\DataBase as DB;
+use \abstracts\designPatterns\EntityManager as EntityManager;
 
 /**
  * Abstract Entity pattern
@@ -67,7 +68,7 @@ abstract class Entity
     /**
      * @var array $columnsValue An associative array with column name on key and its value on value
      */
-    protected $columnsValue      = array();
+    protected $columnsValue = array();
     /**
      * @var array $columnsAttributes An associative array with column name on key and column value on value
      */
@@ -389,6 +390,46 @@ abstract class Entity
         return $this->columnsAttributes[$columnName]['size'];
     }
 
+    /**
+     * Set multiples attributes at once
+     *
+     * @param array $attributes The attributes to set
+     */
+    public function setAttributes($attributes)
+    {
+        foreach ($attributes as $columnName => $value) {
+            $this->{$columnName} = $value;
+        }
+    }
+
+    /*=========================================
+    =            Protected methods            =
+    =========================================*/
+    
+    /**
+     * Check if a column value is not already in database if the column has a unique attribute constraint
+     *
+     * @param  string  $columnName The column name
+     * @param  mixed   $value      The column value
+     * @return boolean             True if the value is already in database and the column has a unique
+     *                             attribute constraint else false
+     */
+    protected function checkUniqueField($columnName, $value)
+    {
+        $alreadyInDatabase = false;
+
+        if (strpos($this->constraints['unique'], $columnName) !== false) {
+            $sqlMarks = 'SELECT count(*) FROM %s WHERE %s = ' . DB::quote($value);
+            $sql      = EntityManager::sqlFormater($sqlMarks, $this->tableName, $columnName);
+
+            $alreadyInDatabase = ((int) DB::query($sql)->fetchColumn() > 0);
+        }
+
+        return $alreadyInDatabase;
+    }
+    
+    /*=====  End of Protected methods  ======*/
+
     /*=======================================
     =            Private methods            =
     =======================================*/
@@ -403,7 +444,16 @@ abstract class Entity
 
         foreach ($this->conf as $columnName => $columnAttributes) {
             if ($columnName !== 'table') {
-                $columnsValue[$columnName]      = null;
+                if (isset($columnAttributes['default'])) {
+                    if ($columnAttributes['default'] === 'NULL') {
+                        $columnsValue[$columnName] = null;
+                    } else {
+                        $columnsValue[$columnName] = $columnAttributes['default'];
+                    }
+                } else {
+                    $columnsValue[$columnName] = '';
+                }
+
                 $columnsAttributes[$columnName] = $columnAttributes;
             } else {
                 $this->tableName  = $columnAttributes['name'];

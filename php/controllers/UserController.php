@@ -28,4 +28,15 @@ class UserController extends Controller
         $this->JSONresponse($userEntityManager->register($_POST));
         unset($_POST);
     }
+
+    /**
+     * Connect a user from $_POST values and return the result of the process as a JSON
+     */
+    public function connect()
+    {
+        $userEntityManager = new UserEntityManager();
+
+        $this->JSONresponse($userEntityManager->connect($_POST));
+        unset($_POST);
+    }
 }

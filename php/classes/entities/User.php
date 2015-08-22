@@ -60,23 +60,8 @@ class User extends Entity
         parent::__construct('User');
 
         if ($data !== null) {
-            foreach ($data as $columnName => $value) {
-                $this->{$columnName} = $value;
-            }
+            $this->setAttributes($date);
         }
-    }
-
-    /**
-     * Set the column name
-     *
-     * @param  string    $columnName The column name
-     * @param  mixed     $value      The new column value
-     * @throws Exception             If the column name does not a exist
-     */
-    public function __set($columnName, $value)
-    {
-        $value = $this->validateField($columnName, $value);
-        parent::__set($columnName, $value);
     }
 
     /*-----  End of Magic methods  ------*/
@@ -95,17 +80,37 @@ class User extends Entity
     
     /*-----  End of Setters / getters  ------*/
 
+    /*======================================
+    =            Public methods            =
+    ======================================*/
+
+    /**
+     * Bind user inputs to set User class attributes with inputs check
+     *
+     * @param  array $inputs The user inputs
+     */
+    public function bindInputs($inputs)
+    {
+        foreach ($inputs as $inputName => &$inputValue) {
+            $inputValue = $this->validateField($inputName, $inputValue);
+        }
+        
+        $this->setAttributes($inputs);
+    }
+
+    /*=====  End of Public methods  ======*/
+
     /*=======================================
     =            Private methods            =
     =======================================*/
-    
+
     /**
      * Check and sanitize the input field before setting the value and keep errors trace
      *
      * @param  string $columnName The column name
-     * @param  mixed  $value      The new column value
+     * @param  string $value      The new column value
      * @throws Exception          If the column name does not a exist
-     * @return mixed              The sanitized value
+     * @return string             The sanitized value
      */
     private function validateField($columnName, $value)
     {
@@ -119,6 +124,10 @@ class User extends Entity
             $this->errors[$columnName][] = _('The ' . $name . ' can\'t be empty');
         } elseif ($length > $maxLength) {
             $this->errors[$columnName][] = _('The ' . $name . ' size can\'t exceed ' . $maxLength . ' characters');
+        }
+
+        if ($this->checkUniqueField($columnName, $value)) {
+            $this->errors[$columnName][] = _('This ' . $name . ' is already used');
         }
 
         switch ($columnName) {
@@ -137,6 +146,10 @@ class User extends Entity
             case 'pseudonym':
                 if (in_array(strtolower($value), static::$pseudoBlackList)) {
                     $this->errors[$columnName][] = _('The pseudonym "' . $value . '" is not accepted');
+                }
+
+                if ($value === '') {
+                    $value = null;
                 }
 
                 break;
@@ -160,6 +173,6 @@ class User extends Entity
 
         return $value;
     }
-    
-    /*-----  End of Private methods  ------*/
+
+    /*=====  End of Private methods  ======*/
 }

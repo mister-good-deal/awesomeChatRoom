@@ -20,26 +20,29 @@ use \classes\IniManager as Ini;
  */
 class UserEntityManager extends EntityManager
 {
+    use \traits\FiltersTrait;
+
     /**
      * Register a user and return errors if errors occured
      *
-     * @param  array $fields The user fields in an array($columnName => $value) pairs to set the object
+     * @param  array $inputs The user inputs in an array($columnName => $value) pairs to set the object
      * @return array         The occured errors or success in a array
      */
-    public function register($fields)
+    public function register($inputs)
     {
         $success = false;
-        $errors  = $this->checkMustDefinedField(array_keys($fields));
+        $errors  = $this->checkMustDefinedField(array_keys($inputs));
 
         if (count($errors['SERVER']) === 0) {
-            $user         = new User($fields);
-            $query        = 'SELECT MAX(id) FROM ' . $user->getTableName();
-            $user->id     = DB::query($query)->fetchColumn() + 1;
-            $this->entity = $user;
-            $errors       = $user->getErrors();
+            $user     = new User();
+            $query    = 'SELECT MAX(id) FROM ' . $user->getTableName();
+            $user->id = DB::query($query)->fetchColumn() + 1;
+            
+            $user->bindInputs($inputs);
+            $errors = $user->getErrors();
 
             if (count($errors) === 0) {
-                $success = $this->saveEntity();
+                $success = $this->saveEntity($user);
             }
         }
 
@@ -49,59 +52,80 @@ class UserEntityManager extends EntityManager
     /**
      * Connect a user with his login / password combinaison
      *
-     * @param  string $login    User login
-     * @param  string $password User password
+     * @param  string[] $inputs Inputs array containing array('login' => 'login', 'password' => 'password')
      * @return array            The occured errors or success in a array
      * @todo                    Complete the method (block success if max attempt reached)
      */
-    public function connect($login, $password)
+    public function connect($inputs)
     {
-        $sqlMarks   = 'SELECT * FROM %s WHERE email = %s OR pseudo = %s';
-        $sql        = $this->sqlFormater($query, $user->getTableName(), $login, $login);
-        $userParams = DB::query($sql)->fetch();
-        $now        = new \DateTime();
-        $success    = false;
-        $continue   = false;
-        $errors     = array();
+        $errors   = array();
+        $success  = false;
+        $login    = @$this->getInput($inputs['login']);
+        $password = @$this->getInput($inputs['password']);
 
-        if (count($userParams) > 0) {
-            $user = new User($userParams);
+        if ($login === null || $login === '') {
+            $errors['login'] = _('Login can\'t be empty');
+        } else {
+            $login = DB::quote($login);
+        }
 
-            if ((int) $user->connectionAttempt === -1) {
-                $lastConnectionAttempt = new \DateTime($user->lastConnectionAttempt);
-                $intervalInSec         = (int) $lastConnectionAttempt->diff($now)->format('%s');
-                $minInterval           = (int) Ini::getParam('User', 'minTimeAttempt');
+        if ($password === null || $password === '') {
+            $errors['password'] = _('Password can\'t be empty');
+        }
 
-                if ($intervalInSec < $minInterval) {
-                    $errors[] = _('You have to wait ' . $minInterval - $intervalInSec . ' sec to try to reconnect');
+        if (count($errors) === 0) {
+            $user       = new User();
+            $sqlMarks   = 'SELECT * FROM %s WHERE email = %s OR pseudonym = %s';
+            $sql        = static::sqlFormater($sqlMarks, $user->getTableName(), $login, $login);
+            $userParams = DB::query($sql)->fetch();
+            $now        = new \DateTime();
+            $continue   = true;
+
+            if ($userParams !== false) {
+                $user->setAttributes($userParams);
+
+                if ((int) $user->connectionAttempt === -1) {
+                    $lastConnectionAttempt = new \DateTime($user->lastConnectionAttempt);
+                    $intervalInSec         = $this->dateIntervalToSec($now->diff($lastConnectionAttempt));
+                    $minInterval           = (int) Ini::getParam('User', 'minTimeAttempt');
+
+                    if ($intervalInSec < $minInterval) {
+                        $continue         = false;
+                        $errors['SERVER'] = _(
+                            'You have to wait ' . ($minInterval - $intervalInSec) . ' sec before trying to reconnect'
+                        );
+                    } else {
+                        $user->connectionAttempt = 1;
+                    }
+                } else {
+                    $user->connectionAttempt++;
+                    $user->ipAttempt             = $_SERVER['REMOTE_ADDR'];
+                    $user->lastConnectionAttempt = $now->format('Y-m-d H:i:s');
+                }
+
+                if ($user->ipAttempt === $_SERVER['REMOTE_ADDR']) {
+                    if ($user->connectionAttempt === (int) Ini::getParam('User', 'maxFailConnectAttempt')) {
+                        $user->connectionAttempt = -1;
+                    }
                 } else {
                     $user->connectionAttempt = 1;
-                    $continue                = true;
+                    $user->ipAttempt         = $_SERVER['REMOTE_ADDR'];
                 }
-            }
 
-            if ($continue) {
-                if (hash_equals($userParams['password'], crypt($password, $userParams['password']))) {
-                    $success                 = true;
-                    $user->lastConnection    = $now->format('Y-m-d H:i:s');
-                    $user->connectionAttempt = 0;
-                    $user->ip                = $_SERVER['REMOTE_ADDR'];
-                } else {
-                    $user->lastConnectionAttempt = $now->format('Y-m-d H:i:s');
-
-                    if ($user->ipAttempt === $_SERVER['REMOTE_ADDR']) {
-                        if (++$user->connectionAttempt === (int) Ini::getParam('User', 'maxFailConnectAttempt')) {
-                            $user->connectionAttempt = -1;
-                        }
-                    } else {
+                if ($continue) {
+                    if (hash_equals($userParams['password'], crypt($password, $userParams['password']))) {
+                        $success                 = true;
+                        $user->lastConnection    = $now->format('Y-m-d H:i:s');
                         $user->connectionAttempt = 0;
-                        $user->ipAttempt         = $_SERVER['REMOTE_ADDR'];
+                        $user->ip                = $_SERVER['REMOTE_ADDR'];
+                    } else {
+                        $errors['password'] = _('Incorrect password');
                     }
                 }
-            }
 
-            if ($this->saveEntity($user) === false) {
-                $errors[] = _('Error with the server, please try later');
+                $this->saveEntity($user);
+            } else {
+                $errors['login'] = _('This login does not exist');
             }
         }
 

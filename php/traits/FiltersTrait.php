@@ -60,4 +60,52 @@ trait FiltersTrait
 
         return $columnsArray;
     }
+
+    /**
+     * Sanitize a user input by stripping unwanted blank characters
+     *
+     * @param  string $input The user input
+     * @return string        The sanitized user input
+     */
+    public function sanitizeInput($input)
+    {
+        return trim($input);
+    }
+
+    /**
+     * Get the user input, return null if undefined or the sanitized value
+     *
+     * @param  string      $input The user input
+     * @return string|null        The sanitized user input or null if the input was undefined
+     */
+    public function getInput($input)
+    {
+        if (!isset($input)) {
+            $input = null;
+        } else {
+            $input = $this->sanitizeInput($input);
+        }
+
+        return $input;
+    }
+
+    /**
+     * Convert a DateInterval object to sec
+     *
+     * @param  \DateInterval $dateInterval The DateInterval object
+     * @return integer                     The converted number of seconds
+     */
+    public function dateIntervalToSec($dateInterval)
+    {
+        $sec = 0;
+
+        $sec += $dateInterval->s;
+        $sec += $dateInterval->i * 60;
+        $sec += $dateInterval->h * 3600;
+        $sec += $dateInterval->d * 86400;
+        $sec += $dateInterval->m * 2592000;
+        $sec += $dateInterval->y * 31104000;
+
+        return $sec;
+    }
 }

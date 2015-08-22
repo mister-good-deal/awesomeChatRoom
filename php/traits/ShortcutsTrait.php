@@ -22,7 +22,7 @@ trait ShortcutsTrait
      * @param mixed $value    The value to set
      * @param mixed $default  OPTIONAL default value to set if the value is not set
      */
-    public static function setIfIsSet($variable, $value)
+    public static function setIfIsSet(&$variable, $value)
     {
         if (isset($value)) {
             $variable = $value;

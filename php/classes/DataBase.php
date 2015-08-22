@@ -275,6 +275,10 @@ class DataBase
                 $params = Ini::getSectionParams('PDO');
 
                 foreach ($params as $paramName => $paramValue) {
+                    if (!is_numeric($paramValue)) {
+                        $paramValue = constant('\PDO::' . $paramValue);
+                    }
+
                     static::$PDO->setAttribute(constant('\PDO::' . $paramName), $paramValue);
                 }
 
