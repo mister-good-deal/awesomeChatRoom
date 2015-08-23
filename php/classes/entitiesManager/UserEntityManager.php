@@ -54,7 +54,7 @@ class UserEntityManager extends EntityManager
      *
      * @param  string[] $inputs Inputs array containing array('login' => 'login', 'password' => 'password')
      * @return array            The occured errors or success in a array
-     * @todo                    Complete the method (block success if max attempt reached)
+     * @todo                    refacto make it shorter...
      */
     public function connect($inputs)
     {
@@ -132,9 +132,58 @@ class UserEntityManager extends EntityManager
         return array('success' => $success, 'errors' => $errors);
     }
 
+    /**
+     * Check if a user have the admin access to the WebSocker server
+     *
+     * @return boolean True if the User has the right else false
+     */
+    public function connectWebSocketServer($login, $password)
+    {
+        $success = false;
+        $user    = $this->authenticateUser($login, $password);
+
+        if ($user !== false) {
+            $rights = $this->getRights($user);
+
+            if ((int) $rights['webSocket'] === 1) {
+                $success = true;
+            }
+        }
+
+        return $success;
+    }
+
     public function connectChat()
     {
         # code...
+    }
+
+    /**
+     * Authenticate a User by his login / password combinaison and return the User object on success or false on fail
+     *
+     * @param  string $login    The user login (email or pseudodym)
+     * @param  string $password The user password
+     * @return User|false       The User instanciated object or false is the authentication failed
+     */
+    public function authenticateUser($login, $password)
+    {
+        $user       = new User();
+        $login      = DB::quote($login);
+        $sqlMarks   = 'SELECT * FROM %s WHERE email = %s OR pseudonym = %s';
+        $sql        = static::sqlFormater($sqlMarks, $user->getTableName(), $login, $login);
+        $userParams = DB::query($sql)->fetch();
+
+        if ($userParams !== false) {
+            $user->setAttributes($userParams);
+
+            if (!hash_equals($userParams['password'], crypt($password, $userParams['password']))) {
+                $user = false;
+            }
+        } else {
+            $user = false;
+        }
+
+        return $user;
     }
 
     /**
@@ -155,5 +204,18 @@ class UserEntityManager extends EntityManager
         }
 
         return $errors;
+    }
+
+    /**
+     * Get all the user right
+     *
+     * @param  User $user The User instanciated object
+     * @return array      The user rights in a array (1 = ok and 0 = nok)
+     */
+    private function getRights($user)
+    {
+        $sql = 'SELECT * FROM UsersRights WHERE idUser = ' . DB::quote($user->id);
+
+        return $userParams = DB::query($sql)->fetch();
     }
 }

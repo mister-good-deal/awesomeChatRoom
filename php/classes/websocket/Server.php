@@ -4,6 +4,7 @@ namespace classes\websocket;
 
 use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
+use \classes\entitiesManager\UserEntityManager as UserEntityManager;
 
 class Server
 {
@@ -86,12 +87,7 @@ class Server
      */
     private function run()
     {
-        if ($this->verbose) {
-            static::out(
-                '[' . date('Y-m-d H:i:s') . ']'
-                . ' Server running on ' . stream_socket_get_name($this->server, false) . PHP_EOL
-            );
-        }
+        $this->log('Server running on ' . stream_socket_get_name($this->server, false));
 
         while (1) {
             $sockets   = $this->clients;
@@ -162,10 +158,18 @@ class Server
         stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
         unset($this->clients[$clientName]);
 
+        $this->log('Client disconnected : ' . $clientName);
+    }
+
+    /**
+     * Log a message to teh server if verbose mode is activated
+     *
+     * @param  string $message The message to output
+     */
+    protected function log($message)
+    {
         if ($this->verbose) {
-            static::out(
-                '[' . date('Y-m-d H:i:s') . '] Client disconnected : ' . $clientName . PHP_EOL
-            );
+            static::out('[' . date('Y-m-d H:i:s') . '] ' . $message . PHP_EOL);
         }
     }
 
@@ -283,24 +287,27 @@ class Server
                 $data = json_decode($data, true);
 
                 if (isset($data['action']) && $data['action'] === 'manageServer') {
-                    $errors = array();
-
                     if (!$this->checkAuthentication($data)) {
-                        $errors[] = _('Authentication failed');
+                        $response = array('success' => false, 'errors' =>_('Authentication failed'));
                     } else {
                         if (isset($data['addService'])) {
-                            $errors = $this->addService($data['addService']);
+                            $response = $this->addService($data['addService']);
                         } elseif (isset($data['removeService'])) {
-                            $errors = $this->removeService($data['removeService']);
+                            $response = $this->removeService($data['removeService']);
                         } elseif (isset($data['listServices'])) {
-                            $errors = $this->listServices($data['listServices']);
+                            $response = array('services' => $this->listServices($data['listServices']));
                         }
                     }
 
-                    $this->send($socket, $this->encode(json_encode(array('errors' => $errors)));
+                    $this->send($socket, $this->encode(json_encode($response)));
                 } else {
-                    foreach ($this->services as $service) {
-                        call_user_func_array($service, array($socket, $data));
+                    foreach ($this->services as $serviceName => $service) {
+                        if (isset($data['service'])
+                            && is_array($data['service'])
+                            && in_array($serviceName, $data['service'])
+                        ) {
+                            call_user_func_array($service, array($socket, $data));
+                        }
                     }
                 }
             }
@@ -325,12 +332,7 @@ class Server
         "\r\n\r\n";
 
         $this->send($client, $upgrade);
-
-        if ($this->verbose) {
-            static::out(
-                '[' . date('Y-m-d H:i:s') . '] New client added : ' . $this->getClientName($client) . PHP_EOL
-            );
-        }
+        $this->log('New client added : ' . $this->getClientName($client));
     }
 
     /**
@@ -370,7 +372,8 @@ class Server
      */
     private function addService($serviceName)
     {
-        $errors = array();
+        $errors  = array();
+        $success = false;
 
         if (array_key_exists($serviceName, $this->services)) {
             $errors[] = _('The service "' . $serviceName . '" is already running');
@@ -382,12 +385,12 @@ class Server
             } else {
                 $service                      = new $servicePath();
                 $this->services[$serviceName] = array($service, 'service');
-
-                static::out('[' . date('Y-m-d H:i:s') . '] Service "' . $serviceName . '" is now running' . PHP_EOL);
+                $success                      = true;
+                $this->log('Service "' . $serviceName . '" is now running');
             }
         }
 
-        return $errors;
+        return array('success' => $success, 'errors' => $errors);
     }
 
     /**
@@ -398,17 +401,18 @@ class Server
      */
     private function removeService($serviceName)
     {
-        $errors = array();
+        $errors  = array();
+        $success = false;
 
         if (!array_key_exists($serviceName, $this->services)) {
             $errors[] = _('The service "' . $serviceName . '" is not running');
         } else {
             unset($this->services[$serviceName]);
-
-            static::out('[' . date('Y-m-d H:i:s') . '] Service "' . $serviceName . '" is now stopped' . PHP_EOL);
+            $success = true;
+            $this->log('Service "' . $serviceName . '" is now stopped');
         }
         
-        return $errors;
+        return array('success' => $success, 'errors' => $errors);
     }
 
     /**
@@ -429,13 +433,9 @@ class Server
      */
     private function checkAuthentication($data)
     {
-        $authenticated = false;
+        $userEntityManager = new UserEntityManager();
 
-        if (isset($data['password']) && $data['password'] === Ini::getParam('Socket', 'adminPassword')) {
-            $authenticated = true;
-        }
-
-        return $authenticated;
+        return $userEntityManager->connectWebSocketServer($data['login'], $data['password']);
     }
 
     /*=====  End of Private methods  ======*/
