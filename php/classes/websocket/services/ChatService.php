@@ -4,6 +4,7 @@ namespace classes\websocket\services;
 
 use \classes\websocket\Server as Server;
 use \interfaces\ServiceInterface as Service;
+use \classes\IniManager as Ini;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
 
 class ChatService extends Server implements Service
@@ -12,9 +13,11 @@ class ChatService extends Server implements Service
     private $usersRegistered = array();
     private $usersGuest      = array();
     private $pseudonyms      = array();
+    private $serverAddress;
 
-    public function __construct()
+    public function __construct($serverAddress)
     {
+        $this->serverAddress = $serverAddress;
     }
 
     /**
@@ -107,8 +110,21 @@ class ChatService extends Server implements Service
      * @param  string  $pseudonym The pseudonym to test
      * @return boolean            True is the pseudonym already exists else false
      */
-    public function isPseudonymUnique($pseudonym)
+    private function isPseudonymUnique($pseudonym)
     {
         return !in_array($pseudonym, $this->pseudonyms);
+    }
+
+    /**
+     * Log a message to teh server if verbose mode is activated
+     *
+     * @param  string $message The message to output
+     */
+    private function log($message)
+    {
+        $serverSocket = stream_socket_client($this->serverAddress);
+        Ini::setIniFileName(Ini::INI_CONF_FILE);
+        $this->send($serverSocket, Ini::getParam('Socket', 'serviceKey') . $message);
+        fclose($serverSocket);
     }
 }

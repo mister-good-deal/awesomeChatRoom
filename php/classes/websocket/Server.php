@@ -13,39 +13,47 @@ class Server
     /**
      * @var resource $server The server socket resource
      */
-    protected $server;
+    private $server;
     /**
      * @var string $protocol The server socket protocol
      */
-    protected $protocol;
+    private $protocol;
     /**
      * @var string $address The server socket address
      */
-    protected $address;
+    private $address;
     /**
      * @var integer $port The server socket port
      */
-    protected $port;
+    private $port;
+    /**
+     * @var string $serverAddress The server address
+     */
+    private $serverAddress;
     /**
      * @var boolean $verbose True to print info in console else false
      */
-    protected $verbose;
+    private $verbose;
     /**
      * @var integer $errorNum The error code if an error occured
      */
-    protected $errorNum;
+    private $errorNum;
     /**
      * @var string $errorString The error string if an error occured
      */
-    protected $errorString;
+    private $errorString;
     /**
      * @var resource[] $clients The clients socket stream
      */
-    protected $clients = array();
+    private $clients = array();
     /**
      * @var array[] $services The services functions / methods implemented
      */
-    protected $services = array();
+    private $services = array();
+    /**
+     * @var string $serviceRegex The regex to get service log entries
+     */
+    private $serviceRegex;
 
     /*=====================================
     =            Magic methods            =
@@ -58,16 +66,14 @@ class Server
     {
         cli_set_process_title('PHP socket server');
 
-        $params          = Ini::getSectionParams('Socket');
-        $this->protocol  = $params['protocol'];
-        $this->address   = $params['address'];
-        $this->port      = $params['port'];
-        $this->verbose   = $params['verbose'];
-        $this->server = stream_socket_server(
-            $this->protocol . '://' . $this->address . ':' . $this->port,
-            $this->errorNum,
-            $this->errorString
-        );
+        $params              = Ini::getSectionParams('Socket');
+        $this->serviceRegex  = '/^' . $params['serviceKey'] . '(.*)/';
+        $this->protocol      = $params['protocol'];
+        $this->address       = $params['address'];
+        $this->port          = $params['port'];
+        $this->verbose       = $params['verbose'];
+        $this->serverAddress = $this->protocol . '://' . $this->address . ':' . $this->port;
+        $this->server        = stream_socket_server($this->serverAddress, $this->errorNum, $this->errorString);
 
         if ($this->server === false) {
             throw new Exception('Error ' . $this->errorNum . '::' . $this->errorString, Exception::$ERROR);
@@ -87,7 +93,7 @@ class Server
      */
     private function run()
     {
-        $this->log('Server running on ' . stream_socket_get_name($this->server, false));
+        $this->log('[SERVER] Server running on ' . stream_socket_get_name($this->server, false));
 
         while (1) {
             $sockets   = $this->clients;
@@ -102,10 +108,14 @@ class Server
                     if ($socket === $this->server) {
                         $client     = stream_socket_accept($this->server, 30);
                         $clientName = $this->getClientName($client);
+                        $data       = $this->get($client);
+                        Ini::setIniFileName(Ini::INI_CONF_FILE);
 
-                        if (!in_array($clientName, $this->clients)) {
+                        if (preg_match($this->serviceRegex, $data, $match) === 1) {
+                            $this->log($match[1]);
+                        } elseif (!in_array($clientName, $this->clients)) {
                             $this->clients[$clientName] = $client;
-                            $this->handshake($client);
+                            $this->handshake($client, $data);
                         }
                     } else {
                         $this->treatDataRecieved($socket);
@@ -158,19 +168,7 @@ class Server
         stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
         unset($this->clients[$clientName]);
 
-        $this->log('Client disconnected : ' . $clientName);
-    }
-
-    /**
-     * Log a message to teh server if verbose mode is activated
-     *
-     * @param  string $message The message to output
-     */
-    protected function log($message)
-    {
-        if ($this->verbose) {
-            static::out('[' . date('Y-m-d H:i:s') . '] ' . $message . PHP_EOL);
-        }
+        $this->log('[SERVER] Client disconnected : ' . $clientName);
     }
 
     /**
@@ -319,10 +317,10 @@ class Server
      *
      * @param resource $client The client socket
      */
-    private function handshake($client)
+    private function handshake($client, $data)
     {
         // Retrieves the header and get the WebSocket-Key
-        preg_match('/Sec-WebSocket-Key\: (.*)/', $this->get($client), $match);
+        preg_match('/Sec-WebSocket-Key\: (.*)/', $data, $match);
 
         // Send the accept key built on the base64 encode of the WebSocket-Key, concated with the magic key, sha1 hash
         $upgrade  = "HTTP/1.1 101 Switching Protocols\r\n" .
@@ -332,7 +330,7 @@ class Server
         "\r\n\r\n";
 
         $this->send($client, $upgrade);
-        $this->log('New client added : ' . $this->getClientName($client));
+        $this->log('[SERVER] New client added : ' . $this->getClientName($client));
     }
 
     /**
@@ -383,10 +381,10 @@ class Server
             if (!(class_exists($servicePath))) {
                 $errors[] = _('The service "' . $serviceName . '" does not exist');
             } else {
-                $service                      = new $servicePath();
+                $service                      = new $servicePath($this->serverAddress);
                 $this->services[$serviceName] = array($service, 'service');
                 $success                      = true;
-                $this->log('Service "' . $serviceName . '" is now running');
+                $this->log('[SERVER] Service "' . $serviceName . '" is now running');
             }
         }
 
@@ -409,7 +407,7 @@ class Server
         } else {
             unset($this->services[$serviceName]);
             $success = true;
-            $this->log('Service "' . $serviceName . '" is now stopped');
+            $this->log('[SERVER] Service "' . $serviceName . '" is now stopped');
         }
         
         return array('success' => $success, 'errors' => $errors);
@@ -436,6 +434,18 @@ class Server
         $userEntityManager = new UserEntityManager();
 
         return $userEntityManager->connectWebSocketServer($data['login'], $data['password']);
+    }
+
+    /**
+     * Log a message to teh server if verbose mode is activated
+     *
+     * @param  string $message The message to output
+     */
+    private function log($message)
+    {
+        if ($this->verbose) {
+            static::out('[' . date('Y-m-d H:i:s') . '] ' . $message . PHP_EOL);
+        }
     }
 
     /*=====  End of Private methods  ======*/

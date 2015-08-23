@@ -20,7 +20,6 @@ define(['jquery', 'module', 'websocket'], function($, module) {
         this.settings  = $.extend(true, {}, this.settings, settings);
         this.websocket = WebSocket;
         this.user      = User;
-        this.init();
     };
 
     ChatManager.prototype = {
@@ -41,12 +40,10 @@ define(['jquery', 'module', 'websocket'], function($, module) {
         "user": {},
 
         /**
-         * Launch the WebSocket server
+         * Connect the user to the chat
+         *
+         * @param {string} pseudonym The user pseudonym
          */
-        init: function () {
-            console.log('init');
-        },
-
         connect: function (pseudonym) {
             if (this.user.connected) {
                 this.connectRegistered();
@@ -55,6 +52,9 @@ define(['jquery', 'module', 'websocket'], function($, module) {
             }
         },
 
+        /**
+         * Connect a user to the chat with his account
+         */
         connectRegistered: function () {
             this.websocket.send(JSON.stringify({
                 "service": [this.settings.serviceName],
@@ -63,6 +63,11 @@ define(['jquery', 'module', 'websocket'], function($, module) {
             }));
         },
 
+        /**
+         * Connect a user to the chat as a guest
+         *
+         * @param {string} pseudonym The user pseudonym
+         */
         connectGuest: function (pseudonym) {
             this.websocket.send(JSON.stringify({
                 "service"  : [this.settings.serviceName],
