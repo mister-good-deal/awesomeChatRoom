@@ -11,10 +11,12 @@ define(['jquery', 'module'], function($, module) {
      *
      * @constructor
      * @alias       module:lib/websocket
+     * @param       {User}   User     The current User
      * @param       {object} settings Overriden settings
      */
-    var WebsocketManager = function (settings) {
+    var WebsocketManager = function (User, settings) {
         this.settings = $.extend(true, {}, this.settings, settings);
+        this.user     = User;
         this.init();
     };
 
@@ -25,7 +27,14 @@ define(['jquery', 'module'], function($, module) {
         "settings": {
             "serverUrl": module.config().serverUrl
         },
+        /**
+         * The websocket ressource
+         */
         "socket": {},
+        /**
+         * The current User instance
+         */
+        "user": {},
 
         /**
          * Launch the WebSocket server
@@ -87,21 +96,30 @@ define(['jquery', 'module'], function($, module) {
          * @param {string} data The text data recieved from the WebSocket server
          */
         treatData: function (data) {
-            console.log(JSON.parse(data));
+            data = JSON.parse(data);
+
+            switch (data.action) {
+                case 'addService':
+                    if (data.success) {
+                        console.log('Service "' + data.serviceName + '" is now running');
+                    } else {
+                        console.log('ERROR: ' + data.errors);
+                    }
+                    
+                    break;
+            }
         },
 
         /**
          * Add a service to the WebSocket server
          *
          * @param {string} serviceName The service name to add to the WebSocket server
-         * @param {string} login       The user login
-         * @param {string} password    The user password
          */
-        addService: function (serviceName, login, password) {
+        addService: function (serviceName) {
             this.socket.send(JSON.stringify({
                 "action"    : "manageServer",
-                "login"     : login,
-                "password"  : password,
+                "login"     : this.user.email,
+                "password"  : this.user.password,
                 "addService": serviceName
             }));
         },
@@ -110,29 +128,24 @@ define(['jquery', 'module'], function($, module) {
          * Remove a service from the WebSocket server
          *
          * @param {string} serviceName The service name to remove from the WebSocket server
-         * @param {string} login       The user login
-         * @param {string} password    The user password
          */
-        removeService: function (serviceName, login, password) {
+        removeService: function (serviceName) {
             this.socket.send(JSON.stringify({
                 "action"       : "manageServer",
-                "login"        : login,
-                "password"     : password,
+                "login"        : this.user.email,
+                "password"     : this.user.password,
                 "removeService": serviceName
             }));
         },
 
         /**
          * Query the currents running services from the WebSocket server
-         *
-         * @param {string} login    The user login
-         * @param {string} password The user password
          */
-        listServices: function (login, password) {
+        listServices: function () {
             this.socket.send(JSON.stringify({
                 "action"      : "manageServer",
-                "login"       : login,
-                "password"    : password,
+                "login"       : this.user.email,
+                "password"    : this.user.password,
                 "listServices": true
             }));
         }

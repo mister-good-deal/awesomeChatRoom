@@ -1,8 +1,11 @@
-define(['jquery', 'websocket', 'user', 'chat'], function($, WebsocketManager, User, ChatManager) {
+define(
+    ['jquery', 'forms', 'websocket', 'user', 'chat'],
+    function($, FormsManager, WebsocketManager, User, ChatManager) {
     'use strict';
 
-    var websocket = new WebsocketManager(),
-        user      = new User(),
+    var forms     = new FormsManager(),
+        user      = new User(forms),
+        websocket = new WebsocketManager(user),
         chat      = new ChatManager(websocket, user);
 
     

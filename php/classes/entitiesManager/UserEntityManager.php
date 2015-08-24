@@ -129,7 +129,14 @@ class UserEntityManager extends EntityManager
             }
         }
 
-        return array('success' => $success, 'errors' => $errors);
+        $response = array('success' => $success, 'errors' => $errors);
+        
+        if ($success) {
+            $user->password = $password;
+            $response['user'] = $user->__toArray();
+        }
+
+        return $response;
     }
 
     /**

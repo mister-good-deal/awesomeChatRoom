@@ -15,7 +15,7 @@
     <body>
         <h1>Test websocket</h1>
 
-        <form action="user/register" method="post" accept-charset="utf-8">
+        <form action="user/register" method="post" accept-charset="utf-8" data-ajax="false">
             <input type="text" name="firstName" placeholder="<?=_('First name')?>">
             <input type="text" name="lastName" placeholder="<?=_('Last name')?>">
             <input type="text" name="pseudonym" placeholder="<?=_('Pseudo')?>">

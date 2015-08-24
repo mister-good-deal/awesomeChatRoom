@@ -5,7 +5,8 @@ requirejs.config({
         jquery   : 'jquery-2.1.4',
         websocket: 'websocket',
         chat     : 'chat',
-        user     : 'user'
+        user     : 'user',
+        forms    : 'forms'
     },
     config: {
         'websocket': {

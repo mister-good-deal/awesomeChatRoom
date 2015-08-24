@@ -4,7 +4,7 @@
  * @module lib/chat
  */
 
-define(['jquery', 'module', 'websocket'], function($, module) {
+define(['jquery', 'module'], function($, module) {
     'use strict';
 
     /**
@@ -38,6 +38,10 @@ define(['jquery', 'module', 'websocket'], function($, module) {
          * The current User instance
          */
         "user": {},
+        /**
+         * If the service is currently running on the server
+         */
+        "serviceRunning": false,
 
         /**
          * Connect the user to the chat

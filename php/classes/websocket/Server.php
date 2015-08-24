@@ -388,7 +388,12 @@ class Server
             }
         }
 
-        return array('success' => $success, 'errors' => $errors);
+        return array(
+            'action'      => 'addService',
+            'serviceName' => $serviceName,
+            'success'     => $success,
+            'errors'      => $errors
+        );
     }
 
     /**
@@ -410,7 +415,12 @@ class Server
             $this->log('[SERVER] Service "' . $serviceName . '" is now stopped');
         }
         
-        return array('success' => $success, 'errors' => $errors);
+        return array(
+            'action'      => 'removeService',
+            'serviceName' => $serviceName,
+            'success'     => $success,
+            'errors'      => $errors
+        );
     }
 
     /**
@@ -437,7 +447,7 @@ class Server
     }
 
     /**
-     * Log a message to teh server if verbose mode is activated
+     * Log a message to the server if verbose mode is activated
      *
      * @param  string $message The message to output
      */
