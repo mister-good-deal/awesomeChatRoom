@@ -101,7 +101,7 @@ class ImagesManager
      */
     public function setImage($imagePath)
     {
-        if (!file_exists($imagePath)) {
+        if (stream_resolve_include_path($imagePath) === false) {
             throw new Exception('There is no image at this path : "' . $imagePath . '"', Exception::$PARAMETER);
         }
 

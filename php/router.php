@@ -22,7 +22,7 @@ function route($route)
 
     $route .= DIRECTORY_SEPARATOR . $controller . '.php';
 
-    if (!is_file($route)) {
+    if (stream_resolve_include_path($route) === false) {
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
         die(file_get_contents(
             dirname(__DIR__) . DIRECTORY_SEPARATOR .

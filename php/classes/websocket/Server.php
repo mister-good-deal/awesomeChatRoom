@@ -286,7 +286,7 @@ class Server
 
                 if (isset($data['action']) && $data['action'] === 'manageServer') {
                     if (!$this->checkAuthentication($data)) {
-                        $response = array('success' => false, 'errors' =>_('Authentication failed'));
+                        $response = array('success' => false, 'error' => _('Authentication failed'));
                     } else {
                         if (isset($data['addService'])) {
                             $response = $this->addService($data['addService']);
@@ -299,12 +299,16 @@ class Server
 
                     $this->send($socket, $this->encode(json_encode($response)));
                 } else {
-                    foreach ($this->services as $serviceName => $service) {
-                        if (isset($data['service'])
-                            && is_array($data['service'])
-                            && in_array($serviceName, $data['service'])
-                        ) {
-                            call_user_func_array($service, array($socket, $data));
+                    if (isset($data['service']) && is_array($data['service'])) {
+                        foreach ($data['service'] as $serviceName) {
+                            if (in_array($serviceName, array_keys($this->services))) {
+                                call_user_func_array($this->services[$serviceName], array($socket, $data));
+                            } else {
+                                $this->send($socket, $this->encode(json_encode(array(
+                                    'success' => false,
+                                    'error'   => _('The service "' . $serviceName . '" is not running')
+                                ))));
+                            }
                         }
                     }
                 }
@@ -378,7 +382,7 @@ class Server
         } else {
             $servicePath = Ini::getParam('Socket', 'servicesPath') . DIRECTORY_SEPARATOR . $serviceName;
 
-            if (!(class_exists($servicePath))) {
+            if (stream_resolve_include_path($servicePath . '.php') === false) {
                 $errors[] = _('The service "' . $serviceName . '" does not exist');
             } else {
                 $service                      = new $servicePath($this->serverAddress);
@@ -443,7 +447,13 @@ class Server
     {
         $userEntityManager = new UserEntityManager();
 
-        return $userEntityManager->connectWebSocketServer($data['login'], $data['password']);
+        if (!isset($data['login']) || !isset($data['password'])) {
+            $check = false;
+        } else {
+            $check = $userEntityManager->connectWebSocketServer($data['login'], $data['password']);
+        }
+
+        return $check;
     }
 
     /**

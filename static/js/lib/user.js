@@ -40,16 +40,61 @@ define(['jquery'], function($) {
         "connected": false,
 
         /**
+         * Get first name
+         *
+         * @return {string} The user first name
+         */
+        getFirstName: function () {
+            return this.settings.firstName;
+        },
+
+        /**
+         * Get last name
+         *
+         * @return {string} The user last name
+         */
+        getLastName: function () {
+            return this.settings.lastName;
+        },
+
+        /**
+         * Get pseudonym
+         *
+         * @return {string} The user pseudonym
+         */
+        getPseudonym: function () {
+            return this.settings.pseudonym;
+        },
+
+        /**
+         * Get email
+         *
+         * @return {string} The user email
+         */
+        getEmail: function () {
+            return this.settings.email;
+        },
+
+        /**
+         * Get password
+         *
+         * @return {string} The user password
+         */
+        getPassword: function () {
+            return this.settings.password;
+        },
+
+        /**
          * Set the User object with a JSON parameter
          *
          * @param {object} JSON data
          */
         setAttributes: function (data) {
-            this.settings.firstName = data.firstName || "";
-            this.settings.lastName  = data.lastName || "";
-            this.settings.pseudonym = data.pseudonym || "";
-            this.settings.email     = data.email || "";
-            this.settings.password  = data.password || "";
+            this.settings.firstName = data.user.firstName || "";
+            this.settings.lastName  = data.user.lastName || "";
+            this.settings.pseudonym = data.user.pseudonym || "";
+            this.settings.email     = data.user.email || "";
+            this.settings.password  = data.user.password || "";
         },
 
         /**
@@ -60,6 +105,7 @@ define(['jquery'], function($) {
          */
         connectSuccess: function (form, data) {
             this.setAttributes(data);
+            this.connected = true;
         },
 
         /**

@@ -118,8 +118,8 @@ define(['jquery', 'module'], function($, module) {
         addService: function (serviceName) {
             this.socket.send(JSON.stringify({
                 "action"    : "manageServer",
-                "login"     : this.user.email,
-                "password"  : this.user.password,
+                "login"     : this.user.getEmail(),
+                "password"  : this.user.getPassword(),
                 "addService": serviceName
             }));
         },
@@ -132,8 +132,8 @@ define(['jquery', 'module'], function($, module) {
         removeService: function (serviceName) {
             this.socket.send(JSON.stringify({
                 "action"       : "manageServer",
-                "login"        : this.user.email,
-                "password"     : this.user.password,
+                "login"        : this.user.getEmail(),
+                "password"     : this.user.getPassword(),
                 "removeService": serviceName
             }));
         },
@@ -144,8 +144,8 @@ define(['jquery', 'module'], function($, module) {
         listServices: function () {
             this.socket.send(JSON.stringify({
                 "action"      : "manageServer",
-                "login"       : this.user.email,
-                "password"    : this.user.password,
+                "login"       : this.user.getEmail(),
+                "password"    : this.user.getPassword(),
                 "listServices": true
             }));
         }
