@@ -345,11 +345,12 @@ class Server
     private function unmask($payload)
     {
         $length = ord($payload[1]) & 127;
+        $text   = '';
 
         if ($length === 126) {
             $masks = substr($payload, 4, 4);
             $data  = substr($payload, 8);
-        } elseif ($length == 127) {
+        } elseif ($length === 127) {
             $masks = substr($payload, 10, 4);
             $data  = substr($payload, 14);
         } else {
@@ -357,7 +358,6 @@ class Server
             $data  = substr($payload, 6);
         }
         
-        $text = '';
 
         for ($i = 0; $i < strlen($data); $i++) {
             $text .= $data[$i] ^ $masks[$i%4];
@@ -459,7 +459,7 @@ class Server
     /**
      * Log a message to the server if verbose mode is activated
      *
-     * @param  string $message The message to output
+     * @param string $message The message to output
      */
     private function log($message)
     {

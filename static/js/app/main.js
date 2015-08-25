@@ -1,14 +1,15 @@
 /*global define, window*/
 
 define(
-    ['jquery', 'forms', 'websocket', 'user', 'chat'],
-    function ($, FormsManager, WebsocketManager, User, ChatManager) {
+    ['jquery', 'message', 'forms', 'websocket', 'user', 'chat'],
+    function ($, Message, FormsManager, WebsocketManager, User, ChatManager) {
         'use strict';
 
-        var forms     = new FormsManager(),
-            user      = new User(forms),
-            websocket = new WebsocketManager(user),
-            chat      = new ChatManager(websocket, user);
+        var message   = new Message(),
+            forms     = new FormsManager(message),
+            user      = new User(message, forms),
+            websocket = new WebsocketManager(message, user),
+            chat      = new ChatManager(message, websocket, user);
 
         // Make it global to develop
         window.WebsocketManager = websocket;

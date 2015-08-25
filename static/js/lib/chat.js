@@ -14,12 +14,14 @@ define(['jquery', 'module'], function ($, module) {
      *
      * @constructor
      * @alias       module:lib/chat
+     * @param       {Message}   Message   A Message object to output message in the IHM
      * @param       {WebSocket} WebSocket The websocket manager
      * @param       {User}      User      The current User
      * @param       {object}    settings  Overriden settings
      */
-    var ChatManager = function (WebSocket, User, settings) {
+    var ChatManager = function (Message, WebSocket, User, settings) {
         this.settings  = $.extend(true, {}, this.settings, settings);
+        this.message   = Message;
         this.websocket = WebSocket;
         this.user      = User;
     };
@@ -32,6 +34,10 @@ define(['jquery', 'module'], function ($, module) {
             "users"      : [],
             "serviceName": module.config().serviceName
         },
+        /**
+         * A Message object to output message in the IHM
+         */
+        "message": {},
         /**
          * The WebsocketManager instance
          */

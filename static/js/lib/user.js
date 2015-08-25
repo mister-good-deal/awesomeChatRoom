@@ -6,7 +6,7 @@
 
 /*global define*/
 
-define(['jquery'], function ($) {
+define(['jquery'], function ($, Message) {
     'use strict';
 
     /**
@@ -15,14 +15,16 @@ define(['jquery'], function ($) {
      * @constructor
      * @alias       module:lib/user
      * @param       {object}       settings Overriden settings
-     * @param       {FormsManager} forms    A FormsManager to handle form XHR ajax calls
+     * @param       {Message}      Message A Message object to output message in the IHM
+     * @param       {FormsManager} Forms   A FormsManager to handle form XHR ajax calls
      */
-    var UserManager = function (forms, settings) {
-        this.settings  = $.extend(true, {}, this.settings, settings);
+    var UserManager = function (Message, Forms, settings) {
+        this.settings = $.extend(true, {}, this.settings, settings);
+        this.message  = Message;
 
         // Bind ajax callback
-        forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
-        forms.addOnFailCallback('user/connect', this.connectFail, this);
+        Forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
+        Forms.addOnFailCallback('user/connect', this.connectFail, this);
     };
 
     UserManager.prototype = {
@@ -36,6 +38,10 @@ define(['jquery'], function ($) {
             "email"    : "",
             "password" : ""
         },
+        /**
+         * A Message object to output message in the IHM
+         */
+        "message": {},
         /**
          * If the user is connected
          */
@@ -93,10 +99,10 @@ define(['jquery'], function ($) {
          */
         setAttributes: function (data) {
             this.settings.firstName = data.user.firstName || "";
-            this.settings.lastName  = data.user.lastName || "";
+            this.settings.lastName  = data.user.lastName  || "";
             this.settings.pseudonym = data.user.pseudonym || "";
-            this.settings.email     = data.user.email || "";
-            this.settings.password  = data.user.password || "";
+            this.settings.email     = data.user.email     || "";
+            this.settings.password  = data.user.password  || "";
         },
 
         /**
@@ -108,6 +114,7 @@ define(['jquery'], function ($) {
         connectSuccess: function (form, data) {
             this.setAttributes(data);
             this.connected = true;
+            this.message.add('Connect success !');
         },
 
         /**

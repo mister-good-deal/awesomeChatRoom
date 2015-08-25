@@ -14,10 +14,12 @@ define(['jquery', 'domReady!'], function ($) {
      *
      * @constructor
      * @alias       module:lib/forms
-     * @param       {object} settings Overriden settings
+     * @param       {Message} Message  A Message object to output message in the IHM
+     * @param       {object}  settings Overriden settings
      */
-    var FormsManager = function (settings) {
+    var FormsManager = function (Message, settings) {
         this.settings = $.extend(true, {}, this.settings, settings);
+        this.message  = Message;
         this.initEvents();
     };
 
@@ -39,6 +41,10 @@ define(['jquery', 'domReady!'], function ($) {
             'onFail'       : [],
             'onRequestFail': []
         },
+        /**
+         * A Message object to output message in the IHM
+         */
+        "message": {},
 
         /**
          * Bind events on all form

@@ -8,7 +8,8 @@ requirejs.config({
         domReady: 'vendors/domReady',
         chat    : 'chat',
         user    : 'user',
-        forms   : 'forms'
+        forms   : 'forms',
+        message : 'message'
     },
     config: {
         'websocket': {
@@ -16,6 +17,25 @@ requirejs.config({
         },
         'chat': {
             serviceName: 'chatService'
+        },
+        'message': {
+            'alert': {
+                'divId'          : '#alert-container',
+                'dismissClass'   : '.dismiss',
+                'defaultDuration': 2
+            },
+            'popup': {
+                'divId'          : '#popup-container',
+                'dismissClass'   : '.dismiss',
+                'defaultDuration': 6
+            },
+            'notification': {
+                'divId'          : '#notification-container',
+                'dismissClass'   : '.dismiss',
+                'defaultDuration': 4
+            },
+            'defaultType' : 'alert',
+            'defaultLevel': 'info'
         }
     }
 });
