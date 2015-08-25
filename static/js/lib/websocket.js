@@ -3,7 +3,9 @@
  *
  * @module lib/websocket
  */
-define(['jquery', 'module'], function($, module) {
+
+/*global define, WebSocket*/
+define(['jquery', 'module'], function ($, module) {
     'use strict';
 
     /**

@@ -4,7 +4,9 @@
  * @module lib/user
  */
 
-define(['jquery'], function($) {
+/*global define*/
+
+define(['jquery'], function ($) {
     'use strict';
 
     /**

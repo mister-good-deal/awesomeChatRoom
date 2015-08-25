@@ -4,7 +4,9 @@
  * @module lib/user
  */
 
-define(['jquery', 'domReady!'], function($, doc) {
+/*global define*/
+
+define(['jquery', 'domReady!'], function ($) {
     'use strict';
 
     /**
@@ -75,8 +77,8 @@ define(['jquery', 'domReady!'], function($, doc) {
                     } else {
                         self.onFail(form, url, data);
                     }
-                }).fail(function (url, jqXHR) {
-                    self.onRequestFail(jqXHR);
+                }).fail(function (jqXHR) {
+                    self.onRequestFail(form, url, jqXHR);
                 }).always(function () {
                     delete self.xhrs[url];
                 });

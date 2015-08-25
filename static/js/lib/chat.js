@@ -4,7 +4,9 @@
  * @module lib/chat
  */
 
-define(['jquery', 'module'], function($, module) {
+/*global define*/
+
+define(['jquery', 'module'], function ($, module) {
     'use strict';
 
     /**
@@ -51,7 +53,7 @@ define(['jquery', 'module'], function($, module) {
         connect: function (pseudonym) {
             if (this.user.connected) {
                 this.connectRegistered();
-            }  else {
+            } else {
                 this.connectGuest(pseudonym);
             }
         },
@@ -63,7 +65,7 @@ define(['jquery', 'module'], function($, module) {
             this.websocket.send(JSON.stringify({
                 "service": [this.settings.serviceName],
                 "action" : "connect",
-                "user"   : user 
+                "user"   : this.user
             }));
         },
 
@@ -76,9 +78,8 @@ define(['jquery', 'module'], function($, module) {
             this.websocket.send(JSON.stringify({
                 "service"  : [this.settings.serviceName],
                 "action"   : "connect",
-                "pseudonym": pseudonym 
+                "pseudonym": pseudonym
             }));
-                
         }
     };
 
