@@ -80,6 +80,7 @@ define(['jquery', 'module'], function ($, module) {
          * @param {object} message The message to display
          */
         alert: function (message) {
+            this.settings.alert.lock = true;
             // var alert = $('#' + this.settings.alert.divId);
             console.log('alert', message);
         },
@@ -90,6 +91,7 @@ define(['jquery', 'module'], function ($, module) {
          * @param {object} message The message to display
          */
         popup: function (message) {
+            this.settings.popup.lock = true;
             console.log('popup', message);
         },
 
@@ -99,6 +101,7 @@ define(['jquery', 'module'], function ($, module) {
          * @param {object} message The message to display
          */
         notification: function (message) {
+            this.settings.notification.lock = true;
             console.log('notification', message);
         },
 
@@ -106,30 +109,33 @@ define(['jquery', 'module'], function ($, module) {
          * Close the alert message
          */
         alertDismiss: function () {
-            console.log('alert dismiss');
-
-            this.settings.alert.lock = false;
-            this.dequeueMessage('alert');
+            if (this.settings.alert.lock) {
+                console.log('alert dismiss');
+                this.settings.alert.lock = false;
+                this.dequeueMessage('alert');
+            }
         },
 
         /**
          * Close the popup message
          */
         popupDismiss: function () {
-            console.log('popup dismiss');
-
-            this.settings.popup.lock = false;
-            this.dequeueMessage('popup');
+            if (this.settings.popup.lock) {
+                console.log('popup dismiss');
+                this.settings.popup.lock = false;
+                this.dequeueMessage('popup');
+            }
         },
 
         /**
          * Close the notification message
          */
         notificationDismiss: function () {
-            console.log('notification dismiss');
-
-            this.settings.notification.lock = false;
-            this.dequeueMessage('notification');
+            if (this.settings.notification.lock) {
+                console.log('notification dismiss');
+                this.settings.notification.lock = false;
+                this.dequeueMessage('notification');
+            }
         },
 
         /**
@@ -168,8 +174,6 @@ define(['jquery', 'module'], function ($, module) {
                     self          = this;
 
                 if (message) {
-                    // Lock the specific queue
-                    this.settings[type].lock = true;
                     // Call the specific method to output the message
                     this[type](message);
 
