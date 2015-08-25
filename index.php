@@ -6,7 +6,7 @@
         <title>Test websocket</title>
         <!-- <link rel="stylesheet" href=""> -->
         <script data-main="/static/js/app"
-                src="/static/js/lib/require.js"
+                src="/static/js/lib/vendors/require.js"
                 type="text/javascript"
                 charset="utf-8"
                 async defer>

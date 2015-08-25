@@ -1,12 +1,14 @@
+/*global requirejs*/
+
 requirejs.config({
     baseUrl: '/static/js/lib',
-    paths  : {
-        app      : '../app',
-        jquery   : 'jquery-2.1.4',
-        websocket: 'websocket',
-        chat     : 'chat',
-        user     : 'user',
-        forms    : 'forms'
+    paths: {
+        app     : '../app',
+        jquery  : 'vendors/jquery-2.1.4',
+        domReady: 'vendors/domReady',
+        chat    : 'chat',
+        user    : 'user',
+        forms   : 'forms'
     },
     config: {
         'websocket': {
