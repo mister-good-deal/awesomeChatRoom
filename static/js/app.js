@@ -17,7 +17,10 @@ requirejs.config({
             serviceName: 'websocketService'
         },
         'chat': {
-            serviceName: 'chatService'
+            serviceName     : 'chatService',
+            divId       : '#chat',
+            pseudonymId : '#chat-pseudonym',
+            connectClass: '.chat-connect'
         },
         'message': {
             'alert': {

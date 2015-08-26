@@ -1,4 +1,10 @@
 <?php
+/**
+ * WebSocket server to handle multiple clients connections and maintain WebSocket services
+ *
+ * @category Class
+ * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ */
 
 namespace classes\websocket;
 
@@ -6,6 +12,11 @@ use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
 
+/**
+ * WebSocket server to handle multiple clients connections and maintain WebSocket services
+ *
+ * @class Server
+ */
 class Server
 {
     use \traits\EchoTrait;
@@ -93,49 +104,6 @@ class Server
     }
     
     /*=====  End of Magic methods  ======*/
-
-    /*======================================
-    =            Public methods            =
-    ======================================*/
-
-    /**
-     * Run the server, accept connections and handle them
-     */
-    private function run()
-    {
-        $this->log('[SERVER] Server running on ' . stream_socket_get_name($this->server, false));
-
-        while (1) {
-            $sockets   = $this->clients;
-            $sockets[] = $this->server;
-
-            if (@stream_select($sockets, $write = null, $except = null, null) === false) {
-                throw new Exception('Error on stream_select', Exception::$ERROR);
-            }
-
-            if (count($sockets) > 0) {
-                foreach ($sockets as $socket) {
-                    if ($socket === $this->server) {
-                        $client     = stream_socket_accept($this->server, 30);
-                        $clientName = $this->getClientName($client);
-                        $data       = $this->get($client);
-                        Ini::setIniFileName(Ini::INI_CONF_FILE);
-
-                        if (preg_match($this->serviceRegex, $data, $match) === 1) {
-                            $this->log($match[1]);
-                        } elseif (!in_array($clientName, $this->clients)) {
-                            $this->clients[$clientName] = $client;
-                            $this->handshake($client, $data);
-                        }
-                    } else {
-                        $this->treatDataRecieved($socket);
-                    }
-                }
-            }
-        }
-    }
-    
-    /*=====  End of Public methods  ======*/
 
     /*=========================================
     =            Protected methods            =
@@ -262,6 +230,43 @@ class Server
     =======================================*/
 
     /**
+     * Run the server, accept connections and handle them
+     */
+    private function run()
+    {
+        $this->log('[SERVER] Server running on ' . stream_socket_get_name($this->server, false));
+
+        while (1) {
+            $sockets   = $this->clients;
+            $sockets[] = $this->server;
+
+            if (@stream_select($sockets, $write = null, $except = null, null) === false) {
+                throw new Exception('Error on stream_select', Exception::$ERROR);
+            }
+
+            if (count($sockets) > 0) {
+                foreach ($sockets as $socket) {
+                    if ($socket === $this->server) {
+                        $client     = stream_socket_accept($this->server, 30);
+                        $clientName = $this->getClientName($client);
+                        $data       = $this->get($client);
+                        Ini::setIniFileName(Ini::INI_CONF_FILE);
+
+                        if (preg_match($this->serviceRegex, $data, $match) === 1) {
+                            $this->log($match[1]);
+                        } elseif (!in_array($clientName, $this->clients)) {
+                            $this->clients[$clientName] = $client;
+                            $this->handshake($client, $data);
+                        }
+                    } else {
+                        $this->treatDataRecieved($socket);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Get data from a client via stream socket
      *
      * @param  resource $socket The client stream socket
@@ -299,7 +304,7 @@ class Server
                         $response = array(
                             'service' => 'notificationService',
                             'success' => false,
-                            'message' => _('Authentication failed')
+                            'text'    => _('Authentication failed')
                         );
                     } else {
                         if (isset($data['addService'])) {
@@ -319,8 +324,9 @@ class Server
                                 call_user_func_array($this->services[$serviceName], array($socket, $data));
                             } else {
                                 $this->send($socket, $this->encode(json_encode(array(
+                                    'service' => $this->notificationService,
                                     'success' => false,
-                                    'error'   => _('The service "' . $serviceName . '" is not running')
+                                    'text'    => sprintf(_('The service "%s" is not running'), $serviceName)
                                 ))));
                             }
                         }

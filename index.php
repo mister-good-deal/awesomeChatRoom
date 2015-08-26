@@ -18,7 +18,7 @@
         <form action="user/register" method="post" accept-charset="utf-8" data-ajax="false">
             <input type="text" name="firstName" placeholder="<?=_('First name')?>">
             <input type="text" name="lastName" placeholder="<?=_('Last name')?>">
-            <input type="text" name="pseudonym" placeholder="<?=_('Pseudo')?>">
+            <input type="text" name="pseudonym" placeholder="<?=_('Pseudonym')?>">
             <input type="email" name="email" placeholder="<?=_('Email')?>">
             <input type="password" name="password" placeholder="<?=_('Password')?>">
             <input type="submit" value="submit">
@@ -29,5 +29,11 @@
             <input type="password" name="password" placeholder="<?=_('Password')?>">
             <input type="submit" value="submit">
         </form>
+
+        <div id="chat">
+            <h3><?=_('Chat')?></h3>
+            <input id="chat-pseudonym" type="text" name="chatPseudo" value="" placeholder="<?=_('Pseudonym')?>">
+            <button type="button" class="chat-connect"><?=_('Connect')?></button>
+        </div>
     </body>
 </html>

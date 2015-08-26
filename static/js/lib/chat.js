@@ -24,6 +24,10 @@ define(['jquery', 'module'], function ($, module) {
         this.message   = Message;
         this.websocket = WebSocket;
         this.user      = User;
+        this.initEvents();
+
+        // Add websocket callbacks
+        this.websocket.addCallback(this.settings.serviceName, this.connectCallback, this);
     };
 
     ChatManager.prototype = {
@@ -31,8 +35,11 @@ define(['jquery', 'module'], function ($, module) {
          * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
          */
         "settings": {
-            "users"      : [],
-            "serviceName": module.config().serviceName
+            "users"       : [],
+            "serviceName" : module.config().serviceName,
+            "divId"       : module.config().divId,
+            "pseudonymId" : module.config().pseudonymId,
+            "connectClass": module.config().connectClass
         },
         /**
          * A Message object to output message in the IHM
@@ -50,6 +57,18 @@ define(['jquery', 'module'], function ($, module) {
          * If the service is currently running on the server
          */
         "serviceRunning": false,
+
+        initEvents: function () {
+            $('body').on(
+                'click',
+                this.settings.divId + ' ' + this.settings.connectClass,
+                $.proxy(this.connectEvent, this)
+            );  
+        },
+
+        connectEvent: function () {
+            this.connect($(this.settings.pseudonymId).val());
+        },
 
         /**
          * Connect the user to the chat
@@ -71,7 +90,7 @@ define(['jquery', 'module'], function ($, module) {
             this.websocket.send(JSON.stringify({
                 "service": [this.settings.serviceName],
                 "action" : "connect",
-                "user"   : this.user
+                "user"   : this.user.settings
             }));
         },
 
@@ -86,6 +105,15 @@ define(['jquery', 'module'], function ($, module) {
                 "action"   : "connect",
                 "pseudonym": pseudonym
             }));
+        },
+
+        /**
+         * Handle the WebSocker server response after a connection attempt
+         *
+         * @param {object} data The server JSON reponse
+         */
+        connectCallback: function (data) {
+            this.message.add(data.text);
         }
     };
 

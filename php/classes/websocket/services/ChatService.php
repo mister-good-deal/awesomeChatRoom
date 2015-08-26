@@ -1,4 +1,10 @@
 <?php
+/**
+ * Chat services to manage a chat with a WebSocket server
+ *
+ * @category WebSocket service
+ * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ */
 
 namespace classes\websocket\services;
 
@@ -7,6 +13,12 @@ use \interfaces\ServiceInterface as Service;
 use \classes\IniManager as Ini;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
 
+/**
+ * Chat services to manage a chat with a WebSocket server
+ *
+ * @todo Make rooms management
+ * @class ChatService
+ */
 class ChatService extends Server implements Service
 {
     private $users           = array();
@@ -18,8 +30,9 @@ class ChatService extends Server implements Service
 
     public function __construct($serverAddress)
     {
+        Ini::setIniFileName(Ini::INI_CONF_FILE);
         $this->serverAddress = $serverAddress;
-        $this->chatService   = Ini::getSectionParam('Socket', 'chatService');
+        $this->chatService   = Ini::getParam('Socket', 'chatService');
     }
 
     /**
@@ -62,14 +75,14 @@ class ChatService extends Server implements Service
         $userName  = $this->getClientName($socket);
         $pseudonym = '';
         $success   = false;
-        $errors    = array();
+        $message   = _('You\'re connected to the chat !');
 
         if (!in_array($userName, $this->users)) {
             if (isset($data['user'])) {
                 $userEntityManager = new UserEntityManager();
                 $user              = $userEntityManager->authenticateUser(
-                    $data['user']['email'],
-                    $data['user']['password']
+                    @$data['user']['email'],
+                    @$data['user']['password']
                 );
 
                 if ($user !== false) {
@@ -82,18 +95,20 @@ class ChatService extends Server implements Service
                         $pseudonym = $user->firstName . ' ' . $user->lastName;
                     }
                 } else {
-                    $errors[] = _('Authentication failed');
+                    $message = _('The authentication failed');
                 }
             } elseif (isset($data['pseudonym'])) {
-                if ($this->isPseudonymUnique($data['pseudonym'])) {
+                if ($data['pseudonym'] === '') {
+                    $message = _('The pseudonym can\'t be empty');
+                } elseif ($this->isPseudonymUnique($data['pseudonym'])) {
                     $this->usersGuest[$userName] = $data['pseudonym'];
                     $pseudonym                   = $data['pseudonym'];
                     $success                     = true;
                 } else {
-                    $errors[] = _('The pseudonym "' . $data['pseudonym'] . '" already exists');
+                    $message = sprintf(_('The pseudonym "%s" is already used'), $data['pseudonym']);
                 }
             } else {
-                $errors[] = _('Error');
+                $message = _('You must enter a pseudonym');
             }
 
             if ($success) {
@@ -103,7 +118,11 @@ class ChatService extends Server implements Service
             }
         }
 
-        $this->send($socket, $this->encode(json_encode(array('success' => $success, 'errors' => $errors))));
+        $this->send($socket, $this->encode(json_encode(array(
+            'service' => $this->chatService,
+            'success' => $success,
+            'text'    => $message
+       ))));
     }
 
     /**
