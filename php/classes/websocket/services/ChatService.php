@@ -14,10 +14,12 @@ class ChatService extends Server implements Service
     private $usersGuest      = array();
     private $pseudonyms      = array();
     private $serverAddress;
+    private $chatService;
 
     public function __construct($serverAddress)
     {
         $this->serverAddress = $serverAddress;
+        $this->chatService   = Ini::getSectionParam('Socket', 'chatService');
     }
 
     /**

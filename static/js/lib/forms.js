@@ -140,9 +140,9 @@ define(['jquery', 'domReady!'], function ($) {
          *
          * Example: function callback(form, data) { ... }
          *
-         * @param {string}   url     The URL called to send the user data
+         * @param {string}   url      The URL called to send the user data
          * @param {function} callback The callback function
-         * @param {object}   context The callback context
+         * @param {object}   context  The callback context
          */
         addOnSuccessCallback: function (url, callback, context) {
             this.callbacks.onSuccess[url] = {

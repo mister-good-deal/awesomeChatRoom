@@ -14,10 +14,10 @@ define(['jquery', 'module'], function ($, module) {
      *
      * @constructor
      * @alias       module:lib/message
-     * @param       {object}    settings  Overriden settings
+     * @param       {object}           settings Overriden settings
      */
     var Message = function (settings) {
-        this.settings = $.extend(true, {}, this.settings, settings);
+        this.settings  = $.extend(true, {}, this.settings, settings);
         this.initEvents();
     };
 
@@ -47,6 +47,7 @@ define(['jquery', 'module'], function ($, module) {
                 "queue"          : [],
                 "lock"           : false
             },
+            "serviceName" : module.config().serviceName,
             "defaultType" : module.config().defaultType,
             "defaultLevel": module.config().defaultLevel
         },
@@ -55,21 +56,21 @@ define(['jquery', 'module'], function ($, module) {
          * Initialize events
          */
         initEvents: function () {
-            $(this.settings.alert.divId).on(
+            $('body').on(
                 'click',
-                this.settings.alert.dismissClass,
+                this.settings.alert.divId + ' ' + this.settings.alert.dismissClass,
                 $.proxy(this.alertDismiss, this)
             );
 
-            $(this.settings.popup.divId).on(
+            $('body').on(
                 'click',
-                this.settings.popup.dismissClass,
+                this.settings.popup.divId + ' ' + this.settings.popup.dismissClass,
                 $.proxy(this.popupDismiss, this)
             );
 
-            $(this.settings.notification.divId).on(
+            $('body').on(
                 'click',
-                this.settings.notification.dismissClass,
+                this.settings.notification.divId + ' ' + this.settings.notification.dismissClass,
                 $.proxy(this.notificationDismiss, this)
             );
         },
@@ -160,6 +161,15 @@ define(['jquery', 'module'], function ($, module) {
             });
 
             this.dequeueMessage(type);
+        },
+
+        /**
+         * Parse the WebSocket server response to notify it
+         *
+         * @param {object} data JSON encoded data recieved from the WebSocket server
+         */
+        parseWebsocketData: function (data) {
+            this.add(data.text, data.type, data.level, data.title, data.duration);
         },
 
         /**

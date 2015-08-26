@@ -13,29 +13,31 @@ requirejs.config({
     },
     config: {
         'websocket': {
-            serverUrl: 'ws://127.0.0.1:5000'
+            serverUrl  : 'ws://127.0.0.1:5000',
+            serviceName: 'websocketService'
         },
         'chat': {
             serviceName: 'chatService'
         },
         'message': {
             'alert': {
-                'divId'          : '#alert-container',
-                'dismissClass'   : '.dismiss',
-                'defaultDuration': 2
+                divId          : '#alert-container',
+                dismissClass   : '.dismiss',
+                defaultDuration: 2
             },
             'popup': {
-                'divId'          : '#popup-container',
-                'dismissClass'   : '.dismiss',
-                'defaultDuration': 6
+                divId          : '#popup-container',
+                dismissClass   : '.dismiss',
+                defaultDuration: 6
             },
             'notification': {
-                'divId'          : '#notification-container',
-                'dismissClass'   : '.dismiss',
-                'defaultDuration': 4
+                divId          : '#notification-container',
+                dismissClass   : '.dismiss',
+                defaultDuration: 4
             },
-            'defaultType' : 'alert',
-            'defaultLevel': 'info'
+            serviceName : 'notificationService',
+            defaultType : 'alert',
+            defaultLevel: 'info'
         }
     }
 });

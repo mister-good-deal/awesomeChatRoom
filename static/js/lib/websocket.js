@@ -43,12 +43,21 @@ define(['jquery', 'module'], function ($, module) {
          * The current User instance
          */
         "user": {},
+        /**
+         * Callbacks method to process data recieved from the WebSocket server
+         */
+        "callbacks": {},
+        /**
+         * The module service name
+         */
+        "serviceName": module.config().serviceName,
 
         /**
-         * Launch the WebSocket server
+         * Launch the WebSocket server and add the WebSocket server callbacks
          */
         init: function () {
             this.connect();
+            this.addCallback(this.settings.serviceName, this.listServiceCallback, this);
         },
 
         /**
@@ -81,9 +90,9 @@ define(['jquery', 'module'], function ($, module) {
         },
 
         /**
-         * Shorthand method to send data to teh server
+         * Shorthand method to send data to the WebSocket server
          *
-         * @param {string} data Data to send to the server
+         * @param {string} data Data to send to the WebSocket server
          */
         send: function (data) {
             this.socket.send(data);
@@ -106,16 +115,26 @@ define(['jquery', 'module'], function ($, module) {
         treatData: function (data) {
             data = JSON.parse(data);
 
-            switch (data.action) {
-                case 'addService':
-                    if (data.success) {
-                        console.log('Service "' + data.serviceName + '" is now running');
-                    } else {
-                        console.log('ERROR: ' + data.errors);
-                    }
-                    
-                    break;
+            if (data.service && this.callbacks[data.service]) {
+                this.callbacks[data.service].callback.call(
+                    this.callbacks[data.service].context,
+                    data
+                );
             }
+        },
+
+        /**
+         * Add a callback to process data recieved from the WebSocket server
+         *
+         * @param {string}   serviceName The callback service name
+         * @param {function} callback    The callback function
+         * @param {object}   context     The callback context
+         */
+        addCallback: function (serviceName, callback, context) {
+            this.callbacks[serviceName] = {
+                "callback": callback,
+                "context" : context
+            };
         },
 
         /**
@@ -156,6 +175,15 @@ define(['jquery', 'module'], function ($, module) {
                 "password"    : this.user.getPassword(),
                 "listServices": true
             }));
+        },
+
+        /**
+         * Parse the WebSocket server response to retrieve the services list
+         *
+         * @param {object} data JSON encoded data recieved from the WebSocket server
+         */
+        listServiceCallback: function (data) {
+            console.log(data.services);
         }
     };
 

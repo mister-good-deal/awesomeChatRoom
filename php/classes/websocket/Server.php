@@ -54,6 +54,14 @@ class Server
      * @var string $serviceRegex The regex to get service log entries
      */
     private $serviceRegex;
+    /**
+     * @var string $notificationService The notification service name
+     */
+    private $notificationService;
+        /**
+     * @var string $websocketService The websocket service name
+     */
+    private $websocketService;
 
     /*=====================================
     =            Magic methods            =
@@ -66,14 +74,16 @@ class Server
     {
         cli_set_process_title('PHP socket server');
 
-        $params              = Ini::getSectionParams('Socket');
-        $this->serviceRegex  = '/^' . $params['serviceKey'] . '(.*)/';
-        $this->protocol      = $params['protocol'];
-        $this->address       = $params['address'];
-        $this->port          = $params['port'];
-        $this->verbose       = $params['verbose'];
-        $this->serverAddress = $this->protocol . '://' . $this->address . ':' . $this->port;
-        $this->server        = stream_socket_server($this->serverAddress, $this->errorNum, $this->errorString);
+        $params                    = Ini::getSectionParams('Socket');
+        $this->serviceRegex        = '/^' . $params['serviceKey'] . '(.*)/';
+        $this->notificationService = $params['notificationService'];
+        $this->websocketService    = $params['websocketService'];
+        $this->protocol            = $params['protocol'];
+        $this->address             = $params['address'];
+        $this->port                = $params['port'];
+        $this->verbose             = $params['verbose'];
+        $this->serverAddress       = $this->protocol . '://' . $this->address . ':' . $this->port;
+        $this->server              = stream_socket_server($this->serverAddress, $this->errorNum, $this->errorString);
 
         if ($this->server === false) {
             throw new Exception('Error ' . $this->errorNum . '::' . $this->errorString, Exception::$ERROR);
@@ -286,7 +296,11 @@ class Server
 
                 if (isset($data['action']) && $data['action'] === 'manageServer') {
                     if (!$this->checkAuthentication($data)) {
-                        $response = array('success' => false, 'error' => _('Authentication failed'));
+                        $response = array(
+                            'service' => 'notificationService',
+                            'success' => false,
+                            'message' => _('Authentication failed')
+                        );
                     } else {
                         if (isset($data['addService'])) {
                             $response = $this->addService($data['addService']);
@@ -370,20 +384,20 @@ class Server
      * Add a service to the server
      *
      * @param  string   $serviceName The service name
-     * @return string[]              Array containing errors or empty array if success
+     * @return string[]              Array containing error or success message
      */
     private function addService($serviceName)
     {
-        $errors  = array();
+        $message = sprintf(_('The service "%s" is now running'), $serviceName);
         $success = false;
 
         if (array_key_exists($serviceName, $this->services)) {
-            $errors[] = _('The service "' . $serviceName . '" is already running');
+            $message = sprintf(_('The service "%s" is already running'), $serviceName);
         } else {
             $servicePath = Ini::getParam('Socket', 'servicesPath') . DIRECTORY_SEPARATOR . $serviceName;
 
             if (stream_resolve_include_path($servicePath . '.php') === false) {
-                $errors[] = _('The service "' . $serviceName . '" does not exist');
+                $message = sprintf(_('The service "%s" does not exist'), $serviceName);
             } else {
                 $service                      = new $servicePath($this->serverAddress);
                 $this->services[$serviceName] = array($service, 'service');
@@ -393,10 +407,9 @@ class Server
         }
 
         return array(
-            'action'      => 'addService',
-            'serviceName' => $serviceName,
+            'service'     => $this->notificationService,
             'success'     => $success,
-            'errors'      => $errors
+            'text'        => $message
         );
     }
 
@@ -408,11 +421,11 @@ class Server
      */
     private function removeService($serviceName)
     {
-        $errors  = array();
+        $message  = sprintf(_('The service "%s" is now stopped'), $serviceName);
         $success = false;
 
         if (!array_key_exists($serviceName, $this->services)) {
-            $errors[] = _('The service "' . $serviceName . '" is not running');
+            $message = sprintf(_('The service "%s" is not running'), $serviceName);
         } else {
             unset($this->services[$serviceName]);
             $success = true;
@@ -420,21 +433,20 @@ class Server
         }
         
         return array(
-            'action'      => 'removeService',
-            'serviceName' => $serviceName,
-            'success'     => $success,
-            'errors'      => $errors
+            'service' => $this->notificationService,
+            'success' => $success,
+            'text'    => $message
         );
     }
 
     /**
      * List all the service name which are currently running
      *
-     * @return string[] The service name list
+     * @return string[] The services name list
      */
     private function listServices()
     {
-        return array_keys($this->services);
+        return array('service' => $this->websocketService, 'services' => array_keys($this->services));
     }
 
     /**
