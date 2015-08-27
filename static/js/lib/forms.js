@@ -1,7 +1,7 @@
 /**
  * Forms module
  *
- * @module lib/user
+ * @module lib/forms
  */
 
 /*global define*/

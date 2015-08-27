@@ -14,7 +14,7 @@ define(['jquery', 'module'], function ($, module) {
      *
      * @constructor
      * @alias       module:lib/message
-     * @param       {object}           settings Overriden settings
+     * @param       {object} settings Overriden settings
      */
     var Message = function (settings) {
         this.settings  = $.extend(true, {}, this.settings, settings);

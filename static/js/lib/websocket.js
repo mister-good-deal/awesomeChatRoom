@@ -5,6 +5,7 @@
  */
 
 /*global define, WebSocket*/
+
 define(['jquery', 'module'], function ($, module) {
     'use strict';
 
@@ -29,7 +30,8 @@ define(['jquery', 'module'], function ($, module) {
          * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
          */
         "settings": {
-            "serverUrl": module.config().serverUrl
+            "serverUrl"  : module.config().serverUrl,
+            "serviceName": module.config().serviceName
         },
         /**
          * The websocket ressource
@@ -47,10 +49,6 @@ define(['jquery', 'module'], function ($, module) {
          * Callbacks method to process data recieved from the WebSocket server
          */
         "callbacks": {},
-        /**
-         * The module service name
-         */
-        "serviceName": module.config().serviceName,
 
         /**
          * Launch the WebSocket server and add the WebSocket server callbacks
