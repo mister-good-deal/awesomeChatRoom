@@ -1,16 +1,14 @@
 var requirejs = require('requirejs');
 
 var config = {
-    // appDir        : '../app',
+    appDir        : '../app',
     baseUrl       : '../lib',
-    // dir           : '../dist',
+    dir           : '../dist',
     name          : '../app/main',
     optimizeCss   : "none",
     optimize      : "uglify2",
     removeCombined: true,
-    // wrap          : true,
-    mainConfigFile: 'main.js',
-    out           : 'main-optimized.js'
+    wrap          : true
 };
 
 requirejs.optimize(config, function (buildResponse) {
