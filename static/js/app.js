@@ -17,10 +17,14 @@ requirejs.config({
             serviceName: 'websocketService'
         },
         'chat': {
-            serviceName : 'chatService',
-            divId       : '#chat',
-            pseudonymId : '#chat-pseudonym',
-            connectClass: '.chat-connect'
+            serviceName      : 'chatService',
+            divId            : '#chat',
+            pseudonymId      : '#pseudonym',
+            roomNameConnectId: '#room-name-connect',
+            connectClass     : '.connect',
+            roomNameId       : '#room-name',
+            createRoomClass  : '.create-room',
+            maxUsers         : 15
         },
         'message': {
             'alert': {

@@ -32,8 +32,13 @@
 
         <div id="chat">
             <h3><?=_('Chat')?></h3>
-            <input id="chat-pseudonym" type="text" name="chatPseudo" value="" placeholder="<?=_('Pseudonym')?>">
-            <button type="button" class="chat-connect"><?=_('Connect')?></button>
+
+            <input id="pseudonym" type="text" name="chatPseudo" value="" placeholder="<?=_('Pseudonym')?>">
+            <input id="room-name-connect" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
+            <button type="button" class="connect"><?=_('Connect')?></button>
+
+            <input id="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
+            <button type="button" class="create-room"><?=_('Create a room')?></button>
         </div>
     </body>
 </html>

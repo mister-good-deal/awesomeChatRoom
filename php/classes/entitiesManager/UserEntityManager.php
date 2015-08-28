@@ -160,9 +160,20 @@ class UserEntityManager extends EntityManager
         return $success;
     }
 
-    public function connectChat()
+    /**
+     * Get a user pseudonym
+     *
+     * @return string The user pseudonym (first name + last name if not defined)
+     */
+    public function getPseudonymForChat()
     {
-        # code...
+        if ($this->entity->pseudonym !== '' && $this->entity->pseudonym !== null) {
+            $pseudonym = $this->entity->pseudonym;
+        } else {
+            $pseudonym = $this->entity->firstName . ' ' . $this->entity->lastName;
+        }
+
+        return $pseudonym;
     }
 
     /**
