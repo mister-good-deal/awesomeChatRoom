@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <phpdoc>
-  <title>Utilities</title>
+  <title>PHP lib</title>
   <parser>
     <target>./.phpDoc</target>
     <markers>
@@ -12,7 +12,7 @@
     </extensions>
   </parser>
   <transformer>
-    <target>../utilities-gh-pages</target>
+    <target>../doc/PHP</target>
   </transformer>
   <files>
     <file>autoloader.php</file>

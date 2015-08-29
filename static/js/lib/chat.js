@@ -33,8 +33,6 @@ define(['jquery', 'module'], function ($, module) {
     ChatManager.prototype = {
         /**
          * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
-         *
-         * @todo rework the selectors structures IN PROGRESS
          */
         "settings": {
             "users"            : [],
@@ -63,6 +61,12 @@ define(['jquery', 'module'], function ($, module) {
                     "message"  : module.config().selectors.roomSend.message,
                     "recievers": module.config().selectors.roomSend.recievers,
                     "send"     : module.config().selectors.roomSend.send
+                },
+                "chat": {
+                    "message"  : module.config().selectors.chat.message,
+                    "pseudonym": module.config().selectors.chat.pseudonym,
+                    "date"     : module.config().selectors.chat.date,
+                    "text"     : module.config().selectors.chat.text
                 }
             }
         },
@@ -322,18 +326,18 @@ define(['jquery', 'module'], function ($, module) {
          */
         formatUserMessage: function (data) {
             return $('<div>', {
-                "class": "message " + data.type
+                "class": this.settings.selectors.chat.message.substr(1) + ' ' + data.type
             }).append(
                 $('<span>', {
-                    "class": "time",
+                    "class": this.settings.selectors.chat.date.substr(1),
                     "text" : '[' + data.time + ']'
                 }),
                 $('<span>', {
-                    "class": "user",
+                    "class": this.settings.selectors.chat.pseudonym.substr(1),
                     "text" : data.pseudonym
                 }),
                 $('<span>', {
-                    "class": "text",
+                    "class": this.settings.selectors.chat.text.substr(1),
                     "text" : data.text
                 })
             );

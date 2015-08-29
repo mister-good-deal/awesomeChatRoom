@@ -27,21 +27,27 @@ requirejs.config({
                     roomChat: '.chat'
                 },
                 'roomConnect': {
-                    div: '.connect-room',
-                    name: '.room-name',
+                    div      : '.connect-room',
+                    name     : '.room-name',
                     pseudonym: '.pseudonym',
-                    connect: '.connect'
+                    connect  : '.connect'
                 },
                 'roomCreation': {
-                    div: '.create-room',
-                    name: '.room-name',
+                    div   : '.create-room',
+                    name  : '.room-name',
                     create: '.create'
                 },
                 'roomSend': {
-                    div: '.send-action',
-                    message: '.message',
+                    div      : '.send-action',
+                    message  : '.message',
                     recievers: '.recievers',
-                    send: '.send'
+                    send     : '.send'
+                },
+                'chat': {
+                    message  : '.message',
+                    pseudonym: '.pseudonym',
+                    date     : '.date',
+                    text     : '.text'
                 }
             }
         },
