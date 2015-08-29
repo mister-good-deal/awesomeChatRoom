@@ -71,7 +71,13 @@ define(['jquery'], function ($, Message) {
          * @return {string} The user pseudonym
          */
         getPseudonym: function () {
-            return this.settings.pseudonym;
+            var pseudonym = this.settings.pseudonym;
+
+            if (pseudonym === '') {
+                pseudonym = this.settings.firstName + ' ' + this.settings.lastName;
+            }
+            
+            return pseudonym;
         },
 
         /**

@@ -39,7 +39,7 @@ class User extends Entity
     /**
      * @var string[] $pseudoBlackList List of unwanted pseudonyms
      */
-    public static $pseudoBlackList = array('admin', 'connard', 'ntm');
+    public static $pseudoBlackList = array('admin', 'all');
 
     /**
      * @var array $errors An array containing the occured errors when fields are set

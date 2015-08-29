@@ -18,13 +18,32 @@ requirejs.config({
         },
         'chat': {
             serviceName      : 'chatService',
-            divId            : '#chat',
-            pseudonymId      : '#pseudonym',
-            roomNameConnectId: '#room-name-connect',
-            connectClass     : '.connect',
-            roomNameId       : '#room-name',
-            createRoomClass  : '.create-room',
-            maxUsers         : 15
+            maxUsers         : 15,
+            'selectors'      : {
+                'global': {
+                    chat    : '#chat',
+                    room    : '.room',
+                    roomName: '.room-name',
+                    roomChat: '.chat'
+                },
+                'roomConnect': {
+                    div: '.connect-room',
+                    name: '.room-name',
+                    pseudonym: '.pseudonym',
+                    connect: '.connect'
+                },
+                'roomCreation': {
+                    div: '.create-room',
+                    name: '.room-name',
+                    create: '.create'
+                },
+                'roomSend': {
+                    div: '.send-action',
+                    message: '.message',
+                    recievers: '.recievers',
+                    send: '.send'
+                }
+            }
         },
         'message': {
             'alert': {

@@ -33,17 +33,38 @@ define(['jquery', 'module'], function ($, module) {
     ChatManager.prototype = {
         /**
          * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
+         *
+         * @todo rework the selectors structures IN PROGRESS
          */
         "settings": {
             "users"            : [],
             "serviceName"      : module.config().serviceName,
-            "divId"            : module.config().divId,
-            "pseudonymId"      : module.config().pseudonymId,
-            "roomNameConnectId": module.config().roomNameConnectId,
-            "connectClass"     : module.config().connectClass,
-            "roomNameId"       : module.config().roomNameId,
-            "createRoomClass"  : module.config().createRoomClass,
-            "maxUsers"         : module.config().maxUsers
+            "maxUsers"         : module.config().maxUsers,
+            "selectors"        : {
+                "global": {
+                    "chat"    : module.config().selectors.global.chat,
+                    "room"    : module.config().selectors.global.room,
+                    "roomName": module.config().selectors.global.roomName,
+                    "roomChat": module.config().selectors.global.roomChat
+                },
+                "roomConnect": {
+                    "div"      : module.config().selectors.roomConnect.div,
+                    "name"     : module.config().selectors.roomConnect.name,
+                    "pseudonym": module.config().selectors.roomConnect.pseudonym,
+                    "connect"  : module.config().selectors.roomConnect.connect
+                },
+                "roomCreation": {
+                    "div"      : module.config().selectors.roomCreation.div,
+                    "name"  : module.config().selectors.roomCreation.name,
+                    "create": module.config().selectors.roomCreation.create
+                },
+                "roomSend": {
+                    "div"      : module.config().selectors.roomSend.div,
+                    "message"  : module.config().selectors.roomSend.message,
+                    "recievers": module.config().selectors.roomSend.recievers,
+                    "send"     : module.config().selectors.roomSend.send
+                }
+            }
         },
         /**
          * A Message object to output message in the IHM
@@ -66,16 +87,29 @@ define(['jquery', 'module'], function ($, module) {
          * Initialize all the events
          */
         initEvents: function () {
+            // Connect to a room
             $('body').on(
                 'click',
-                this.settings.divId + ' ' + this.settings.connectClass,
+                this.settings.selectors.global.chat + ' ' +
+                this.settings.selectors.roomConnect.div + ' ' +
+                this.settings.selectors.roomConnect.connect,
                 $.proxy(this.connectEvent, this)
             );
-
+            // Create a room
             $('body').on(
                 'click',
-                this.settings.divId + ' ' + this.settings.createRoomClass,
+                this.settings.selectors.global.chat + ' ' +
+                this.settings.selectors.roomCreation.div + ' ' +
+                this.settings.selectors.roomCreation.create,
                 $.proxy(this.createRoomEvent, this)
+            );
+            // Send a message in a room
+            $('body').on(
+                'click',
+                this.settings.selectors.global.room + ' ' +
+                this.settings.selectors.roomSend.div + ' ' +
+                this.settings.selectors.roomSend.send,
+                $.proxy(this.sendMessageEvent, this)
             );  
         },
 
@@ -83,7 +117,117 @@ define(['jquery', 'module'], function ($, module) {
          * Event fired when a user want to connect to a chat
          */
         connectEvent: function () {
-            this.connect($(this.settings.pseudonymId).val(), $(this.settings.roomNameConnectId).val());
+            var connectDiv = $(this.settings.selectors.global.chat + ' ' + this.settings.selectors.roomConnect.div),
+                pseudonym  = connectDiv.find(this.settings.selectors.roomConnect.pseudonym).val(),
+                roomName   = connectDiv.find(this.settings.selectors.roomConnect.name).val();
+
+            this.connect(pseudonym, roomName);
+        },
+
+        /**
+         * Event fired when a user wants to create a chat room
+         */
+        createRoomEvent: function () {
+            var createDiv = $(this.settings.selectors.global.chat + ' ' + this.settings.selectors.roomCreation.div),
+                roomName  = createDiv.find(this.settings.selectors.roomCreation.name).val();
+
+            this.createRoom(roomName);
+        },
+
+        /**
+         * Event fired when a user wants to send a message
+         *
+         * @param {event} e The fired event
+         */
+        sendMessageEvent: function (e) {
+            var sendDiv = $(e.currentTarget).closest(
+                    this.settings.selectors.global.room + ' ' + this.settings.selectors.roomSend.div
+                ),
+                recievers = sendDiv.find(this.settings.selectors.roomSend.recievers).val(),
+                message   = sendDiv.find(this.settings.selectors.roomSend.message).val(),
+                room      = $(e.currentTarget).closest(this.settings.selectors.global.room),
+                roomName  = room.attr('data-name'),
+                password  = room.attr('data-password');
+
+            this.sendMessage(recievers, message, roomName, password);
+        },
+
+        /**
+         * Handle the WebSocker server response and process action then
+         *
+         * @param {object} data The server JSON reponse
+         */
+        chatCallback: function (data) {
+            switch (data.action) {
+                case 'connect':
+                    this.message.add(data.text);
+
+                    break;
+
+                case 'createRoom':
+                    this.createRoomCallback(data);
+
+                    break;
+
+                case 'recieveMessage':
+                    this.recieveMessageCallback(data);
+
+                    break;
+
+                case 'sendMessage':
+                    this.sendMessageCallback(data);
+
+                    break;
+                
+                default:
+                    if (data.text) {
+                        this.message.add(data.text);
+                    }
+            }
+        },
+
+        /**
+         * Callback after a user attempted to create a room
+         *
+         * @param {object} data The server JSON reponse
+         */
+        createRoomCallback: function (data) {
+            console.log(data);
+            if (data.success) {
+                var defaultRoom = $(this.settings.selectors.global.room + '[data-name="default"]'),
+                    newRoom     = defaultRoom.clone(true);
+
+                newRoom.attr('data-name', data.roomName);
+                newRoom.attr('data-type', data.type);
+                newRoom.attr('data-password', data.roomPassword);
+                newRoom.attr('data-max-users', data.maxUsers);
+                newRoom.find(this.settings.selectors.global.roomName).text(data.roomName);
+                newRoom.find(this.settings.selectors.global.roomChat).html('');
+
+                defaultRoom.after(newRoom);
+            }
+
+            this.message.add(data.text);
+        },
+
+        /**
+         * Callback after a user recieved a message
+         *
+         * @param {object} data The server JSON reponse
+         */
+        recieveMessageCallback: function (data) {
+            var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]');
+
+            room.find(this.settings.selectors.global.roomChat).append(this.formatUserMessage(data));
+        },
+
+        /**
+         * Callback after a user sent a message
+         *
+         * @param {object} data The server JSON reponse
+         */
+        sendMessageCallback: function (data) {
+            console.log('Message sent', data);
         },
 
         /**
@@ -130,27 +274,33 @@ define(['jquery', 'module'], function ($, module) {
         },
 
         /**
-         * Handle the WebSocker server response and process action then
+         * Send a message to all the users in the chat room or at one user in teh chat room
          *
-         * @param {object} data The server JSON reponse
+         * @param  {string} recievers The message reciever ('all' || userPseudonym)
+         * @param  {string} message   The txt message to send
+         * @param  {string} roomName  The chat room name
+         * @param  {string} password  The chat room password if required
          */
-        chatCallback: function (data) {
-            switch (data.action) {
-                case 'connect':
-                    this.message.add(data.text);
-                    break;
-
-                case 'createRoom':
-                    this.message.add(data.text);
-                    break;
-                
-                default:
-                    if (data.text) {
-                        this.message.add(data.text);
-                    }
-            }
+        sendMessage: function (recievers, message, roomName, password) {
+            this.websocket.send(JSON.stringify({
+                "service"  : [this.settings.serviceName],
+                "action"   : "sendMessage",
+                "pseudonym": this.user.getPseudonym(),
+                "roomName" : roomName,
+                "message"  : message,
+                "recievers": recievers,
+                "password" : password || ''
+            }));
         },
 
+        /**
+         * Create a chat room
+         *
+         * @param  {string}  roomName     The room name
+         * @param  {string}  type         The room type ('public' || 'private')
+         * @param  {string}  roomPassword The room password
+         * @param  {integer} maxUsers     The max users number
+         */
         createRoom: function (roomName, type, roomPassword, maxUsers) {
             this.websocket.send(JSON.stringify({
                 "service"      : [this.settings.serviceName],
@@ -164,8 +314,29 @@ define(['jquery', 'module'], function ($, module) {
             }));
         },
 
-        createRoomEvent: function () {
-            this.createRoom($(this.settings.roomNameId).val());
+        /**
+         * Format a user message in a html div
+         *
+         * @param  {object} data The server JSON reponse
+         * @return {object}      jQuery html div object containing the user message
+         */
+        formatUserMessage: function (data) {
+            return $('<div>', {
+                "class": "message " + data.type
+            }).append(
+                $('<span>', {
+                    "class": "time",
+                    "text" : '[' + data.time + ']'
+                }),
+                $('<span>', {
+                    "class": "user",
+                    "text" : data.pseudonym
+                }),
+                $('<span>', {
+                    "class": "text",
+                    "text" : data.text
+                })
+            );
         }
     };
 

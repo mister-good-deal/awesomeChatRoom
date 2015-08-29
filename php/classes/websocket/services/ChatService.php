@@ -12,7 +12,6 @@ use \classes\websocket\Server as Server;
 use \interfaces\ServiceInterface as Service;
 use \classes\IniManager as Ini;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
-use \classes\entities\User as User;
 
 /**
  * Chat services to manage a chat with a WebSocket server
@@ -22,6 +21,8 @@ use \classes\entities\User as User;
  */
 class ChatService extends Server implements Service
 {
+    use \traits\ShortcutsTrait;
+
     /**
      * @var resources[] $users All the users sockets connected indexed by their pseudonym
      */
@@ -47,7 +48,7 @@ class ChatService extends Server implements Service
      *
      * array(
      *     'room name' => array(
-     *         'pseudonyms'   => array('pseudo 1', 'pseudo 2', ...),
+     *         'users'        => array(array('pseudo 1' => socket), array('pseudo 2' => socket), ...),
      *         'creator'      => User object instance,
      *         'type'         => 'public|private',
      *         'password'     => 'password',
@@ -66,7 +67,7 @@ class ChatService extends Server implements Service
 
         // Create the default room
         $this->rooms['default'] = array(
-            'pseudonyms'   => array('admin'),
+            'users'        => array(),
             'type'         => 'public',
             'creationDate' => new \DateTime(),
             'maxUsers'     => 200
@@ -82,8 +83,8 @@ class ChatService extends Server implements Service
     public function service($socket, $data)
     {
         switch ($data['action']) {
-            case 'chat':
-                $this->log(_('[chatService] somone says: "' . $data['message'] . '"'));
+            case 'sendMessage':
+                $this->sendMessage($socket, $data);
 
                 break;
 
@@ -120,14 +121,26 @@ class ChatService extends Server implements Service
     public function createRoom($socket, $data)
     {
         $success = false;
+        @$this->setIfIsSet($roomName, $data['roomName'], null);
+        @$this->setIfIsSet($login, $data['login'], null);
+        @$this->setIfIsSet($password, $data['password'], null);
+        @$this->setIfIsSet($type, $data['type'], null);
+        @$this->setIfIsSet($roomPassword, $data['roomPassword'], null);
+        @$this->setIfIsSet($maxUsers, $data['maxUsers'], null);
 
-        if (!isset($data['roomName']) || $data['roomName'] === '') {
-            $message = 'The room name is required';
-        } elseif (array_key_exists($data['roomName'], $this->rooms)) {
-            $message = sprintf(_('The chat room name "%s" already exists'), $data['roomName']);
+        if ($roomName === null || $roomName === '') {
+            $message = _('The room name is required');
+        } elseif (array_key_exists($roomName, $this->rooms)) {
+            $message = sprintf(_('The chat room name "%s" already exists'), $roomName);
+        } elseif ($type !== 'public' && $type !== 'private') {
+            $message = _('The room type must be "public" or "private"');
+        } elseif ($type === 'private' && ($password === null || strlen($password) === 0)) {
+            $message = _('The password is required and must not be empty');
+        } elseif (!is_numeric($maxUsers) || $maxUsers < 2) {
+            $message = _('The max number of users must be a number and must no be less than 2');
         } else {
             $userEntityManager = new UserEntityManager();
-            $user              = $userEntityManager->authenticateUser($data['login'], $data['password']);
+            $user              = $userEntityManager->authenticateUser($login, $password);
 
             if ($user === false) {
                 $message = _('Authentication failed');
@@ -135,25 +148,30 @@ class ChatService extends Server implements Service
                 $userEntityManager->setEntity($user);
 
                 $pseudonym                      = $userEntityManager->getPseudonymForChat();
-                $this->rooms[$data['roomName']] = array(
-                    'pseudonyms'   => array($pseudonym),
+                $this->rooms[$roomName] = array(
+                    'users'        => array($pseudonym => $socket),
                     'creator'      => $user,
-                    'type'         => $data['type'],
-                    'password'     => $data['roomPassword'],
+                    'type'         => $type,
+                    'password'     => $roomPassword,
                     'creationDate' => new \DateTime(),
-                    'maxUsers'     => $data['maxUsers']
+                    'maxUsers'     => $maxUsers
                 );
 
                 $success = true;
-                $message = sprintf(_('The chat room name "%s" is successfully created !'), $data['roomName']);
-                $this->log(_('[chatService] New room added "' . $data['roomName'] . '" by ' . $pseudonym));
+                $message = sprintf(_('The chat room name "%s" is successfully created !'), $roomName);
+                $this->log(_('[chatService] New room added "' . $roomName . '" by ' . $pseudonym));
             }
         }
 
         $this->send($socket, $this->encode(json_encode(array(
-            'service' => $this->chatService,
-            'success' => $success,
-            'text'    => $message
+            'service'      => $this->chatService,
+            'action'       => 'createRoom',
+            'success'      => $success,
+            'roomName'     => $roomName,
+            'type'         => $type,
+            'maxUsers'     => $maxUsers,
+            'roomPassword' => $roomPassword,
+            'text'         => $message
         ))));
     }
 
@@ -162,7 +180,7 @@ class ChatService extends Server implements Service
      *
      * @param resource $socket The user socket
      * @param array    $data   JSON decoded client data
-     * @todo Refacto => private method to authenticated process
+     * @todo Refacto => getClientName VS getPseudonymForChat
      */
     private function connectUser($socket, $data)
     {
@@ -205,7 +223,7 @@ class ChatService extends Server implements Service
                     // Guest user
                     if ($data['pseudonym'] === '') {
                         $message = _('The pseudonym can\'t be empty');
-                    } elseif ($this->isPseudonymUnique($data['pseudonym'], $roomName)) {
+                    } elseif ($this->pseudonymIsInRoom($data['pseudonym'], $roomName)) {
                         $this->usersGuest[$userName] = $data['pseudonym'];
                         $pseudonym                   = $data['pseudonym'];
                         $success                     = true;
@@ -218,8 +236,8 @@ class ChatService extends Server implements Service
 
                 if ($success) {
                     // Add user to the room
-                    $this->users[$userName]                 = $socket;
-                    $this->rooms[$roomName]['pseudonyms'][] = $pseudonym;
+                    $this->users[$userName]                      = $socket;
+                    $this->rooms[$roomName]['users'][$pseudonym] = $socket;
                     $this->log(_(
                         '[chatService] New user added with the pseudonym "' . $pseudonym . '" in the room "'
                         . $roomName . '"'
@@ -237,19 +255,115 @@ class ChatService extends Server implements Service
     }
 
     /**
+     * Send a public message to all the users in the room or a private message to one user in the room
+     *
+     * @param resource $socket The user socket
+     * @param array    $data   JSON decoded client data
+     */
+    public function sendMessage($socket, $data)
+    {
+        $success = false;
+        $message = _('Message successfully sent !');
+        @$this->setIfIsSet($roomName, $data['roomName'], null);
+        @$this->setIfIsSet($pseudonym, $data['pseudonym'], null);
+        @$this->setIfIsSet($password, $data['password'], null);
+        @$this->setIfIsSet($recievers, $data['recievers'], null);
+        @$this->setIfIsSet($text, $data['message'], null);
+
+        if ($text === null || $text === '') {
+            $message = _('The message cannot be empty');
+        } elseif ($roomName === null) {
+            $message = _('The chat room name cannot be empty');
+        } elseif ($pseudonym === null) {
+            $message = _('Your pseudonym cannot be empty');
+        } elseif ($this->rooms[$roomName]['type'] === 'private') {
+            if ($password === null) {
+                $message = sprintf(_('The chat room "%s" requires a password'), $roomName);
+            } elseif ($password !== $this->rooms[$roomName]['password']) {
+                $message = _('Incorrect password');
+            }
+        } elseif ($recievers === null) {
+            $message = _('You must precise a reciever for your message (all or a pseudonym');
+        } elseif ($recievers === 'all') {
+            // Send the message to all the users in the chat room
+            foreach ($this->rooms[$roomName]['users'] as $userSocket) {
+                $this->sendMessageToUser($userSocket, $pseudonym, $text, $roomName, 'public');
+            }
+
+            $this->log(sprintf(
+                _('[chatService] Message "%s" sent by "%s" to "%s" in the room "%s"'),
+                $text,
+                $pseudonym,
+                $recievers,
+                $roomName
+            ));
+            $success = true;
+        } elseif (!$this->pseudonymIsInRoom($recievers, $roomName)) {
+            $message = sprintf(_('The user "%" is not connected to the room "%"'), $recievers, $roomName);
+        } else {
+            // Send the message to one user
+            $this->sendMessageToUser(
+                $this->rooms[$roomName]['users'][$recievers],
+                $pseudonym,
+                $text,
+                $roomName,
+                'private'
+            );
+
+            $this->log(sprintf(
+                _('[chatService] Message "%s" sent by "%s" to "%s" in the room "%s"'),
+                $text,
+                $pseudonym,
+                $recievers,
+                $roomName
+            ));
+            $success = true;
+        }
+
+        $this->send($socket, $this->encode(json_encode(array(
+            'service' => $this->chatService,
+            'action'  => 'sendMessage',
+            'success' => $success,
+            'text'    => $message
+        ))));
+    }
+
+    /**
      * Check if a pseudonym is already used in the defined room
      *
-     * @param  string  $pseudonym The pseudonym to test
+     * @param  string  $pseudonym The pseudonym
      * @param  string  $roomName  The room name to connect to
-     * @return boolean            True is the pseudonym already exists else false
+     * @return boolean            True if the pseudonym exists in the room else false
      */
-    private function isPseudonymUnique($pseudonym, $roomName)
+    private function pseudonymIsInRoom($pseudonym, $roomName)
     {
         return !in_array($pseudonym, $this->rooms[$roomName]['pseudonyms']);
     }
 
     /**
-     * Log a message to teh server if verbose mode is activated
+     * Send a message to a user
+     *
+     * @param  resource $socket     The user socket
+     * @param  string   $pseudonym  The user message owner pseudonym
+     * @param  string   $message    The text message
+     * @param  string   $roomName   The room name
+     * @param  string   $type       The message type ('public' || 'private')
+     */
+    private function sendMessageToUser($socket, $pseudonym, $message, $roomName, $type)
+    {
+        $this->send($socket, $this->encode(json_encode(array(
+            'service'   => $this->chatService,
+            'action'    => 'recieveMessage',
+            'pseudonym' => $pseudonym,
+            'time'      => date('Y-m-d H:i:s'),
+            'roomName'  => $roomName,
+            'type'      => $type,
+            'text'      => $message
+        ))));
+    }
+
+    /**
+     * Log a message to the server if verbose mode is activated
      *
      * @param  string $message The message to output
      */

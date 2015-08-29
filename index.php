@@ -33,12 +33,34 @@
         <div id="chat">
             <h3><?=_('Chat')?></h3>
 
-            <input id="pseudonym" type="text" name="chatPseudo" value="" placeholder="<?=_('Pseudonym')?>">
-            <input id="room-name-connect" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
-            <button type="button" class="connect"><?=_('Connect')?></button>
-
-            <input id="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
-            <button type="button" class="create-room"><?=_('Create a room')?></button>
+            <!-- connect -->
+            <div class="connect-room">
+                <input class="pseudonym" type="text" name="chatPseudo" value="" placeholder="<?=_('Pseudonym')?>">
+                <input class="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
+                <button class="connect" type="button"><?=_('Connect')?></button>
+            </div>
+            
+            <!-- create room -->
+            <div class="create-room">
+                <input class="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
+                <button class="create" type="button"><?=_('Create a room')?></button>
+            </div>
+            
+            <div class="room" data-name="default" data-type="public" data-max-users="200" data-password="">
+                <h3 class="room-name">default</h3>
+                <!-- chat message display -->
+                <div class="chat"></div>
+                <!-- send message -->
+                <div class="send-action">
+                    <input class="message" type="text" name="message" value="" placeholder="<?=_('Message')?>">
+                    <select class="recievers" name="recievers">
+                        <option value="all" selected><?=_('All')?></option>
+                        <option value="pseudonym">futur pseudonyms list</option>
+                        <!-- <input type="text" name="userPseudonym" placeholder="<?=_('User pseudonym')?>"> -->
+                    </select>
+                    <button class="send" type="button"><?=_('Send message')?></button>
+                </div>
+            </div>
         </div>
     </body>
 </html>
