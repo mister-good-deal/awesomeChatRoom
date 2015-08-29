@@ -5,11 +5,11 @@ call phpdoc
 @echo.
 @echo **** phpDoc generated ****
 @echo.
-cd ../doc/PHP
+cd ../../web-doc/phpDoc
 call git add .
 call git commit -a -m "update phpDoc"
-call git push
+call git push origin gh-pages
 @echo.
 @echo **** phpDoc pushed in git-hub pages branch ****
 @echo.
-cd ../php
+cd ../../web/php

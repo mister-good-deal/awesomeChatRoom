@@ -12,7 +12,7 @@
     </extensions>
   </parser>
   <transformer>
-    <target>../doc/PHP</target>
+    <target>../../web-doc/phpDoc</target>
   </transformer>
   <files>
     <file>autoloader.php</file>

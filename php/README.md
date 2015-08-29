@@ -185,7 +185,7 @@ The code uses advanced strucure like Traits to avoid code replication.
 
 ***
 
-The [phpDoc](http://ziperrom1.github.io/utilities/) is automatically generated and updated at each commit.
+The [phpDoc](http://ziperrom1.github.io/web/phpDoc) is automatically generated and updated at each commit.
 
 ***
 
