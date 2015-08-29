@@ -71,6 +71,8 @@ class User extends Entity
     =========================================*/
     
     /**
+     * Get the occured errors when fields are set
+     *
      * @return array An array containing the occured errors when fields are set
      */
     public function getErrors()

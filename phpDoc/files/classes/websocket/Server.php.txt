@@ -250,7 +250,6 @@ class Server
                         $client     = stream_socket_accept($this->server, 30);
                         $clientName = $this->getClientName($client);
                         $data       = $this->get($client);
-                        Ini::setIniFileName(Ini::INI_CONF_FILE);
 
                         if (preg_match($this->serviceRegex, $data, $match) === 1) {
                             $this->log($match[1]);
@@ -340,6 +339,7 @@ class Server
      * Perform an handshake with the remote client by sending a specific HTTP response
      *
      * @param resource $client The client socket
+     * @param string   $data   The client data sent to perform the handshake
      */
     private function handshake($client, $data)
     {
