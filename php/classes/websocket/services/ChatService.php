@@ -59,18 +59,24 @@ class ChatService extends Server implements Service
      */
     private $rooms = array();
 
+    /**
+     * Constructor that sets the WebSocket server adress and create en empty default room
+     *
+     * @param string $serverAddress The WebSocket server adress
+     */
     public function __construct($serverAddress)
     {
         Ini::setIniFileName(Ini::INI_CONF_FILE);
+        $params              = Ini::getSectionParams('Chat service');
         $this->serverAddress = $serverAddress;
-        $this->chatService   = Ini::getParam('Socket', 'chatService');
+        $this->chatService   = $params['serviceName'];
 
         // Create the default room
         $this->rooms['default'] = array(
             'users'        => array(),
             'type'         => 'public',
             'creationDate' => new \DateTime(),
-            'maxUsers'     => 200
+            'maxUsers'     => $params['maxUsers']
         );
     }
 

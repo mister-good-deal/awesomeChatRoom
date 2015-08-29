@@ -142,7 +142,9 @@ class UserEntityManager extends EntityManager
     /**
      * Check if a user have the admin access to the WebSocker server
      *
-     * @return boolean True if the User has the right else false
+     * @param  string $login    The user login
+     * @param  string $password The user password
+     * @return boolean          True if the User has the right else false
      */
     public function connectWebSocketServer($login, $password)
     {
