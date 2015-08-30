@@ -578,7 +578,8 @@ class ChatService extends Server implements Service
     /**
      * Set the last part number of room historic
      *
-     * @param string $roomName The room name
+     * @param string  $roomName The room name
+     * @param integer $part     The last part number
      */
     private function setLastPartNumber($roomName, $part)
     {
