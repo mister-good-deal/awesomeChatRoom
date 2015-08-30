@@ -45,6 +45,22 @@ class ChatService extends Server implements Service
      */
     private $chatService;
     /**
+     * @var string $savingDir The absolute path from the lib path where conversations will be stored
+     */
+    private $savingDir;
+    /**
+     * @var integer $maxMessagesPerFile The maximum number of messages per file saved
+     */
+    private $maxMessagesPerFile;
+    /**
+     * @var string[] $roomsName Array containing all the rooms name that exists
+     */
+    private $roomsName;
+    /**
+     * @var string $roomsNamePath The path of the file storing the list of rooms name
+     */
+    private $roomsNamePath;
+    /**
      * @var array $rooms Rooms live sessions
      *
      * array(
@@ -55,7 +71,17 @@ class ChatService extends Server implements Service
      *         'type'         => 'public' || 'private',
      *         'password'     => 'password',
      *         'creationDate' => DateTime object instance,
-     *         'maxUsers'     => integer
+     *         'maxUsers'     => integer,
+     *         'historicPart' => integer,
+     *         'historic'     => array(
+     *             array(
+     *                 'part'    => the part number,
+     *                 'message' => the text message,
+     *                 'time'    => the message sent time,
+     *                 'from'    => the pseudonym of the message owner,
+     *                 'to'      => the pseudonym of the message reciever or 'all'
+     *             )
+     *         )
      *     )
      * )
      */
@@ -73,9 +99,13 @@ class ChatService extends Server implements Service
     public function __construct($serverAddress)
     {
         Ini::setIniFileName(Ini::INI_CONF_FILE);
-        $params              = Ini::getSectionParams('Chat service');
-        $this->serverAddress = $serverAddress;
-        $this->chatService   = $params['serviceName'];
+        $params                   = Ini::getSectionParams('Chat service');
+        $this->serverAddress      = $serverAddress;
+        $this->chatService        = $params['serviceName'];
+        $this->savingDir          = $params['savingDir'];
+        $this->maxMessagesPerFile = $params['maxMessagesPerFile'];
+        $this->roomsNamePath      = $this->savingDir . DIRECTORY_SEPARATOR . 'rooms_name';
+        $this->roomsName          = json_decode(file_get_contents($this->roomsNamePath), true);
 
         // Create the default room
         $this->rooms['default'] = array(
@@ -84,8 +114,12 @@ class ChatService extends Server implements Service
             'type'         => 'public',
             'password'     => '',
             'creationDate' => new \DateTime(),
-            'maxUsers'     => $params['maxUsers']
+            'maxUsers'     => $params['maxUsers'],
+            'historicPart' => $this->getLastPartNumber('default'),
+            'historic'     => array()
         );
+
+        $this->loadConversation('default', $this->rooms['default']['historicPart']);
     }
     
     /*=====  End of Magic methods  ======*/
@@ -156,7 +190,7 @@ class ChatService extends Server implements Service
 
         if ($roomName === null || $roomName === '') {
             $message = _('The room name is required');
-        } elseif (array_key_exists($roomName, $this->rooms)) {
+        } elseif (in_array($roomName, $this->roomsName)) {
             $message = sprintf(_('The chat room name "%s" already exists'), $roomName);
         } elseif ($type !== 'public' && $type !== 'private') {
             $message = _('The room type must be "public" or "private"');
@@ -175,6 +209,7 @@ class ChatService extends Server implements Service
 
                 $socketHash             = $this->getClientName($socket);
                 $pseudonym              = $userEntityManager->getPseudonymForChat();
+                $this->roomsName[]      = $roomName;
                 $this->rooms[$roomName] = array(
                     'sockets'      => array($socketHash => $socket),
                     'pseudonyms'   => array($socketHash => $pseudonym),
@@ -182,8 +217,12 @@ class ChatService extends Server implements Service
                     'type'         => $type,
                     'password'     => $roomPassword,
                     'creationDate' => new \DateTime(),
-                    'maxUsers'     => $maxUsers
+                    'maxUsers'     => $maxUsers,
+                    'historicPart' => 0,
+                    'historic'     => array()
                 );
+
+                $this->updateRoomsName();
 
                 $success = true;
                 $message = sprintf(_('The chat room name "%s" is successfully created !'), $roomName);
@@ -231,6 +270,7 @@ class ChatService extends Server implements Service
             $roomName = 'default';
         }
 
+        // @todo Check if a room historic exists
         if (!array_key_exists($roomName, $this->rooms)) {
             $message = sprintf(_('The chat room "%s" does not exist'), $roomName);
         } elseif (count($this->rooms[$roomName]['sockets']) >= $this->rooms[$roomName]['maxUsers']) {
@@ -391,6 +431,12 @@ class ChatService extends Server implements Service
         foreach ($this->usersRooms[$socketHash] as $roomName) {
             unset($this->rooms[$roomName]['sockets'][$socketHash]);
             unset($this->rooms[$roomName]['pseudonyms'][$socketHash]);
+
+            // Save and cloe the chat room if noone is in
+            if (count($this->rooms[$roomName]['sockets']) === 0) {
+                $this->saveConversation($roomName);
+                unset($this->rooms[$roomName]);
+            }
         }
 
         $this->disconnect($socket);
@@ -446,6 +492,108 @@ class ChatService extends Server implements Service
             'type'      => $type,
             'text'      => $message
         ))));
+    }
+
+    /**
+     * Update a conversation with a new message
+     *
+     * @param  string $roomName The room name
+     * @param  string $time     The server message sent time
+     * @param  string $message  The text message
+     * @param  string $from     The pseudonym of the user message owner
+     * @param  string $to       The pseudonym of the user message reviever or 'all'
+     */
+    private function updateConversation($roomName, $time, $message, $from, $to)
+    {
+        if (count($this->rooms[$roomName]['historic']) >= $this->maxMessagesPerFile) {
+            $this->saveConversation($roomName);
+            $this->rooms[$roomName]['historic'] = array();
+            $this->setLastPartNumber($roomName, ++$this->rooms[$roomName]['historicPart']);
+        }
+
+        $this->rooms[$roomName]['historic'][] = array(
+            'part'    => $this->rooms[$roomName]['historicPart'],
+            'message' => $message,
+            'time'    => $time,
+            'from'    => $from,
+            'to'      => $to
+        );
+    }
+
+    /**
+     * Store the conversation into a text file
+     *
+     * @param string $roomName The room name
+     */
+    private function saveConversation($roomName)
+    {
+        $part = $this->rooms[$roomName]['historic']['part'];
+
+        file_put_contents(
+            $this->savingDir . DIRECTORY_SEPARATOR . $roomName . DIRECTORY_SEPARATOR . '-part-' . $part,
+            json_encode($this->rooms[$roomName]['historic'])
+        );
+    }
+
+    /**
+     * Load a conversation
+     *
+     * @param string  $roomName The room name
+     * @param integer $part     The conversation part
+     */
+    private function loadConversation($roomName, $part)
+    {
+        $conversation = file_get_contents(
+            $this->savingDir . DIRECTORY_SEPARATOR . $roomName . DIRECTORY_SEPARATOR . '-part-' . $part
+        );
+
+        if ($conversation === false) {
+            $conversation = array();
+        } else {
+            $conversation = json_decode($conversation, true);
+        }
+
+        $this->rooms[$roomName]['historic'] = $conversation;
+    }
+
+    /**
+     * Get the last part number of room historic
+     *
+     * @param  string  $roomName The room name
+     * @return integer           The last part number
+     */
+    private function getLastPartNumber($roomName)
+    {
+        $part = file_get_contents(
+            $this->savingDir . DIRECTORY_SEPARATOR . $roomName . DIRECTORY_SEPARATOR . '-last-part'
+        );
+
+        if ($part === false) {
+            $part = 0;
+        }
+
+        return (int) $part;
+    }
+
+    /**
+     * Set the last part number of room historic
+     *
+     * @param string $roomName The room name
+     */
+    private function setLastPartNumber($roomName, $part)
+    {
+        file_put_contents(
+            $this->savingDir . DIRECTORY_SEPARATOR . $roomName . DIRECTORY_SEPARATOR . '-last-part',
+            $part
+        );
+    }
+
+    /**
+     * Update the rooms name
+     */
+    private function updateRoomsName()
+    {
+        file_put_contents($this->roomsNamePath, json_encode($this->roomsName));
     }
 
     /**
