@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>WebSocket services / AMD modules Source: websocket.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cyborg.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">WebSocket services / AMD modules</a>
+	</div>
+	<div class="navbar-collapse">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-lib_chat.html">lib/chat</a></li><li><a href="module-lib_forms.html">lib/forms</a></li><li><a href="module-lib_message.html">lib/message</a></li><li><a href="module-lib_user.html">lib/user</a></li><li><a href="module-lib_websocket.html">lib/websocket</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+	</div>
+</div>
+</div>
+
+
+<div class="container">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+    		<h1 class="page-title">Source: websocket.js</h1>
+			
+
+		<h1 class="page-title">Source: websocket.js</h1>
+    
+<section>
+	<article>
+		<pre
+			class="sunlight-highlight-javascript linenums">/**
+ * Websocket module
+ *
+ * @module lib/websocket
+ */
+
+/*global define, WebSocket*/
+
+define(['jquery', 'module'], function ($, module) {
+    'use strict';
+
+    /**
+     * Websocket manager class
+     *
+     * @constructor
+     * @alias       module:lib/websocket
+     * @param       {Message} Message  A Message object to output message in the IHM
+     * @param       {User}    User     The current User
+     * @param       {object}  settings Overriden settings
+     */
+    var WebsocketManager = function (Message, User, settings) {
+        this.settings = $.extend(true, {}, this.settings, settings);
+        this.message  = Message;
+        this.user     = User;
+        this.init();
+    };
+
+    WebsocketManager.prototype = {
+        /**
+         * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
+         */
+        "settings": {
+            "serverUrl"  : module.config().serverUrl,
+            "serviceName": module.config().serviceName
+        },
+        /**
+         * The websocket ressource
+         */
+        "socket": {},
+        /**
+         * A Message object to output message in the IHM
+         */
+        "message": {},
+        /**
+         * The current User instance
+         */
+        "user": {},
+        /**
+         * Callbacks method to process data recieved from the WebSocket server
+         */
+        "callbacks": {},
+
+        /**
+         * Launch the WebSocket server and add the WebSocket server callbacks
+         */
+        init: function () {
+            this.connect();
+            this.addCallback(this.settings.serviceName, this.listServiceCallback, this);
+        },
+
+        /**
+         * Connect the client to the WebSocket server
+         */
+        connect: function () {
+            var self = this;
+
+            try {
+                this.socket = new WebSocket(this.settings.serverUrl);
+
+                this.socket.onopen = function () {
+                    console.log('socket opened');
+                };
+
+                this.socket.onclose = function () {
+                    console.log('socket closed');
+                };
+
+                this.socket.onerror = function () {
+                    console.log('socket error');
+                };
+
+                this.socket.onmessage = function (message) {
+                    self.treatData(message.data);
+                };
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        /**
+         * Shorthand method to send data to the WebSocket server
+         *
+         * @param {string} data Data to send to the WebSocket server
+         */
+        send: function (data) {
+            this.socket.send(data);
+        },
+
+        /**
+         * Disconnect the client from the WebSocket server
+         */
+        disconnect: function () {
+            this.socket.send(JSON.stringify({
+                "action": "disconnect"
+            }));
+        },
+
+        /**
+         * Treat data recieved from the WebSocket server
+         *
+         * @param {string} data The text data recieved from the WebSocket server
+         */
+        treatData: function (data) {
+            data = JSON.parse(data);
+
+            if (data.service &amp;&amp; this.callbacks[data.service]) {
+                this.callbacks[data.service].callback.call(
+                    this.callbacks[data.service].context,
+                    data
+                );
+            }
+        },
+
+        /**
+         * Add a callback to process data recieved from the WebSocket server
+         *
+         * @param {string}   serviceName The callback service name
+         * @param {function} callback    The callback function
+         * @param {object}   context     The callback context
+         */
+        addCallback: function (serviceName, callback, context) {
+            this.callbacks[serviceName] = {
+                "callback": callback,
+                "context" : context
+            };
+        },
+
+        /**
+         * Add a service to the WebSocket server
+         *
+         * @param {string} serviceName The service name to add to the WebSocket server
+         */
+        addService: function (serviceName) {
+            this.socket.send(JSON.stringify({
+                "action"    : "manageServer",
+                "login"     : this.user.getEmail(),
+                "password"  : this.user.getPassword(),
+                "addService": serviceName
+            }));
+        },
+
+        /**
+         * Remove a service from the WebSocket server
+         *
+         * @param {string} serviceName The service name to remove from the WebSocket server
+         */
+        removeService: function (serviceName) {
+            this.socket.send(JSON.stringify({
+                "action"       : "manageServer",
+                "login"        : this.user.getEmail(),
+                "password"     : this.user.getPassword(),
+                "removeService": serviceName
+            }));
+        },
+
+        /**
+         * Query the currents running services from the WebSocket server
+         */
+        listServices: function () {
+            this.socket.send(JSON.stringify({
+                "action"      : "manageServer",
+                "login"       : this.user.getEmail(),
+                "password"    : this.user.getPassword(),
+                "listServices": true
+            }));
+        },
+
+        /**
+         * Parse the WebSocket server response to retrieve the services list
+         *
+         * @param {object} data JSON encoded data recieved from the WebSocket server
+         */
+        listServiceCallback: function (data) {
+            console.log(data.services);
+        }
+    };
+
+    return WebsocketManager;
+});</pre>
+	</article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.
+	</span>
+	<br />
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
+	on 2015 Aug Sun using the <a
+	href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<!--<script src="scripts/sunlight.js"></script>-->
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/bootstrap-dropdown.js"></script>
+<script src="scripts/toc.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "h1,h2,h3,h4",
+		showAndHide : false,
+		scrollTo    : "100px"
+	} );
+
+	$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+	//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			lang = "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+</body>
+</html>
