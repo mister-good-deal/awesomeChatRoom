@@ -105,7 +105,7 @@ class ChatService extends Server implements Service
         $this->savingDir          = $params['savingDir'];
         $this->maxMessagesPerFile = $params['maxMessagesPerFile'];
         $this->roomsNamePath      = $this->savingDir . DIRECTORY_SEPARATOR . 'rooms_name';
-        $this->roomsName          = unserialize($this->roomsNamePath);
+        $this->roomsName          = json_decode(file_get_contents($this->roomsNamePath), true);
 
         // Create the default room
         $this->rooms['default'] = array(
@@ -531,7 +531,7 @@ class ChatService extends Server implements Service
 
         file_put_contents(
             $this->savingDir . DIRECTORY_SEPARATOR . $roomName . DIRECTORY_SEPARATOR . '-part-' . $part,
-            serialize($this->rooms[$roomName]['historic'])
+            json_encode($this->rooms[$roomName]['historic'])
         );
     }
 
@@ -550,7 +550,7 @@ class ChatService extends Server implements Service
         if ($conversation === false) {
             $conversation = array();
         } else {
-            $conversation = unserialize($conversation);
+            $conversation = json_decode($conversation, true);
         }
 
         $this->rooms[$roomName]['historic'] = $conversation;
@@ -593,7 +593,7 @@ class ChatService extends Server implements Service
      */
     private function updateRoomsName()
     {
-        file_put_contents($this->roomsNamePath, serialize($this->roomsName));
+        file_put_contents($this->roomsNamePath, json_encode($this->roomsName));
     }
 
     /**
