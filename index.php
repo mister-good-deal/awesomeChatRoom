@@ -37,12 +37,19 @@
             <div class="connect-room">
                 <input class="pseudonym" type="text" name="chatPseudo" value="" placeholder="<?=_('Pseudonym')?>">
                 <input class="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
+                <input class="room-password" type="password" name="roomPassword" value="" placeholder="<?=_('Room password')?>">
                 <button class="connect" type="button"><?=_('Connect')?></button>
             </div>
             
             <!-- create room -->
             <div class="create-room">
                 <input class="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
+                <select class="room-type" name="roomType">
+                    <option value="public" selected><?=_('Public')?></option>
+                    <option value="private"><?=_('Private')?></option>
+                </select>
+                <input class="room-password" type="password" name="roomPassword" value="" placeholder="<?=_('Password')?>">
+                <input class="room-max-users" type="number" name="roomMaxUsers" value="" placeholder="<?=_('Max users')?>">
                 <button class="create" type="button"><?=_('Create a room')?></button>
             </div>
             

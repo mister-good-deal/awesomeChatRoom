@@ -30,12 +30,16 @@ requirejs.config({
                     div      : '.connect-room',
                     name     : '.room-name',
                     pseudonym: '.pseudonym',
+                    password : '.room-password',
                     connect  : '.connect'
                 },
                 'roomCreation': {
-                    div   : '.create-room',
-                    name  : '.room-name',
-                    create: '.create'
+                    div     : '.create-room',
+                    name    : '.room-name',
+                    type    : '.room-type',
+                    password: '.room-password',
+                    maxUsers: '.room-max-users',
+                    create  : '.create'
                 },
                 'roomSend': {
                     div      : '.send-action',

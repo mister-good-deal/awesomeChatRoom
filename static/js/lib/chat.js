@@ -49,12 +49,16 @@ define(['jquery', 'module'], function ($, module) {
                     "div"      : module.config().selectors.roomConnect.div,
                     "name"     : module.config().selectors.roomConnect.name,
                     "pseudonym": module.config().selectors.roomConnect.pseudonym,
+                    "password" : module.config().selectors.roomConnect.password,
                     "connect"  : module.config().selectors.roomConnect.connect
                 },
                 "roomCreation": {
-                    "div"      : module.config().selectors.roomCreation.div,
-                    "name"  : module.config().selectors.roomCreation.name,
-                    "create": module.config().selectors.roomCreation.create
+                    "div"     : module.config().selectors.roomCreation.div,
+                    "name"    : module.config().selectors.roomCreation.name,
+                    "type"    : module.config().selectors.roomCreation.type,
+                    "password": module.config().selectors.roomCreation.password,
+                    "maxUsers": module.config().selectors.roomCreation.maxUsers,
+                    "create"  : module.config().selectors.roomCreation.create
                 },
                 "roomSend": {
                     "div"      : module.config().selectors.roomSend.div,
@@ -123,9 +127,10 @@ define(['jquery', 'module'], function ($, module) {
         connectEvent: function () {
             var connectDiv = $(this.settings.selectors.global.chat + ' ' + this.settings.selectors.roomConnect.div),
                 pseudonym  = connectDiv.find(this.settings.selectors.roomConnect.pseudonym).val(),
-                roomName   = connectDiv.find(this.settings.selectors.roomConnect.name).val();
+                roomName   = connectDiv.find(this.settings.selectors.roomConnect.name).val(),
+                password   = connectDiv.find(this.settings.selectors.roomConnect.password).val();
 
-            this.connect(pseudonym, roomName);
+            this.connect(pseudonym, roomName, password);
         },
 
         /**
@@ -133,9 +138,12 @@ define(['jquery', 'module'], function ($, module) {
          */
         createRoomEvent: function () {
             var createDiv = $(this.settings.selectors.global.chat + ' ' + this.settings.selectors.roomCreation.div),
-                roomName  = createDiv.find(this.settings.selectors.roomCreation.name).val();
+                roomName  = createDiv.find(this.settings.selectors.roomCreation.name).val(),
+                type      = createDiv.find(this.settings.selectors.roomCreation.type).val(),
+                password  = createDiv.find(this.settings.selectors.roomCreation.password).val(),
+                maxUsers  = createDiv.find(this.settings.selectors.roomCreation.maxUsers).val();
 
-            this.createRoom(roomName);
+            this.createRoom(roomName, type, password, maxUsers);
         },
 
         /**
@@ -164,7 +172,7 @@ define(['jquery', 'module'], function ($, module) {
         chatCallback: function (data) {
             switch (data.action) {
                 case 'connect':
-                    this.message.add(data.text);
+                    this.connectRoomCallback(data);
 
                     break;
 
@@ -191,24 +199,26 @@ define(['jquery', 'module'], function ($, module) {
         },
 
         /**
+         * Callback after a user attempted to connect to a room
+         *
+         * @param {object} data The server JSON reponse
+         */
+        connectRoomCallback: function (data) {
+            if (data.success) {
+                this.insertRoomInDOM(data);
+            }
+
+            this.message.add(data.text);
+        },
+
+        /**
          * Callback after a user attempted to create a room
          *
          * @param {object} data The server JSON reponse
          */
         createRoomCallback: function (data) {
-            console.log(data);
             if (data.success) {
-                var defaultRoom = $(this.settings.selectors.global.room + '[data-name="default"]'),
-                    newRoom     = defaultRoom.clone(true);
-
-                newRoom.attr('data-name', data.roomName);
-                newRoom.attr('data-type', data.type);
-                newRoom.attr('data-password', data.roomPassword);
-                newRoom.attr('data-max-users', data.maxUsers);
-                newRoom.find(this.settings.selectors.global.roomName).text(data.roomName);
-                newRoom.find(this.settings.selectors.global.roomChat).html('');
-
-                defaultRoom.after(newRoom);
+                this.insertRoomInDOM(data);
             }
 
             this.message.add(data.text);
@@ -239,12 +249,13 @@ define(['jquery', 'module'], function ($, module) {
          *
          * @param {string} pseudonym The user pseudonym
          * @param {string} roomName  The room name to connect to
+         * @param {string} password  The room password to connect to
          */
-        connect: function (pseudonym, roomName) {
+        connect: function (pseudonym, roomName, password) {
             if (this.user.connected) {
-                this.connectRegistered(roomName);
+                this.connectRegistered(roomName, password);
             } else {
-                this.connectGuest(pseudonym, roomName);
+                this.connectGuest(pseudonym, roomName, password);
             }
         },
 
@@ -252,13 +263,15 @@ define(['jquery', 'module'], function ($, module) {
          * Connect a user to the chat with his account
          *
          * @param {string} roomName The room name to connect to
+         * @param {string} password The room password to connect to
          */
-        connectRegistered: function (roomName) {
+        connectRegistered: function (roomName, password) {
             this.websocket.send(JSON.stringify({
                 "service" : [this.settings.serviceName],
                 "action"  : "connect",
                 "user"    : this.user.settings,
-                "roomName": roomName
+                "roomName": roomName,
+                "password": password
             }));
         },
 
@@ -267,29 +280,30 @@ define(['jquery', 'module'], function ($, module) {
          *
          * @param {string} pseudonym The user pseudonym
          * @param {string} roomName  The room name to connect to
+         * @param {string} password  The room password to connect to
          */
-        connectGuest: function (pseudonym, roomName) {
+        connectGuest: function (pseudonym, roomName, password) {
             this.websocket.send(JSON.stringify({
                 "service"  : [this.settings.serviceName],
                 "action"   : "connect",
                 "pseudonym": pseudonym,
-                "roomName" : roomName
+                "roomName" : roomName,
+                "password" : password
             }));
         },
 
         /**
          * Send a message to all the users in the chat room or at one user in teh chat room
          *
-         * @param  {string} recievers The message reciever ('all' || userPseudonym)
-         * @param  {string} message   The txt message to send
-         * @param  {string} roomName  The chat room name
-         * @param  {string} password  The chat room password if required
+         * @param {string} recievers The message reciever ('all' || userPseudonym)
+         * @param {string} message   The txt message to send
+         * @param {string} roomName  The chat room name
+         * @param {string} password  The chat room password if required
          */
         sendMessage: function (recievers, message, roomName, password) {
             this.websocket.send(JSON.stringify({
                 "service"  : [this.settings.serviceName],
                 "action"   : "sendMessage",
-                "pseudonym": this.user.getPseudonym(),
                 "roomName" : roomName,
                 "message"  : message,
                 "recievers": recievers,
@@ -300,22 +314,43 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Create a chat room
          *
-         * @param  {string}  roomName     The room name
-         * @param  {string}  type         The room type ('public' || 'private')
-         * @param  {string}  roomPassword The room password
-         * @param  {integer} maxUsers     The max users number
+         * @param {string}  roomName The room name
+         * @param {string}  type     The room type ('public' || 'private')
+         * @param {string}  password The room password
+         * @param {integer} maxUsers The max users number
          */
-        createRoom: function (roomName, type, roomPassword, maxUsers) {
+        createRoom: function (roomName, type, password, maxUsers) {
             this.websocket.send(JSON.stringify({
-                "service"      : [this.settings.serviceName],
-                "action"       : "createRoom",
-                "login"        : this.user.getEmail(),
-                "password"     : this.user.getPassword(),
-                "roomName"     : roomName,
-                "type"         : type || 'public',
-                "roomPassword" : roomPassword || '',
-                "maxUsers"     : maxUsers || this.settings.maxUsers
+                "service"     : [this.settings.serviceName],
+                "action"      : "createRoom",
+                "login"       : this.user.getEmail(),
+                "password"    : this.user.getPassword(),
+                "roomName"    : roomName,
+                "type"        : type,
+                "roomPassword": password,
+                "maxUsers"    : maxUsers
             }));
+        },
+
+        /**
+         * Insert a room in the user DOM with data recieved from server
+         *
+         * @param {object} data The server JSON reponse
+         */
+        insertRoomInDOM: function (data) {
+            if ($(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]').length === 0) {
+                var defaultRoom = $(this.settings.selectors.global.room + '[data-name="default"]'),
+                    newRoom     = defaultRoom.clone(true);
+
+                newRoom.attr('data-name', data.roomName);
+                newRoom.attr('data-type', data.type);
+                newRoom.attr('data-password', data.password);
+                newRoom.attr('data-max-users', data.maxUsers);
+                newRoom.find(this.settings.selectors.global.roomName).text(data.roomName);
+                newRoom.find(this.settings.selectors.global.roomChat).html('');
+
+                defaultRoom.after(newRoom);
+            }
         },
 
         /**

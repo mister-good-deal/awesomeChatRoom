@@ -30,4 +30,17 @@ trait ShortcutsTrait
             $variable = func_get_arg(2);
         }
     }
+
+    /**
+     * Set a trimed value to a variable if the value is set or set a default value instead if a default value is defined
+     *
+     * @param mixed $variable The variable to set the value
+     * @param mixed $value    The value to set
+     * @param mixed $default  OPTIONAL default value to set if the value is not set
+     */
+    public function setIfIsSetAndTrim(&$variable, $value)
+    {
+        $this->setIfIsSet($variable, $value);
+        $variable = trim($variable);
+    }
 }
