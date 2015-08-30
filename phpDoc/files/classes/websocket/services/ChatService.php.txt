@@ -61,6 +61,10 @@ class ChatService extends Server implements Service
      */
     private $rooms = array();
 
+    /*=====================================
+    =            Magic methods            =
+    =====================================*/
+    
     /**
      * Constructor that sets the WebSocket server adress and create en empty default room
      *
@@ -83,7 +87,13 @@ class ChatService extends Server implements Service
             'maxUsers'     => $params['maxUsers']
         );
     }
+    
+    /*=====  End of Magic methods  ======*/
 
+    /*======================================
+    =            Public methods            =
+    ======================================*/
+    
     /**
      * Method to recieves data from the WebSocket server
      *
@@ -121,14 +131,20 @@ class ChatService extends Server implements Service
                 ))));
         }
     }
+    
+    /*=====  End of Public methods  ======*/
 
+    /*=======================================
+    =            Private methods            =
+    =======================================*/
+    
     /**
      * Create a chat room by an authenticated user request
      *
      * @param resource $socket The user socket
      * @param array    $data   JSON decoded client data
      */
-    public function createRoom($socket, $data)
+    private function createRoom($socket, $data)
     {
         $success = false;
         @$this->setIfIsSet($password, $data['password'], null);
@@ -183,14 +199,14 @@ class ChatService extends Server implements Service
         }
 
         $this->send($socket, $this->encode(json_encode(array(
-            'service'      => $this->chatService,
-            'action'       => 'createRoom',
-            'success'      => $success,
-            'roomName'     => $roomName,
-            'type'         => $type,
-            'maxUsers'     => $maxUsers,
-            'roomPassword' => $roomPassword,
-            'text'         => $message
+            'service'  => $this->chatService,
+            'action'   => 'createRoom',
+            'success'  => $success,
+            'roomName' => $roomName,
+            'type'     => $type,
+            'maxUsers' => $maxUsers,
+            'password' => $roomPassword,
+            'text'     => $message
         ))));
     }
 
@@ -296,30 +312,12 @@ class ChatService extends Server implements Service
     }
 
     /**
-     * Disconnet a user from all the chat he was connected to
-     *
-     * @param resource $socket The user socket
-     */
-    private function disconnectUser($socket)
-    {
-        $socketHash = $this->getClientName($socket);
-
-        foreach ($this->usersRooms[$socketHash] as $roomName) {
-            unset($this->rooms[$roomName]['sockets'][$socketHash]);
-            unset($this->rooms[$roomName]['pseudonyms'][$socketHash]);
-        }
-
-        $this->disconnect($socket);
-    }
-
-    /**
      * Send a public message to all the users in the room or a private message to one user in the room
      *
      * @param resource $socket The user socket
      * @param array    $data   JSON decoded client data
-     * @todo get pseudonym from the server and not the client [in progress]
      */
-    public function sendMessage($socket, $data)
+    private function sendMessage($socket, $data)
     {
         $success    = false;
         $message    = _('Message successfully sent !');
@@ -382,6 +380,23 @@ class ChatService extends Server implements Service
     }
 
     /**
+     * Disconnet a user from all the chat he was connected to
+     *
+     * @param resource $socket The user socket
+     */
+    private function disconnectUser($socket)
+    {
+        $socketHash = $this->getClientName($socket);
+
+        foreach ($this->usersRooms[$socketHash] as $roomName) {
+            unset($this->rooms[$roomName]['sockets'][$socketHash]);
+            unset($this->rooms[$roomName]['pseudonyms'][$socketHash]);
+        }
+
+        $this->disconnect($socket);
+    }
+
+    /**
      * Check if a user has the right to enter a private room
      *
      * @param  string  $roomName     The room name
@@ -409,11 +424,6 @@ class ChatService extends Server implements Service
     private function pseudonymIsInRoom($pseudonym, $roomName)
     {
         return in_array($pseudonym, $this->rooms[$roomName]['pseudonyms']);
-    }
-
-    private function getPseudonymFromSocket($socket, $roomName)
-    {
-        
     }
 
     /**
@@ -450,5 +460,7 @@ class ChatService extends Server implements Service
         $this->send($serverSocket, Ini::getParam('Socket', 'serviceKey') . $message);
         fclose($serverSocket);
     }
+    
+    /*=====  End of Private methods  ======*/
 }
 
