@@ -69,10 +69,14 @@ class Server
      * @var string $notificationService The notification service name
      */
     private $notificationService;
-        /**
+    /**
      * @var string $websocketService The websocket service name
      */
     private $websocketService;
+    /**
+     * @var string $serverKey A key to authentificate the server when sending data to services
+     */
+    protected $serverKey;
 
     /*=====================================
     =            Magic methods            =
@@ -87,6 +91,7 @@ class Server
 
         $params                    = Ini::getSectionParams('Socket');
         $this->serviceRegex        = '/^' . $params['serviceKey'] . '(.*)/';
+        $this->serverKey           = $params['serverKey'];
         $this->notificationService = $params['notificationService'];
         $this->websocketService    = $params['websocketService'];
         $this->protocol            = $params['protocol'];
@@ -141,6 +146,12 @@ class Server
     {
         if ($clientName === null) {
             $clientName = $this->getClientName($socket);
+        }
+
+        $data = array('action' => $this->serverKey . 'disconnect', 'clientSocket' => $socket);
+
+        foreach (array_keys($this->services) as $serviceName) {
+            call_user_func_array($this->services[$serviceName], array($socket, $data));
         }
 
         stream_socket_shutdown($socket, STREAM_SHUT_RDWR);
