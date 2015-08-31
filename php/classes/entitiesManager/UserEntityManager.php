@@ -194,10 +194,10 @@ class UserEntityManager extends EntityManager
         $userParams = DB::query($sql)->fetch();
 
         if ($userParams !== false) {
-            $user->setAttributes($userParams);
-
             if (!hash_equals($userParams['password'], crypt($password, $userParams['password']))) {
                 $user = false;
+            } else {
+                $user->setAttributes($userParams);
             }
         } else {
             $user = false;

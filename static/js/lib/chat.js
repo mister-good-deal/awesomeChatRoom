@@ -340,16 +340,34 @@ define(['jquery', 'module'], function ($, module) {
         insertRoomInDOM: function (data) {
             if ($(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]').length === 0) {
                 var defaultRoom = $(this.settings.selectors.global.room + '[data-name="default"]'),
-                    newRoom     = defaultRoom.clone(true);
+                    newRoom     = defaultRoom.clone(true),
+                    newRoomChat = newRoom.find(this.settings.selectors.global.roomChat),
+                    i;
 
                 newRoom.attr('data-name', data.roomName);
                 newRoom.attr('data-type', data.type);
                 newRoom.attr('data-password', data.password);
                 newRoom.attr('data-max-users', data.maxUsers);
                 newRoom.find(this.settings.selectors.global.roomName).text(data.roomName);
-                newRoom.find(this.settings.selectors.global.roomChat).html('');
+                newRoomChat.html('');
+
+                if (data.historic) {
+                    this.loadHistoric(newRoomChat, data.historic);
+                }
 
                 defaultRoom.after(newRoom);
+            }
+        },
+
+        /**
+         * Load conversations historic sent by the server
+         *
+         * @param  {object} roomChatDOM The room chat jQuery DOM element to insert the conversations historic in
+         * @param  {object} historic    The conversations historic
+         */
+        loadHistoric: function (roomChatDOM, historic) {
+            for (i = historic.length - 1; i >= 0; i--) {
+                roomChatDOM.prepend(this.formatUserMessage(historic[i]));
             }
         },
 

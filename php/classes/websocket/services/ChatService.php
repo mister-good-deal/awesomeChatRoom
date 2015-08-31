@@ -77,10 +77,12 @@ class ChatService extends Server implements Service
      *         'historic'     => array(
      *             array(
      *                 'part'    => the part number,
-     *                 'message' => the text message,
-     *                 'time'    => the message sent time,
-     *                 'from'    => the pseudonym of the message owner,
-     *                 'to'      => the pseudonym of the message reciever or 'all'
+     *                 'conversations' => array(
+     *                     'text' => the text message,
+     *                     'time' => the message sent time,
+     *                     'from' => the pseudonym of the message owner,
+     *                     'to'   => the pseudonym of the message reciever or 'all'
+     *                 )
      *             )
      *         )
      *     )
@@ -119,7 +121,7 @@ class ChatService extends Server implements Service
             'creationDate' => new \DateTime(),
             'maxUsers'     => $params['maxUsers'],
             'historicPart' => $this->getLastPartNumber('default'),
-            'historic'     => array('part' => 0)
+            'historic'     => array('part' => 0, 'conversations' => array())
         );
 
         $this->loadConversation('default', $this->rooms['default']['historicPart']);
@@ -222,13 +224,13 @@ class ChatService extends Server implements Service
                 $this->rooms[$roomName] = array(
                     'sockets'      => array($socketHash => $socket),
                     'pseudonyms'   => array($socketHash => $pseudonym),
-                    'creator'      => $user,
+                    'creator'      => $user->email,
                     'type'         => $type,
                     'password'     => $roomPassword,
                     'creationDate' => new \DateTime(),
                     'maxUsers'     => $maxUsers,
                     'historicPart' => 0,
-                    'historic'     => array('part' => 0)
+                    'historic'     => array('part' => 0, 'conversations' => array())
                 );
 
                 mkdir(stream_resolve_include_path($this->savingDir) . DIRECTORY_SEPARATOR . $roomName);
@@ -350,6 +352,10 @@ class ChatService extends Server implements Service
                     $response['type']     = $this->rooms[$roomName]['type'];
                     $response['maxUsers'] = $this->rooms[$roomName]['maxUsers'];
                     $response['password'] = $this->rooms[$roomName]['password'];
+                    $response['historic'] = $this->filterConversations(
+                        $this->rooms[$roomName]['historic']['conversations'],
+                        $pseudonym
+                    );
                 }
             }
         }
@@ -526,8 +532,12 @@ class ChatService extends Server implements Service
      */
     private function saveRoom($roomName)
     {
-        $tmpHistoric                        = $this->rooms[$roomName]['historic'];
-        $this->rooms[$roomName]['historic'] = array();
+        $tmpSockets                           = $this->rooms[$roomName]['sockets'];
+        $tmpPseudonyms                        = $this->rooms[$roomName]['pseudonyms'];
+        $tmpHistoric                          = $this->rooms[$roomName]['historic'];
+        $this->rooms[$roomName]['sockets']    = array();
+        $this->rooms[$roomName]['pseudonyms'] = array();
+        $this->rooms[$roomName]['historic']   = array();
 
         file_put_contents(
             stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR . $roomName) .
@@ -535,7 +545,39 @@ class ChatService extends Server implements Service
             json_encode($this->rooms[$roomName])
         );
 
-        $this->rooms[$roomName]['historic'] = $tmpHistoric;
+        $this->rooms[$roomName]['sockets']    = $tmpSockets;
+        $this->rooms[$roomName]['pseudonyms'] = $tmpPseudonyms;
+        $this->rooms[$roomName]['historic']   = $tmpHistoric;
+    }
+
+    /**
+     * Filter conversations to delete private message which must not be viewed by the user and parse the content
+     *
+     * @param  array  $conversations The conversations
+     * @param  string $pseudonym     The user pseudonym
+     * @return array                 The filtered conversations
+     */
+    private function filterConversations($conversations, $pseudonym)
+    {
+        $filteredConversations = array();
+
+        foreach ($conversations as $conversation) {
+            $filteredConversation['pseudonym'] = $conversation['from'];
+            $filteredConversation['time']      = $conversation['time'];
+            $filteredConversation['text']      = $conversation['text'];
+
+            if ($conversation['to'] !== 'all') {
+                if ($conversation['from'] === $pseudonym) {
+                    $filteredConversation['type'] = 'private';
+                    $filteredConversations[]      = $filteredConversation;
+                }
+            } else {
+                $filteredConversation['type'] = 'public';
+                $filteredConversations[]      = $filteredConversation;
+            }
+        }
+
+        return $filteredConversations;
     }
 
     /**
@@ -563,18 +605,17 @@ class ChatService extends Server implements Service
      */
     private function updateConversation($roomName, $time, $message, $from, $to)
     {
-        if (count($this->rooms[$roomName]['historic']) >= $this->maxMessagesPerFile) {
+        if (count($this->rooms[$roomName]['historic']['conversations']) >= $this->maxMessagesPerFile) {
             $this->saveConversation($roomName);
-            $this->rooms[$roomName]['historic'] = array();
+            $this->rooms[$roomName]['historic']['conversations'] = array();
             $this->setLastPartNumber($roomName, ++$this->rooms[$roomName]['historicPart']);
         }
 
-        $this->rooms[$roomName]['historic'][] = array(
-            'part'    => $this->rooms[$roomName]['historicPart'],
-            'message' => $message,
-            'time'    => $time,
-            'from'    => $from,
-            'to'      => $to
+        $this->rooms[$roomName]['historic']['conversations'][] = array(
+            'text' => $message,
+            'time' => $time,
+            'from' => $from,
+            'to'   => $to
         );
     }
 
@@ -608,7 +649,7 @@ class ChatService extends Server implements Service
         ));
 
         if ($conversation === false) {
-            $conversation = array();
+            $conversation = array('part' => 0, 'conversations' => array());
         } else {
             $conversation = json_decode($conversation, true);
         }
@@ -652,8 +693,6 @@ class ChatService extends Server implements Service
      */
     private function getRoomsName()
     {
-        // PHP FILE_USE_INCLUDE_PATH is bugged
-        // return json_decode(file_get_contents($this->roomsNamePath), FILE_USE_INCLUDE_PATH);
         return json_decode(file_get_contents($this->roomsNamePath, FILE_USE_INCLUDE_PATH), true);
     }
 
