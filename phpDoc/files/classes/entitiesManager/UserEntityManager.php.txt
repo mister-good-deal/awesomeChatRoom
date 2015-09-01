@@ -181,7 +181,7 @@ class UserEntityManager extends EntityManager
     /**
      * Authenticate a User by his login / password combinaison and return the User object on success or false on fail
      *
-     * @param  string $login    The user login (email or pseudodym)
+     * @param  string $login    The user login (email or pseudonym)
      * @param  string $password The user password
      * @return User|false       The User instanciated object or false is the authentication failed
      */
@@ -204,6 +204,21 @@ class UserEntityManager extends EntityManager
         }
 
         return $user;
+    }
+
+    /**
+     * Check if a pseudonym exists in the database
+     *
+     * @param  string  $pseudonym The pseudonym
+     * @return boolean            True if the pseudonym exists else false
+     */
+    public function isPseudonymExist($pseudonym)
+    {
+        $user     = new User();
+        $sqlMarks = 'SELECT count(*) FROM %s WHERE pseudonym = %s';
+        $sql      = static::sqlFormater($sqlMarks, $user->getTableName(), DB::quote($pseudonym));
+
+        return (int) DB::query($sql)->fetchColumn() > 0;
     }
 
     /**

@@ -18,25 +18,14 @@ use \classes\entitiesManager\UserEntityManager as UserEntityManager;
  * Chat services to manage a chat with a WebSocket server
  *
  * @todo Sonar this class
- * @todo Bug with USE_INCLUDE_PATH of the file_get_contents() function, see method getRoomsName() FIX WITH stream_resolve_include_path
+ * @todo Bug with USE_INCLUDE_PATH of the file_get_contents() function, see method getRoomsName()
+ *       FIX WITH stream_resolve_include_path
  * @class ChatService
  */
 class ChatService extends Server implements Service
 {
     use \traits\ShortcutsTrait;
 
-    /**
-     * @var string[] $users All the user rooms where he is connected to indexed by his socketHash
-     */
-    private $usersRooms = array();
-    /**
-     * @var User[] $usersRegistered All the authenticated User object connected indexed by their socketHash
-     */
-    private $usersRegistered = array();
-    /**
-     * @var string[] $usersGuest All the guest users pseudonyms connected indexed by their socketHash
-     */
-    private $usersGuest = array();
     /**
      * @var string $serverAddress The server adress to connect
      */
@@ -62,6 +51,10 @@ class ChatService extends Server implements Service
      */
     private $roomsNamePath;
     /**
+     * @var string[] $usersRooms All rooms where users are connected to to indexed by their socketHash
+     */
+    private $usersRooms = array();
+    /**
      * @var array $rooms Rooms live sessions
      *
      * array(
@@ -73,16 +66,13 @@ class ChatService extends Server implements Service
      *         'password'     => 'password',
      *         'creationDate' => DateTime object instance,
      *         'maxUsers'     => integer,
-     *         'historicPart' => integer,
      *         'historic'     => array(
-     *             array(
-     *                 'part'    => the part number,
-     *                 'conversations' => array(
-     *                     'text' => the text message,
-     *                     'time' => the message sent time,
-     *                     'from' => the pseudonym of the message owner,
-     *                     'to'   => the pseudonym of the message reciever or 'all'
-     *                 )
+     *             'part'          => the part number,
+     *             'conversations' => array(
+     *                 'text' => the text message,
+     *                 'time' => the message sent time,
+     *                 'from' => the pseudonym of the message owner,
+     *                 'to'   => the pseudonym of the message reciever or 'all'
      *             )
      *         )
      *     )
@@ -112,7 +102,6 @@ class ChatService extends Server implements Service
         $this->roomsName          = $this->getRoomsName();
 
         // Create the default room
-        // todo check the loading of the default room
         $this->rooms['default'] = array(
             'sockets'      => array(),
             'pseudonyms'   => array(),
@@ -120,11 +109,10 @@ class ChatService extends Server implements Service
             'password'     => '',
             'creationDate' => new \DateTime(),
             'maxUsers'     => $params['maxUsers'],
-            'historicPart' => $this->getLastPartNumber('default'),
             'historic'     => array('part' => 0, 'conversations' => array())
         );
 
-        $this->loadConversation('default', $this->rooms['default']['historicPart']);
+        $this->loadHistoric('default', $this->getLastPartNumber('default'));
     }
     
     /*=====  End of Magic methods  ======*/
@@ -165,6 +153,11 @@ class ChatService extends Server implements Service
 
             case 'createRoom':
                 $this->createRoom($socket, $data);
+
+                break;
+
+            case 'getHistoric':
+                $this->getHistoric($socket, $data);
 
                 break;
 
@@ -229,7 +222,6 @@ class ChatService extends Server implements Service
                     'password'     => $roomPassword,
                     'creationDate' => new \DateTime(),
                     'maxUsers'     => $maxUsers,
-                    'historicPart' => 0,
                     'historic'     => array('part' => 0, 'conversations' => array())
                 );
 
@@ -237,6 +229,7 @@ class ChatService extends Server implements Service
                 $this->addUserRoom($socketHash, $roomName);
                 $this->setRoomsName();
                 $this->setLastPartNumber($roomName, 0);
+                $this->saveRoom($roomName);
 
                 $success = true;
                 $message = sprintf(_('The chat room name "%s" is successfully created !'), $roomName);
@@ -279,12 +272,9 @@ class ChatService extends Server implements Service
         @$this->setIfIsSetAndTrim($email, $data['user']['email'], null);
         @$this->setIfIsSetAndTrim($pseudonym, $data['pseudonym'], null);
 
-        // Default room if no room defined
-        if ($roomName === null || $roomName === '') {
-            $roomName = 'default';
-        }
-
-        if (!in_array($roomName, $this->roomsName)) {
+        if ($roomName === null) {
+            $message = _('The chat room name cannot be empty');
+        } elseif (!in_array($roomName, $this->roomsName)) {
             $message = sprintf(_('The chat room "%s" does not exist'), $roomName);
         } else {
             if (!isset($this->rooms[$roomName])) {
@@ -294,69 +284,51 @@ class ChatService extends Server implements Service
 
             if (count($this->rooms[$roomName]['sockets']) >= $this->rooms[$roomName]['maxUsers']) {
                 $message = _('The room is full');
-            } else {
-                $message    = sprintf(_('You\'re connected to the chat room "%s" !'), $roomName);
-                $socketHash = $this->getClientName($socket);
+            } elseif (!$this->checkPrivateRoomPassword($roomName, $roomPassword)) {
+                $message = _('You cannot access to this room or the password is incorrect');
+            } elseif ($email !== null && $password !== null) {
+                // Authenticated user
+                $userEntityManager = new UserEntityManager();
+                $user              = $userEntityManager->authenticateUser($email, $password);
 
-                if ($email !== null && $password !== null) {
-                    // Authenticated user
-                    $userEntityManager = new UserEntityManager();
-                    $user              = $userEntityManager->authenticateUser($email, $password);
+                $userEntityManager->setEntity($user);
 
-                    $userEntityManager->setEntity($user);
-
-                    if ($user !== false) {
-                        // check if room is private
-                        if (!$this->checkPrivateRoomPassword($roomName, $roomPassword)) {
-                            $message = _('You cannot access to this room or the password is incorrect');
-                        } else {
-                            $pseudonym                          = $userEntityManager->getPseudonymForChat();
-                            $this->usersRegistered[$socketHash] = $user;
-                            $success                            = true;
-                        }
-                    } else {
-                        $message = _('The authentication failed');
-                    }
-                } elseif ($pseudonym !== null) {
-                    // Guest user
-                    if ($pseudonym === '') {
-                        $message = _('The pseudonym can\'t be empty');
-                    } elseif (!$this->pseudonymIsInRoom($pseudonym, $roomName)) {
-                         // check if room is private
-                        if (!$this->checkPrivateRoomPassword($roomName, $roomPassword)) {
-                            $message = _('You cannot access to this room or the password is incorrect');
-                        } else {
-                            $this->usersGuest[$socketHash] = $pseudonym;
-                            $success                       = true;
-                        }
-                    } else {
-                        $message = sprintf(_('The pseudonym "%s" is already used'), $pseudonym);
-                    }
+                if ($user !== false) {
+                    $pseudonym = $userEntityManager->getPseudonymForChat();
+                    $success   = true;
                 } else {
-                    $message = _('You must enter a pseudonym');
+                    $message = _('The authentication failed');
                 }
-
-                if ($success) {
-                    // Add user to the room
-                    $this->rooms[$roomName]['sockets'][$socketHash]    = $socket;
-                    $this->rooms[$roomName]['pseudonyms'][$socketHash] = $pseudonym;
-
-                    $this->addUserRoom($socketHash, $roomName);
-
-                    $this->log(_(
-                        '[chatService] New user added with the pseudonym "' . $pseudonym . '" in the room "'
-                        . $roomName . '"'
-                    ));
-
-                    $response['roomName'] = $roomName;
-                    $response['type']     = $this->rooms[$roomName]['type'];
-                    $response['maxUsers'] = $this->rooms[$roomName]['maxUsers'];
-                    $response['password'] = $this->rooms[$roomName]['password'];
-                    $response['historic'] = $this->filterConversations(
-                        $this->rooms[$roomName]['historic']['conversations'],
-                        $pseudonym
-                    );
+            } elseif ($pseudonym !== null && $pseudonym !== '') {
+                // Guest user
+                if ($this->isPseudonymUsabled($pseudonym, $roomName)) {
+                    $success = true;
+                } else {
+                    $message = sprintf(_('The pseudonym "%s" is already used'), $pseudonym);
                 }
+            } else {
+                $message = _('The pseudonym can\'t be empty');
+            }
+
+            if ($success) {
+                // Add user to the room
+                $socketHash                                        = $this->getClientName($socket);
+                $this->rooms[$roomName]['sockets'][$socketHash]    = $socket;
+                $this->rooms[$roomName]['pseudonyms'][$socketHash] = $pseudonym;
+
+                $this->addUserRoom($socketHash, $roomName);
+
+                $this->log(sprintf(_('[chatService] New user "%s" added in the room %s"'), $pseudonym, $roomName));
+
+                $message              = sprintf(_('You\'re connected to the chat room "%s" !'), $roomName);
+                $response['roomName'] = $roomName;
+                $response['type']     = $this->rooms[$roomName]['type'];
+                $response['maxUsers'] = $this->rooms[$roomName]['maxUsers'];
+                $response['password'] = $this->rooms[$roomName]['password'];
+                $response['historic'] = $this->filterConversations(
+                    $this->rooms[$roomName]['historic']['conversations'],
+                    $pseudonym
+                );
             }
         }
 
@@ -423,7 +395,7 @@ class ChatService extends Server implements Service
                 $roomName
             ));
 
-            $this->updateConversation($roomName, $now, $text, $pseudonym, $recievers);
+            $this->updateHistoric($roomName, $now, $text, $pseudonym, $recievers);
             $success = true;
         }
 
@@ -436,6 +408,53 @@ class ChatService extends Server implements Service
     }
 
     /**
+     * Get the next chat conversation historic part of a room
+     *
+     * @param resource $socket The user socket
+     * @param array    $data   JSON decoded client data
+     */
+    private function getHistoric($socket, $data)
+    {
+        $success  = false;
+        $message  = _('Historic successfully loaded !');
+        $historic = array();
+        @$this->setIfIsSetAndTrim($roomName, $data['roomName'], null);
+        @$this->setIfIsSetAndTrim($password, $data['roomPassword'], null);
+        @$this->setIfIsSetAndTrim($part, $data['historicLoaded'], null);
+
+        if ($roomName === null || $roomName === '') {
+            $message = _('The room name is required');
+        } elseif (!in_array($roomName, $this->roomsName)) {
+            $message = sprintf(_('The chat room name "%s" does not exists'), $roomName);
+        } elseif ($this->rooms[$roomName]['type'] === 'private' && $this->rooms[$roomName]['password'] !== $password) {
+            $message = _('You cannot access to this room or the password is incorrect');
+        } elseif (!is_numeric($part)) {
+            $message = _('The part must be numeric');
+        } else {
+            $success  = true;
+            $lastPart = $this->getLastPartNumber($roomName);
+            
+            if ($lastPart < $part) {
+                $message = _('There is no more conversation historic for this chat');
+            } else {
+                $historic = $this->filterConversations(
+                    $this->getHistoricPart($roomName, $lastPart - $part)['conversations'],
+                    $this->rooms[$roomName]['pseudonyms'][$this->getClientName($socket)]
+                );
+            }
+        }
+
+        $this->send($socket, $this->encode(json_encode(array(
+            'service'  => $this->chatService,
+            'action'   => 'getHistoric',
+            'success'  => $success,
+            'text'     => $message,
+            'historic' => $historic,
+            'roomName' => $roomName
+        ))));
+    }
+
+    /**
      * Disconnet a user from all the chat he was connected to
      *
      * @param resource $socket The user socket
@@ -444,15 +463,16 @@ class ChatService extends Server implements Service
     {
         $socketHash = $this->getClientName($socket);
 
-        foreach ($this->usersRooms[$socketHash] as $roomName) {
-            unset($this->rooms[$roomName]['sockets'][$socketHash]);
-            unset($this->rooms[$roomName]['pseudonyms'][$socketHash]);
+        if (isset($this->usersRooms[$socketHash])) {
+            foreach ($this->usersRooms[$socketHash] as $roomName) {
+                unset($this->rooms[$roomName]['sockets'][$socketHash]);
+                unset($this->rooms[$roomName]['pseudonyms'][$socketHash]);
 
-            // Save and close the chat room if noone is in
-            if (count($this->rooms[$roomName]['sockets']) === 0) {
-                $this->saveRoom($roomName);
-                $this->saveConversation($roomName);
-                unset($this->rooms[$roomName]);
+                // Save and close the chat room if noone is in
+                if (count($this->rooms[$roomName]['sockets']) === 0) {
+                    $this->saveHistoric($roomName);
+                    unset($this->rooms[$roomName]);
+                }
             }
         }
     }
@@ -485,6 +505,25 @@ class ChatService extends Server implements Service
     private function pseudonymIsInRoom($pseudonym, $roomName)
     {
         return in_array($pseudonym, $this->rooms[$roomName]['pseudonyms']);
+    }
+
+    /**
+     * Check if a pseudonym is usabled to be used in a room (not already in the room and not used by a registered user)
+     *
+     * @param  string  $pseudonym The pseudonym
+     * @param  string  $roomName  The room name to connect to
+     * @return boolean            True if the pseudonym is usabled else false
+     */
+    private function isPseudonymUsabled($pseudonym, $roomName)
+    {
+        $isUsabled = !$this->pseudonymIsInRoom($pseudonym, $roomName);
+
+        if ($isUsabled) {
+            $userEntityManager = new UserEntityManager();
+            $isUsabled         = !$userEntityManager->isPseudonymExist($pseudonym);
+        }
+
+        return $isUsabled;
     }
 
     /**
@@ -526,6 +565,38 @@ class ChatService extends Server implements Service
     }
 
     /**
+     * Filter conversations to delete private message which must not be viewed by the user and parse the content
+     *
+     * @param  array  $conversations The conversations
+     * @param  string $pseudonym     The user pseudonym
+     * @return array                 The filtered conversations
+     */
+    private function filterConversations($conversations, $pseudonym)
+    {
+        $filteredConversations = array();
+
+        if (count($conversations) > 0) {
+            foreach ($conversations as $conversation) {
+                $filteredConversation['pseudonym'] = $conversation['from'];
+                $filteredConversation['time']      = $conversation['time'];
+                $filteredConversation['text']      = $conversation['text'];
+
+                if ($conversation['to'] !== 'all') {
+                    if ($conversation['from'] === $pseudonym) {
+                        $filteredConversation['type'] = 'private';
+                        $filteredConversations[]      = $filteredConversation;
+                    }
+                } else {
+                    $filteredConversation['type'] = 'public';
+                    $filteredConversations[]      = $filteredConversation;
+                }
+            }
+        }
+
+        return $filteredConversations;
+    }
+
+    /**
      * Store a room in a file to recover it later
      *
      * @param string $roomName The room name
@@ -551,51 +622,22 @@ class ChatService extends Server implements Service
     }
 
     /**
-     * Filter conversations to delete private message which must not be viewed by the user and parse the content
-     *
-     * @param  array  $conversations The conversations
-     * @param  string $pseudonym     The user pseudonym
-     * @return array                 The filtered conversations
-     */
-    private function filterConversations($conversations, $pseudonym)
-    {
-        $filteredConversations = array();
-
-        foreach ($conversations as $conversation) {
-            $filteredConversation['pseudonym'] = $conversation['from'];
-            $filteredConversation['time']      = $conversation['time'];
-            $filteredConversation['text']      = $conversation['text'];
-
-            if ($conversation['to'] !== 'all') {
-                if ($conversation['from'] === $pseudonym) {
-                    $filteredConversation['type'] = 'private';
-                    $filteredConversations[]      = $filteredConversation;
-                }
-            } else {
-                $filteredConversation['type'] = 'public';
-                $filteredConversations[]      = $filteredConversation;
-            }
-        }
-
-        return $filteredConversations;
-    }
-
-    /**
      * Load a room that was stored in a file
      *
      * @param string $roomName The room name
      */
     private function loadRoom($roomName)
     {
-        $this->rooms[$roomName] = json_decode(file_get_contents(stream_resolve_include_path(
-            $this->savingDir . DIRECTORY_SEPARATOR . $roomName . DIRECTORY_SEPARATOR . 'room.json'
-        )), true);
+        $this->rooms[$roomName] = json_decode(file_get_contents(
+            stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR .$roomName) .
+            DIRECTORY_SEPARATOR . 'room.json'
+        ), true);
 
-        $this->loadConversation($roomName, $this->getLastPartNumber($roomName));
+        $this->loadHistoric($roomName, $this->getLastPartNumber($roomName));
     }
 
     /**
-     * Update a conversation with a new message
+     * Update a conversation historic with a new message
      *
      * @param  string $roomName The room name
      * @param  string $time     The server message sent time
@@ -603,12 +645,12 @@ class ChatService extends Server implements Service
      * @param  string $from     The pseudonym of the user message owner
      * @param  string $to       The pseudonym of the user message reviever or 'all'
      */
-    private function updateConversation($roomName, $time, $message, $from, $to)
+    private function updateHistoric($roomName, $time, $message, $from, $to)
     {
         if (count($this->rooms[$roomName]['historic']['conversations']) >= $this->maxMessagesPerFile) {
-            $this->saveConversation($roomName);
+            $this->saveHistoric($roomName);
             $this->rooms[$roomName]['historic']['conversations'] = array();
-            $this->setLastPartNumber($roomName, ++$this->rooms[$roomName]['historicPart']);
+            $this->setLastPartNumber($roomName, ++$this->rooms[$roomName]['historic']['part']);
         }
 
         $this->rooms[$roomName]['historic']['conversations'][] = array(
@@ -620,11 +662,11 @@ class ChatService extends Server implements Service
     }
 
     /**
-     * Store the conversation into a text file
+     * Store the conversation historic into a JSON text file
      *
      * @param string $roomName The room name
      */
-    private function saveConversation($roomName)
+    private function saveHistoric($roomName)
     {
         $part = $this->rooms[$roomName]['historic']['part'];
 
@@ -636,25 +678,35 @@ class ChatService extends Server implements Service
     }
 
     /**
-     * Load a conversation
+     * Load an historic
      *
      * @param string  $roomName The room name
-     * @param integer $part     The conversation part
+     * @param integer $part     The historic part
      */
-    private function loadConversation($roomName, $part)
+    private function loadHistoric($roomName, $part)
     {
-        $conversation = @file_get_contents(stream_resolve_include_path(
-            $this->savingDir . DIRECTORY_SEPARATOR . $roomName .
-            DIRECTORY_SEPARATOR . 'historic-part-' . $part . '.json'
-        ));
+        $historic = $this->getHistoricPart($roomName, $part);
 
-        if ($conversation === false) {
-            $conversation = array('part' => 0, 'conversations' => array());
-        } else {
-            $conversation = json_decode($conversation, true);
+        if ($historic === false) {
+            $historic = array('part' => 0, 'conversations' => array());
         }
 
-        $this->rooms[$roomName]['historic'] = $conversation;
+        $this->rooms[$roomName]['historic'] = $historic;
+    }
+
+    /**
+     * Get a conversation historic part
+     *
+     * @param  string      $roomName The room name
+     * @param  integer     $part     The conversation part
+     * @return array|false           The conversation historic as an array or false if an error occured
+     */
+    private function getHistoricPart($roomName, $part)
+    {
+        return json_decode(@file_get_contents(
+            stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR . $roomName) .
+            DIRECTORY_SEPARATOR . 'historic-part-' . $part . '.json'
+        ), true);
     }
 
     /**
