@@ -47,6 +47,9 @@ requirejs.config({
                     recievers: '.recievers',
                     send     : '.send'
                 },
+                "roomAction": {
+                    loadHistoric: '.load-historic'
+                },
                 'chat': {
                     message  : '.message',
                     pseudonym: '.pseudonym',

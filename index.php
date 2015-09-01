@@ -53,10 +53,11 @@
                 <button class="create" type="button"><?=_('Create a room')?></button>
             </div>
             
-            <div class="room" data-name="default" data-type="public" data-max-users="200" data-password="">
+            <div class="room" data-name="default" data-type="public" data-max-users="200">
                 <h3 class="room-name">default</h3>
                 <!-- chat message display -->
-                <div class="chat"></div>
+                <button class="load-historic" type="button"><?=_('Load more')?></button>
+                <div class="chat" data-historic-loaded="0"></div>
                 <!-- send message -->
                 <div class="send-action">
                     <input class="message" type="text" name="message" value="" placeholder="<?=_('Message')?>">
