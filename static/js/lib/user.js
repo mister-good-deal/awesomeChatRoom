@@ -25,6 +25,7 @@ define(['jquery'], function ($, Message) {
         // Bind ajax callback
         Forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
         Forms.addOnFailCallback('user/connect', this.connectFail, this);
+        Forms.addOnRequestFailCallback('user/connect', this.connectRequestFail, this);
     };
 
     UserManager.prototype = {
@@ -131,6 +132,16 @@ define(['jquery'], function ($, Message) {
          */
         connectFail: function (form, data) {
             console.log('Fail !');
+        },
+
+        /**
+         * Callback when the user connection request failed
+         *
+         * @param {object} form  The jQuery DOM form element
+         * @param {object} jqXHR The jQuery jqXHR object
+         */
+        connectRequestFail: function (form, jqXHR) {
+            console.log(jqXHR);
         }
     };
 

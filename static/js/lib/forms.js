@@ -99,7 +99,7 @@ define(['jquery', 'domReady!'], function ($) {
          * @param {object} data The server JSON reponse
          */
         onSuccess: function (form, url, data) {
-            if (typeof this.callbacks.onSuccess[url].callback === 'function') {
+            if (this.callbacks.onSuccess[url] && typeof this.callbacks.onSuccess[url].callback === 'function') {
                 this.callbacks.onSuccess[url].callback.call(this.callbacks.onSuccess[url].context, form, data);
             }
         },
@@ -112,7 +112,7 @@ define(['jquery', 'domReady!'], function ($) {
          * @param {object} data The server JSON reponse
          */
         onFail: function (form, url, data) {
-            if (typeof this.callbacks.onFail[url].callback === 'function') {
+            if (this.callbacks.onFail[url] && typeof this.callbacks.onFail[url].callback === 'function') {
                 this.callbacks.onFail[url].callback.call(this.callbacks.onFail[url].context, form, data);
             }
         },
@@ -125,7 +125,7 @@ define(['jquery', 'domReady!'], function ($) {
          * @param {object} jqXHR The jQuery jqXHR object
          */
         onRequestFail: function (form, url, jqXHR) {
-            if (typeof this.callbacks.onRequestFail[url].callback === 'function') {
+            if (this.callbacks.onRequestFail[url] && typeof this.callbacks.onRequestFail[url].callback === 'function') {
                 this.callbacks.onRequestFail[url].callback.call(this.callbacks.onRequestFail[url].context, form, jqXHR);
             }
         },

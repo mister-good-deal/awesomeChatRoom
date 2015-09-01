@@ -301,7 +301,7 @@ class ChatService extends Server implements Service
                 }
             } elseif ($pseudonym !== null && $pseudonym !== '') {
                 // Guest user
-                if (!$this->isPseudonymUsabled($pseudonym, $roomName)) {
+                if ($this->isPseudonymUsabled($pseudonym, $roomName)) {
                     $success = true;
                 } else {
                     $message = sprintf(_('The pseudonym "%s" is already used'), $pseudonym);
@@ -463,14 +463,16 @@ class ChatService extends Server implements Service
     {
         $socketHash = $this->getClientName($socket);
 
-        foreach ($this->usersRooms[$socketHash] as $roomName) {
-            unset($this->rooms[$roomName]['sockets'][$socketHash]);
-            unset($this->rooms[$roomName]['pseudonyms'][$socketHash]);
+        if (isset($this->usersRooms[$socketHash])) {
+            foreach ($this->usersRooms[$socketHash] as $roomName) {
+                unset($this->rooms[$roomName]['sockets'][$socketHash]);
+                unset($this->rooms[$roomName]['pseudonyms'][$socketHash]);
 
-            // Save and close the chat room if noone is in
-            if (count($this->rooms[$roomName]['sockets']) === 0) {
-                $this->saveHistoric($roomName);
-                unset($this->rooms[$roomName]);
+                // Save and close the chat room if noone is in
+                if (count($this->rooms[$roomName]['sockets']) === 0) {
+                    $this->saveHistoric($roomName);
+                    unset($this->rooms[$roomName]);
+                }
             }
         }
     }
@@ -666,8 +668,8 @@ class ChatService extends Server implements Service
      */
     private function saveHistoric($roomName)
     {
-        var_dump($this->rooms[$roomName]['historic']);
         $part = $this->rooms[$roomName]['historic']['part'];
+
         file_put_contents(
             stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR . $roomName) .
             DIRECTORY_SEPARATOR . 'historic-part-' . $part . '.json',

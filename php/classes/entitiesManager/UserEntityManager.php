@@ -214,8 +214,9 @@ class UserEntityManager extends EntityManager
      */
     public function isPseudonymExist($pseudonym)
     {
+        $user     = new User();
         $sqlMarks = 'SELECT count(*) FROM %s WHERE pseudonym = %s';
-        $sql      = static::sqlFormater($sqlMarks, $user->getTableName(), $pseudonym);
+        $sql      = static::sqlFormater($sqlMarks, $user->getTableName(), DB::quote($pseudonym));
 
         return (int) DB::query($sql)->fetchColumn() > 0;
     }
