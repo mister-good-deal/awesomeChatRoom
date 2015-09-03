@@ -21,10 +21,11 @@ requirejs.config({
             maxUsers         : 15,
             'selectors'      : {
                 'global': {
-                    chat    : '#chat',
-                    room    : '.room',
-                    roomName: '.room-name',
-                    roomChat: '.chat'
+                    chat      : '#chat',
+                    room      : '.room',
+                    roomName  : '.room-name',
+                    roomChat  : '.chat',
+                    roomSample: '#room-sample'
                 },
                 'roomConnect': {
                     div      : '.connect-room',
@@ -48,7 +49,8 @@ requirejs.config({
                     send     : '.send'
                 },
                 "roomAction": {
-                    loadHistoric: '.load-historic'
+                    loadHistoric: '.load-historic',
+                    kickUser    : '.kick-user'
                 },
                 'chat': {
                     message  : '.message',

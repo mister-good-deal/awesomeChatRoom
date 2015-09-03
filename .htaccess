@@ -8,6 +8,7 @@ RewriteCond  %{REQUEST_URI} !^\/index\.php$
 RewriteCond  %{REQUEST_URI} !^\/static\/?$
 RewriteCond  %{REQUEST_URI} !^\/static\/js\/.*$
 RewriteCond  %{REQUEST_URI} !^\/static\/html\/.*$
+RewriteCond  %{REQUEST_URI} !^\/static\/dist\/.*$
 
 # Redirect all the left urls to the router
 RewriteRule ^(.*)$ php/router.php?action=$1 [B,NE,QSA,L]

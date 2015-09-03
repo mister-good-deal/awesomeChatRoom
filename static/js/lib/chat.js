@@ -44,10 +44,11 @@ define(['jquery', 'module'], function ($, module) {
             "maxUsers"         : module.config().maxUsers,
             "selectors"        : {
                 "global": {
-                    "chat"    : module.config().selectors.global.chat,
-                    "room"    : module.config().selectors.global.room,
-                    "roomName": module.config().selectors.global.roomName,
-                    "roomChat": module.config().selectors.global.roomChat
+                    "chat"      : module.config().selectors.global.chat,
+                    "room"      : module.config().selectors.global.room,
+                    "roomName"  : module.config().selectors.global.roomName,
+                    "roomChat"  : module.config().selectors.global.roomChat,
+                    "roomSample": module.config().selectors.global.roomSample
                 },
                 "roomConnect": {
                     "div"      : module.config().selectors.roomConnect.div,
@@ -71,7 +72,8 @@ define(['jquery', 'module'], function ($, module) {
                     "send"     : module.config().selectors.roomSend.send
                 },
                 "roomAction": {
-                    "loadHistoric" : module.config().selectors.roomAction.loadHistoric
+                    "loadHistoric": module.config().selectors.roomAction.loadHistoric,
+                    "kickUser"    : module.config().selectors.roomAction.kickUser
                 },
                 "chat": {
                     "message"  : module.config().selectors.chat.message,
@@ -89,6 +91,18 @@ define(['jquery', 'module'], function ($, module) {
          * The WebsocketManager instance
          */
         "websocket": {},
+        /**
+         * A messages sent history
+         */
+        "messagesHistory": [],
+        /**
+         * Pointer in the array messagesHistory
+         */
+        "messagesHistoryPointer": 0,
+        /**
+         * The kick command regex
+         */
+        "kickRegex": /^\/kick '([^'']*)'? ?(.*)/,
         /**
          * The current User instance
          */
@@ -124,6 +138,14 @@ define(['jquery', 'module'], function ($, module) {
                 this.settings.selectors.roomCreation.create,
                 $.proxy(this.createRoomEvent, this)
             );
+            // Listen the "enter" keypress event on the chat text input
+            $('body').on(
+                'keydown',
+                this.settings.selectors.global.room + ' ' +
+                this.settings.selectors.roomSend.div + ' ' +
+                this.settings.selectors.roomSend.message,
+                $.proxy(this.chatTextKeyPressEvent, this)
+            );
             // Send a message in a room
             $('body').on(
                 'click',
@@ -138,7 +160,14 @@ define(['jquery', 'module'], function ($, module) {
                 this.settings.selectors.global.room + ' ' +
                 this.settings.selectors.roomAction.loadHistoric,
                 $.proxy(this.getHistoricEvent, this)
-            ); 
+            );
+            // Kick a user from a room
+            $('body').on(
+                'click',
+                this.settings.selectors.global.room + ' ' +
+                this.settings.selectors.roomAction.kickUser,
+                $.proxy(this.kickUserEvent, this)
+            );
         },
 
         /**
@@ -166,6 +195,23 @@ define(['jquery', 'module'], function ($, module) {
             this.createRoom(roomName, type, password, maxUsers);
         },
 
+        chatTextKeyPressEvent: function (e) {
+            if (e.which === 13) {
+                // Enter key pressed
+                this.sendMessageEvent(e);
+            } else if (e.which === 38) {
+                // Up arrow key pressed
+                if (this.messagesHistoryPointer - 1 >= 0) {
+                    $(e.currentTarget).val(this.messagesHistory[--this.messagesHistoryPointer]);
+                }
+            } else if (e.which === 40) {
+                // Down arrow key pressed
+                if (this.messagesHistoryPointer + 1 <= this.messagesHistory.length) {
+                    $(e.currentTarget).val(this.messagesHistory[++this.messagesHistoryPointer]);
+                }
+            }
+        },
+
         /**
          * Event fired when a user wants to send a message
          *
@@ -175,13 +221,22 @@ define(['jquery', 'module'], function ($, module) {
             var sendDiv = $(e.currentTarget).closest(
                     this.settings.selectors.global.room + ' ' + this.settings.selectors.roomSend.div
                 ),
-                recievers = sendDiv.find(this.settings.selectors.roomSend.recievers).val(),
-                message   = sendDiv.find(this.settings.selectors.roomSend.message).val(),
-                room      = $(e.currentTarget).closest(this.settings.selectors.global.room),
-                roomName  = room.attr('data-name'),
-                password  = room.attr('data-password');
+                recievers    = sendDiv.find(this.settings.selectors.roomSend.recievers).val(),
+                messageInput = sendDiv.find(this.settings.selectors.roomSend.message),
+                message      = messageInput.val(),
+                room         = $(e.currentTarget).closest(this.settings.selectors.global.room),
+                roomName     = room.attr('data-name'),
+                password     = room.attr('data-password');
 
-            this.sendMessage(recievers, message, roomName, password);
+            if ($.trim(message) !== '') {
+                if (!this.isCommand(message, roomName)) {
+                    this.sendMessage(recievers, message, roomName, password);
+                }
+
+                this.messagesHistory.push(message);
+                this.messagesHistoryPointer++;
+                messageInput.val('');
+            }
         },
 
         /**
@@ -196,6 +251,19 @@ define(['jquery', 'module'], function ($, module) {
                 historicLoaded = room.find(this.settings.selectors.global.roomChat).attr('data-historic-loaded');
 
             this.getHistoric(roomName, password, historicLoaded);
+        },
+
+        /**
+         * Event fired when a user wants to kick another user from a room
+         *
+         * @param {event} e The fired event
+         */
+        kickUserEvent: function (e) {
+            var room           = $(e.currentTarget).closest(this.settings.selectors.global.room),
+                roomName       = room.attr('data-name'),
+                pseudonym      = $(e.currentTarget).next(this.settings.selectors.chat.pseudonym).text();
+
+            this.kickUser(roomName, pseudonym);
         },
         
         /*=====  End of Events  ======*/
@@ -293,6 +361,24 @@ define(['jquery', 'module'], function ($, module) {
                 "historicLoaded": historicLoaded
             }));
         },
+
+        /**
+         * Kick a user from a room
+         *
+         * @param {string} roomName  The room name
+         * @param {string} pseudonym The user pseudonym to kick
+         * @param {string} reason    OPTIONAL the reason of the kick
+         */
+        kickUser: function (roomName, pseudonym, reason) {
+            this.websocket.send(JSON.stringify({
+                "service"  : [this.settings.serviceName],
+                "action"   : "kickUser",
+                "user"     : this.user.settings,
+                "roomName" : roomName,
+                "pseudonym": pseudonym,
+                "reason"   : reason
+            }));
+        },
         
         /*=====  End of Actions that query to the WebSocket server  ======*/
         
@@ -329,6 +415,16 @@ define(['jquery', 'module'], function ($, module) {
 
                 case 'getHistoric':
                     this.getHistoricCallback(data);
+
+                    break;
+
+                case 'getkicked':
+                    this.getKickedCallback(data);
+
+                    break;
+
+                case 'kickUser':
+                    this.kickUserCallback(data);
 
                     break;
                 
@@ -397,6 +493,26 @@ define(['jquery', 'module'], function ($, module) {
             this.loadHistoric(roomChat, data.historic);
             this.message.add(data.text);
         },
+
+        /**
+         * Callback after being kicked from a room
+         *
+         * @param {object} data The server JSON reponse
+         */
+        getKickedCallback: function (data) {
+            this.message.add(data.text);
+        },
+
+        /**
+         * Callback after kicked a user from a room
+         *
+         * @param {object} data The server JSON reponse
+         */
+        kickUserCallback: function (data) {
+            if (!data.success) {
+                this.message.add(data.text);
+            }
+        },
         
         /*=====  End of Callbacks after WebSocket server responses  ======*/
         
@@ -428,8 +544,8 @@ define(['jquery', 'module'], function ($, module) {
             var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]');
 
             if (room.length === 0) {
-                var defaultRoom = $(this.settings.selectors.global.room + '[data-name="default"]'),
-                    newRoom     = defaultRoom.clone(true),
+                var roomSample  = $(this.settings.selectors.global.roomSample),
+                    newRoom     = roomSample.clone(true),
                     newRoomChat = newRoom.find(this.settings.selectors.global.roomChat),
                     i;
 
@@ -437,15 +553,16 @@ define(['jquery', 'module'], function ($, module) {
                 newRoom.attr('data-type', data.type);
                 newRoom.attr('data-password', data.password);
                 newRoom.attr('data-max-users', data.maxUsers);
+                newRoom.removeAttr('id');
+                newRoom.removeClass('hide');
                 newRoom.find(this.settings.selectors.global.roomName).text(data.roomName);
                 newRoomChat.attr('data-historic-loaded', 0);
-                newRoomChat.html('');
 
                 if (data.historic) {
                     this.loadHistoric(newRoomChat, data.historic);
                 }
 
-                defaultRoom.after(newRoom);
+                $(this.settings.selectors.global.chat).append(newRoom);
             } else if (data.historic) {
                 this.loadHistoric(room.find(this.settings.selectors.global.roomChat), data.historic);
             }
@@ -482,6 +599,10 @@ define(['jquery', 'module'], function ($, module) {
                     "class": this.settings.selectors.chat.date.substr(1),
                     "text" : '[' + data.time + ']'
                 }),
+                $('<button>', {
+                    "class": this.settings.selectors.roomAction.kickUser.substr(1),
+                    "text" : 'Kick'
+                }),
                 $('<span>', {
                     "class": this.settings.selectors.chat.pseudonym.substr(1),
                     "text" : data.pseudonym
@@ -491,6 +612,25 @@ define(['jquery', 'module'], function ($, module) {
                     "text" : data.text
                 })
             );
+        },
+
+        /**
+         * Check if the user input is a command and process it
+         *
+         * @param  {string}  message  The user input
+         * @param  {string}  roomName The room name
+         * @return {boolean}          True if the user input was a command else false
+         */
+        isCommand: function (message, roomName) {
+            var isCommand   = false,
+                regexResult = this.kickRegex.exec(message);
+
+            if (regexResult !== null) {
+                this.kickUser(roomName, regexResult[1], regexResult[2] || '');
+                isCommand = true;
+            }
+
+            return isCommand;
         }
         
         /*=====  End of Utilities methods  ======*/

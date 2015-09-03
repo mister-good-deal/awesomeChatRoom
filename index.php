@@ -4,7 +4,8 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Test websocket</title>
-        <!-- <link rel="stylesheet" href=""> -->
+        <link rel="stylesheet" href="/static/dist/css/bootstrap.css">
+        <link rel="stylesheet" href="/static/dist/css/bootstrap-theme.css">
         <script data-main="/static/js/app"
                 src="/static/js/lib/vendors/require.js"
                 type="text/javascript"
@@ -38,7 +39,7 @@
                 <input class="pseudonym" type="text" name="chatPseudo" value="" placeholder="<?=_('Pseudonym')?>">
                 <input class="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
                 <input class="room-password" type="password" name="roomPassword" value="" placeholder="<?=_('Room password')?>">
-                <button class="connect" type="button"><?=_('Connect')?></button>
+                <button class="connect btn btn-primary" type="button"><?=_('Connect')?></button>
             </div>
             
             <!-- create room -->
@@ -53,14 +54,14 @@
                 <button class="create" type="button"><?=_('Create a room')?></button>
             </div>
             
-            <div class="room" data-name="default" data-type="public" data-max-users="200">
+            <div id="room-sample" class="room hide" data-name="" data-type="" data-max-users="" data-password="">
                 <h3 class="room-name">default</h3>
                 <!-- chat message display -->
                 <button class="load-historic" type="button"><?=_('Load more')?></button>
                 <div class="chat" data-historic-loaded="0"></div>
                 <!-- send message -->
                 <div class="send-action">
-                    <input class="message" type="text" name="message" value="" placeholder="<?=_('Message')?>">
+                    <input class="message" type="text" name="message" list="chatCommands" placeholder="<?=_('Message')?>">
                     <select class="recievers" name="recievers">
                         <option value="all" selected><?=_('All')?></option>
                         <option value="pseudonym">futur pseudonyms list</option>
@@ -69,6 +70,11 @@
                     <button class="send" type="button"><?=_('Send message')?></button>
                 </div>
             </div>
+
+            <datalist id="chatCommands">
+                <option value="/pm 'pseudonym'">
+                <option value="/kick 'pseudonym' [reason]">
+            </datalist>
         </div>
     </body>
 </html>

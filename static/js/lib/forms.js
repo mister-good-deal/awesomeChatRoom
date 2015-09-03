@@ -50,7 +50,7 @@ define(['jquery', 'domReady!'], function ($) {
          * Bind events on all form
          */
         initEvents: function () {
-            $('html').on('submit', 'form', $.proxy(this.submit, this));
+            $('body').on('submit', 'form', $.proxy(this.submit, this));
         },
 
         /**
