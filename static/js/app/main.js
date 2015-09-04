@@ -1,7 +1,7 @@
 /*global define, window*/
 
 define(
-    ['jquery', 'message', 'forms', 'websocket', 'user', 'chat'],
+    ['jquery', 'message', 'forms', 'websocket', 'user', 'chat', 'bootstrap'],
     function ($, Message, FormsManager, WebsocketManager, User, ChatManager) {
         'use strict';
 

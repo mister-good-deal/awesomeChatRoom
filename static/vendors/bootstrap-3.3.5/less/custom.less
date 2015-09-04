@@ -1,0 +1,30 @@
+#chat {
+    position: absolute;
+    height: 3em;
+    width: 100%;
+    bottom: 0;
+    overflow-y: hidden;
+    overflow-x: auto;
+    background-color: #888;
+
+    .room {
+        position: relative;
+        height: 3em;
+        width: auto;
+        top: 0;
+        display: inline-block;
+
+        .room-name {
+            height: 3em;
+            // background-color: #888;
+            margin: 0 0;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid #000;
+        }
+    }
+
+    .connect-room, .create-room {
+        height: 0;
+    }
+}

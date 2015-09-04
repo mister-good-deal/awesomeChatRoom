@@ -3,13 +3,15 @@
 requirejs.config({
     baseUrl: '/static/js/lib',
     paths: {
-        app     : '../app',
-        jquery  : 'vendors/jquery-2.1.4',
-        domReady: 'vendors/domReady',
-        chat    : 'chat',
-        user    : 'user',
-        forms   : 'forms',
-        message : 'message'
+        app      : '../app',
+        jquery   : 'vendors/jquery-2.1.4',
+        lodash   : 'vendors/lodash-3.10.1',
+        bootstrap: 'vendors/bootstrap-3.3.5',
+        domReady : 'vendors/domReady',
+        chat     : 'chat',
+        user     : 'user',
+        forms    : 'forms',
+        message  : 'message'
     },
     config: {
         'websocket': {
@@ -46,6 +48,7 @@ requirejs.config({
                     div      : '.send-action',
                     message  : '.message',
                     recievers: '.recievers',
+                    usersList: '.users-list',
                     send     : '.send'
                 },
                 "roomAction": {
@@ -58,6 +61,10 @@ requirejs.config({
                     date     : '.date',
                     text     : '.text'
                 }
+            },
+            'commands': {
+                kick: /^\/kick '([^']*)'? ?(.*)/,
+                pm  : /^\/pm '([^']*)' (.*)/
             }
         },
         'message': {

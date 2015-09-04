@@ -337,14 +337,15 @@ class ChatService extends Server implements Service
             }
         }
 
-        $response = array_merge($response, array(
+        $this->send($socket, $this->encode(json_encode(array_merge(
+            $response,
+            array(
                 'service' => $this->chatService,
                 'action'  => 'connect',
                 'success' => $success,
                 'text'    => $message
-        ));
-
-        $this->send($socket, $this->encode(json_encode($response)));
+            )
+        ))));
     }
 
     /**
@@ -358,6 +359,7 @@ class ChatService extends Server implements Service
         $success    = false;
         $message    = _('Message successfully sent !');
         $socketHash = $this->getClientName($socket);
+        $response   = array();
         @$this->setIfIsSet($password, $data['password'], null);
         @$this->setIfIsSetAndTrim($roomName, $data['roomName'], null);
         @$this->setIfIsSetAndTrim($recievers, $data['recievers'], null);
@@ -386,10 +388,13 @@ class ChatService extends Server implements Service
                 }
             } else {
                 // Send the message to one user
-                $recieverHash   = $this->getUserHashByPseudonym($roomName, $recievers);
-                $recieverSocket = $this->rooms[$roomName]['sockets'][$recieverHash];
+                $recieverHash        = $this->getUserHashByPseudonym($roomName, $recievers);
+                $recieverSocket      = $this->rooms[$roomName]['sockets'][$recieverHash];
+                $response['message'] = $text;
+                $response['type']    = 'private';
 
                 $this->sendMessageToUser($socket, $recieverSocket, $text, $roomName, 'private', $now);
+                $this->sendMessageToUser($socket, $socket, $text, $roomName, 'private', $now);
             }
 
             $this->log(sprintf(
@@ -404,11 +409,14 @@ class ChatService extends Server implements Service
             $success = true;
         }
 
-        $this->send($socket, $this->encode(json_encode(array(
-            'service' => $this->chatService,
-            'action'  => 'sendMessage',
-            'success' => $success,
-            'text'    => $message
+        $this->send($socket, $this->encode(json_encode(array_merge(
+            $response,
+            array(
+                'service' => $this->chatService,
+                'action'  => 'sendMessage',
+                'success' => $success,
+                'text'    => $message
+            )
         ))));
     }
 

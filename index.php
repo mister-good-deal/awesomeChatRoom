@@ -32,9 +32,50 @@
         </form>
 
         <div id="chat">
-            <h3><?=_('Chat')?></h3>
+            <!-- rooms -->
+            <div id="room-sample" class="room" data-name="" data-type="" data-max-users="" data-password="">
+                <h3 class="room-name">default</h3>
+                <!-- chat message display -->
+                <button class="load-historic" type="button"><?=_('Load more')?></button>
+                <div class="chat" data-historic-loaded="0"></div>
+                <!-- send message -->
+                <form class="send-action no-ajax">
+                    <div class="input-group col-md-6">
+                        <textarea class="message form-control"
+                                  rows="3"
+                                  name="message"
+                                  list="chatCommands"
+                                  placeholder="<?=_('Message')?>"
+                        ><?php
+                            echo _('Availabled commands :') . '&#13;&#10;&#13;&#10;' . '/pm ' . _('pseudonym message') .
+                                '&#13;&#10;' . '/kick ' . _('pseudonym [reason]');
+                        ?></textarea>
+                    </div>
+                    <div class="input-group col-md-6">
+                        <div class="input-group-btn">
+                            <button type="button"
+                                    class="btn btn-default dropdown-toggle recievers"
+                                    data-toggle="dropdown"
+                                    data-value="all"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                            ><?=_('Send to')?> (<span class="value"><?=_('All')?></span>) <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu users-list">
+                                <li data-value="all">
+                                    <a href="#" title="<?=_('All')?>"><?=_('All')?></a>
+                                </li>
+                                <li data-value="test">
+                                    <a href="#" title="<?=_('test')?>"><?=_('test')?></a>
+                                </li>
+                            </ul>
+                            <button class="send btn btn-default" type="submit"><?=_('Send message')?></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-            <!-- connect -->
+            <!-- connect room -->
             <div class="connect-room">
                 <input class="pseudonym" type="text" name="chatPseudo" value="" placeholder="<?=_('Pseudonym')?>">
                 <input class="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
@@ -53,28 +94,6 @@
                 <input class="room-max-users" type="number" name="roomMaxUsers" value="" placeholder="<?=_('Max users')?>">
                 <button class="create" type="button"><?=_('Create a room')?></button>
             </div>
-            
-            <div id="room-sample" class="room hide" data-name="" data-type="" data-max-users="" data-password="">
-                <h3 class="room-name">default</h3>
-                <!-- chat message display -->
-                <button class="load-historic" type="button"><?=_('Load more')?></button>
-                <div class="chat" data-historic-loaded="0"></div>
-                <!-- send message -->
-                <div class="send-action">
-                    <input class="message" type="text" name="message" list="chatCommands" placeholder="<?=_('Message')?>">
-                    <select class="recievers" name="recievers">
-                        <option value="all" selected><?=_('All')?></option>
-                        <option value="pseudonym">futur pseudonyms list</option>
-                        <!-- <input type="text" name="userPseudonym" placeholder="<?=_('User pseudonym')?>"> -->
-                    </select>
-                    <button class="send" type="button"><?=_('Send message')?></button>
-                </div>
-            </div>
-
-            <datalist id="chatCommands">
-                <option value="/pm 'pseudonym'">
-                <option value="/kick 'pseudonym' [reason]">
-            </datalist>
         </div>
     </body>
 </html>
