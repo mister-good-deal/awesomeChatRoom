@@ -140,45 +140,6 @@ class UserEntityManager extends EntityManager
     }
 
     /**
-     * Check if a user have the admin access to the WebSocker server
-     *
-     * @param  string $login    The user login
-     * @param  string $password The user password
-     * @return boolean          True if the User has the right else false
-     */
-    public function connectWebSocketServer($login, $password)
-    {
-        $success = false;
-        $user    = $this->authenticateUser($login, $password);
-
-        if ($user !== false) {
-            $rights = $this->getRights($user);
-
-            if ((int) $rights['webSocket'] === 1) {
-                $success = true;
-            }
-        }
-
-        return $success;
-    }
-
-    /**
-     * Get a user pseudonym
-     *
-     * @return string The user pseudonym (first name + last name if not defined)
-     */
-    public function getPseudonymForChat()
-    {
-        if ($this->entity->pseudonym !== '' && $this->entity->pseudonym !== null) {
-            $pseudonym = $this->entity->pseudonym;
-        } else {
-            $pseudonym = $this->entity->firstName . ' ' . $this->entity->lastName;
-        }
-
-        return $pseudonym;
-    }
-
-    /**
      * Authenticate a User by his login / password combinaison and return the User object on success or false on fail
      *
      * @param  string $login    The user login (email or pseudonym)
@@ -206,6 +167,72 @@ class UserEntityManager extends EntityManager
         return $user;
     }
 
+    /*====================================
+    =            Chat section            =
+    ====================================*/
+    
+    /**
+     * Check if a user have the admin access to the WebSocker server
+     *
+     * @param  string  $login    The user login
+     * @param  string  $password The user password
+     * @return boolean           True if the User has the right else false
+     */
+    public function connectWebSocketServer($login, $password)
+    {
+        $success = false;
+        $user    = $this->authenticateUser($login, $password);
+
+        if ($user !== false) {
+            $rights = $this->getRights($user);
+
+            if ((int) $rights['webSocket'] === 1) {
+                $success = true;
+            }
+        }
+
+        return $success;
+    }
+
+    /**
+     * Check if a user has the right to ckick a user
+     *
+     * @param  string  $login    The user login
+     * @param  string  $password The user password
+     * @return boolean           True if a user has the right to kick a player from a room else false
+     */
+    public function hasChatAdminRight($login, $password)
+    {
+        $success = false;
+        $user    = $this->authenticateUser($login, $password);
+
+        if ($user !== false) {
+            $rights = $this->getRights($user);
+
+            if ((int) $rights['chatAdmin'] === 1) {
+                $success = true;
+            }
+        }
+
+        return $success;
+    }
+
+    /**
+     * Get a user pseudonym
+     *
+     * @return string The user pseudonym (first name + last name if not defined)
+     */
+    public function getPseudonymForChat()
+    {
+        if ($this->entity->pseudonym !== '' && $this->entity->pseudonym !== null) {
+            $pseudonym = $this->entity->pseudonym;
+        } else {
+            $pseudonym = $this->entity->firstName . ' ' . $this->entity->lastName;
+        }
+
+        return $pseudonym;
+    }
+
     /**
      * Check if a pseudonym exists in the database
      *
@@ -220,6 +247,21 @@ class UserEntityManager extends EntityManager
 
         return (int) DB::query($sql)->fetchColumn() > 0;
     }
+
+    /**
+     * Get all the user right
+     *
+     * @param  User $user The User instanciated object
+     * @return array      The user rights in a array (1 = ok and 0 = nok)
+     */
+    private function getRights($user)
+    {
+        $sql = 'SELECT * FROM UsersRights WHERE idUser = ' . DB::quote($user->id);
+
+        return $userParams = DB::query($sql)->fetch();
+    }
+    
+    /*=====  End of Chat section  ======*/
 
     /**
      * Check all the must defined fields and fill an errors array if not
@@ -239,19 +281,6 @@ class UserEntityManager extends EntityManager
         }
 
         return $errors;
-    }
-
-    /**
-     * Get all the user right
-     *
-     * @param  User $user The User instanciated object
-     * @return array      The user rights in a array (1 = ok and 0 = nok)
-     */
-    private function getRights($user)
-    {
-        $sql = 'SELECT * FROM UsersRights WHERE idUser = ' . DB::quote($user->id);
-
-        return $userParams = DB::query($sql)->fetch();
     }
 }
 

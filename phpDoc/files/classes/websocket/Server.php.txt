@@ -22,10 +22,6 @@ class Server
     use \traits\EchoTrait;
 
     /**
-     * @var resource $server The server socket resource
-     */
-    private $server;
-    /**
      * @var string $protocol The server socket protocol
      */
     private $protocol;
@@ -77,6 +73,10 @@ class Server
      * @var string $serverKey A key to authentificate the server when sending data to services
      */
     protected $serverKey;
+    /**
+     * @var resource $server The server socket resource
+     */
+    protected $server;
 
     /*=====================================
     =            Magic methods            =
