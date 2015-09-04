@@ -23,11 +23,12 @@ requirejs.config({
             maxUsers         : 15,
             'selectors'      : {
                 'global': {
-                    chat      : '#chat',
-                    room      : '.room',
-                    roomName  : '.room-name',
-                    roomChat  : '.chat',
-                    roomSample: '#room-sample'
+                    chat        : '#chat',
+                    room        : '.room',
+                    roomName    : '.room-name',
+                    roomContents: '.room-contents',
+                    roomChat    : '.chat',
+                    roomSample  : '#room-sample'
                 },
                 'roomConnect': {
                     div      : '.connect-room',

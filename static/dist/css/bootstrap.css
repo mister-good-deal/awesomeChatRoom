@@ -6766,29 +6766,35 @@ button.close {
 }
 #chat {
   position: absolute;
-  height: 3em;
   width: 100%;
   bottom: 0;
-  overflow-y: hidden;
-  overflow-x: auto;
-  background-color: #888;
 }
 #chat .room {
-  position: relative;
-  height: 3em;
-  width: auto;
-  top: 0;
-  display: inline-block;
+  width: 25em;
 }
 #chat .room .room-name {
-  height: 3em;
+  height: 1.5em;
+  background: linear-gradient(to bottom, #7d7e7d 0%, #0e0e0e 100%);
   margin: 0 0;
   text-align: center;
   cursor: pointer;
-  border: 1px solid #000;
+  border-right: 1px solid #000;
+  border-left: 1px solid #000;
+  color: #E6E6E6;
+  font-size: 1.2em;
+  display: inline-block;
+  width: 100%;
 }
-#chat .connect-room,
-#chat .create-room {
-  height: 0;
+#chat .room .chat {
+  position: relative;
+  height: 18.5em;
+  width: 25em;
+  padding-top: 2.2em;
+  margin-bottom: 1.2em;
+  overflow-y: scroll;
+}
+#chat .room .chat .load-historic {
+  position: absolute;
+  top: 0.1em;
 }
 /*# sourceMappingURL=/static/dist/css/bootstrap.css.map */

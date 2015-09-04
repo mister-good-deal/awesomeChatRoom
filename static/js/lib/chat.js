@@ -44,11 +44,12 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
             "maxUsers"         : module.config().maxUsers,
             "selectors"        : {
                 "global": {
-                    "chat"      : module.config().selectors.global.chat,
-                    "room"      : module.config().selectors.global.room,
-                    "roomName"  : module.config().selectors.global.roomName,
-                    "roomChat"  : module.config().selectors.global.roomChat,
-                    "roomSample": module.config().selectors.global.roomSample
+                    "chat"        : module.config().selectors.global.chat,
+                    "room"        : module.config().selectors.global.room,
+                    "roomName"    : module.config().selectors.global.roomName,
+                    "roomContents": module.config().selectors.global.roomContents,
+                    "roomChat"    : module.config().selectors.global.roomChat,
+                    "roomSample"  : module.config().selectors.global.roomSample
                 },
                 "roomConnect": {
                     "div"      : module.config().selectors.roomConnect.div,
@@ -129,7 +130,6 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
             // Connect to a room
             $('body').on(
                 'click',
-                this.settings.selectors.global.chat + ' ' +
                 this.settings.selectors.roomConnect.div + ' ' +
                 this.settings.selectors.roomConnect.connect,
                 $.proxy(this.connectEvent, this)
@@ -137,10 +137,15 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
             // Create a room
             $('body').on(
                 'click',
-                this.settings.selectors.global.chat + ' ' +
                 this.settings.selectors.roomCreation.div + ' ' +
                 this.settings.selectors.roomCreation.create,
                 $.proxy(this.createRoomEvent, this)
+            );
+            // Toggle a room
+            $('body').on(
+                'click',
+                this.settings.selectors.global.roomName,
+                $.proxy(this.toggleRoomEvent, this)
             );
             // Listen the "enter" keypress event on the chat text input
             $('body').on(
@@ -185,7 +190,7 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
          * Event fired when a user want to connect to a chat
          */
         connectEvent: function () {
-            var connectDiv = $(this.settings.selectors.global.chat + ' ' + this.settings.selectors.roomConnect.div),
+            var connectDiv = $(this.settings.selectors.roomConnect.div),
                 pseudonym  = connectDiv.find(this.settings.selectors.roomConnect.pseudonym).val(),
                 roomName   = connectDiv.find(this.settings.selectors.roomConnect.name).val(),
                 password   = connectDiv.find(this.settings.selectors.roomConnect.password).val();
@@ -197,13 +202,22 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
          * Event fired when a user wants to create a chat room
          */
         createRoomEvent: function () {
-            var createDiv = $(this.settings.selectors.global.chat + ' ' + this.settings.selectors.roomCreation.div),
+            var createDiv = $(this.settings.selectors.roomCreation.div),
                 roomName  = createDiv.find(this.settings.selectors.roomCreation.name).val(),
                 type      = createDiv.find(this.settings.selectors.roomCreation.type).val(),
                 password  = createDiv.find(this.settings.selectors.roomCreation.password).val(),
                 maxUsers  = createDiv.find(this.settings.selectors.roomCreation.maxUsers).val();
 
             this.createRoom(roomName, type, password, maxUsers);
+        },
+
+        /**
+         * Event fired when a user wants to show / hide a room
+         *
+         * @param {event} e The fired event
+         */
+        toggleRoomEvent: function (e) {
+            $(e.currentTarget).siblings(this.settings.global.roomContents).slideToggle(500);
         },
 
         /**
