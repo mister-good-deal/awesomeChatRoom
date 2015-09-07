@@ -28,7 +28,8 @@ requirejs.config({
                     roomName    : '.room-name',
                     roomContents: '.room-contents',
                     roomChat    : '.chat',
-                    roomSample  : '#room-sample'
+                    roomSample  : '#room-sample',
+                    roomHeader  : '.header'
                 },
                 'roomConnect': {
                     div      : '.connect-room',

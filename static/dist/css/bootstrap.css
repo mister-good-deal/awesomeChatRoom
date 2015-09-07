@@ -6772,7 +6772,7 @@ button.close {
 #chat .room {
   width: 25em;
 }
-#chat .room .room-name {
+#chat .room .header {
   height: 1.5em;
   background: linear-gradient(to bottom, #7d7e7d 0%, #0e0e0e 100%);
   margin: 0 0;
@@ -6785,6 +6785,10 @@ button.close {
   display: inline-block;
   width: 100%;
 }
+#chat .room .header .close {
+  margin-right: 0.3em;
+  color: #fff;
+}
 #chat .room .chat {
   position: relative;
   height: 18.5em;
@@ -6796,5 +6800,9 @@ button.close {
 #chat .room .chat .load-historic {
   position: absolute;
   top: 0.1em;
+}
+#chat .room .chat .pseudonym {
+  color: blue;
+  padding-right: 0.2em;
 }
 /*# sourceMappingURL=/static/dist/css/bootstrap.css.map */

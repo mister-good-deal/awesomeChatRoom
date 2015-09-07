@@ -57,7 +57,7 @@
             <!-- rooms -->
             <div id="room-sample" class="room hide" data-name="" data-type="" data-max-users="" data-password="">
                 <!-- room title -->
-                <h3 class="room-name">default</h3>
+                <h3 class="header"><span class="room-name">default</span> <span class="close pull-right">&times;</span></h3>
                 <!-- room contents -->
                 <div class="room-contents">
                     <!-- messages display -->

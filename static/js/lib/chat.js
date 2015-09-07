@@ -49,7 +49,8 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                     "roomName"    : module.config().selectors.global.roomName,
                     "roomContents": module.config().selectors.global.roomContents,
                     "roomChat"    : module.config().selectors.global.roomChat,
-                    "roomSample"  : module.config().selectors.global.roomSample
+                    "roomSample"  : module.config().selectors.global.roomSample,
+                    "roomHeader"  : module.config().selectors.global.roomHeader
                 },
                 "roomConnect": {
                     "div"      : module.config().selectors.roomConnect.div,
@@ -144,7 +145,7 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
             // Toggle a room
             $('body').on(
                 'click',
-                this.settings.selectors.global.roomName,
+                this.settings.selectors.global.roomHeader,
                 $.proxy(this.toggleRoomEvent, this)
             );
             // Listen the "enter" keypress event on the chat text input
@@ -217,7 +218,7 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
          * @param {event} e The fired event
          */
         toggleRoomEvent: function (e) {
-            $(e.currentTarget).siblings(this.settings.global.roomContents).slideToggle(500);
+            $(e.currentTarget).siblings(this.settings.selectors.global.roomContents).slideToggle(500);
         },
 
         /**
@@ -646,10 +647,6 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                 $('<span>', {
                     "class": this.settings.selectors.chat.date.substr(1),
                     "text" : '[' + data.time + ']'
-                }),
-                $('<button>', {
-                    "class": this.settings.selectors.roomAction.kickUser.substr(1),
-                    "text" : 'Kick'
                 }),
                 $('<span>', {
                     "class": this.settings.selectors.chat.pseudonym.substr(1),
