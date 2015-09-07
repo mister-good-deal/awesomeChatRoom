@@ -246,7 +246,7 @@ class Server
     private function run()
     {
         $this->log('[SERVER] Server running on ' . stream_socket_get_name($this->server, false));
-
+        
         while (1) {
             $sockets   = $this->clients;
             $sockets[] = $this->server;
