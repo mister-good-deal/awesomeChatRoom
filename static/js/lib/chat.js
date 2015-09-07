@@ -42,6 +42,7 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
             "users"            : [],
             "serviceName"      : module.config().serviceName,
             "maxUsers"         : module.config().maxUsers,
+            "animationTime"    : module.config().animationTime,
             "selectors"        : {
                 "global": {
                     "chat"          : module.config().selectors.global.chat,
@@ -241,7 +242,7 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
         displayRoomEvent: function (e) {
             $(e.currentTarget).closest(this.settings.selectors.global.roomHeader)
             .next(this.settings.selectors.global.roomContents)
-            .slideDown(500);
+            .slideDown(this.settings.animationTime);
         },
 
         /**
@@ -252,18 +253,26 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
         minimizeRoomEvent: function (e) {
             $(e.currentTarget).closest(this.settings.selectors.global.roomHeader)
             .next(this.settings.selectors.global.roomContents)
-            .slideUp(500);
+            .slideUp(this.settings.animationTime);
         },
 
         /**
-         * Event fired when a user wants to fullscreen a room
+         * Event fired when a user wants to fullscreen / reduce a room
          *
          * @param {event} e The fired event
          */
         fullscreenRoomEvent: function (e) {
-            $(e.currentTarget).closest(this.settings.selectors.global.roomHeader)
-            .next(this.settings.selectors.global.roomContents)
-            .slideDown(500);
+            var room = $(e.currentTarget).closest(this.settings.selectors.global.room);
+
+            if ($(e.currentTarget).hasClass('glyphicon-fullscreen')) {
+                room.css('width', '100%');
+                $(e.currentTarget).removeClass('glyphicon-fullscreen');
+                $(e.currentTarget).addClass('glyphicon-resize-small');
+            } else {
+                room.removeAttr('style');
+                $(e.currentTarget).removeClass('glyphicon-resize-small');
+                $(e.currentTarget).addClass('glyphicon-fullscreen');
+            }
         },
 
         /**

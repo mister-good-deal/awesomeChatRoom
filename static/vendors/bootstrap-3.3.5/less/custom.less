@@ -17,21 +17,22 @@
             font-size: 1.2em;
             display: inline-block;
             width: 100%;
+            line-height: 1.3em;
+
+            .glyphicon, .room-name {
+                cursor: pointer;
+            };
 
             .glyphicon {
-                margin-right: 0.3em;
-                cursor: pointer;
-            }
-
-            .room-name {
-                cursor: pointer;
-            }
+                margin-right: 0.4em;
+                line-height: 1.3em;
+            };
         }
     
         .chat {
             position: relative;
             height: 18.5em;
-            width: 25em;
+            width: 100%;
             padding-top: 2.2em;
             margin-bottom: 1.2em;
             overflow-y: scroll;
@@ -39,12 +40,12 @@
             .load-historic {
                 position: absolute;
                 top: 0.1em;
-            }
+            };
 
             .pseudonym {
                 color: blue;
                 padding-right: 0.2em;
-            }
+            };
         }
     }
 }

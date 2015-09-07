@@ -6783,18 +6783,20 @@ button.close {
   font-size: 1.2em;
   display: inline-block;
   width: 100%;
+  line-height: 1.3em;
 }
-#chat .room .header .glyphicon {
-  margin-right: 0.3em;
-  cursor: pointer;
-}
+#chat .room .header .glyphicon,
 #chat .room .header .room-name {
   cursor: pointer;
+}
+#chat .room .header .glyphicon {
+  margin-right: 0.4em;
+  line-height: 1.3em;
 }
 #chat .room .chat {
   position: relative;
   height: 18.5em;
-  width: 25em;
+  width: 100%;
   padding-top: 2.2em;
   margin-bottom: 1.2em;
   overflow-y: scroll;

@@ -21,6 +21,7 @@ requirejs.config({
         'chat': {
             serviceName      : 'chatService',
             maxUsers         : 15,
+            animationTime    : 500,
             'selectors'      : {
                 'global': {
                     chat          : '#chat',
