@@ -44,13 +44,16 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
             "maxUsers"         : module.config().maxUsers,
             "selectors"        : {
                 "global": {
-                    "chat"        : module.config().selectors.global.chat,
-                    "room"        : module.config().selectors.global.room,
-                    "roomName"    : module.config().selectors.global.roomName,
-                    "roomContents": module.config().selectors.global.roomContents,
-                    "roomChat"    : module.config().selectors.global.roomChat,
-                    "roomSample"  : module.config().selectors.global.roomSample,
-                    "roomHeader"  : module.config().selectors.global.roomHeader
+                    "chat"          : module.config().selectors.global.chat,
+                    "room"          : module.config().selectors.global.room,
+                    "roomName"      : module.config().selectors.global.roomName,
+                    "roomContents"  : module.config().selectors.global.roomContents,
+                    "roomChat"      : module.config().selectors.global.roomChat,
+                    "roomSample"    : module.config().selectors.global.roomSample,
+                    "roomHeader"    : module.config().selectors.global.roomHeader,
+                    "roomClose"     : module.config().selectors.global.roomClose,
+                    "roomMinimize"  : module.config().selectors.global.roomMinimize,
+                    "roomFullscreen": module.config().selectors.global.roomFullscreen
                 },
                 "roomConnect": {
                     "div"      : module.config().selectors.roomConnect.div,
@@ -142,11 +145,29 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                 this.settings.selectors.roomCreation.create,
                 $.proxy(this.createRoomEvent, this)
             );
-            // Toggle a room
+            // Display a room
             $('body').on(
                 'click',
-                this.settings.selectors.global.roomHeader,
-                $.proxy(this.toggleRoomEvent, this)
+                this.settings.selectors.global.roomName,
+                $.proxy(this.displayRoomEvent, this)
+            );
+            // Minimize a room
+            $('body').on(
+                'click',
+                this.settings.selectors.global.roomMinimize,
+                $.proxy(this.minimizeRoomEvent, this)
+            );
+            // Fullscreen a room
+            $('body').on(
+                'click',
+                this.settings.selectors.global.roomFullscreen,
+                $.proxy(this.fullscreenRoomEvent, this)
+            );
+            // Close a room
+            $('body').on(
+                'click',
+                this.settings.selectors.global.roomClose,
+                $.proxy(this.closeRoomEvent, this)
             );
             // Listen the "enter" keypress event on the chat text input
             $('body').on(
@@ -213,12 +234,46 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
         },
 
         /**
-         * Event fired when a user wants to show / hide a room
+         * Event fired when a user wants to display a room
          *
          * @param {event} e The fired event
          */
-        toggleRoomEvent: function (e) {
-            $(e.currentTarget).siblings(this.settings.selectors.global.roomContents).slideToggle(500);
+        displayRoomEvent: function (e) {
+            $(e.currentTarget).closest(this.settings.selectors.global.roomHeader)
+            .next(this.settings.selectors.global.roomContents)
+            .slideDown(500);
+        },
+
+        /**
+         * Event fired when a user wants to minimize a room
+         *
+         * @param {event} e The fired event
+         */
+        minimizeRoomEvent: function (e) {
+            $(e.currentTarget).closest(this.settings.selectors.global.roomHeader)
+            .next(this.settings.selectors.global.roomContents)
+            .slideUp(500);
+        },
+
+        /**
+         * Event fired when a user wants to fullscreen a room
+         *
+         * @param {event} e The fired event
+         */
+        fullscreenRoomEvent: function (e) {
+            $(e.currentTarget).closest(this.settings.selectors.global.roomHeader)
+            .next(this.settings.selectors.global.roomContents)
+            .slideDown(500);
+        },
+
+        /**
+         * Event fired when a user wants to close a room
+         *
+         * @param {event} e The fired event
+         * @todo disconnect the user
+         */
+        closeRoomEvent: function (e) {
+            $(e.currentTarget).closest(this.settings.selectors.global.room).remove();
         },
 
         /**

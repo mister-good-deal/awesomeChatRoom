@@ -6777,7 +6777,6 @@ button.close {
   background: linear-gradient(to bottom, #7d7e7d 0%, #0e0e0e 100%);
   margin: 0 0;
   text-align: center;
-  cursor: pointer;
   border-right: 1px solid #000;
   border-left: 1px solid #000;
   color: #E6E6E6;
@@ -6785,9 +6784,12 @@ button.close {
   display: inline-block;
   width: 100%;
 }
-#chat .room .header .close {
+#chat .room .header .glyphicon {
   margin-right: 0.3em;
-  color: #fff;
+  cursor: pointer;
+}
+#chat .room .header .room-name {
+  cursor: pointer;
 }
 #chat .room .chat {
   position: relative;
