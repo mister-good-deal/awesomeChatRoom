@@ -59,7 +59,8 @@ requirejs.config({
                 },
                 "roomAction": {
                     loadHistoric: '.load-historic',
-                    kickUser    : '.kick-user'
+                    kickUser    : '.kick-user',
+                    showUsers   : '.users'
                 },
                 'chat': {
                     message  : '.message',

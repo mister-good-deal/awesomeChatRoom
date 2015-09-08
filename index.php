@@ -55,13 +55,28 @@
 
         <div id="chat">
             <!-- rooms -->
-            <div id="room-sample" class="room hide" data-name="" data-type="" data-max-users="" data-password="">
+            <div id="room-sample"
+                class="room hide"
+                data-name=""
+                data-type=""
+                data-users=""
+                data-max-users=""
+                data-password=""
+            >
                 <!-- room title -->
                 <h3 class="header">
-                    <span class="room-name">default</span>
+                    <span
+                        class="users glyphicon glyphicon-user pull-left"
+                        type="button"
+                        data-title="<?= _('Connected users')?>"
+                        data-toggle="popover"
+                        data-placement="right"
+                        data-html="true"
+                    ></span>
+                    <span class="room-name"><?= _('default')?></span>
                     <span class="close-room pull-right glyphicon glyphicon-remove"></span>
-                    <span class="minimize pull-right glyphicon glyphicon-minus"></span>
                     <span class="fullscreen pull-right glyphicon glyphicon-fullscreen"></span>
+                    <span class="minimize pull-right glyphicon glyphicon-minus"></span>
                 </h3>
                 <!-- room contents -->
                 <div class="room-contents">

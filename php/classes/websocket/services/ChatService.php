@@ -151,6 +151,11 @@ class ChatService extends Server implements Service
                 
                 break;
 
+            case 'disconnectFromRoom':
+                $this->disconnectUserFromRoom($socket, $data);
+                
+                break;
+
             case 'createRoom':
                 $this->createRoom($socket, $data);
 
@@ -325,12 +330,13 @@ class ChatService extends Server implements Service
 
                 $this->log(sprintf(_('[chatService] New user "%s" added in the room %s"'), $pseudonym, $roomName));
 
-                $message              = sprintf(_('You\'re connected to the chat room "%s" !'), $roomName);
-                $response['roomName'] = $roomName;
-                $response['type']     = $this->rooms[$roomName]['type'];
-                $response['maxUsers'] = $this->rooms[$roomName]['maxUsers'];
-                $response['password'] = $this->rooms[$roomName]['password'];
-                $response['historic'] = $this->filterConversations(
+                $message                = sprintf(_('You\'re connected to the chat room "%s" !'), $roomName);
+                $response['roomName']   = $roomName;
+                $response['type']       = $this->rooms[$roomName]['type'];
+                $response['maxUsers']   = $this->rooms[$roomName]['maxUsers'];
+                $response['password']   = $this->rooms[$roomName]['password'];
+                $response['pseudonyms'] = array_values($this->rooms[$roomName]['pseudonyms']);
+                $response['historic']   = $this->filterConversations(
                     $this->rooms[$roomName]['historic']['conversations'],
                     $pseudonym
                 );
@@ -431,11 +437,11 @@ class ChatService extends Server implements Service
         $success  = false;
         $message  = _('Historic successfully loaded !');
         $historic = array();
-        @$this->setIfIsSetAndTrim($roomName, $data['roomName'], null);
-        @$this->setIfIsSetAndTrim($password, $data['roomPassword'], null);
-        @$this->setIfIsSetAndTrim($part, $data['historicLoaded'], null);
+        @$this->setIfIsSetAndTrim($roomName, $data['roomName'], '');
+        @$this->setIfIsSetAndTrim($password, $data['roomPassword'], '');
+        @$this->setIfIsSetAndTrim($part, $data['historicLoaded'], '');
 
-        if ($roomName === null || $roomName === '') {
+        if ($roomName === '') {
             $message = _('The room name is required');
         } elseif (!in_array($roomName, $this->roomsName)) {
             $message = sprintf(_('The chat room name "%s" does not exists'), $roomName);
@@ -507,6 +513,7 @@ class ChatService extends Server implements Service
                 $this->disconnectUser($this->rooms[$roomName]['sockets'][$userHash]);
 
                 foreach ($this->rooms[$roomName]['sockets'] as $userSocket) {
+                    $this->updateRoomUsers($userSocket, $roomName);
                     $this->sendMessageToUser(
                         $this->server,
                         $userSocket,
@@ -533,6 +540,101 @@ class ChatService extends Server implements Service
     }
 
     /**
+     * Update the connected users list in a room
+     *
+     * @param resource $socket   The user socket
+     * @param string   $roomName The room name
+     */
+    private function updateRoomUsers($socket, $roomName)
+    {
+        $this->send($socket, $this->encode(json_encode(array(
+            'service'    => $this->chatService,
+            'action'     => 'updateRoomUsers',
+            'roomName'   => $roomName,
+            'pseudonyms' => array_values($this->rooms[$roomName]['pseudonyms'])
+        ))));
+    }
+
+    /**
+     * Disconnect a user from a room
+     *
+     * @param string $socketHash The user socket hash
+     * @param string $roomName   The room name
+     */
+    private function disconnectUserFromRoomAction($socketHash, $roomName)
+    {
+        $pseudonym = $this->rooms[$roomName]['pseudonyms'][$socketHash];
+
+        unset($this->rooms[$roomName]['sockets'][$socketHash]);
+        unset($this->rooms[$roomName]['pseudonyms'][$socketHash]);
+
+        // Save and close the chat room if noone is in
+        if (count($this->rooms[$roomName]['sockets']) === 0) {
+            $this->saveHistoric($roomName);
+            unset($this->rooms[$roomName]);
+        } else {
+            foreach ($this->rooms[$roomName]['sockets'] as $socket) {
+                $this->updateRoomUsers($socket, $roomName);
+                $this->sendMessageToUser(
+                    $this->server,
+                    $socket,
+                    sprintf(_('User "%s" disconnected'), $pseudonym),
+                    $roomName,
+                    'public',
+                    date('Y-m-d H:i:s')
+                );
+            }
+        }
+    }
+
+    /**
+     * Disconnet a user from all the chat he was connected to
+     *
+     * @param resource $socket The user socket
+     */
+    private function disconnectUser($socket)
+    {
+        $socketHash = $this->getClientName($socket);
+
+        if (isset($this->usersRooms[$socketHash])) {
+            foreach ($this->usersRooms[$socketHash] as $roomName) {
+                $this->disconnectUserFromRoomAction($socketHash, $roomName);
+            }
+        }
+    }
+
+    /**
+     * Disconnet a user from a room he was connected to
+     *
+     * @param resource $socket The user socket
+     * @param array    $data   JSON decoded client data
+     */
+    private function disconnectUserFromRoom($socket, $data)
+    {
+        @$this->setIfIsSetAndTrim($roomName, $data['roomName'], null);
+        $socketHash = $this->getClientName($socket);
+        $success    = false;
+
+        if (!isset($this->usersRooms[$socketHash])) {
+            $message = _('An error occured');
+        } elseif (!in_array($roomName, $this->usersRooms[$socketHash])) {
+            $message = sprintf(_('You are not connected to the room %s'), $roomName);
+        } else {
+            $this->disconnectUserFromRoomAction($socketHash, $roomName);
+            $message = sprintf(_('You are disconnected from the room %s'), $roomName);
+            $success = true;
+        }
+
+        $this->send($socket, $this->encode(json_encode(array(
+            'service'  => $this->chatService,
+            'action'   => 'disconnectFromRoom',
+            'success'  => $success,
+            'text'     => $message,
+            'roomName' => $roomName
+        ))));
+    }
+
+    /**
      * Add a room to the user when he is connected to this room
      *
      * @param string $socketHash The user socket hash
@@ -548,6 +650,7 @@ class ChatService extends Server implements Service
         $this->usersRooms[$socketHash][] = $roomName;
 
         foreach ($this->rooms[$roomName]['sockets'] as $socket) {
+            $this->updateRoomUsers($socket, $roomName);
             $this->sendMessageToUser(
                 $this->server,
                 $socket,
@@ -556,42 +659,6 @@ class ChatService extends Server implements Service
                 'public',
                 date('Y-m-d H:i:s')
             );
-        }
-    }
-
-    /**
-     * Disconnet a user from all the chat he was connected to
-     *
-     * @param resource $socket The user socket
-     */
-    private function disconnectUser($socket)
-    {
-        $socketHash = $this->getClientName($socket);
-
-        if (isset($this->usersRooms[$socketHash])) {
-            foreach ($this->usersRooms[$socketHash] as $roomName) {
-                $pseudonym = $this->rooms[$roomName]['pseudonyms'][$socketHash];
-
-                unset($this->rooms[$roomName]['sockets'][$socketHash]);
-                unset($this->rooms[$roomName]['pseudonyms'][$socketHash]);
-
-                // Save and close the chat room if noone is in
-                if (count($this->rooms[$roomName]['sockets']) === 0) {
-                    $this->saveHistoric($roomName);
-                    unset($this->rooms[$roomName]);
-                } else {
-                    foreach ($this->rooms[$roomName]['sockets'] as $socket) {
-                        $this->sendMessageToUser(
-                            $this->server,
-                            $socket,
-                            sprintf(_('User "%s" disconnected'), $pseudonym),
-                            $roomName,
-                            'public',
-                            date('Y-m-d H:i:s')
-                        );
-                    }
-                }
-            }
         }
     }
 

@@ -80,7 +80,8 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                 },
                 "roomAction": {
                     "loadHistoric": module.config().selectors.roomAction.loadHistoric,
-                    "kickUser"    : module.config().selectors.roomAction.kickUser
+                    "kickUser"    : module.config().selectors.roomAction.kickUser,
+                    "showUsers"   : module.config().selectors.roomAction.showUsers
                 },
                 "chat": {
                     "message"  : module.config().selectors.chat.message,
@@ -282,7 +283,10 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
          * @todo disconnect the user
          */
         closeRoomEvent: function (e) {
-            $(e.currentTarget).closest(this.settings.selectors.global.room).remove();
+            var room = $(e.currentTarget).closest(this.settings.selectors.global.room);
+
+            this.disconnect(room.attr('data-name'));
+            room.remove();
         },
 
         /**
@@ -417,6 +421,19 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
         },
 
         /**
+         * Disconnect a user from a chat room
+         *
+         * @param {string} roomName The room name to connect to
+         */
+        disconnect: function (roomName) {
+            this.websocket.send(JSON.stringify({
+                "service"  : [this.settings.serviceName],
+                "action"   : "disconnectFromRoom",
+                "roomName" : roomName
+            }));
+        },
+
+        /**
          * Send a message to all the users in the chat room or at one user in the chat room
          *
          * @param {string} recievers The message reciever ('all' || userPseudonym)
@@ -509,6 +526,16 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
 
                     break;
 
+                case 'disconnectFromRoom':
+                    this.disconnectRoomCallback(data);
+
+                    break;
+
+                case 'updateRoomUsers':
+                    this.updateRoomUsersCallback(data);
+
+                    break;
+
                 case 'createRoom':
                     this.createRoomCallback(data);
 
@@ -557,6 +584,25 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
             }
 
             this.message.add(data.text);
+        },
+
+        /**
+         * Callback after a user attempted to disconnect from a room
+         *
+         * @param {object} data The server JSON reponse
+         */
+        disconnectRoomCallback: function (data) {
+            this.message.add(data.text);
+        },
+
+        /**
+         * Callback after a user entered or left the room
+         *
+         * @param {object} data The server JSON reponse
+         */
+        updateRoomUsersCallback: function (data) {
+            $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]')
+            .attr('data-users', _(data.pseudonyms).toString());
         },
 
         /**
@@ -666,14 +712,26 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                 newRoom.attr('data-type', data.type);
                 newRoom.attr('data-password', data.password);
                 newRoom.attr('data-max-users', data.maxUsers);
+                newRoom.attr('data-users', _(data.pseudonyms).toString());
                 newRoom.removeAttr('id');
                 newRoom.removeClass('hide');
                 newRoom.find(this.settings.selectors.global.roomName).text(data.roomName);
+                newRoom.find(this.settings.selectors.roomAction.showUsers).popover({
+                    content: function () {
+                        var list = $('<ul>');
+
+                        _.forEach(newRoom.attr('data-users').split(','), function (pseudonym) {
+                            list.append($('<li>', {"text": pseudonym}));
+                        });
+
+                        return list.html();
+                    }
+                });
+
                 newRoomChat.attr('data-historic-loaded', 0);
 
-                if (data.historic) {
-                    this.loadHistoric(newRoomChat, data.historic);
-                }
+
+                this.loadHistoric(newRoomChat, data.historic);
 
                 $(this.settings.selectors.global.chat).append(newRoom);
             } else if (data.historic) {
@@ -736,7 +794,7 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                 self      = this,
                 regexResult;
 
-            _.each(this.commands, function (regex, name) {
+            _.forEach(this.commands, function (regex, name) {
                 regexResult = regex.exec(message);
 
                 if (regexResult !== null) {

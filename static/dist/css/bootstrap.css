@@ -6793,6 +6793,12 @@ button.close {
   margin-right: 0.4em;
   line-height: 1.3em;
 }
+#chat .room .header .popover {
+  color: #000;
+}
+#chat .room .header .popover li {
+  list-style: none;
+}
 #chat .room .chat {
   position: relative;
   height: 18.5em;
