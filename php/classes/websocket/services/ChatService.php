@@ -333,6 +333,7 @@ class ChatService extends Server implements Service
                 $message                = sprintf(_('You\'re connected to the chat room "%s" !'), $roomName);
                 $response['roomName']   = $roomName;
                 $response['type']       = $this->rooms[$roomName]['type'];
+                $response['pseudonym']  = $pseudonym;
                 $response['maxUsers']   = $this->rooms[$roomName]['maxUsers'];
                 $response['password']   = $this->rooms[$roomName]['password'];
                 $response['pseudonyms'] = array_values($this->rooms[$roomName]['pseudonyms']);

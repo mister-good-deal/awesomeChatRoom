@@ -601,8 +601,10 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
          * @param {object} data The server JSON reponse
          */
         updateRoomUsersCallback: function (data) {
-            $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]')
-            .attr('data-users', _(data.pseudonyms).toString());
+            var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]');
+            
+            room.attr('data-users', _(data.pseudonyms).toString());
+            this.updateUsersDropdown(room, data.pseudonyms);
         },
 
         /**
@@ -710,6 +712,7 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
 
                 newRoom.attr('data-name', data.roomName);
                 newRoom.attr('data-type', data.type);
+                newRoom.attr('data-pseudonym', data.pseudonym);
                 newRoom.attr('data-password', data.password);
                 newRoom.attr('data-max-users', data.maxUsers);
                 newRoom.attr('data-users', _(data.pseudonyms).toString());
@@ -730,7 +733,7 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
 
                 newRoomChat.attr('data-historic-loaded', 0);
 
-
+                this.updateUsersDropdown(newRoom, data.pseudonyms);
                 this.loadHistoric(newRoomChat, data.historic);
 
                 $(this.settings.selectors.global.chat).append(newRoom);
@@ -779,6 +782,41 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                     "text" : data.text
                 })
             );
+        },
+
+        /**
+         * Update the users list in the dropdown menu recievers
+         *
+         * @param  {object} room       The room jQuery DOM element
+         * @param  {array}  pseudonyms The new pseudonyms list
+         * @todo                       Traduction on 'all' value
+         */
+        updateUsersDropdown: function (room, pseudonyms) {
+            var list = [],
+                self = this;
+
+            list.push($('<li>', {
+                    "data-value": "all"
+                }).append($('<a>', {
+                    "href" : "#",
+                    "title": "all",
+                    "text" : "all"
+                })));
+
+            _.forEach(pseudonyms, function (pseudonym) {
+                if (pseudonym !== room.attr('data-pseudonym')) {
+                        list.push($('<li>', {
+                        "data-value": pseudonym
+                    }).append($('<a>', {
+                        "href" : "#",
+                        "title": pseudonym,
+                        "text" : pseudonym
+                    })));
+                }
+            });
+
+            room.find(this.settings.selectors.roomSend.div + ' ' + this.settings.selectors.roomSend.usersList)
+            .html(list);
         },
 
         /**

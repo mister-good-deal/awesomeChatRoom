@@ -59,6 +59,7 @@
                 class="room hide"
                 data-name=""
                 data-type=""
+                data-pseudonym=""
                 data-users=""
                 data-max-users=""
                 data-password=""
@@ -98,7 +99,7 @@
                             ?></textarea>
                         </div>
                         <div class="form-group">
-                            <div class="input-group-btn">
+                            <div class="input-group-btn dropup">
                                 <button type="button"
                                         class="btn btn-default dropdown-toggle recievers"
                                         data-toggle="dropdown"
@@ -110,9 +111,6 @@
                                 <ul class="dropdown-menu users-list">
                                     <li data-value="all">
                                         <a href="#" title="<?=_('All')?>"><?=_('All')?></a>
-                                    </li>
-                                    <li data-value="test">
-                                        <a href="#" title="<?=_('test')?>"><?=_('test')?></a>
                                     </li>
                                 </ul>
                                 <button class="send btn btn-default" type="submit"><?=_('Send message')?></button>
