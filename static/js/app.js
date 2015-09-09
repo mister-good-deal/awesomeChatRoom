@@ -24,16 +24,17 @@ requirejs.config({
             animationTime    : 500,
             'selectors'      : {
                 'global': {
-                    chat          : '#chat',
-                    room          : '.room',
-                    roomName      : '.room-name',
-                    roomContents  : '.room-contents',
-                    roomChat      : '.chat',
-                    roomSample    : '#room-sample',
-                    roomHeader    : '.header',
-                    roomClose     : '.close-room',
-                    roomMinimize  : '.minimize',
-                    roomFullscreen: '.fullscreen'
+                    chat              : '#chat',
+                    room              : '.room',
+                    roomName          : '.room-name',
+                    roomContents      : '.room-contents',
+                    roomChat          : '.chat',
+                    roomSample        : '#room-sample',
+                    roomHeader        : '.header',
+                    roomClose         : '.close-room',
+                    roomMinimize      : '.minimize',
+                    roomFullscreen    : '.fullscreen',
+                    roomMessagesUnread: '.messages-unread'
                 },
                 'roomConnect': {
                     div      : '.connect-room',

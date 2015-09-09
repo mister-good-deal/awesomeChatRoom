@@ -45,16 +45,17 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
             "animationTime"    : module.config().animationTime,
             "selectors"        : {
                 "global": {
-                    "chat"          : module.config().selectors.global.chat,
-                    "room"          : module.config().selectors.global.room,
-                    "roomName"      : module.config().selectors.global.roomName,
-                    "roomContents"  : module.config().selectors.global.roomContents,
-                    "roomChat"      : module.config().selectors.global.roomChat,
-                    "roomSample"    : module.config().selectors.global.roomSample,
-                    "roomHeader"    : module.config().selectors.global.roomHeader,
-                    "roomClose"     : module.config().selectors.global.roomClose,
-                    "roomMinimize"  : module.config().selectors.global.roomMinimize,
-                    "roomFullscreen": module.config().selectors.global.roomFullscreen
+                    "chat"              : module.config().selectors.global.chat,
+                    "room"              : module.config().selectors.global.room,
+                    "roomName"          : module.config().selectors.global.roomName,
+                    "roomContents"      : module.config().selectors.global.roomContents,
+                    "roomChat"          : module.config().selectors.global.roomChat,
+                    "roomSample"        : module.config().selectors.global.roomSample,
+                    "roomHeader"        : module.config().selectors.global.roomHeader,
+                    "roomClose"         : module.config().selectors.global.roomClose,
+                    "roomMinimize"      : module.config().selectors.global.roomMinimize,
+                    "roomFullscreen"    : module.config().selectors.global.roomFullscreen,
+                    "roomMessagesUnread": module.config().selectors.global.roomMessagesUnread
                 },
                 "roomConnect": {
                     "div"      : module.config().selectors.roomConnect.div,
@@ -107,6 +108,10 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
          */
         "websocket": {},
         /**
+         * The current user message (not sent)
+         */
+        "messagesCurrent": "",
+        /**
          * A messages sent history
          */
         "messagesHistory": [],
@@ -114,6 +119,14 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
          * Pointer in the array messagesHistory
          */
         "messagesHistoryPointer": 0,
+        /**
+         * Monitor mouse position when it is in or out a room chat div
+         */
+        "mouseInRoomChat": {},
+        /**
+         * Monitor if a room is opened or not
+         */
+        "isRoomOpened": {},
         /**
          * The current User instance
          */
@@ -208,6 +221,18 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                 this.settings.selectors.roomSend.usersList + ' li a',
                 $.proxy(this.selectUserEvent, this)
             );
+            // Monitor the mouse when it is in a roomChat div
+            $('body').on(
+                'mouseenter',
+                this.settings.selectors.global.roomChat,
+                $.proxy(this.mouseEnterRoomChatEvent, this)
+            );
+            // Monitor the mouse when it is not in a roomChat div
+            $('body').on(
+                'mouseleave',
+                this.settings.selectors.global.roomChat,
+                $.proxy(this.mouseLeaveRoomChatEvent, this)
+            );
         },
 
         /**
@@ -244,6 +269,8 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
             $(e.currentTarget).closest(this.settings.selectors.global.roomHeader)
             .next(this.settings.selectors.global.roomContents)
             .slideDown(this.settings.animationTime);
+
+            this.isRoomOpened[$(e.currentTarget).closest(this.settings.selectors.global.room).attr('data-name')] = true;
         },
 
         /**
@@ -255,6 +282,8 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
             $(e.currentTarget).closest(this.settings.selectors.global.roomHeader)
             .next(this.settings.selectors.global.roomContents)
             .slideUp(this.settings.animationTime);
+
+            this.isRoomOpened[$(e.currentTarget).closest(this.settings.selectors.global.room).attr('data-name')] = false;
         },
 
         /**
@@ -280,12 +309,14 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
          * Event fired when a user wants to close a room
          *
          * @param {event} e The fired event
-         * @todo disconnect the user
          */
         closeRoomEvent: function (e) {
-            var room = $(e.currentTarget).closest(this.settings.selectors.global.room);
+            var room     = $(e.currentTarget).closest(this.settings.selectors.global.room),
+                roomName = room.attr('data-name');
 
-            this.disconnect(room.attr('data-name'));
+            this.disconnect(roomName);
+            delete this.isRoomOpened[roomName];
+            delete this.mouseInRoomChat[roomName];
             room.remove();
         },
 
@@ -300,13 +331,20 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                 this.sendMessageEvent(e);
             } else if (e.which === 38) {
                 // Up arrow key pressed
-                if (this.messagesHistoryPointer - 1 >= 0) {
+                if (this.messagesHistoryPointer > 0) {
+                    if (this.messagesHistoryPointer === this.messagesHistory.length) {
+                        this.messagesCurrent = $(e.currentTarget).val();
+                    }
+
                     $(e.currentTarget).val(this.messagesHistory[--this.messagesHistoryPointer]);
                 }
             } else if (e.which === 40) {
                 // Down arrow key pressed
-                if (this.messagesHistoryPointer + 1 <= this.messagesHistory.length) {
+                if (this.messagesHistoryPointer + 1 < this.messagesHistory.length) {
                     $(e.currentTarget).val(this.messagesHistory[++this.messagesHistoryPointer]);
+                } else if (this.messagesHistoryPointer + 1 === this.messagesHistory.length) {
+                    this.messagesHistoryPointer++;
+                    $(e.currentTarget).val(this.messagesCurrent);
                 }
             }
         },
@@ -336,6 +374,8 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                 this.messagesHistoryPointer++;
                 messageInput.val('');
             }
+            
+            e.preventDefault();
         },
 
         /**
@@ -380,7 +420,28 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
 
             e.preventDefault();
         },
+
+        /**
+         * Event fired when the user mouse enters the room chat div
+         *
+         * @param {event} e The fired event
+         */
+        mouseEnterRoomChatEvent: function (e) {
+            var roomName = $(e.currentTarget).closest(this.settings.selectors.global.room).attr('data-name');
+            this.mouseInRoomChat[roomName] = true;
+        },
         
+        /**
+         * Event fired when the user mouse leaves the room chat div
+         *
+         * @param {event} e The fired event
+         */
+        mouseLeaveRoomChatEvent: function (e) {
+            var roomName = $(e.currentTarget).closest(this.settings.selectors.global.room).attr('data-name');
+
+            this.mouseInRoomChat[roomName] = false;
+        },
+
         /*=====  End of Events  ======*/
 
         /*==================================================================
@@ -626,9 +687,23 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
          * @param {object} data The server JSON reponse
          */
         recieveMessageCallback: function (data) {
-            var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]');
+            var room                = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
+                roomChat            = room.find(this.settings.selectors.global.roomChat),
+                messagesUnread      = room.find(this.settings.selectors.global.roomMessagesUnread),
+                messagesUnreadValue = messagesUnread.text();
 
-            room.find(this.settings.selectors.global.roomChat).append(this.formatUserMessage(data));
+            roomChat.append(this.formatUserMessage(data));
+
+            if (this.isRoomOpened[data.roomName] && !this.mouseInRoomChat[data.roomName]) {
+                roomChat.scrollTop(room.height());
+                messagesUnread.text('');
+            } else {
+                if (messagesUnreadValue === '') {
+                    messagesUnread.text('1');
+                } else {
+                    messagesUnread.text(++messagesUnreadValue);
+                }
+            }
         },
 
         /**
@@ -735,6 +810,8 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
 
                 this.updateUsersDropdown(newRoom, data.pseudonyms);
                 this.loadHistoric(newRoomChat, data.historic);
+                this.mouseInRoomChat[data.roomName] = false;
+                this.isRoomOpened[data.roomName]    = true;
 
                 $(this.settings.selectors.global.chat).append(newRoom);
             } else if (data.historic) {

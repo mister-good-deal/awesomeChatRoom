@@ -75,6 +75,7 @@
                         data-html="true"
                     ></span>
                     <span class="room-name"><?= _('default')?></span>
+                    <span class="badge messages-unread"></span>
                     <span class="close-room pull-right glyphicon glyphicon-remove"></span>
                     <span class="fullscreen pull-right glyphicon glyphicon-fullscreen"></span>
                     <span class="minimize pull-right glyphicon glyphicon-minus"></span>
@@ -93,10 +94,7 @@
                                       name="message"
                                       list="chatCommands"
                                       placeholder="<?=_('Message')?>"
-                            ><?php
-                                echo _('Availabled commands :') . '&#13;&#10;&#13;&#10;' . '/pm ' .
-                                _('pseudonym message') . '&#13;&#10;' . '/kick ' . _('pseudonym [reason]');
-                            ?></textarea>
+                            ></textarea>
                         </div>
                         <div class="form-group">
                             <div class="input-group-btn dropup">
