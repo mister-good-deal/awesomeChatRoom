@@ -12,7 +12,9 @@ use \classes\websocket\Server as Server;
 use \interfaces\ServiceInterface as Service;
 use \classes\IniManager as Ini;
 use \classes\entities\User as User;
+use \classes\entities\UsersChatRights as UsersChatRights;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
+use \classes\entitiesManager\UsersChatRightsEntityManager as UsersChatRightsEntityManager;
 
 /**
  * Chat services to manage a chat with a WebSocket server
@@ -219,7 +221,11 @@ class ChatService extends Server implements Service
             if ($user === false) {
                 $message = _('Authentication failed');
             } else {
-                $userEntityManager->setEntity($user);
+                $usersChatRights              = new UsersChatRights();
+                $usersChatRightsEntityManager = new UsersChatRightsEntityManager($usersChatRights);
+                $usersChatRights->idUser      = $user->id;
+                $usersChatRights->roomName    = $roomName;
+                $usersChatRightsEntityManager->grantAll();
 
                 $socketHash             = $this->getClientName($socket);
                 $pseudonym              = $userEntityManager->getPseudonymForChat();
@@ -300,8 +306,6 @@ class ChatService extends Server implements Service
                 // Authenticated user
                 $userEntityManager = new UserEntityManager();
                 $user              = $userEntityManager->authenticateUser($email, $password);
-
-                $userEntityManager->setEntity($user);
 
                 if ($user !== false) {
                     $pseudonym = $userEntityManager->getPseudonymForChat();
@@ -475,7 +479,7 @@ class ChatService extends Server implements Service
     }
 
     /**
-     * Kick a user fro ma room
+     * Kick a user from a room
      *
      * @param resource $socket The user socket
      * @param array    $data   JSON decoded client data
@@ -490,45 +494,53 @@ class ChatService extends Server implements Service
         @$this->setIfIsSetAndTrim($reason, $data['reason'], '');
 
         $userEntityManager = new UserEntityManager();
+        $user              = $userEntityManager->authenticateUser($email, $password);
 
-        if ($userEntityManager->hasChatAdminRight($email, $password)) {
-            $userHash = $this->getUserHashByPseudonym($roomName, $pseudonym);
+        if ($user === false) {
+            $message = _('Authentication failed');
+        } else {
+            $usersChatRightsEntityManager = new UsersChatRightsEntityManager();
+            $usersChatRightsEntityManager->loadEntity(array('idUser' => $user->id, 'roomName' => $roomName));
 
-            if ($userHash !== false) {
-                if ($reason !== '') {
-                    $reason = sprintf(_(' because %s'), $reason);
-                }
+            if ($user->getUserRights()->chatAdmin || $usersChatRightsEntityManager->getEntity()->kick === 1) {
+                $userHash = $this->getUserHashByPseudonym($roomName, $pseudonym);
 
-                $success        = true;
-                $message        = sprintf(_('You kicked "%s" from the room "%s"'), $pseudonym, $roomName) . $reason;
-                $adminPseudonym = $this->rooms[$roomName]['pseudonyms'][$this->getClientName($socket)];
+                if ($userHash !== false) {
+                    if ($reason !== '') {
+                        $reason = sprintf(_(' because %s'), $reason);
+                    }
+
+                    $success        = true;
+                    $message        = sprintf(_('You kicked "%s" from the room "%s"'), $pseudonym, $roomName) . $reason;
+                    $adminPseudonym = $this->rooms[$roomName]['pseudonyms'][$this->getClientName($socket)];
 
 
-                $this->send($this->rooms[$roomName]['sockets'][$userHash], $this->encode(json_encode(array(
-                    'service'  => $this->chatService,
-                    'action'   => 'getkicked',
-                    'text'     => sprintf(_('You got kicked from the room by "%s"'), $adminPseudonym) . $reason,
-                    'roomName' => $roomName
-                ))));
+                    $this->send($this->rooms[$roomName]['sockets'][$userHash], $this->encode(json_encode(array(
+                        'service'  => $this->chatService,
+                        'action'   => 'getkicked',
+                        'text'     => sprintf(_('You got kicked from the room by "%s"'), $adminPseudonym) . $reason,
+                        'roomName' => $roomName
+                    ))));
 
-                $this->disconnectUser($this->rooms[$roomName]['sockets'][$userHash]);
+                    $this->disconnectUser($this->rooms[$roomName]['sockets'][$userHash]);
 
-                foreach ($this->rooms[$roomName]['sockets'] as $userSocket) {
-                    $this->updateRoomUsers($userSocket, $roomName);
-                    $this->sendMessageToUser(
-                        $this->server,
-                        $userSocket,
-                        sprintf(_('The user "%s" got kicked by "%s"'), $pseudonym, $adminPseudonym) . $reason,
-                        $roomName,
-                        'public',
-                        date('Y-m-d H:i:s')
-                    );
+                    foreach ($this->rooms[$roomName]['sockets'] as $userSocket) {
+                        $this->updateRoomUsers($userSocket, $roomName);
+                        $this->sendMessageToUser(
+                            $this->server,
+                            $userSocket,
+                            sprintf(_('The user "%s" got kicked by "%s"'), $pseudonym, $adminPseudonym) . $reason,
+                            $roomName,
+                            'public',
+                            date('Y-m-d H:i:s')
+                        );
+                    }
+                } else {
+                    $message = sprintf(_('The user "%s" cannot be found in the room "%s"'), $pseudonym, $roomName);
                 }
             } else {
-                $message = sprintf(_('The user "%s" cannot be found in the room "%s"'), $pseudonym, $roomName);
+                $message = _('You do not have the right to kick a user on this room');
             }
-        } else {
-            $message = _('You do not have the right to kick a user on this room');
         }
 
         $this->send($socket, $this->encode(json_encode(array(

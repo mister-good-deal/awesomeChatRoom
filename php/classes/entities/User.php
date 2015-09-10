@@ -11,6 +11,7 @@ namespace classes\entities;
 use \abstracts\designPatterns\Entity as Entity;
 use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
+use \classes\entities\UsersRights as UsersRights;
 
 /**
  * User entity that extends the Entity abstact class
@@ -45,6 +46,10 @@ class User extends Entity
      * @var array $errors An array containing the occured errors when fields are set
      */
     private $errors = array();
+    /**
+     * @var UsersRights $userRights The user rights
+     */
+    private $userRights;
 
     /*=====================================
     =            Magic methods            =
@@ -60,8 +65,10 @@ class User extends Entity
         parent::__construct('User');
 
         if ($data !== null) {
-            $this->setAttributes($date);
+            $this->setAttributes($data);
         }
+
+        $this->userRights = new UsersRights();
     }
 
     /*-----  End of Magic methods  ------*/
@@ -78,6 +85,26 @@ class User extends Entity
     public function getErrors()
     {
         return $this->errors;
+    }
+
+    /**
+     * Get the user rights
+     *
+     * @return UsersRights The user rights
+     */
+    public function getUserRights()
+    {
+        return $this->userRights;
+    }
+
+    /**
+     * Set the user rights
+     *
+     * @param UsersRights $userRights The user rights
+     */
+    public function setUserRights($userRights)
+    {
+        $this->userRights = $userRights;
     }
     
     /*-----  End of Setters / getters  ------*/
@@ -116,8 +143,11 @@ class User extends Entity
      */
     private function validateField($columnName, $value)
     {
+        if ($columnName !== 'password') {
+            $value = trim($value);
+        }
+
         $this->errors[$columnName] = array();
-        $value                     = trim($value);
         $length                    = strlen($value);
         $maxLength                 = $this->getColumnMaxSize($columnName);
         $name                      = _(strtolower(preg_replace('/([A-Z])/', ' $0', $columnName)));

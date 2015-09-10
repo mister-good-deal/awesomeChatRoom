@@ -117,6 +117,17 @@ abstract class EntityManager
     ======================================*/
 
     /**
+     * Load an entity by its id
+     *
+     * @param  int|array The id value
+     */
+    public function loadEntity($id)
+    {
+        $this->entity->setIdValue($id);
+        $this->loadEntityInDatabase();
+    }
+
+    /**
      * Save the entity in the database
      *
      * @param  Entity $entity OPTIONAL If an entity is passed, this entity becomes the EntityManager Entity DEFAULT null
@@ -231,6 +242,26 @@ abstract class EntityManager
     /*=======================================
     =            Private methods            =
     =======================================*/
+
+    /**
+     * Load an entity by its id in the database
+     */
+    private function loadEntityInDatabase()
+    {
+        $sqlMarks = " SELECT *\n FROM %s\n WHERE %s";
+
+        $sql = static::sqlFormater(
+            $sqlMarks,
+            $this->entity->getTableName(),
+            $this->getEntityPrimaryKeysWhereClause()
+        );
+
+        $attributes = DB::query($sql)->fetch();
+        
+        if ($attributes !== false) {
+            $this->entity->setAttributes($attributes);
+        }
+    }
 
     /**
      * Check if the entity already exists in the database

@@ -9,6 +9,7 @@
 namespace classes\entitiesManager;
 
 use \abstracts\designPatterns\EntityManager as EntityManager;
+use \classes\entitiesManager\UsersRightsEntityManager as UsersRightsEntityManager;
 use \classes\entities\User as User;
 use \classes\DataBase as DB;
 use \classes\IniManager as Ini;
@@ -16,12 +17,40 @@ use \classes\IniManager as Ini;
 /**
  * Performed database action relative to the User entity class
  *
- * @class UserEntityManager
+ * @property User $entity The user entity
  */
 class UserEntityManager extends EntityManager
 {
     use \traits\FiltersTrait;
 
+    /**
+     * Constructor that can take a User entity as first parameter and a Collection as second parameter
+     *
+     * @param User       $entity           A user entity object DEFAULT null
+     * @param Collection $entityCollection A colection oject DEFAULT null
+     */
+    public function __construct($entity = null, $entityCollection = null)
+    {
+        parent::__construct($entity, $entityCollection);
+
+        if ($entity === null) {
+            $this->entity = new User();
+        }
+    }
+
+   /**
+     * Load user entity and userRights entity linked to the user entity
+     *
+     * @param  int|array The id value
+     */
+    public function loadEntity($id)
+    {
+        parent::loadEntity($id);
+
+        $usersRightsEntityManager = new UsersRightsEntityManager($this->entity->getUserRights());
+        $usersRightsEntityManager->loadEntity($id);
+    }
+    
     /**
      * Register a user and return errors if errors occured
      *
@@ -150,7 +179,7 @@ class UserEntityManager extends EntityManager
     {
         $user       = new User();
         $login      = DB::quote($login);
-        $sqlMarks   = 'SELECT * FROM %s WHERE email = %s OR pseudonym = %s';
+        $sqlMarks   = 'SELECT id, password FROM %s WHERE email = %s OR pseudonym = %s';
         $sql        = static::sqlFormater($sqlMarks, $user->getTableName(), $login, $login);
         $userParams = DB::query($sql)->fetch();
 
@@ -158,7 +187,8 @@ class UserEntityManager extends EntityManager
             if (!hash_equals($userParams['password'], crypt($password, $userParams['password']))) {
                 $user = false;
             } else {
-                $user->setAttributes($userParams);
+                $this->loadEntity($userParams['id']);
+                $user = $this->entity;
             }
         } else {
             $user = false;
@@ -184,9 +214,7 @@ class UserEntityManager extends EntityManager
         $user    = $this->authenticateUser($login, $password);
 
         if ($user !== false) {
-            $rights = $this->getRights($user);
-
-            if ((int) $rights['webSocket'] === 1) {
+            if ((int) $this->entity->getUserRights()->webSocket === 1) {
                 $success = true;
             }
         }
@@ -207,9 +235,7 @@ class UserEntityManager extends EntityManager
         $user    = $this->authenticateUser($login, $password);
 
         if ($user !== false) {
-            $rights = $this->getRights($user);
-
-            if ((int) $rights['chatAdmin'] === 1) {
+            if ((int) $this->entity->getUserRights()->chatAdmin === 1) {
                 $success = true;
             }
         }
@@ -246,19 +272,6 @@ class UserEntityManager extends EntityManager
         $sql      = static::sqlFormater($sqlMarks, $user->getTableName(), DB::quote($pseudonym));
 
         return (int) DB::query($sql)->fetchColumn() > 0;
-    }
-
-    /**
-     * Get all the user right
-     *
-     * @param  User $user The User instanciated object
-     * @return array      The user rights in a array (1 = ok and 0 = nok)
-     */
-    private function getRights($user)
-    {
-        $sql = 'SELECT * FROM UsersRights WHERE idUser = ' . DB::quote($user->id);
-
-        return $userParams = DB::query($sql)->fetch();
     }
     
     /*=====  End of Chat section  ======*/

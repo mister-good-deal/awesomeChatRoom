@@ -475,11 +475,12 @@ class Server
     private function checkAuthentication($data)
     {
         $userEntityManager = new UserEntityManager();
+        $user              = $userEntityManager->authenticateUser($data['login'], $data['password']);
 
-        if (!isset($data['login']) || !isset($data['password'])) {
+        if ($user === false) {
             $check = false;
         } else {
-            $check = $userEntityManager->connectWebSocketServer($data['login'], $data['password']);
+            $check = (int) $user->getUserRights()->webSocket === 1;
         }
 
         return $check;

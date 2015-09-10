@@ -66,13 +66,16 @@
             >
                 <!-- room title -->
                 <h3 class="header">
-                    <span
-                        class="users glyphicon glyphicon-user pull-left"
-                        type="button"
-                        data-title="<?= _('Connected users')?>"
-                        data-toggle="popover"
-                        data-placement="right"
-                        data-html="true"
+                    <span class="users glyphicon glyphicon-user pull-left"
+                          type="button"
+                          data-title="<?= _('Connected users')?>"
+                          data-toggle="popover"
+                          data-placement="right"
+                          data-html="true"
+                    ></span>
+                    <span class="admin glyphicon glyphicon-cog pull-left"
+                          data-toggle="modal" *
+                          data-target="#chat-admin"
                     ></span>
                     <span class="room-name"><?= _('default')?></span>
                     <span class="badge messages-unread"></span>
@@ -115,6 +118,96 @@
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- admin chat modal -->
+        <div class="modal"
+             id="chat-admin"
+             tabindex="-1"
+             role="dialog"
+             aria-labelledby="<?=_('Chat administration')?>"
+             data-room-name=""
+        >
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title"><?=_('Chat administration')?> "<span class="room-name"></span>"</h4>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="users-list list-unstyled">
+                            <li class="sample">
+                                <span class="user-pseudonym"></span>
+                                <ul class="actions list-inline">
+                                    <li><button class="btn btn-default" type="button"><?=_('Kick')?></button></li>
+                                    <li><button class="btn btn-default" type="button"><?=_('Ban')?></button></li>
+                                    <li>
+                                        <?=_('Rights')?>
+                                        <ul class="rights list-unstyled">
+                                            <li class="warper">
+                                                <?=_('Kick users')?>
+                                                <input type="checkbox"
+                                                       name="kick"
+                                                       data-on-color="success"
+                                                       data-off-color="danger"
+                                                       data-size="mini"
+                                                >
+                                            </li>
+                                            <li class="warper">
+                                                <?=_('Ban users')?>
+                                                <input type="checkbox"
+                                                       name="ban"
+                                                       data-on-color="success"
+                                                       data-off-color="danger"
+                                                       data-size="mini"
+                                                >
+                                            </li>
+                                            <li class="warper">
+                                                <?=_('Grant users rights')?>
+                                                <input type="checkbox"
+                                                       name="grant"
+                                                       data-on-color="success"
+                                                       data-off-color="danger"
+                                                       data-size="mini"
+                                                >
+                                            </li>
+                                            <li class="warper">
+                                                <?=_('Revoke users rights')?>
+                                                <input type="checkbox"
+                                                       name="revoke"
+                                                       data-on-color="success"
+                                                       data-off-color="danger"
+                                                       data-size="mini"
+                                                >
+                                            </li>
+                                            <li class="warper">
+                                                <?=_('Rename room name')?>
+                                                <input type="checkbox"
+                                                       name="rename"
+                                                       data-on-color="success"
+                                                       data-off-color="danger"
+                                                       data-size="mini"
+                                                >
+                                            </li>
+                                            <li class="warper">
+                                                <?=_('Change room password')?>
+                                                <input type="checkbox"
+                                                       name="password"
+                                                       data-on-color="success"
+                                                       data-off-color="danger"
+                                                       data-size="mini"
+                                                >
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

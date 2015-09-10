@@ -70,7 +70,7 @@ abstract class Entity
      */
     protected $columnsValue = array();
     /**
-     * @var array $columnsAttributes An associative array with column name on key and column value on value
+     * @var array $columnsAttributes An associative array with column name on key and column attributes on value
      */
     protected $columnsAttributes = array();
 
@@ -258,12 +258,6 @@ abstract class Entity
      */
     public function setIdValue($value)
     {
-        if (!is_array($value)) {
-            $values = array($value);
-        } else {
-            $values = $value;
-        }
-
         if (!is_array($value) && count($this->idKey) > 1) {
             throw new Exception(
                 'The id is on several columns you must passed an assosiative array with keys (' .
@@ -272,15 +266,19 @@ abstract class Entity
             );
         }
 
-        foreach ($values as $key => $val) {
-            if (!array_key_exists($key, $this->columnsValue)) {
-                throw new Exception(
-                    'The keys of the assosiative array must be one of these : ' . implode(', ', $this->idKey),
-                    Exception::$PARAMETER
-                );
-            }
+        if (is_array($value)) {
+            foreach ($value as $key => $val) {
+                if (!array_key_exists($key, $this->columnsValue)) {
+                    throw new Exception(
+                        'The keys of the assosiative array must be one of these : ' . implode(', ', $this->idKey),
+                        Exception::$PARAMETER
+                    );
+                }
 
-            $this->columnAttributes[$key] = $val;
+                $this->columnsValue[$key] = $val;
+            }
+        } else {
+            $this->columnsValue[$this->idKey[0]] = $value;
         }
     }
 
@@ -489,7 +487,7 @@ abstract class Entity
         }
         
         if (isset($constraints['primary'])) {
-            $this->idKey = explode(', ', trim($constraints['primary']['columns'], '`'));
+            $this->idKey = explode(', ', str_replace('`', '', $constraints['primary']['columns']));
         } else {
             $this->idKey = array();
         }

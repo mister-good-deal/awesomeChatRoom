@@ -54,17 +54,17 @@ GODDBYE;
      * @var string[] $COMMANDS List of all commands with their description
      */
     private static $COMMANDS = array(
-        'exit'                                              => 'Exit the ORM console',
-        'last cmd'                                          => 'Get the last command written',
-        'all cmd'                                           => 'Get all the commands written',
-        'tables'                                            => 'Get all the tables name',
-        'entites'                                           => 'Get all the entites name',
+        'exit'                                               => 'Exit the ORM console',
+        'last cmd'                                           => 'Get the last command written',
+        'all cmd'                                            => 'Get all the commands written',
+        'tables'                                             => 'Get all the tables name',
+        'entities'                                           => 'Get all the entites name',
         'entity -n entityName --clean|drop|show|desc|create' => 'Perform action on entity table',
-        'clean -t tableName'                                => 'Delete all the row of the given table name',
-        'drop -t tableName'                                 => 'Drop the given table name',
-        'show -t tableName [-s startIndex -e endIndex]'     => 'Show table data begin at startIndex and stop at endIndex',
-        'desc -t tableName'                                 => 'Show table structure',
-        'help'                                              => 'Display all the commands'
+        'clean -t tableName'                                 => 'Delete all the row of the given table name',
+        'drop -t tableName'                                  => 'Drop the given table name',
+        'show -t tableName [-s startIndex -e endIndex]'      => 'Show table data begin at startIndex and stop at endIndex',
+        'desc -t tableName'                                  => 'Show table structure',
+        'help'                                               => 'Display all the commands'
     );
 
     /**

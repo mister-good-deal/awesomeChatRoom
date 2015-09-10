@@ -6,7 +6,7 @@
 
 /*global define*/
 
-define(['jquery', 'module', 'lodash'], function ($, module, _) {
+define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function ($, module, _) {
     'use strict';
 
     /**
@@ -80,15 +80,20 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                     "send"     : module.config().selectors.roomSend.send
                 },
                 "roomAction": {
-                    "loadHistoric": module.config().selectors.roomAction.loadHistoric,
-                    "kickUser"    : module.config().selectors.roomAction.kickUser,
-                    "showUsers"   : module.config().selectors.roomAction.showUsers
+                    "loadHistoric"  : module.config().selectors.roomAction.loadHistoric,
+                    "kickUser"      : module.config().selectors.roomAction.kickUser,
+                    "showUsers"     : module.config().selectors.roomAction.showUsers,
+                    "administration": module.config().selectors.roomAction.administration
                 },
                 "chat": {
                     "message"  : module.config().selectors.chat.message,
                     "pseudonym": module.config().selectors.chat.pseudonym,
                     "date"     : module.config().selectors.chat.date,
                     "text"     : module.config().selectors.chat.text
+                },
+                "administrationPanel": {
+                    "div"     : module.config().selectors.administrationPanel.div,
+                    "roomName": module.config().selectors.administrationPanel.roomName
                 }
             }
         },
@@ -232,6 +237,12 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                 'mouseleave',
                 this.settings.selectors.global.roomChat,
                 $.proxy(this.mouseLeaveRoomChatEvent, this)
+            );
+            // Set the modal admin contents before it is opened
+            $('body').on(
+                'show.bs.modal',
+                this.settings.selectors.administrationPanel.div,
+                $.proxy(this.setAministrationPanelEvent, this)
             );
         },
 
@@ -440,6 +451,20 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
             var roomName = $(e.currentTarget).closest(this.settings.selectors.global.room).attr('data-name');
 
             this.mouseInRoomChat[roomName] = false;
+        },
+
+        /**
+         * Event fired when the user wants to display the administration room panel
+         *
+         * @param {event} e The fired event
+         */
+        setAministrationPanelEvent: function (e) {
+            var modal    = $(e.currentTarget),
+                roomName = $(e.relatedTarget).closest(this.settings.selectors.global.room).attr('data-name');
+
+            modal.find(this.settings.selectors.administrationPanel.roomName).text(roomName);
+            modal.attr('data-room-name', roomName);
+            modal.find('.rights input[type="checkbox"]').bootstrapSwitch();
         },
 
         /*=====  End of Events  ======*/
@@ -805,6 +830,7 @@ define(['jquery', 'module', 'lodash'], function ($, module, _) {
                         return list.html();
                     }
                 });
+                // newRoom.find(this.settings.selectors.roomAction.administration).modal()
 
                 newRoomChat.attr('data-historic-loaded', 0);
 
