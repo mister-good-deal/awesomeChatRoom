@@ -142,14 +142,21 @@
                         <ul class="users-list list-unstyled">
                             <li class="sample">
                                 <span class="user-pseudonym"></span>
-                                <ul class="actions list-inline">
+                                <ul class="actions list-inline dropdown">
                                     <li><button class="btn btn-default" type="button"><?=_('Kick')?></button></li>
                                     <li><button class="btn btn-default" type="button"><?=_('Ban')?></button></li>
                                     <li>
-                                        <?=_('Rights')?>
-                                        <ul class="rights list-unstyled">
+                                        <button class="btn btn-default dropdown-toggle" 
+                                                type="button"
+                                                data-toggle="dropdown"
+                                                aria-haspopup="true"
+                                                aria-expanded="false"
+                                        >
+                                            <?=_('Rights')?> <span class="caret"></span>
+                                        </button>
+                                        <ul class="rights dropdown-menu">
                                             <li class="warper">
-                                                <?=_('Kick users')?>
+                                                <label><?=_('Kick users')?></label>
                                                 <input type="checkbox"
                                                        name="kick"
                                                        data-on-color="success"
@@ -158,7 +165,7 @@
                                                 >
                                             </li>
                                             <li class="warper">
-                                                <?=_('Ban users')?>
+                                                <label><?=_('Ban users')?></label>
                                                 <input type="checkbox"
                                                        name="ban"
                                                        data-on-color="success"
@@ -167,7 +174,7 @@
                                                 >
                                             </li>
                                             <li class="warper">
-                                                <?=_('Grant users rights')?>
+                                                <label><?=_('Grant users rights')?></label>
                                                 <input type="checkbox"
                                                        name="grant"
                                                        data-on-color="success"
@@ -176,7 +183,7 @@
                                                 >
                                             </li>
                                             <li class="warper">
-                                                <?=_('Revoke users rights')?>
+                                                <label><?=_('Revoke users rights')?></label>
                                                 <input type="checkbox"
                                                        name="revoke"
                                                        data-on-color="success"
@@ -185,7 +192,7 @@
                                                 >
                                             </li>
                                             <li class="warper">
-                                                <?=_('Rename room name')?>
+                                                <label><?=_('Rename room name')?></label>
                                                 <input type="checkbox"
                                                        name="rename"
                                                        data-on-color="success"
@@ -194,7 +201,7 @@
                                                 >
                                             </li>
                                             <li class="warper">
-                                                <?=_('Change room password')?>
+                                                <label><?=_('Change room password')?></label>
                                                 <input type="checkbox"
                                                        name="password"
                                                        data-on-color="success"
