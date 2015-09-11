@@ -6794,6 +6794,9 @@ button.close {
   margin-right: 0.4em;
   line-height: 1.3em;
 }
+#chat .room .header .glyphicon:first-child {
+  margin-left: 0.4em;
+}
 #chat .room .header .popover {
   color: #000;
 }
@@ -6817,35 +6820,18 @@ button.close {
   padding-right: 0.2em;
 }
 /*----------  Chat modal admin  ----------*/
-#chat-admin .rights {
-  width: 100%;
+.chat-admin tr.right {
+  display: none;
 }
-#chat-admin .rights .warper {
+.chat-admin tr.right td.warper {
   position: relative;
-  line-height: 2.2em;
 }
-#chat-admin .rights .warper .bootstrap-switch {
+.chat-admin tr.right td.warper .bootstrap-switch {
   position: absolute;
-  top: 0.3em;
+  right: 0.5em;
 }
-@media screen and (min-width: 768px) {
-  #chat-admin .rights .warper .bootstrap-switch {
-    left: 85%;
-  }
-}
-@media screen and (min-width: 480px) and (max-width: 767px) {
-  #chat-admin .rights .warper .bootstrap-switch {
-    left: 80%;
-  }
-}
-@media screen and (max-width: 480px) {
-  #chat-admin .rights .warper .bootstrap-switch {
-    left: 71%;
-  }
-}
-#chat-admin .rights .warper label {
+.chat-admin tr.right td.warper label {
   margin-bottom: 0;
-  padding-left: 1em;
 }
 .bootstrap-switch {
   display: inline-block;

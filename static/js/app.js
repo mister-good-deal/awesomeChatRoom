@@ -14,6 +14,11 @@ requirejs.config({
         "forms"           : "forms",
         "message"         : "message"
     },
+    "shim" : {
+        "bootstrap" : {
+            "deps" :['jquery']
+        }
+    },
     "config": {
         "websocket": {
             "serverUrl"  : "ws://127.0.0.1:5000",
@@ -72,8 +77,13 @@ requirejs.config({
                     "text"     : ".text"
                 },
                 "administrationPanel": {
-                    "div"     : "#chat-admin",
-                    "roomName": ".room-name"
+                    "modal"       : ".chat-admin",
+                    "modalSample" : "#chat-admin-sample",
+                    "trSample"    : ".sample",
+                    "roomName"    : ".room-name",
+                    "rights"      : ".right",
+                    "pseudonym"   : ".user-pseudonym",
+                    "toggleRights": ".toggle-rights"
                 }
             },
             "commands": {

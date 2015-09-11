@@ -74,8 +74,8 @@
                           data-html="true"
                     ></span>
                     <span class="admin glyphicon glyphicon-cog pull-left"
-                          data-toggle="modal" *
-                          data-target="#chat-admin"
+                          data-toggle="modal"
+                          data-target="#chat-admin-id"
                     ></span>
                     <span class="room-name"><?= _('default')?></span>
                     <span class="badge messages-unread"></span>
@@ -123,8 +123,8 @@
         </div>
         
         <!-- admin chat modal -->
-        <div class="modal"
-             id="chat-admin"
+        <div class="modal chat-admin"
+             id="chat-admin-sample"
              tabindex="-1"
              role="dialog"
              aria-labelledby="<?=_('Chat administration')?>"
@@ -139,81 +139,100 @@
                         <h4 class="modal-title"><?=_('Chat administration')?> "<span class="room-name"></span>"</h4>
                     </div>
                     <div class="modal-body">
-                        <ul class="users-list list-unstyled">
-                            <li class="sample">
-                                <span class="user-pseudonym"></span>
-                                <ul class="actions list-inline dropdown">
-                                    <li><button class="btn btn-default" type="button"><?=_('Kick')?></button></li>
-                                    <li><button class="btn btn-default" type="button"><?=_('Ban')?></button></li>
-                                    <li>
-                                        <button class="btn btn-default dropdown-toggle" 
-                                                type="button"
-                                                data-toggle="dropdown"
-                                                aria-haspopup="true"
-                                                aria-expanded="false"
-                                        >
-                                            <?=_('Rights')?> <span class="caret"></span>
-                                        </button>
-                                        <ul class="rights dropdown-menu">
-                                            <li class="warper">
-                                                <label><?=_('Kick users')?></label>
-                                                <input type="checkbox"
-                                                       name="kick"
-                                                       data-on-color="success"
-                                                       data-off-color="danger"
-                                                       data-size="mini"
-                                                >
-                                            </li>
-                                            <li class="warper">
-                                                <label><?=_('Ban users')?></label>
-                                                <input type="checkbox"
-                                                       name="ban"
-                                                       data-on-color="success"
-                                                       data-off-color="danger"
-                                                       data-size="mini"
-                                                >
-                                            </li>
-                                            <li class="warper">
-                                                <label><?=_('Grant users rights')?></label>
-                                                <input type="checkbox"
-                                                       name="grant"
-                                                       data-on-color="success"
-                                                       data-off-color="danger"
-                                                       data-size="mini"
-                                                >
-                                            </li>
-                                            <li class="warper">
-                                                <label><?=_('Revoke users rights')?></label>
-                                                <input type="checkbox"
-                                                       name="revoke"
-                                                       data-on-color="success"
-                                                       data-off-color="danger"
-                                                       data-size="mini"
-                                                >
-                                            </li>
-                                            <li class="warper">
-                                                <label><?=_('Rename room name')?></label>
-                                                <input type="checkbox"
-                                                       name="rename"
-                                                       data-on-color="success"
-                                                       data-off-color="danger"
-                                                       data-size="mini"
-                                                >
-                                            </li>
-                                            <li class="warper">
-                                                <label><?=_('Change room password')?></label>
-                                                <input type="checkbox"
-                                                       name="password"
-                                                       data-on-color="success"
-                                                       data-off-color="danger"
-                                                       data-size="mini"
-                                                >
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><?=_('Users list')?></div>
+                            <table class="table table-hover">
+                                <caption>table title and/or explanatory text</caption>
+                                <thead>
+                                    <tr>
+                                        <th><?=_('User pseudonym')?></th>
+                                        <th colspan="3"><?=_('Actions')?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="hide sample">
+                                        <td class="user-pseudonym">Pseudonym</td>
+                                        <td>
+                                            <button class="btn btn-default" type="button"><?=_('Kick')?></button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-default" type="button"><?=_('Ban')?></button>
+                                        </td>
+                                        <td>
+                                            <button class="toggle-rights btn btn-default" type="button" data-refer="">
+                                                <?=_('Rights')?> <span class="caret"></span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hide sample right">
+                                        <td colspan="4" class="warper">
+                                            <label for="right-kick"><?=_('Kick users')?></label>
+                                            <input type="checkbox"
+                                                   name="kick"
+                                                   data-on-color="success"
+                                                   data-off-color="danger"
+                                                   data-size="mini"
+                                            >
+                                        </td>
+                                    </tr>
+                                    <tr class="hide sample right">
+                                        <td colspan="4" class="warper">
+                                            <label><?=_('Ban users')?></label>
+                                            <input type="checkbox"
+                                                   name="ban"
+                                                   data-on-color="success"
+                                                   data-off-color="danger"
+                                                   data-size="mini"
+                                            >
+                                        </td>
+                                    </tr>
+                                    <tr class="hide sample right">
+                                        <td colspan="4" class="warper">
+                                            <label><?=_('Grant users rights')?></label>
+                                            <input type="checkbox"
+                                                   name="grant"
+                                                   data-on-color="success"
+                                                   data-off-color="danger"
+                                                   data-size="mini"
+                                            >
+                                        </td>
+                                    </tr>
+                                    <tr class="hide sample right">
+                                        <td colspan="4" class="warper">
+                                            <label><?=_('Revoke users rights')?></label>
+                                            <input type="checkbox"
+                                                   name="revoke"
+                                                   data-on-color="success"
+                                                   data-off-color="danger"
+                                                   data-size="mini"
+                                            >
+                                        </td>
+                                    </tr>
+                                    <tr class="hide sample right">
+                                        <td colspan="4" class="warper">
+                                            <label><?=_('Rename room name')?></label>
+                                            <input type="checkbox"
+                                                   name="rename"
+                                                   data-on-color="success"
+                                                   data-off-color="danger"
+                                                   data-size="mini"
+                                            >
+                                        </td>
+                                    </tr>
+                                    <tr class="hide sample right">
+                                        <td colspan="4" class="warper">
+                                            <label><?=_('Change room password')?></label>
+                                            <input type="checkbox"
+                                                   name="password"
+                                                   data-on-color="success"
+                                                   data-off-color="danger"
+                                                   data-size="mini"
+                                            >
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

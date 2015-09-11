@@ -20,8 +20,6 @@ use \classes\entitiesManager\UsersChatRightsEntityManager as UsersChatRightsEnti
  * Chat services to manage a chat with a WebSocket server
  *
  * @todo Sonar this class
- * @todo Bug with USE_INCLUDE_PATH of the file_get_contents() function, see method getRoomsName()
- *       FIX WITH stream_resolve_include_path
  * @class ChatService
  */
 class ChatService extends Server implements Service
@@ -63,10 +61,11 @@ class ChatService extends Server implements Service
      *     'room name' => array(
      *         'sockets'      => array(socketHash1 => socket, socketHash2 => socket, ...),
      *         'pseudonyms'   => array(socketHash1 => pseudonym1, socketHash2 => pseudonym2, ...)
-     *         'creator'      => User object instance,
+     *         'usersRights'  => array(pseudonym1 => UsersChatRights, pseudonym2 => UsersChatRights, ...)
+     *         'creator'      => User,
      *         'type'         => 'public' || 'private',
      *         'password'     => 'password',
-     *         'creationDate' => DateTime object instance,
+     *         'creationDate' => DateTime,
      *         'maxUsers'     => integer,
      *         'historic'     => array(
      *             'part'          => the part number,
@@ -280,8 +279,9 @@ class ChatService extends Server implements Service
      */
     private function connectUser($socket, $data)
     {
-        $success   = false;
-        $response  = array();
+        $success  = false;
+        $user     = false;
+        $response = array();
         @$this->setIfIsSet($password, $data['user']['password'], null);
         @$this->setIfIsSet($roomPassword, $data['password'], null);
         @$this->setIfIsSetAndTrim($roomName, $data['roomName'], null);
@@ -308,8 +308,11 @@ class ChatService extends Server implements Service
                 $user              = $userEntityManager->authenticateUser($email, $password);
 
                 if ($user !== false) {
-                    $pseudonym = $userEntityManager->getPseudonymForChat();
-                    $success   = true;
+                    $usersChatRightsEntityManager = new UsersChatRightsEntityManager();
+                    $usersChatRightsEntityManager->loadEntity(array('idUser' => $user->id, 'roomName' => $roomName));
+                    $pseudonym                                         = $userEntityManager->getPseudonymForChat();
+                    $this->rooms[$roomName]['usersRights'][$pseudonym] = $usersChatRightsEntityManager->getEntity();
+                    $success                                           = true;
                 } else {
                     $message = _('The authentication failed');
                 }
@@ -345,6 +348,10 @@ class ChatService extends Server implements Service
                     $this->rooms[$roomName]['historic']['conversations'],
                     $pseudonym
                 );
+
+                if ($user !== false) {
+                    $response['usersRights'] = $this->rooms[$roomName]['usersRights'];
+                }
             }
         }
 
@@ -514,7 +521,6 @@ class ChatService extends Server implements Service
                     $message        = sprintf(_('You kicked "%s" from the room "%s"'), $pseudonym, $roomName) . $reason;
                     $adminPseudonym = $this->rooms[$roomName]['pseudonyms'][$this->getClientName($socket)];
 
-
                     $this->send($this->rooms[$roomName]['sockets'][$userHash], $this->encode(json_encode(array(
                         'service'  => $this->chatService,
                         'action'   => 'getkicked',
@@ -525,7 +531,6 @@ class ChatService extends Server implements Service
                     $this->disconnectUser($this->rooms[$roomName]['sockets'][$userHash]);
 
                     foreach ($this->rooms[$roomName]['sockets'] as $userSocket) {
-                        $this->updateRoomUsers($userSocket, $roomName);
                         $this->sendMessageToUser(
                             $this->server,
                             $userSocket,
@@ -569,6 +574,22 @@ class ChatService extends Server implements Service
     }
 
     /**
+     * Update the connected users rights list in a room
+     *
+     * @param resource $socket   The user socket
+     * @param string   $roomName The room name
+     */
+    private function updateRoomUsersRights($socket, $roomName)
+    {
+        $this->send($socket, $this->encode(json_encode(array(
+            'service'     => $this->chatService,
+            'action'      => 'updateRoomUsersRights',
+            'roomName'    => $roomName,
+            'usersRights' => $this->rooms[$roomName]['usersRights']
+        ))));
+    }
+
+    /**
      * Disconnect a user from a room
      *
      * @param string $socketHash The user socket hash
@@ -587,6 +608,11 @@ class ChatService extends Server implements Service
             unset($this->rooms[$roomName]);
         } else {
             foreach ($this->rooms[$roomName]['sockets'] as $socket) {
+                if ($this->isRegistered($roomName, $pseudonym)) {
+                    unset($this->rooms[$roomName]['usersRights'][$pseudonym]);
+                    $this->updateRoomUsersRights($socket, $roomName);
+                }
+
                 $this->updateRoomUsers($socket, $roomName);
                 $this->sendMessageToUser(
                     $this->server,
@@ -655,19 +681,23 @@ class ChatService extends Server implements Service
      */
     private function addUserRoom($socketHash, $roomName)
     {
-
         if (!isset($this->usersRooms[$socketHash])) {
             $this->usersRooms[$socketHash] = array();
         }
 
         $this->usersRooms[$socketHash][] = $roomName;
+        $pseudonym                       = $this->rooms[$roomName]['pseudonyms'][$socketHash];
 
         foreach ($this->rooms[$roomName]['sockets'] as $socket) {
+            if ($this->isRegistered($roomName, $pseudonym)) {
+                $this->updateRoomUsersRights($socket, $roomName);
+            }
+
             $this->updateRoomUsers($socket, $roomName);
             $this->sendMessageToUser(
                 $this->server,
                 $socket,
-                sprintf(_('User "%s" connected'), $this->rooms[$roomName]['pseudonyms'][$socketHash]),
+                sprintf(_('User "%s" connected'), $pseudonym),
                 $roomName,
                 'public',
                 date('Y-m-d H:i:s')
@@ -734,6 +764,18 @@ class ChatService extends Server implements Service
     private function getUserHashByPseudonym($roomName, $pseudonym)
     {
         return array_search($pseudonym, $this->rooms[$roomName]['pseudonyms']);
+    }
+
+    /**
+     * Tell if a user is registered or not
+     *
+     * @param  string  $roomName  The room name
+     * @param  string  $pseudonym The user pseudonym
+     * @return boolean            True if the user is registered else false
+     */
+    private function isRegistered($roomName, $pseudonym)
+    {
+        return array_key_exists($pseudonym, $this->rooms[$roomName]['usersRights']);
     }
 
     /**

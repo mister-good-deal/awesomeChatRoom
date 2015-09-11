@@ -30,6 +30,10 @@
                 line-height: 1.3em;
             };
 
+            .glyphicon:first-child {
+                margin-left: 0.4em;
+            };
+
             .popover {
                 color: #000;
 
@@ -62,34 +66,20 @@
 
 /*----------  Chat modal admin  ----------*/
 
-#chat-admin {
-    .rights {
-        width: 100%;
-
-        .warper {
+.chat-admin {
+    tr.right {
+        display: none;
+        
+        td.warper {
             position: relative;
-            line-height: 2.2em;
 
             .bootstrap-switch {
                 position: absolute;
-                top: 0.3em;
-
-                @media screen and (min-width: @screen-sm-min) {
-                    left: 85%
-                };
-
-                @media screen and (min-width: @screen-xs-min) and (max-width: @screen-xs-max) {
-                    left: 80%
-                };
-
-                @media screen and (max-width: @screen-xs-min) {
-                    left: 71%
-                };
+                right: 0.5em;
             };
 
             label {
                 margin-bottom: 0;
-                padding-left: 1em;
             };
         };
     };

@@ -92,8 +92,13 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                     "text"     : module.config().selectors.chat.text
                 },
                 "administrationPanel": {
-                    "div"     : module.config().selectors.administrationPanel.div,
-                    "roomName": module.config().selectors.administrationPanel.roomName
+                    "modal"       : module.config().selectors.administrationPanel.modal,
+                    "modalSample" : module.config().selectors.administrationPanel.modalSample,
+                    "trSample"    : module.config().selectors.administrationPanel.trSample,
+                    "roomName"    : module.config().selectors.administrationPanel.roomName,
+                    "rights"      : module.config().selectors.administrationPanel.rights,
+                    "pseudonym"   : module.config().selectors.administrationPanel.pseudonym,
+                    "toggleRights": module.config().selectors.administrationPanel.toggleRights
                 }
             }
         },
@@ -113,17 +118,17 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          */
         "websocket": {},
         /**
-         * The current user message (not sent)
+         * The current user message (not sent) by room
          */
-        "messagesCurrent": "",
+        "messagesCurrent": {},
         /**
-         * A messages sent history
+         * A messages sent history by room
          */
-        "messagesHistory": [],
+        "messagesHistory": {},
         /**
-         * Pointer in the array messagesHistory
+         * Pointer in the array messagesHistory by room
          */
-        "messagesHistoryPointer": 0,
+        "messagesHistoryPointer": {},
         /**
          * Monitor mouse position when it is in or out a room chat div
          */
@@ -244,6 +249,13 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                 this.settings.selectors.administrationPanel.div,
                 $.proxy(this.setAministrationPanelEvent, this)
             );
+            // Set the modal admin contents before it is opened
+            $('body').on(
+                'click',
+                this.settings.selectors.administrationPanel.modal + ' ' +
+                this.settings.selectors.administrationPanel.toggleRights,
+                $.proxy(this.toggleAdministrationRights, this)
+            );
         },
 
         /**
@@ -337,25 +349,28 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          * @param {event} e The fired event
          */
         chatTextKeyPressEvent: function (e) {
+            var room     = $(e.currentTarget).closest(this.settings.selectors.global.room),
+                roomName = room.attr('data-name');
+
             if (e.which === 13) {
                 // Enter key pressed
                 this.sendMessageEvent(e);
             } else if (e.which === 38) {
                 // Up arrow key pressed
-                if (this.messagesHistoryPointer > 0) {
-                    if (this.messagesHistoryPointer === this.messagesHistory.length) {
-                        this.messagesCurrent = $(e.currentTarget).val();
+                if (this.messagesHistoryPointer[roomName] > 0) {
+                    if (this.messagesHistoryPointer[roomName] === this.messagesHistory[roomName].length) {
+                        this.messagesCurrent[roomName] = $(e.currentTarget).val();
                     }
 
-                    $(e.currentTarget).val(this.messagesHistory[--this.messagesHistoryPointer]);
+                    $(e.currentTarget).val(this.messagesHistory[roomName][--this.messagesHistoryPointer[roomName]]);
                 }
             } else if (e.which === 40) {
                 // Down arrow key pressed
-                if (this.messagesHistoryPointer + 1 < this.messagesHistory.length) {
-                    $(e.currentTarget).val(this.messagesHistory[++this.messagesHistoryPointer]);
-                } else if (this.messagesHistoryPointer + 1 === this.messagesHistory.length) {
-                    this.messagesHistoryPointer++;
-                    $(e.currentTarget).val(this.messagesCurrent);
+                if (this.messagesHistoryPointer[roomName] + 1 < this.messagesHistory[roomName].length) {
+                    $(e.currentTarget).val(this.messagesHistory[roomName][++this.messagesHistoryPointer[roomName]]);
+                } else if (this.messagesHistoryPointer[roomName] + 1 === this.messagesHistory[roomName].length) {
+                    this.messagesHistoryPointer[roomName]++;
+                    $(e.currentTarget).val(this.messagesCurrent[roomName]);
                 }
             }
         },
@@ -439,6 +454,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          */
         mouseEnterRoomChatEvent: function (e) {
             var roomName = $(e.currentTarget).closest(this.settings.selectors.global.room).attr('data-name');
+
             this.mouseInRoomChat[roomName] = true;
         },
         
@@ -462,9 +478,16 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
             var modal    = $(e.currentTarget),
                 roomName = $(e.relatedTarget).closest(this.settings.selectors.global.room).attr('data-name');
 
-            modal.find(this.settings.selectors.administrationPanel.roomName).text(roomName);
-            modal.attr('data-room-name', roomName);
-            modal.find('.rights input[type="checkbox"]').bootstrapSwitch();
+            modal.find(this.settings.selectors.administrationPanel.rights + ' input[type="checkbox"]').bootstrapSwitch();
+        },
+
+        /**
+         * Event fired when the user wants to display a user rights in administration modal
+         *
+         * @param {event} e The fired event
+         */
+        toggleAdministrationRights: function (e) {
+            $(e.currentTarget).closest('tbody').find($(e.currentTarget).attr('data-refer')).toggle();
         },
 
         /*=====  End of Events  ======*/
@@ -622,6 +645,11 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
 
                     break;
 
+                case 'updateRoomUsersRights':
+                    this.updateRoomUsersRightsCallback(data);
+
+                    break;
+
                 case 'createRoom':
                     this.createRoomCallback(data);
 
@@ -691,6 +719,17 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
             
             room.attr('data-users', _(data.pseudonyms).toString());
             this.updateUsersDropdown(room, data.pseudonyms);
+        },
+
+        /**
+         * Callback after a registered user entered or left the room
+         *
+         * @param {object} data The server JSON reponse
+         */
+        updateRoomUsersRightsCallback: function (data) {
+            var modal = $('.modal[data-room-name="' + data.roomName + '"]');
+            
+            this.updateRoomUsersRights(modal, data.usersRights);
         },
 
         /**
@@ -805,17 +844,20 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
             var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]');
 
             if (room.length === 0) {
+                // Room chat creation if the room does not exist yet
                 var roomSample  = $(this.settings.selectors.global.roomSample),
                     newRoom     = roomSample.clone(true),
                     newRoomChat = newRoom.find(this.settings.selectors.global.roomChat),
                     i;
 
-                newRoom.attr('data-name', data.roomName);
-                newRoom.attr('data-type', data.type);
-                newRoom.attr('data-pseudonym', data.pseudonym);
-                newRoom.attr('data-password', data.password);
-                newRoom.attr('data-max-users', data.maxUsers);
-                newRoom.attr('data-users', _(data.pseudonyms).toString());
+                newRoom.attr({
+                    "data-name"     : data.roomName,
+                    "data-type"     : data.type,
+                    "data-pseudonym": data.pseudonym,
+                    "data-password" : data.password,
+                    "data-max-users": data.maxUsers,
+                    "data-users"    : _(data.pseudonyms).toString()
+                });
                 newRoom.removeAttr('id');
                 newRoom.removeClass('hide');
                 newRoom.find(this.settings.selectors.global.roomName).text(data.roomName);
@@ -830,16 +872,35 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                         return list.html();
                     }
                 });
-                // newRoom.find(this.settings.selectors.roomAction.administration).modal()
 
                 newRoomChat.attr('data-historic-loaded', 0);
 
                 this.updateUsersDropdown(newRoom, data.pseudonyms);
                 this.loadHistoric(newRoomChat, data.historic);
-                this.mouseInRoomChat[data.roomName] = false;
-                this.isRoomOpened[data.roomName]    = true;
-
+                this.mouseInRoomChat[data.roomName]        = false;
+                this.isRoomOpened[data.roomName]           = true;
+                this.messagesHistory[data.roomName]        = [];
+                this.messagesHistoryPointer[data.roomName] = 0;
+                this.messagesCurrent[data.roomName]        = '';
+                
                 $(this.settings.selectors.global.chat).append(newRoom);
+
+                // Modal room chat administration creation if the user is registered
+                if (data.usersRights !== undefined) {
+                    var modalSample = $(this.settings.selectors.administrationPanel.modalSample),
+                        newModal    = modalSample.clone(),
+                        id          = _.uniqueId('chat-admin-');
+
+                    newModal.attr({
+                        "id"            : id,
+                        "data-room-name": data.roomName
+                    });
+                    newModal.find(this.settings.selectors.administrationPanel.roomName).text(data.roomName);
+                    newRoom.find(this.settings.selectors.roomAction.administration).attr('data-target', '#' + id);
+                    this.updateRoomUsersRights(newModal, data.usersRights);
+
+                    modalSample.after(newModal);
+                }
             } else if (data.historic) {
                 this.loadHistoric(room.find(this.settings.selectors.global.roomChat), data.historic);
             }
@@ -920,6 +981,45 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
 
             room.find(this.settings.selectors.roomSend.div + ' ' + this.settings.selectors.roomSend.usersList)
             .html(list);
+        },
+
+        /**
+         * Update the users list in the administration modal
+         *
+         * @param  {object} modal       The modal jQuery DOM element
+         * @param  {object} usersRights The users rights object returned by the server
+         */
+        updateRoomUsersRights: function (modal, usersRights) {
+            var trSample = modal.find(this.settings.selectors.administrationPanel.trSample),
+                room     = $(this.settings.selectors.global.room + '[data-name="' + modal.attr('data-room-name') + '"]'),
+                self     = this;
+
+            if (room.length > 0) {
+                _.forEach(room.attr('data-users').split(','), function (pseudonym) {
+                    var newLines = trSample.clone(),
+                        refer    = _.uniqueId('right-');
+
+                    newLines.removeClass('hide sample');
+                    newLines.find(self.settings.selectors.administrationPanel.pseudonym).text(pseudonym);
+                    newLines.find(self.settings.selectors.administrationPanel.toggleRights).attr('data-refer', '.' + refer);
+
+                    newLines.each(function() {
+                        if ($(this).hasClass(self.settings.selectors.administrationPanel.rights.substr(1))) {
+                            $(this).addClass(refer);
+
+                            // Unregistered user
+                            if (usersRights[pseudonym] === undefined) {
+                                $(this).find('input').bootstrapSwitch('readonly', true);
+                            } else {
+                                // todo set right state
+                                // todo bootstrapSwitch switchChange event
+                            }
+                        }
+                    });
+
+                    trSample.last().after(newLines);
+                });
+            }
         },
 
         /**
