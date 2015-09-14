@@ -95,6 +95,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                     "modal"       : module.config().selectors.administrationPanel.modal,
                     "modalSample" : module.config().selectors.administrationPanel.modalSample,
                     "trSample"    : module.config().selectors.administrationPanel.trSample,
+                    "contents"    : module.config().selectors.administrationPanel.contents,
                     "roomName"    : module.config().selectors.administrationPanel.roomName,
                     "rights"      : module.config().selectors.administrationPanel.rights,
                     "pseudonym"   : module.config().selectors.administrationPanel.pseudonym,
@@ -396,8 +397,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                     this.sendMessage(recievers, message, roomName, password);
                 }
 
-                this.messagesHistory.push(message);
-                this.messagesHistoryPointer++;
+                this.messagesHistory[roomName].push(message);
+                this.messagesHistoryPointer[roomName]++;
                 messageInput.val('');
             }
             
@@ -614,6 +615,26 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                 "roomName" : roomName,
                 "pseudonym": pseudonym,
                 "reason"   : reason
+            }));
+        },
+
+        /**
+         * Update a user right
+         *
+         * @param  {string}  roomName   The room name
+         * @param  {string}  pseudonym  The user pseudonym
+         * @param  {string}  rightName  The right name to update
+         * @param  {boolean} rightValue The new right value
+         */
+        updateRoomUserRight: function (roomName, pseudonym, rightName, rightValue) {
+            this.websocket.send(JSON.stringify({
+                "service"   : [this.settings.serviceName],
+                "action"    : "updateRoomUserRight",
+                "user"      : this.user.settings,
+                "roomName"  : roomName,
+                "pseudonym" : pseudonym,
+                "rightName" : rightName,
+                "rightValue": rightValue
             }));
         },
         
@@ -991,34 +1012,58 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          */
         updateRoomUsersRights: function (modal, usersRights) {
             var trSample = modal.find(this.settings.selectors.administrationPanel.trSample),
-                room     = $(this.settings.selectors.global.room + '[data-name="' + modal.attr('data-room-name') + '"]'),
-                self     = this;
+                roomName = modal.attr('data-room-name'),
+                room     = $(this.settings.selectors.global.room + '[data-name="' + roomName + '"]'),
+                newLines = [],
+                self     = this,
+                input,
+                rightName;
 
             if (room.length > 0) {
                 _.forEach(room.attr('data-users').split(','), function (pseudonym) {
-                    var newLines = trSample.clone(),
+                    var newLine = trSample.clone(),
                         refer    = _.uniqueId('right-');
 
-                    newLines.removeClass('hide sample');
-                    newLines.find(self.settings.selectors.administrationPanel.pseudonym).text(pseudonym);
-                    newLines.find(self.settings.selectors.administrationPanel.toggleRights).attr('data-refer', '.' + refer);
+                    newLine.removeClass('hide sample');
+                    newLine.find(self.settings.selectors.administrationPanel.pseudonym).text(pseudonym);
+                    newLine.find(self.settings.selectors.administrationPanel.toggleRights).attr('data-refer', '.' + refer);
 
-                    newLines.each(function() {
+                    newLine.each(function() {
                         if ($(this).hasClass(self.settings.selectors.administrationPanel.rights.substr(1))) {
                             $(this).addClass(refer);
 
+                            input     = $(this).find('input');
+                            rightName = input.attr('name');
+
                             // Unregistered user
                             if (usersRights[pseudonym] === undefined) {
-                                $(this).find('input').bootstrapSwitch('readonly', true);
+                                // Disabled rights on unregistered users
+                                input.bootstrapSwitch('readonly', true);
+                                input.bootstrapSwitch('state', false);
                             } else {
-                                // todo set right state
-                                // todo bootstrapSwitch switchChange event
+                                // Set the current user rights
+                                input.bootstrapSwitch('state', usersRights[pseudonym][rightName]);
+
+                                if (!usersRights[self.user.getPseudonym()].grant) {
+                                    // Disabled rights if the admin have no "grant" right
+                                    input.bootstrapSwitch('readonly', true);
+                                } else {
+                                    // Bind event on right change event to update the right instantly
+                                    input.on('switchChange.bootstrapSwitch', function(e, rightValue) {
+                                        self.updateRoomUserRight(roomName, pseudonym, $(this).attr('name'), rightValue);
+                                    });
+                                }
                             }
                         }
                     });
 
-                    trSample.last().after(newLines);
+                    newLines.push(newLine);
                 });
+
+                // Clean and insert lines
+                modal.find(this.settings.selectors.administrationPanel.contents + ' tr:not(' +
+                    this.settings.selectors.administrationPanel.trSample + ')').remove();
+                trSample.last().after(newLines);
             }
         },
 

@@ -408,11 +408,13 @@ abstract class EntityManager
         foreach ($this->entity->getColumnsKeyValueNoPrimary() as $columnName => $columnValue) {
             if ($columnValue === null) {
                 $columnValue = 'NULL';
+            } elseif (is_bool($columnValue)) {
+                $columnValue = ($columnValue ? 1 : 0);
             } else {
                 $columnValue = DB::quote($columnValue);
             }
 
-            $marks[] = $columnName . ' = ' . $columnValue;
+            $marks[] = '`' . $columnName . '` = ' . $columnValue;
         }
 
         return implode(', ', $marks);
@@ -434,10 +436,10 @@ abstract class EntityManager
                 $columnValue = DB::quote($columnValue);
             }
 
-            $columnsValue[] = $columnName . ' = ' . $columnValue;
+            $columnsValue[] = '`' . $columnName . '` = ' . $columnValue;
         }
 
-        return implode($columnsValue, 'AND ');
+        return implode($columnsValue, ' AND ');
     }
 
     /**

@@ -42,7 +42,6 @@ class UsersChatRightsEntityManager extends EntityManager
         $this->entity->grant    = 1;
         $this->entity->password = 1;
         $this->entity->rename   = 1;
-        $this->entity->revoke   = 1;
         $this->saveEntity();
     }
 }

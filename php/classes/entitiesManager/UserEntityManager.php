@@ -50,6 +50,21 @@ class UserEntityManager extends EntityManager
         $usersRightsEntityManager = new UsersRightsEntityManager($this->entity->getUserRights());
         $usersRightsEntityManager->loadEntity($id);
     }
+
+    /**
+     * Get a user id by his pseudonym
+     *
+     * @param  string  $pseudonym The user pseudonym
+     * @return integer            The user id
+     */
+    public function getUserIdByPseudonym($pseudonym)
+    {
+        $user       = new User();
+        $sqlMarks   = 'SELECT id FROM %s WHERE pseudonym = %s';
+        $sql        = static::sqlFormater($sqlMarks, $user->getTableName(), DB::quote($pseudonym));
+        
+        return (int) DB::query($sql)->fetchColumn();
+    }
     
     /**
      * Register a user and return errors if errors occured

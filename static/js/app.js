@@ -80,6 +80,7 @@ requirejs.config({
                     "modal"       : ".chat-admin",
                     "modalSample" : "#chat-admin-sample",
                     "trSample"    : ".sample",
+                    "contents"    : ".contents",
                     "roomName"    : ".room-name",
                     "rights"      : ".right",
                     "pseudonym"   : ".user-pseudonym",

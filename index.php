@@ -142,14 +142,13 @@
                         <div class="panel panel-default">
                             <div class="panel-heading"><?=_('Users list')?></div>
                             <table class="table table-hover">
-                                <caption>table title and/or explanatory text</caption>
                                 <thead>
                                     <tr>
                                         <th><?=_('User pseudonym')?></th>
                                         <th colspan="3"><?=_('Actions')?></th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="contents">
                                     <tr class="hide sample">
                                         <td class="user-pseudonym">Pseudonym</td>
                                         <td>
@@ -166,7 +165,7 @@
                                     </tr>
                                     <tr class="hide sample right">
                                         <td colspan="4" class="warper">
-                                            <label for="right-kick"><?=_('Kick users')?></label>
+                                            <label><?=_('Kick users')?></label>
                                             <input type="checkbox"
                                                    name="kick"
                                                    data-on-color="success"
@@ -191,17 +190,6 @@
                                             <label><?=_('Grant users rights')?></label>
                                             <input type="checkbox"
                                                    name="grant"
-                                                   data-on-color="success"
-                                                   data-off-color="danger"
-                                                   data-size="mini"
-                                            >
-                                        </td>
-                                    </tr>
-                                    <tr class="hide sample right">
-                                        <td colspan="4" class="warper">
-                                            <label><?=_('Revoke users rights')?></label>
-                                            <input type="checkbox"
-                                                   name="revoke"
                                                    data-on-color="success"
                                                    data-off-color="danger"
                                                    data-size="mini"
