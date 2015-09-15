@@ -80,11 +80,15 @@ requirejs.config({
                     "modal"       : ".chat-admin",
                     "modalSample" : "#chat-admin-sample",
                     "trSample"    : ".sample",
-                    "contents"    : ".contents",
+                    "usersList"   : ".users-list",
                     "roomName"    : ".room-name",
+                    "kick"        : ".kick",
+                    "ban"         : ".ban",
                     "rights"      : ".right",
                     "pseudonym"   : ".user-pseudonym",
-                    "toggleRights": ".toggle-rights"
+                    "toggleRights": ".toggle-rights",
+                    "ipBanned"    : ".ip-banned",
+                    "ip"          : ".ip"
                 }
             },
             "commands": {

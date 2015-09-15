@@ -95,11 +95,15 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                     "modal"       : module.config().selectors.administrationPanel.modal,
                     "modalSample" : module.config().selectors.administrationPanel.modalSample,
                     "trSample"    : module.config().selectors.administrationPanel.trSample,
-                    "contents"    : module.config().selectors.administrationPanel.contents,
+                    "usersList"   : module.config().selectors.administrationPanel.usersList,
                     "roomName"    : module.config().selectors.administrationPanel.roomName,
+                    "kick"        : module.config().selectors.administrationPanel.kick,
+                    "ban"         : module.config().selectors.administrationPanel.ban,
                     "rights"      : module.config().selectors.administrationPanel.rights,
                     "pseudonym"   : module.config().selectors.administrationPanel.pseudonym,
-                    "toggleRights": module.config().selectors.administrationPanel.toggleRights
+                    "toggleRights": module.config().selectors.administrationPanel.toggleRights,
+                    "ipBanned"    : module.config().selectors.administrationPanel.ipBanned,
+                    "ip"          : module.config().selectors.administrationPanel.ip
                 }
             }
         },
@@ -218,13 +222,6 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                 this.settings.selectors.roomAction.loadHistoric,
                 $.proxy(this.getHistoricEvent, this)
             );
-            // Kick a user from a room
-            $('body').on(
-                'click',
-                this.settings.selectors.global.room + ' ' +
-                this.settings.selectors.roomAction.kickUser,
-                $.proxy(this.kickUserEvent, this)
-            );
             // Select a reciever for the chat message
             $('body').on(
                 'click',
@@ -250,12 +247,26 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                 this.settings.selectors.administrationPanel.div,
                 $.proxy(this.setAministrationPanelEvent, this)
             );
-            // Set the modal admin contents before it is opened
+            // Toggle the user right in the administration panel
             $('body').on(
                 'click',
                 this.settings.selectors.administrationPanel.modal + ' ' +
                 this.settings.selectors.administrationPanel.toggleRights,
                 $.proxy(this.toggleAdministrationRights, this)
+            );
+            // Kick a user from a room in the administration panel
+            $('body').on(
+                'click',
+                this.settings.selectors.administrationPanel.modal + ' ' +
+                this.settings.selectors.administrationPanel.kick,
+                $.proxy(this.kickUserEvent, this)
+            );
+            // Ban a user from a room in the administration panel
+            $('body').on(
+                'click',
+                this.settings.selectors.administrationPanel.modal + ' ' +
+                this.settings.selectors.administrationPanel.ban,
+                $.proxy(this.banUserEvent, this)
             );
         },
 
@@ -420,19 +431,6 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
         },
 
         /**
-         * Event fired when a user wants to kick another user from a room
-         *
-         * @param {event} e The fired event
-         */
-        kickUserEvent: function (e) {
-            var room      = $(e.currentTarget).closest(this.settings.selectors.global.room),
-                roomName  = room.attr('data-name'),
-                pseudonym = $(e.currentTarget).next(this.settings.selectors.chat.pseudonym).text();
-
-            this.kickUser(roomName, pseudonym);
-        },
-
-        /**
          * Event fired when a user wants to select a reciever for his message
          *
          * @param {event} e The fired event
@@ -489,6 +487,32 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          */
         toggleAdministrationRights: function (e) {
             $(e.currentTarget).closest('tbody').find($(e.currentTarget).attr('data-refer')).toggle();
+        },
+
+        /**
+         * Event fired when a user wants to kick another user from a room in the administration panel
+         *
+         * @param {event} e The fired event
+         */
+        kickUserEvent: function (e) {
+            var pseudonym = $(e.currentTarget).closest('tr').attr('data-pseudonym'),
+                roomName  = $(e.currentTarget).closest(this.settings.selectors.administrationPanel.modal)
+                .attr('data-room-name');
+
+            this.kickUser(roomName, pseudonym);
+        },
+
+        /**
+         * Event fired when a user wants to ban another user from a room in the administration panel
+         *
+         * @param {event} e The fired event
+         */
+        banUserEvent: function (e) {
+            var pseudonym = $(e.currentTarget).closest('tr').attr('data-pseudonym'),
+                roomName  = $(e.currentTarget).closest(this.settings.selectors.administrationPanel.modal)
+                .attr('data-room-name');
+
+            this.banUser(roomName, pseudonym);
         },
 
         /*=====  End of Events  ======*/
@@ -619,6 +643,24 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
         },
 
         /**
+         * Ban a user from a room
+         *
+         * @param {string} roomName  The room name
+         * @param {string} pseudonym The user pseudonym to ban
+         * @param {string} reason    OPTIONAL the reason of the ban
+         */
+        banUser: function (roomName, pseudonym, reason) {
+            this.websocket.send(JSON.stringify({
+                "service"  : [this.settings.serviceName],
+                "action"   : "banUser",
+                "user"     : this.user.settings,
+                "roomName" : roomName,
+                "pseudonym": pseudonym,
+                "reason"   : reason
+            }));
+        },
+
+        /**
          * Update a user right
          *
          * @param  {string}  roomName   The room name
@@ -671,6 +713,11 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
 
                     break;
 
+                case 'updateRoomUsersBanned':
+                    this.updateRoomUsersBannedCallback(data);
+
+                    break;
+
                 case 'createRoom':
                     this.createRoomCallback(data);
 
@@ -691,13 +738,23 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
 
                     break;
 
-                case 'getkicked':
+                case 'getKicked':
                     this.getKickedCallback(data);
 
                     break;
 
                 case 'kickUser':
                     this.kickUserCallback(data);
+
+                    break;
+
+                case 'getBanned':
+                    this.getBannedCallback(data);
+
+                    break;
+
+                case 'banUser':
+                    this.banUserCallback(data);
 
                     break;
                 
@@ -736,10 +793,30 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          * @param {object} data The server JSON reponse
          */
         updateRoomUsersCallback: function (data) {
-            var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]');
+            var room      = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
+                usersList = room.attr('data-users').split(',');
             
             room.attr('data-users', _(data.pseudonyms).toString());
             this.updateUsersDropdown(room, data.pseudonyms);
+
+            // Update the administration panel
+            if (this.user.connected) {
+                var newPseudonyms = _.difference(usersList, data.pseudonyms),
+                    oldPseudonyms = _.difference(data.pseudonyms, usersList),
+                    modal         = $('.modal[data-room-name="' + data.roomName + '"]'),
+                    users         = modal.find(self.settings.selectors.administrationPanel.usersList),
+                    self          = this;
+
+                _.forEach(newPseudonyms, function (pseudonym) {
+                    users.append(
+                        self.getUserRightLine(modal, pseudonym)
+                    );
+                });
+
+                _.forEach(oldPseudonyms, function (pseudonym) {
+                    users.find('tr[data-pseudonym="' + pseudonym + '"]').remove();
+                });
+            }
         },
 
         /**
@@ -751,6 +828,17 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
             var modal = $('.modal[data-room-name="' + data.roomName + '"]');
             
             this.updateRoomUsersRights(modal, data.usersRights);
+        },
+
+        /**
+         * Callback after a user get banned or unbanned from a room
+         *
+         * @param {object} data The server JSON reponse
+         */
+        updateRoomUsersBannedCallback: function (data) {
+            var modal = $('.modal[data-room-name="' + data.roomName + '"]');
+            
+            this.updateRoomUsersBanned(modal, data.ipBannedList);
         },
 
         /**
@@ -825,14 +913,30 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
         },
 
         /**
-         * Callback after kicked a user from a room
+         * Callback after kicking a user from a room
          *
          * @param {object} data The server JSON reponse
          */
         kickUserCallback: function (data) {
-            if (!data.success) {
-                this.message.add(data.text);
-            }
+            this.message.add(data.text);
+        },
+
+        /**
+         * Callback after being banned from a room
+         *
+         * @param {object} data The server JSON reponse
+         */
+        getBannedCallback: function (data) {
+            this.message.add(data.text);
+        },
+
+        /**
+         * Callback after banning a user from a room
+         *
+         * @param {object} data The server JSON reponse
+         */
+        banUserCallback: function (data) {
+            this.message.add(data.text);
         },
         
         /*=====  End of Callbacks after WebSocket server responses  ======*/
@@ -1011,60 +1115,99 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          * @param  {object} usersRights The users rights object returned by the server
          */
         updateRoomUsersRights: function (modal, usersRights) {
-            var trSample = modal.find(this.settings.selectors.administrationPanel.trSample),
-                roomName = modal.attr('data-room-name'),
-                room     = $(this.settings.selectors.global.room + '[data-name="' + roomName + '"]'),
-                newLines = [],
-                self     = this,
-                input,
-                rightName;
+            var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),
+                trSample  = usersList.find(this.settings.selectors.administrationPanel.trSample),
+                roomName  = modal.attr('data-room-name'),
+                room      = $(this.settings.selectors.global.room + '[data-name="' + roomName + '"]'),
+                newLines  = [],
+                self      = this;
 
             if (room.length > 0) {
                 _.forEach(room.attr('data-users').split(','), function (pseudonym) {
-                    var newLine = trSample.clone(),
-                        refer    = _.uniqueId('right-');
-
-                    newLine.removeClass('hide sample');
-                    newLine.find(self.settings.selectors.administrationPanel.pseudonym).text(pseudonym);
-                    newLine.find(self.settings.selectors.administrationPanel.toggleRights).attr('data-refer', '.' + refer);
-
-                    newLine.each(function() {
-                        if ($(this).hasClass(self.settings.selectors.administrationPanel.rights.substr(1))) {
-                            $(this).addClass(refer);
-
-                            input     = $(this).find('input');
-                            rightName = input.attr('name');
-
-                            // Unregistered user
-                            if (usersRights[pseudonym] === undefined) {
-                                // Disabled rights on unregistered users
-                                input.bootstrapSwitch('readonly', true);
-                                input.bootstrapSwitch('state', false);
-                            } else {
-                                // Set the current user rights
-                                input.bootstrapSwitch('state', usersRights[pseudonym][rightName]);
-
-                                if (!usersRights[self.user.getPseudonym()].grant) {
-                                    // Disabled rights if the admin have no "grant" right
-                                    input.bootstrapSwitch('readonly', true);
-                                } else {
-                                    // Bind event on right change event to update the right instantly
-                                    input.on('switchChange.bootstrapSwitch', function(e, rightValue) {
-                                        self.updateRoomUserRight(roomName, pseudonym, $(this).attr('name'), rightValue);
-                                    });
-                                }
-                            }
-                        }
-                    });
-
-                    newLines.push(newLine);
+                    newLines.push(self.getUserRightLine(modal, pseudonym, usersRights[pseudonym]));
                 });
 
                 // Clean and insert lines
-                modal.find(this.settings.selectors.administrationPanel.contents + ' tr:not(' +
-                    this.settings.selectors.administrationPanel.trSample + ')').remove();
+                usersList.find('tr').not(trSample).remove();
                 trSample.last().after(newLines);
             }
+        },
+
+        /**
+         * Get a new user right line in the administration panel
+         *
+         * @param  {object} modal      The modal jQuery DOM element
+         * @param  {string} pseudonym  The new user pseudonym
+         * @param  {object} usersRight The new user rights
+         * @return {object}            The new user right line jQuery DOM element
+         */
+        getUserRightLine: function (modal, pseudonym, usersRight) {
+            var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),
+                trSample  = usersList.find(this.settings.selectors.administrationPanel.trSample),
+                roomName  = modal.attr('data-room-name'),
+                newLine   = trSample.clone(),
+                refer     = _.uniqueId('right-'),
+                self      = this;
+
+            newLine.removeClass('hide sample');
+            newLine.attr('data-pseudonym', pseudonym);
+            newLine.find(this.settings.selectors.administrationPanel.pseudonym).text(pseudonym);
+            newLine.find(this.settings.selectors.administrationPanel.toggleRights).attr('data-refer', '.' + refer);
+
+            newLine.each(function() {
+                if ($(this).hasClass(self.settings.selectors.administrationPanel.rights.substr(1))) {
+                    $(this).addClass(refer);
+
+                    input     = $(this).find('input');
+                    rightName = input.attr('name');
+
+                    // Unregistered user
+                    if (usersRight === undefined) {
+                        // Disabled rights on unregistered users
+                        input.bootstrapSwitch('readonly', true);
+                        input.bootstrapSwitch('state', false);
+                    } else {
+                        // Set the current user rights
+                        input.bootstrapSwitch('state', usersRight[rightName]);
+
+                        if (self.user.getChatRights(roomName).grant) {
+                            // Disabled rights if the admin have no "grant" right
+                            input.bootstrapSwitch('readonly', true);
+                        } else {
+                            // Bind event on right change event to update the right instantly
+                            input.on('switchChange.bootstrapSwitch', function(e, rightValue) {
+                                self.updateRoomUserRight(roomName, pseudonym, $(this).attr('name'), rightValue);
+                            });
+                        }
+                    }
+                }
+            });
+
+            return newLine;
+        },
+
+        /**
+         * Update the ip banned list in the administration modal
+         *
+         * @param  {object} modal        The modal jQuery DOM element
+         * @param  {object} ipBannedList The ip banned object returned by the server
+         */
+        updateRoomUsersBanned: function (modal, ipBannedList) {
+            var ipBanned = modal.find(this.settings.selectors.administrationPanel.ipBanned),
+                trSample = usersList.find(this.settings.selectors.administrationPanel.trSample),
+                newLines = [];
+            
+            _.forEach(ipBannedList, function (ip) {
+                var newLine = trSample.clone();
+
+                newLine.removeClass('hide sample');
+                newLine.find(self.settings.selectors.administrationPanel.ip).text(ip);
+                newLines.push(newLine);
+            });
+
+            // Clean and insert lines
+            ipBanned.find('tr').not(trSample).remove();
+            trSample.last().after(newLines);
         },
 
         /**

@@ -35,9 +35,9 @@
 
         <!-- connect room -->
         <div class="connect-room">
-            <input class="pseudonym" type="text" name="chatPseudo" value="" placeholder="<?=_('Pseudonym')?>">
-            <input class="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
-            <input class="room-password" type="password" name="roomPassword" value="" placeholder="<?=_('Room password')?>">
+            <input class="pseudonym" type="text" name="chatPseudo" placeholder="<?=_('Pseudonym')?>">
+            <input class="room-name" type="text" name="roomName" placeholder="<?=_('Room name')?>">
+            <input class="room-password" type="password" name="roomPassword"  placeholder="<?=_('Room password')?>">
             <button class="connect btn btn-primary" type="button"><?=_('Connect')?></button>
         </div>
         
@@ -148,14 +148,14 @@
                                         <th colspan="3"><?=_('Actions')?></th>
                                     </tr>
                                 </thead>
-                                <tbody class="contents">
-                                    <tr class="hide sample">
+                                <tbody class="users-list">
+                                    <tr class="hide sample" data-pseudonym="">
                                         <td class="user-pseudonym">Pseudonym</td>
                                         <td>
-                                            <button class="btn btn-default" type="button"><?=_('Kick')?></button>
+                                            <button class="btn btn-default kick" type="button"><?=_('Kick')?></button>
                                         </td>
                                         <td>
-                                            <button class="btn btn-default" type="button"><?=_('Ban')?></button>
+                                            <button class="btn btn-default ban" type="button"><?=_('Ban')?></button>
                                         </td>
                                         <td>
                                             <button class="toggle-rights btn btn-default" type="button" data-refer="">
@@ -163,7 +163,7 @@
                                             </button>
                                         </td>
                                     </tr>
-                                    <tr class="hide sample right">
+                                    <tr class="hide sample right" data-pseudonym="">
                                         <td colspan="4" class="warper">
                                             <label><?=_('Kick users')?></label>
                                             <input type="checkbox"
@@ -174,7 +174,7 @@
                                             >
                                         </td>
                                     </tr>
-                                    <tr class="hide sample right">
+                                    <tr class="hide sample right" data-pseudonym="">
                                         <td colspan="4" class="warper">
                                             <label><?=_('Ban users')?></label>
                                             <input type="checkbox"
@@ -185,7 +185,7 @@
                                             >
                                         </td>
                                     </tr>
-                                    <tr class="hide sample right">
+                                    <tr class="hide sample right" data-pseudonym="">
                                         <td colspan="4" class="warper">
                                             <label><?=_('Grant users rights')?></label>
                                             <input type="checkbox"
@@ -196,7 +196,7 @@
                                             >
                                         </td>
                                     </tr>
-                                    <tr class="hide sample right">
+                                    <tr class="hide sample right" data-pseudonym="">
                                         <td colspan="4" class="warper">
                                             <label><?=_('Rename room name')?></label>
                                             <input type="checkbox"
@@ -207,7 +207,7 @@
                                             >
                                         </td>
                                     </tr>
-                                    <tr class="hide sample right">
+                                    <tr class="hide sample right" data-pseudonym="">
                                         <td colspan="4" class="warper">
                                             <label><?=_('Change room password')?></label>
                                             <input type="checkbox"
@@ -218,6 +218,26 @@
                                             >
                                         </td>
                                     </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><?=_('Ip banned')?></div>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th><?=_('Ip banned')?></th>
+                                        <th><?=_('Actions')?></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="ip-banned">
+                                    <tr class="hide sample">
+                                        <td class="ip">0.0.0.0</td>
+                                        <td>
+                                            <button class="btn btn-default unbanned" type="button">
+                                                <?=_('unbanned')?>
+                                            </button>
+                                        </td>
                                 </tbody>
                             </table>
                         </div>

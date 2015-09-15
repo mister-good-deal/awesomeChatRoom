@@ -43,6 +43,11 @@ class User extends Entity
     public static $pseudoBlackList = array('admin', 'all', 'SERVER');
 
     /**
+     * @var string[] $forbidenPseudoCharacters List of forbidden pseudonym characters
+     */
+    public static $forbiddenPseudoCharacters = array(',', "'");
+
+    /**
      * @var array $errors An array containing the occured errors when fields are set
      */
     private $errors = array();
@@ -178,6 +183,14 @@ class User extends Entity
             case 'pseudonym':
                 if (in_array(strtolower($value), static::$pseudoBlackList)) {
                     $this->errors[$columnName][] = _('The pseudonym "' . $value . '" is not accepted');
+                }
+
+                foreach (static::$forbiddenPseudoCharacters as $forbiddenPseudoCharacter) {
+                    if (strpos($value, $forbiddenPseudoCharacter) !== false) {
+                        $this->errors[$columnName][] = _(
+                            'The character "' . $forbiddenPseudoCharacter . '" is not accepted in pseudonyms'
+                        );
+                    }
                 }
 
                 if ($value === '') {

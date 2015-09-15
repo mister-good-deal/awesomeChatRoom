@@ -126,6 +126,24 @@ class Server
     }
 
     /**
+     * Get the client ip from his socket stream
+     *
+     * @param resource $socket The client socket
+     * @return string          The client ip
+     */
+    protected function getClientIp($socket)
+    {
+        $ipClient = stream_socket_get_name($socket, true);
+
+        // Extract only the ip and not the port
+        if (strpos($ipClient, ':') !== false) {
+            $ipClient = substr($ipClient, 0, strpos($ipClient, ':'));
+        }
+
+        return $ipClient;
+    }
+
+    /**
      * Send data to a client via stream socket
      *
      * @param resource $socket The client stream socket

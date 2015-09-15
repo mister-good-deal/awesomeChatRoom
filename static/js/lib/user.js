@@ -100,6 +100,17 @@ define(['jquery'], function ($, Message) {
         },
 
         /**
+         * Get chat rights
+         *
+         * @param  {string} The room name
+         * @return {string} The user password
+         * @todo
+         */
+        getChatRights: function (roomName) {
+            
+        },
+
+        /**
          * Set the User object with a JSON parameter
          *
          * @param {object} JSON data
