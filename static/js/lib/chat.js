@@ -793,29 +793,32 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          * @param {object} data The server JSON reponse
          */
         updateRoomUsersCallback: function (data) {
-            var room      = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
+            var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
+                usersList;
+
+            if (room.length > 0) {
                 usersList = room.attr('data-users').split(',');
-            
-            room.attr('data-users', _(data.pseudonyms).toString());
-            this.updateUsersDropdown(room, data.pseudonyms);
+                room.attr('data-users', _(data.pseudonyms).toString());
+                this.updateUsersDropdown(room, data.pseudonyms);
 
-            // Update the administration panel
-            if (this.user.connected) {
-                var newPseudonyms = _.difference(usersList, data.pseudonyms),
-                    oldPseudonyms = _.difference(data.pseudonyms, usersList),
-                    modal         = $('.modal[data-room-name="' + data.roomName + '"]'),
-                    users         = modal.find(self.settings.selectors.administrationPanel.usersList),
-                    self          = this;
+                // Update the administration panel
+                if (this.user.connected) {
+                    var newPseudonyms = _.difference(data.pseudonyms, usersList),
+                        oldPseudonyms = _.difference(usersList, data.pseudonyms),
+                        modal         = $('.modal[data-room-name="' + data.roomName + '"]'),
+                        users         = modal.find(this.settings.selectors.administrationPanel.usersList),
+                        self          = this;
 
-                _.forEach(newPseudonyms, function (pseudonym) {
-                    users.append(
-                        self.getUserRightLine(modal, pseudonym)
-                    );
-                });
+                    _.forEach(newPseudonyms, function (pseudonym) {
+                        users.append(
+                            self.getUserRightLine(modal, pseudonym)
+                        );
+                    });
 
-                _.forEach(oldPseudonyms, function (pseudonym) {
-                    users.find('tr[data-pseudonym="' + pseudonym + '"]').remove();
-                });
+                    _.forEach(oldPseudonyms, function (pseudonym) {
+                        users.find('tr[data-pseudonym="' + pseudonym + '"]').remove();
+                    });
+                }
             }
         },
 
@@ -1156,11 +1159,10 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
 
             newLine.each(function() {
                 if ($(this).hasClass(self.settings.selectors.administrationPanel.rights.substr(1))) {
+                    var input     = $(this).find('input'),
+                        rightName = input.attr('name');
+
                     $(this).addClass(refer);
-
-                    input     = $(this).find('input');
-                    rightName = input.attr('name');
-
                     // Unregistered user
                     if (usersRight === undefined) {
                         // Disabled rights on unregistered users
@@ -1170,7 +1172,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                         // Set the current user rights
                         input.bootstrapSwitch('state', usersRight[rightName]);
 
-                        if (self.user.getChatRights(roomName).grant) {
+                        if (!self.user.getChatRights(roomName).grant) {
                             // Disabled rights if the admin have no "grant" right
                             input.bootstrapSwitch('readonly', true);
                         } else {
@@ -1194,8 +1196,9 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          */
         updateRoomUsersBanned: function (modal, ipBannedList) {
             var ipBanned = modal.find(this.settings.selectors.administrationPanel.ipBanned),
-                trSample = usersList.find(this.settings.selectors.administrationPanel.trSample),
-                newLines = [];
+                trSample = ipBanned.find(this.settings.selectors.administrationPanel.trSample),
+                newLines = [],
+                self     = this;
             
             _.forEach(ipBannedList, function (ip) {
                 var newLine = trSample.clone();

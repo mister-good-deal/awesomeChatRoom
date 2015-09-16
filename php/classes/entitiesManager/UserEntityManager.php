@@ -10,6 +10,7 @@ namespace classes\entitiesManager;
 
 use \abstracts\designPatterns\EntityManager as EntityManager;
 use \classes\entitiesManager\UsersRightsEntityManager as UsersRightsEntityManager;
+use \classes\entitiesManager\UsersChatRightsEntityManager as UsersChatRightsEntityManager;
 use \classes\entities\User as User;
 use \classes\DataBase as DB;
 use \classes\IniManager as Ini;
@@ -176,8 +177,10 @@ class UserEntityManager extends EntityManager
         $response = array('success' => $success, 'errors' => $errors);
         
         if ($success) {
-            $user->password = $password;
-            $response['user'] = $user->__toArray();
+            $usersChatRightsEntityManager   = new UsersChatRightsEntityManager();
+            $user->password                 = $password;
+            $response['user']               = $user->__toArray();
+            $response['user']['chatRights'] = $usersChatRightsEntityManager->getAllUserChatRights($user->id);
         }
 
         return $response;

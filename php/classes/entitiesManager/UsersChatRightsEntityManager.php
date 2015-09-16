@@ -10,6 +10,7 @@ namespace classes\entitiesManager;
 
 use \abstracts\designPatterns\EntityManager as EntityManager;
 use \classes\entities\UsersChatRights as UsersChatRights;
+use \classes\DataBase as DB;
 
 /**
  * Performed database action relative to the UsersChatRights entity class
@@ -31,10 +32,12 @@ class UsersChatRightsEntityManager extends EntityManager
 
         if ($entity === null) {
             $this->entity = new UsersChatRights();
-            
         }
     }
 
+    /**
+     * Grant all the rights to the user in the current chat room
+     */
     public function grantAll()
     {
         $this->entity->kick     = 1;
@@ -43,5 +46,19 @@ class UsersChatRightsEntityManager extends EntityManager
         $this->entity->password = 1;
         $this->entity->rename   = 1;
         $this->saveEntity();
+    }
+
+    /**
+     * Get all the chat rooms rights for a user
+     *
+     * @param  integer $idUser The user id
+     * @return array           The user chat rooms rights indexed by room names
+     */
+    public function getAllUserChatRights($idUser)
+    {
+        $sqlMarks        = 'SELECT `roomName`, `kick`, `ban`, `grant`, `rename`, `password` FROM %s WHERE idUser = %s';
+        $sql             = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($idUser));
+
+        return DB::query($sql)->fetchIndexedByFirstColumn();
     }
 }

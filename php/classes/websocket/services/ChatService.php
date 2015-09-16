@@ -619,10 +619,18 @@ class ChatService extends Server implements Service
                     ))));
 
                     $this->rooms[$roomName]['ipBanned'][] = $this->getClientIp($userSocket);
-
                     $this->disconnectUser($userSocket);
 
                     foreach ($this->rooms[$roomName]['sockets'] as $userSocket) {
+                        // Update all admin users panel
+                        if ($this->isRegistered(
+                                $roomName,
+                                $this->rooms[$roomName]['pseudonyms'][$this->getClientName($userSocket)]
+                            )
+                        ) {
+                            $this->updateRoomUsersBanned($userSocket, $roomName);
+                        }
+
                         $this->sendMessageToUser(
                             $this->server,
                             $userSocket,
@@ -756,13 +764,13 @@ class ChatService extends Server implements Service
      * @param resource $socket   The user socket
      * @param string   $roomName The room name
      */
-    private function updateRoomIpbanned($socket, $roomName)
+    private function updateRoomUsersBanned($socket, $roomName)
     {
         $this->send($socket, $this->encode(json_encode(array(
-            'service'     => $this->chatService,
-            'action'      => 'updateRoomIpBanned',
-            'roomName'    => $roomName,
-            'usersRights' => $this->rooms[$roomName]['ipBanned']
+            'service'      => $this->chatService,
+            'action'       => 'updateRoomUsersBanned',
+            'roomName'     => $roomName,
+            'ipBannedList' => $this->rooms[$roomName]['ipBanned']
         ))));
     }
 

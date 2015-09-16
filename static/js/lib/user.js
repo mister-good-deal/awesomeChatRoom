@@ -33,11 +33,12 @@ define(['jquery'], function ($, Message) {
          * Default settings will get overriden if they are set when the UserManager will be instanciated
          */
         "settings" : {
-            "firstName": "",
-            "lastName" : "",
-            "pseudonym": "",
-            "email"    : "",
-            "password" : ""
+            "firstName" : "",
+            "lastName"  : "",
+            "pseudonym" : "",
+            "email"     : "",
+            "password"  : "",
+            "chatRights": {}
         },
         /**
          * A Message object to output message in the IHM
@@ -103,11 +104,10 @@ define(['jquery'], function ($, Message) {
          * Get chat rights
          *
          * @param  {string} The room name
-         * @return {string} The user password
-         * @todo
+         * @return {string} The user chat rights for the room
          */
         getChatRights: function (roomName) {
-            
+            return this.settings.chatRights[roomName];
         },
 
         /**
@@ -116,11 +116,12 @@ define(['jquery'], function ($, Message) {
          * @param {object} JSON data
          */
         setAttributes: function (data) {
-            this.settings.firstName = data.user.firstName || "";
-            this.settings.lastName  = data.user.lastName  || "";
-            this.settings.pseudonym = data.user.pseudonym || "";
-            this.settings.email     = data.user.email     || "";
-            this.settings.password  = data.user.password  || "";
+            this.settings.firstName  = data.user.firstName || "";
+            this.settings.lastName   = data.user.lastName  || "";
+            this.settings.pseudonym  = data.user.pseudonym || "";
+            this.settings.email      = data.user.email     || "";
+            this.settings.password   = data.user.password  || "";
+            this.settings.chatRights = data.user.chatRights  || {};
         },
 
         /**
