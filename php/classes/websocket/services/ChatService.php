@@ -67,7 +67,13 @@ class ChatService extends Server implements Service
      *         'password'     => 'password',
      *         'creationDate' => DateTime,
      *         'maxUsers'     => integer,
-     *         'ipBanned'     => array('ipAddress1', 'ipAddress2', ...)
+     *         'usersBanned'  => array(
+     *             'ip'        => ipAddress,
+     *             'pseudonym' => the banned user pseudonym,
+     *             'admin'     => the admin pseudonym who banned the user,
+     *             'reason'    => the reason of the ban,
+     *             'date'      => the banned timestamp
+     *         ),
      *         'historic'     => array(
      *             'part'          => the part number,
      *             'conversations' => array(
@@ -111,7 +117,7 @@ class ChatService extends Server implements Service
             'password'     => '',
             'creationDate' => new \DateTime(),
             'maxUsers'     => $params['maxUsers'],
-            'ipBanned'     => array(),
+            'usersBanned'  => array(),
             'historic'     => array('part' => 0, 'conversations' => array())
         );
 
@@ -249,7 +255,7 @@ class ChatService extends Server implements Service
                     'password'     => $roomPassword,
                     'creationDate' => new \DateTime(),
                     'maxUsers'     => $maxUsers,
-                    'ipBanned'     => array(),
+                    'usersBanned'  => array(),
                     'historic'     => array('part' => 0, 'conversations' => array())
                 );
 
@@ -315,7 +321,7 @@ class ChatService extends Server implements Service
                 $message = _('The room is full');
             } elseif (!$this->checkPrivateRoomPassword($roomName, $roomPassword)) {
                 $message = _('You cannot access to this room or the password is incorrect');
-            } elseif (in_array($this->getClientIp($socket), $this->rooms[$roomName]['ipBanned'])) {
+            } elseif ($this->inSubArray($this->getClientIp($socket), $this->rooms[$roomName]['usersBanned'], 'ip')) {
                 $message = _('You are banned from this room');
             } elseif ($email !== null && $password !== null) {
                 // Authenticated user
@@ -366,8 +372,8 @@ class ChatService extends Server implements Service
                 );
 
                 if ($user !== false) {
-                    $response['usersRights']  = $this->rooms[$roomName]['usersRights'];
-                    $response['ipBannedList'] = $this->rooms[$roomName]['ipBanned'];
+                    $response['usersRights'] = $this->rooms[$roomName]['usersRights'];
+                    $response['usersBanned'] = $this->rooms[$roomName]['usersBanned'];
                 }
             }
         }
@@ -587,7 +593,7 @@ class ChatService extends Server implements Service
         @$this->setIfIsSetAndTrim($email, $data['user']['email'], null);
         @$this->setIfIsSetAndTrim($roomName, $data['roomName'], null);
         @$this->setIfIsSetAndTrim($pseudonym, $data['pseudonym'], null);
-        @$this->setIfIsSetAndTrim($reason, $data['reason'], '');
+        @$this->setIfIsSetAndTrim($reasonInput, $data['reason'], '');
 
         $userEntityManager = new UserEntityManager();
         $user              = $userEntityManager->authenticateUser($email, $password);
@@ -602,14 +608,23 @@ class ChatService extends Server implements Service
                 $userHash = $this->getUserHashByPseudonym($roomName, $pseudonym);
 
                 if ($userHash !== false) {
-                    if ($reason !== '') {
-                        $reason = sprintf(_(' because %s'), $reason);
+                    if ($reasonInput !== '') {
+                        $reason = sprintf(_(' for the reason %s'), $reasonInput);
+                    } else {
+                        $reason = '';
                     }
 
                     $success        = true;
                     $message        = sprintf(_('You banned "%s" from the room "%s"'), $pseudonym, $roomName) . $reason;
                     $adminPseudonym = $this->rooms[$roomName]['pseudonyms'][$this->getClientName($socket)];
                     $userSocket     = $this->rooms[$roomName]['sockets'][$userHash];
+                    $banInfos       = array(
+                        'ip'        => $this->getClientIp($userSocket),
+                        'pseudonym' => $pseudonym,
+                        'admin'     => $adminPseudonym,
+                        'reason'    => $reasonInput,
+                        'date'      => date('Y-m-d H:i:s')
+                    );
 
                     $this->send($userSocket, $this->encode(json_encode(array(
                         'service'  => $this->chatService,
@@ -618,7 +633,7 @@ class ChatService extends Server implements Service
                         'roomName' => $roomName
                     ))));
 
-                    $this->rooms[$roomName]['ipBanned'][] = $this->getClientIp($userSocket);
+                    $this->rooms[$roomName]['usersBanned'][] = $banInfos;
                     $this->disconnectUser($userSocket);
 
                     foreach ($this->rooms[$roomName]['sockets'] as $userSocket) {
@@ -767,10 +782,10 @@ class ChatService extends Server implements Service
     private function updateRoomUsersBanned($socket, $roomName)
     {
         $this->send($socket, $this->encode(json_encode(array(
-            'service'      => $this->chatService,
-            'action'       => 'updateRoomUsersBanned',
-            'roomName'     => $roomName,
-            'ipBannedList' => $this->rooms[$roomName]['ipBanned']
+            'service'     => $this->chatService,
+            'action'      => 'updateRoomUsersBanned',
+            'roomName'    => $roomName,
+            'usersBanned' => $this->rooms[$roomName]['usersBanned']
         ))));
     }
 

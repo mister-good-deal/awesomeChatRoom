@@ -92,18 +92,22 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                     "text"     : module.config().selectors.chat.text
                 },
                 "administrationPanel": {
-                    "modal"       : module.config().selectors.administrationPanel.modal,
-                    "modalSample" : module.config().selectors.administrationPanel.modalSample,
-                    "trSample"    : module.config().selectors.administrationPanel.trSample,
-                    "usersList"   : module.config().selectors.administrationPanel.usersList,
-                    "roomName"    : module.config().selectors.administrationPanel.roomName,
-                    "kick"        : module.config().selectors.administrationPanel.kick,
-                    "ban"         : module.config().selectors.administrationPanel.ban,
-                    "rights"      : module.config().selectors.administrationPanel.rights,
-                    "pseudonym"   : module.config().selectors.administrationPanel.pseudonym,
-                    "toggleRights": module.config().selectors.administrationPanel.toggleRights,
-                    "ipBanned"    : module.config().selectors.administrationPanel.ipBanned,
-                    "ip"          : module.config().selectors.administrationPanel.ip
+                    "modal"          : module.config().selectors.administrationPanel.modal,
+                    "modalSample"    : module.config().selectors.administrationPanel.modalSample,
+                    "trSample"       : module.config().selectors.administrationPanel.trSample,
+                    "usersList"      : module.config().selectors.administrationPanel.usersList,
+                    "roomName"       : module.config().selectors.administrationPanel.roomName,
+                    "kick"           : module.config().selectors.administrationPanel.kick,
+                    "ban"            : module.config().selectors.administrationPanel.ban,
+                    "rights"         : module.config().selectors.administrationPanel.rights,
+                    "pseudonym"      : module.config().selectors.administrationPanel.pseudonym,
+                    "toggleRights"   : module.config().selectors.administrationPanel.toggleRights,
+                    "bannedList"     : module.config().selectors.administrationPanel.bannedList,
+                    "ip"             : module.config().selectors.administrationPanel.ip,
+                    "pseudonymBanned": module.config().selectors.administrationPanel.pseudonymBanned,
+                    "pseudonymAdmin" : module.config().selectors.administrationPanel.pseudonymAdmin,
+                    "reason"         : module.config().selectors.administrationPanel.reason,
+                    "date"           : module.config().selectors.administrationPanel.date
                 }
             }
         },
@@ -841,7 +845,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
         updateRoomUsersBannedCallback: function (data) {
             var modal = $('.modal[data-room-name="' + data.roomName + '"]');
             
-            this.updateRoomUsersBanned(modal, data.ipBannedList);
+            this.updateRoomUsersBanned(modal, data.usersBanned);
         },
 
         /**
@@ -1192,24 +1196,28 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          * Update the ip banned list in the administration modal
          *
          * @param  {object} modal        The modal jQuery DOM element
-         * @param  {object} ipBannedList The ip banned object returned by the server
+         * @param  {object} usersBanned  The users banned object returned by the server
          */
-        updateRoomUsersBanned: function (modal, ipBannedList) {
-            var ipBanned = modal.find(this.settings.selectors.administrationPanel.ipBanned),
-                trSample = ipBanned.find(this.settings.selectors.administrationPanel.trSample),
-                newLines = [],
-                self     = this;
+        updateRoomUsersBanned: function (modal, usersBanned) {
+            var bannedList = modal.find(this.settings.selectors.administrationPanel.bannedList),
+                trSample   = bannedList.find(this.settings.selectors.administrationPanel.trSample),
+                newLines   = [],
+                self       = this;
             
-            _.forEach(ipBannedList, function (ip) {
+            _.forEach(usersBanned, function (bannedInfos) {
                 var newLine = trSample.clone();
 
                 newLine.removeClass('hide sample');
-                newLine.find(self.settings.selectors.administrationPanel.ip).text(ip);
+                newLine.find(self.settings.selectors.administrationPanel.ip).text(bannedInfos.ip);
+                newLine.find(self.settings.selectors.administrationPanel.pseudonymBanned).text(bannedInfos.pseudonym);
+                newLine.find(self.settings.selectors.administrationPanel.pseudonymAdmin).text(bannedInfos.admin);
+                newLine.find(self.settings.selectors.administrationPanel.reason).text(bannedInfos.reason);
+                newLine.find(self.settings.selectors.administrationPanel.date).text(bannedInfos.date);
                 newLines.push(newLine);
             });
 
             // Clean and insert lines
-            ipBanned.find('tr').not(trSample).remove();
+            bannedList.find('tr').not(trSample).remove();
             trSample.last().after(newLines);
         },
 

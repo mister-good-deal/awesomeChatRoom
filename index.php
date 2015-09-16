@@ -130,7 +130,7 @@
              aria-labelledby="<?=_('Chat administration')?>"
              data-room-name=""
         >
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -222,17 +222,25 @@
                             </table>
                         </div>
                         <div class="panel panel-default">
-                            <div class="panel-heading"><?=_('Ip banned')?></div>
+                            <div class="panel-heading"><?=_('Users banned')?></div>
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th><?=_('Ip banned')?></th>
+                                        <th><?=_('Ip')?></th>
+                                        <th><?=_('Pseudonym')?></th>
+                                        <th><?=_('Banned by')?></th>
+                                        <th><?=_('Reason')?></th>
+                                        <th><?=_('At')?></th>
                                         <th><?=_('Actions')?></th>
                                     </tr>
                                 </thead>
-                                <tbody class="ip-banned">
+                                <tbody class="banned-list">
                                     <tr class="hide sample">
                                         <td class="ip">0.0.0.0</td>
+                                        <td class="pseudonym-banned">pseudonym used</td>
+                                        <td class="pseudonym-admin">admin pseudonym</td>
+                                        <td class="reason">reason</td>
+                                        <td class="date">01/01/2000</td>
                                         <td>
                                             <button class="btn btn-default unbanned" type="button">
                                                 <?=_('unbanned')?>
