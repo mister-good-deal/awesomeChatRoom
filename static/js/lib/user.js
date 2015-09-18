@@ -14,15 +14,15 @@ define(['jquery'], function ($, Message) {
      *
      * @constructor
      * @alias       module:lib/user
+     * @param       {Message}      Message  A Message object to output message in the IHM
+     * @param       {FormsManager} Forms    A FormsManager to handle form XHR ajax calls or jsCallbacks
      * @param       {object}       settings Overriden settings
-     * @param       {Message}      Message A Message object to output message in the IHM
-     * @param       {FormsManager} Forms   A FormsManager to handle form XHR ajax calls
      */
     var UserManager = function (Message, Forms, settings) {
         this.settings = $.extend(true, {}, this.settings, settings);
         this.message  = Message;
 
-        // Bind ajax callback
+        // Bind forms ajax callback
         Forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
         Forms.addOnFailCallback('user/connect', this.connectFail, this);
         Forms.addOnRequestFailCallback('user/connect', this.connectRequestFail, this);

@@ -14,12 +14,13 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
      *
      * @constructor
      * @alias       module:lib/chat
-     * @param       {Message}   Message   A Message object to output message in the IHM
-     * @param       {WebSocket} WebSocket The websocket manager
-     * @param       {User}      User      The current User
-     * @param       {object}    settings  Overriden settings
+     * @param       {Message}      Message   A Message object to output message in the IHM
+     * @param       {WebSocket}    WebSocket The websocket manager
+     * @param       {User}         User      The current User
+     * @param       {FormsManager} Forms     A FormsManager to handle form XHR ajax calls or jsCallbacks
+     * @param       {object}       settings  Overriden settings
      */
-    var ChatManager = function (Message, WebSocket, User, settings) {
+    var ChatManager = function (Message, WebSocket, User, Forms, settings) {
         this.settings  = $.extend(true, {}, this.settings, settings);
         this.message   = Message;
         this.websocket = WebSocket;
@@ -28,6 +29,9 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
 
         // Add websocket callbacks
         this.websocket.addCallback(this.settings.serviceName, this.chatCallback, this);
+
+        // Bind forms callback
+        Forms.addJsCallback('setReasonCallbackEvent', this.setReasonCallbackEvent, this);
     };
 
     ChatManager.prototype = {
@@ -108,8 +112,18 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                     "pseudonymAdmin" : module.config().selectors.administrationPanel.pseudonymAdmin,
                     "reason"         : module.config().selectors.administrationPanel.reason,
                     "date"           : module.config().selectors.administrationPanel.date
+                },
+                "alertInputsChoice": {
+                    "div"   : module.config().selectors.alertInputsChoice.div,
+                    "submit": module.config().selectors.alertInputsChoice.submit
                 }
             }
+        },
+        /**
+         * Global promises handler
+         */
+        "promises": {
+            "setReason": $.Deferred()
         },
         /**
          * List of all commands name and regex
@@ -500,10 +514,18 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          */
         kickUserEvent: function (e) {
             var pseudonym = $(e.currentTarget).closest('tr').attr('data-pseudonym'),
-                roomName  = $(e.currentTarget).closest(this.settings.selectors.administrationPanel.modal)
-                .attr('data-room-name');
+                modal     = $(e.currentTarget).closest(this.settings.selectors.administrationPanel.modal),
+                roomName  = modal.attr('data-room-name'),
+                self      = this;
 
-            this.kickUser(roomName, pseudonym);
+            $(modal).fadeOut(this.settings.animationTime, function() {
+                $(self.settings.selectors.alertInputsChoice.div).fadeIn(self.settings.animationTime);
+            });
+
+            $.when(this.promises.setReason).done(function (reason) {
+                self.kickUser(roomName, pseudonym, reason);
+                $(modal).fadeIn(self.settings.animationTime);
+            });
         },
 
         /**
@@ -513,10 +535,34 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          */
         banUserEvent: function (e) {
             var pseudonym = $(e.currentTarget).closest('tr').attr('data-pseudonym'),
-                roomName  = $(e.currentTarget).closest(this.settings.selectors.administrationPanel.modal)
-                .attr('data-room-name');
+                modal     = $(e.currentTarget).closest(this.settings.selectors.administrationPanel.modal),
+                roomName  = modal.attr('data-room-name'),
+                self      = this;
 
-            this.banUser(roomName, pseudonym);
+            $(modal).fadeOut(this.settings.animationTime, function() {
+                $(self.settings.selectors.alertInputsChoice.div).fadeIn(self.settings.animationTime);
+            });
+
+            $.when(this.promises.setReason).done(function (reason) {
+                self.banUser(roomName, pseudonym, reason);
+                $(modal).fadeIn(self.settings.animationTime);
+            });
+        },
+
+        /**
+         * Set the reason of the admin kick / ban action
+         *
+         * @param {object} form   The jQuery DOM form element
+         * @param {object} inputs The user inputs as object
+         */
+        setReasonCallbackEvent: function (form, inputs) {
+            var self = this;
+
+            $(this.settings.selectors.alertInputsChoice.div).fadeOut(this.settings.animationTime, function() {
+                self.promises.setReason.resolve(_.findWhere(inputs, {"name": "reason"}).value);
+                self.promises.setReason = $.Deferred();
+                form[0].reset();
+            });
         },
 
         /*=====  End of Events  ======*/

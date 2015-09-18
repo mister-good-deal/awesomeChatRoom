@@ -93,6 +93,10 @@ requirejs.config({
                     "pseudonymAdmin" : ".pseudonym-admin",
                     "reason"         : ".reason",
                     "date"           : ".date"
+                },
+                "alertInputsChoice": {
+                    "div"   : "#alert-input-choice",
+                    "submit": ".send"
                 }
             },
             "commands": {

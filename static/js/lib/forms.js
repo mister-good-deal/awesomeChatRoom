@@ -34,13 +34,17 @@ define(['jquery', 'domReady!'], function ($) {
          */
         "xhrs": [],
         /**
-         * Callbacks methods to process specifics responses
+         * Callbacks methods to process specifics responses on a XHR server response
          */
         "callbacks": {
             'onSuccess'    : [],
             'onFail'       : [],
             'onRequestFail': []
         },
+        /**
+         * Callbacks methods to process users input on user sumbit action
+         */
+        "jsCallbacks": {},
         /**
          * A Message object to output message in the IHM
          */
@@ -54,7 +58,7 @@ define(['jquery', 'domReady!'], function ($) {
         },
 
         /**
-         * Send ajax request on form submit if data-ajax = true and process the result
+         * Process the form with specified method in the data-send-action HTML attribute (default AJAX call)
          *
          * @param {event} e The form submit event
          */
@@ -63,31 +67,38 @@ define(['jquery', 'domReady!'], function ($) {
                 self = this,
                 url;
 
-            if (form.attr('data-ajax') !== 'false') {
-                e.preventDefault();
+            switch (form.attr('data-send-action')) {
+                case 'jsCallback':
+                    e.preventDefault();
+                    this.onJsCallback(form, form.attr('data-callback-name'), form.serializeArray());
 
-                url = form.attr('action');
+                    break;
 
-                if (this.xhrs[url]) {
-                    this.xhrs[url].abort();
-                }
+                default:
+                    e.preventDefault();
 
-                this.xhrs[url] = $.ajax({
-                    url     : url,
-                    type    : form.attr('method'),
-                    dataType: 'json',
-                    data    : form.serialize(),
-                }).done(function (data) {
-                    if (data.success) {
-                        self.onSuccess(form, url, data);
-                    } else {
-                        self.onFail(form, url, data);
+                    url = form.attr('action');
+
+                    if (this.xhrs[url]) {
+                        this.xhrs[url].abort();
                     }
-                }).fail(function (jqXHR) {
-                    self.onRequestFail(form, url, jqXHR);
-                }).always(function () {
-                    delete self.xhrs[url];
-                });
+
+                    this.xhrs[url] = $.ajax({
+                        url     : url,
+                        type    : form.attr('method'),
+                        dataType: 'json',
+                        data    : form.serialize(),
+                    }).done(function (data) {
+                        if (data.success) {
+                            self.onSuccess(form, url, data);
+                        } else {
+                            self.onFail(form, url, data);
+                        }
+                    }).fail(function (jqXHR) {
+                        self.onRequestFail(form, url, jqXHR);
+                    }).always(function () {
+                        delete self.xhrs[url];
+                    });
             }
         },
 
@@ -127,6 +138,19 @@ define(['jquery', 'domReady!'], function ($) {
         onRequestFail: function (form, url, jqXHR) {
             if (this.callbacks.onRequestFail[url] && typeof this.callbacks.onRequestFail[url].callback === 'function') {
                 this.callbacks.onRequestFail[url].callback.call(this.callbacks.onRequestFail[url].context, form, jqXHR);
+            }
+        },
+
+        /**
+         * Processing method on sumbit event
+         *
+         * @param {object} form          The jQuery DOM form element
+         * @param {string} callbackName  The callback function name
+         * @param {object} inputs        The user inputs as object
+         */
+        onJsCallback: function (form, callbackName, inputs) {
+            if (this.jsCallbacks[callbackName] && typeof this.jsCallbacks[callbackName].callback === 'function') {
+                this.jsCallbacks[callbackName].callback.call(this.jsCallbacks[callbackName].context, form, inputs);
             }
         },
 
@@ -189,7 +213,28 @@ define(['jquery', 'domReady!'], function ($) {
         addOnRequestFailCallback: function (url, callback, context) {
             this.callbacks.onRequestFail[url] = {
                 "callback": callback,
-                "context": context
+                "context" : context
+            };
+        },
+
+        /**
+         * Add a callback to process the form user inputs on submit
+         *
+         * The callback takes 2 arguments:
+         * 
+         * - The jQuery DOM form element
+         * - The user inputs as object
+         *
+         * Example: function callback(form, inputs) { ... }
+         *
+         * @param {string}   callbackName The callback function name
+         * @param {function} callback     The callback function
+         * @param {object}   context      The callback context
+         */
+        addJsCallback: function (callbackName, callback, context) {
+            this.jsCallbacks[callbackName] = {
+                "callback": callback,
+                "context" : context
             };
         }
     };

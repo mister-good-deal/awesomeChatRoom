@@ -6833,6 +6833,14 @@ button.close {
 .chat-admin tr.right td.warper label {
   margin-bottom: 0;
 }
+#alert-input-choice {
+  display: none;
+  position: absolute;
+  top: 25%;
+  right: 25%;
+  width: 50%;
+  z-index: 1050;
+}
 .bootstrap-switch {
   display: inline-block;
   direction: ltr;

@@ -9,7 +9,7 @@ define(
             forms     = new FormsManager(message),
             user      = new User(message, forms),
             websocket = new WebsocketManager(message, user),
-            chat      = new ChatManager(message, websocket, user);
+            chat      = new ChatManager(message, websocket, user, forms);
 
         // Bind WebSocket server callbacks
         websocket.addCallback(message.settings.serviceName, message.parseWebsocketData, message);

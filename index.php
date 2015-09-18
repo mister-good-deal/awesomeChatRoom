@@ -17,7 +17,7 @@
         <h1>Test websocket</h1>
     
         <!-- register user -->
-        <form action="user/register" method="post" accept-charset="utf-8" data-ajax="false">
+        <form action="user/register" method="post" accept-charset="utf-8">
             <input type="text" name="firstName" placeholder="<?=_('First name')?>">
             <input type="text" name="lastName" placeholder="<?=_('Last name')?>">
             <input type="text" name="pseudonym" placeholder="<?=_('Pseudonym')?>">
@@ -95,7 +95,6 @@
                             <textarea class="message form-control"
                                       rows="3"
                                       name="message"
-                                      list="chatCommands"
                                       placeholder="<?=_('Message')?>"
                             ></textarea>
                         </div>
@@ -252,6 +251,21 @@
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- alert to display user choice input on kick / ban events -->
+        <div id="alert-input-choice" class="alert alert-info">
+            <p><?=_('Complete the reason')?></p>
+            <form data-send-action="jsCallback" data-callback-name="setReasonCallbackEvent">
+                <div class="form-group">
+                    <textarea class="reason form-control"
+                              rows="3"
+                              name="reason"
+                              placeholder="<?=_('Reason')?>"
+                    ></textarea>
+                </div>
+                <button class="send btn btn-default" type="submit"><?=_('OK')?></button>
+            </form>
         </div>
     </body>
 </html>
