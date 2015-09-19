@@ -51,7 +51,7 @@ class ChatService extends Server implements Service
      */
     private $roomsNamePath;
     /**
-     * @var string[] $usersRooms All rooms where users are connected to to indexed by their socketHash
+     * @var string[] $usersRooms All rooms where users are connected to indexed by their socketHash
      */
     private $usersRooms = array();
     /**
@@ -187,6 +187,11 @@ class ChatService extends Server implements Service
 
             case 'updateRoomUserRight':
                 $this->updateRoomUserRight($socket, $data);
+
+                break;
+
+            case 'setRoomInfos':
+                $this->setRoomInfos($socket, $data);
 
                 break;
 
@@ -639,10 +644,9 @@ class ChatService extends Server implements Service
                     foreach ($this->rooms[$roomName]['sockets'] as $userSocket) {
                         // Update all admin users panel
                         if ($this->isRegistered(
-                                $roomName,
-                                $this->rooms[$roomName]['pseudonyms'][$this->getClientName($userSocket)]
-                            )
-                        ) {
+                            $roomName,
+                            $this->rooms[$roomName]['pseudonyms'][$this->getClientName($userSocket)]
+                        )) {
                             $this->updateRoomUsersBanned($userSocket, $roomName);
                         }
 
@@ -683,8 +687,8 @@ class ChatService extends Server implements Service
         $success = false;
         @$this->setIfIsSet($password, $data['user']['password'], null);
         @$this->setIfIsSetAndTrim($email, $data['user']['email'], null);
-        @$this->setIfIsSetAndTrim($roomName, $data['roomName'], null);
         @$this->setIfIsSetAndTrim($pseudonym, $data['pseudonym'], null);
+        @$this->setIfIsSetAndTrim($roomName, $data['roomName'], '');
         @$this->setIfIsSetAndTrim($rightName, $data['rightName'], '');
         @$this->setIfIsSetAndTrim($rightValue, $data['rightValue'], '');
 
@@ -738,6 +742,125 @@ class ChatService extends Server implements Service
             'success'  => $success,
             'text'     => $message,
             'roomName' => $roomName
+        ))));
+    }
+
+    /**
+     * Change a room name / password
+     *
+     * @param resource $socket The user socket
+     * @param array    $data   JSON decoded client data
+     */
+    private function setRoomInfos($socket, $data)
+    {
+        $success        = false;
+        $messageToUsers = array();
+        @$this->setIfIsSet($password, $data['user']['password'], null);
+        @$this->setIfIsSetAndTrim($email, $data['user']['email'], null);
+        @$this->setIfIsSetAndTrim($oldRoomName, $data['oldRoomName'], '');
+        @$this->setIfIsSetAndTrim($newRoomName, $data['newRoomName'], '');
+        @$this->setIfIsSetAndTrim($oldRoomPassword, $data['oldRoomPassword'], '');
+        @$this->setIfIsSetAndTrim($newRoomPassword, $data['newRoomPassword'], '');
+
+        $userEntityManager = new UserEntityManager();
+        $user              = $userEntityManager->authenticateUser($email, $password);
+
+        if ($oldRoomName === '') {
+            $message[] = _('The room name is required');
+        } elseif ($newRoomName === '') {
+            $message[] = _('The new room name is required');
+        } elseif (!in_array($oldRoomName, $this->roomsName)) {
+            $message[] = sprintf(_('The chat room name "%s" does not exists'), $oldRoomName);
+        } elseif ($oldRoomName !== $newRoomName && in_array($newRoomName, $this->roomsName)) {
+            $message[] = sprintf(_('The chat room name "%s" already exists'), $newRoomName);
+        } elseif ($user === false) {
+            $message[] = _('Authentication failed');
+        } else {
+            $usersChatRightsEntityManager = new UsersChatRightsEntityManager();
+            $usersChatRightsEntityManager->loadEntity(array('idUser' => $user->id, 'roomName' => $oldRoomName));
+
+            if ($oldRoomPassword !== $newRoomPassword) {
+                if ($user->getUserRights()->chatAdmin || $usersChatRightsEntityManager->getEntity()->password === 1) {
+                    $success                               = true;
+                    $this->rooms[$oldRoomName]['password'] = $newRoomPassword;
+                    $message[]                             = _('The room password has been successfully updated');
+                    $messageToUsers[]                      = sprintf(
+                        _('The room password has been updated from "%s" to "%s"'),
+                        $oldRoomPassword,
+                        $newRoomPassword
+                    );
+
+                    if ($newRoomPassword === '') {
+                        $this->rooms[$oldRoomName]['type'] = 'public';
+                    } else {
+                        $this->rooms[$oldRoomName]['type'] = 'private';
+                    }
+                } else {
+                    $message[] = _('You do not have the right to change the room password');
+                }
+            }
+
+            if ($oldRoomName !== $newRoomName) {
+                if ($user->getUserRights()->chatAdmin || $usersChatRightsEntityManager->getEntity()->rename === 1) {
+                    $success                   = true;
+                    $this->rooms[$newRoomName] = $this->rooms[$oldRoomName];
+                    $message[]                 = _('The room name has been successfully updated');
+                    unset($this->rooms[$oldRoomName]);
+                    $this->roomsName[array_search($oldRoomName, $this->roomsName)] = $newRoomName;
+
+                    foreach ($this->usersRooms as &$roomName) {
+                        if ($roomName === $oldRoomName) {
+                            $roomName = $newRoomName;
+                        }
+                    }
+
+                    rename(
+                        stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR . $oldRoomName),
+                        stream_resolve_include_path($this->savingDir) . DIRECTORY_SEPARATOR . $newRoomName
+                    );
+
+                    $usersChatRightsEntityManager->changeRoomName($oldRoomName, $newRoomName);
+
+                    $this->setRoomsName();
+
+                    $messageToUsers[] = sprintf(
+                        _('The room name has been updated from "%s" to "%s"'),
+                        $oldRoomName,
+                        $newRoomName
+                    );
+                } else {
+                    $message[] = _('You do not have the right to change the room name');
+                }
+            }
+
+            $this->saveRoom($newRoomName);
+
+            foreach ($this->rooms[$newRoomName]['sockets'] as $userSocket) {
+                $this->send($userSocket, $this->encode(json_encode(array(
+                    'service'         => $this->chatService,
+                    'action'          => 'changeRoomInfos',
+                    'oldRoomName'     => $oldRoomName,
+                    'newRoomName'     => $newRoomName,
+                    'oldRoomPassword' => $oldRoomPassword,
+                    'newRoomPassword' => $newRoomPassword,
+                    'pseudonym'       => 'SERVER',
+                    'time'            => date('Y-m-d H:i:s'),
+                    'roomName'        => $newRoomName,
+                    'type'            => 'public',
+                    'text'            => $messageToUsers
+                ))));
+            }
+        }
+
+        $this->send($socket, $this->encode(json_encode(array(
+            'service'         => $this->chatService,
+            'action'          => 'setRoomInfos',
+            'success'         => $success,
+            'text'            => implode('. ', $message),
+            'oldRoomName'     => $oldRoomName,
+            'newRoomName'     => $newRoomName,
+            'oldRoomPassword' => $oldRoomPassword,
+            'newRoomPassword' => $newRoomPassword
         ))));
     }
 

@@ -116,12 +116,12 @@ define(['jquery'], function ($, Message) {
          * @param {object} JSON data
          */
         setAttributes: function (data) {
-            this.settings.firstName  = data.user.firstName || "";
-            this.settings.lastName   = data.user.lastName  || "";
-            this.settings.pseudonym  = data.user.pseudonym || "";
-            this.settings.email      = data.user.email     || "";
-            this.settings.password   = data.user.password  || "";
-            this.settings.chatRights = data.user.chatRights  || {};
+            this.settings.firstName  = data.user.firstName  || "";
+            this.settings.lastName   = data.user.lastName   || "";
+            this.settings.pseudonym  = data.user.pseudonym  || "";
+            this.settings.email      = data.user.email      || "";
+            this.settings.password   = data.user.password   || "";
+            this.settings.chatRights = data.user.chatRights || {};
         },
 
         /**

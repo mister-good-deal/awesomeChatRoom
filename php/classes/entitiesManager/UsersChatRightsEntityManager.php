@@ -56,9 +56,29 @@ class UsersChatRightsEntityManager extends EntityManager
      */
     public function getAllUserChatRights($idUser)
     {
-        $sqlMarks        = 'SELECT `roomName`, `kick`, `ban`, `grant`, `rename`, `password` FROM %s WHERE idUser = %s';
-        $sql             = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($idUser));
+        $sqlMarks = 'SELECT `roomName`, `kick`, `ban`, `grant`, `rename`, `password` FROM %s WHERE idUser = %s';
+        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($idUser));
 
         return DB::query($sql)->fetchIndexedByFirstColumn();
+    }
+
+    /**
+     * Change a room name in the chat rights table
+     *
+     * @param  string  $oldRoomName The old room name
+     * @param  string  $newRoomName The new room name
+     * @return integer              The number of rows updated
+     */
+    public function changeRoomName($oldRoomName, $newRoomName)
+    {
+        $sqlMarks = 'UPDATE %s SET `roomName` = %s WHERE `roomName` = %s';
+        $sql      = static::sqlFormater(
+            $sqlMarks,
+            $this->entity->getTableName(),
+            DB::quote($newRoomName),
+            DB::quote($oldRoomName)
+        );
+
+        return (int) DB::exec($sql);
     }
 }

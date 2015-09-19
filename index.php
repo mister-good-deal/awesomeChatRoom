@@ -128,6 +128,7 @@
              role="dialog"
              aria-labelledby="<?=_('Chat administration')?>"
              data-room-name=""
+             data-room-password=""
         >
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -138,6 +139,20 @@
                         <h4 class="modal-title"><?=_('Chat administration')?> "<span class="room-name"></span>"</h4>
                     </div>
                     <div class="modal-body">
+                        <form class="form-inline"
+                              data-send-action="jsCallback"
+                              data-callback-name="setRoomInfosCallbackEvent"
+                        >
+                            <div class="form-group">
+                                <label><?=_('Room name')?></label>
+                                <input class="room-name" type="text" name="roomName" value="">
+                            </div>
+                            <div class="form-group">
+                                <label><?=_('Room password')?></label>
+                                <input class="room-password" type="password" name="roomPassword" value="">
+                            </div>
+                            <button class="send btn btn-default" type="submit"><?=_('Change')?></button>
+                        </form>
                         <div class="panel panel-default">
                             <div class="panel-heading"><?=_('Users list')?></div>
                             <table class="table table-hover">

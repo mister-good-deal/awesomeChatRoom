@@ -32,6 +32,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
 
         // Bind forms callback
         Forms.addJsCallback('setReasonCallbackEvent', this.setReasonCallbackEvent, this);
+        Forms.addJsCallback('setRoomInfosCallbackEvent', this.setRoomInfosCallbackEvent, this);
     };
 
     ChatManager.prototype = {
@@ -96,22 +97,24 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                     "text"     : module.config().selectors.chat.text
                 },
                 "administrationPanel": {
-                    "modal"          : module.config().selectors.administrationPanel.modal,
-                    "modalSample"    : module.config().selectors.administrationPanel.modalSample,
-                    "trSample"       : module.config().selectors.administrationPanel.trSample,
-                    "usersList"      : module.config().selectors.administrationPanel.usersList,
-                    "roomName"       : module.config().selectors.administrationPanel.roomName,
-                    "kick"           : module.config().selectors.administrationPanel.kick,
-                    "ban"            : module.config().selectors.administrationPanel.ban,
-                    "rights"         : module.config().selectors.administrationPanel.rights,
-                    "pseudonym"      : module.config().selectors.administrationPanel.pseudonym,
-                    "toggleRights"   : module.config().selectors.administrationPanel.toggleRights,
-                    "bannedList"     : module.config().selectors.administrationPanel.bannedList,
-                    "ip"             : module.config().selectors.administrationPanel.ip,
-                    "pseudonymBanned": module.config().selectors.administrationPanel.pseudonymBanned,
-                    "pseudonymAdmin" : module.config().selectors.administrationPanel.pseudonymAdmin,
-                    "reason"         : module.config().selectors.administrationPanel.reason,
-                    "date"           : module.config().selectors.administrationPanel.date
+                    "modal"            : module.config().selectors.administrationPanel.modal,
+                    "modalSample"      : module.config().selectors.administrationPanel.modalSample,
+                    "trSample"         : module.config().selectors.administrationPanel.trSample,
+                    "usersList"        : module.config().selectors.administrationPanel.usersList,
+                    "roomName"         : module.config().selectors.administrationPanel.roomName,
+                    "kick"             : module.config().selectors.administrationPanel.kick,
+                    "ban"              : module.config().selectors.administrationPanel.ban,
+                    "rights"           : module.config().selectors.administrationPanel.rights,
+                    "pseudonym"        : module.config().selectors.administrationPanel.pseudonym,
+                    "toggleRights"     : module.config().selectors.administrationPanel.toggleRights,
+                    "bannedList"       : module.config().selectors.administrationPanel.bannedList,
+                    "ip"               : module.config().selectors.administrationPanel.ip,
+                    "pseudonymBanned"  : module.config().selectors.administrationPanel.pseudonymBanned,
+                    "pseudonymAdmin"   : module.config().selectors.administrationPanel.pseudonymAdmin,
+                    "reason"           : module.config().selectors.administrationPanel.reason,
+                    "date"             : module.config().selectors.administrationPanel.date,
+                    "inputRoomPassword": module.config().selectors.administrationPanel.inputRoomPassword,
+                    "inputRoomName"    : module.config().selectors.administrationPanel.inputRoomName
                 },
                 "alertInputsChoice": {
                     "div"   : module.config().selectors.alertInputsChoice.div,
@@ -565,6 +568,24 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
             });
         },
 
+        /**
+         * Set the room name / password
+         *
+         * @param {object} form   The jQuery DOM form element
+         * @param {object} inputs The user inputs as object
+         */
+        setRoomInfosCallbackEvent: function (form, inputs) {
+            var modal           = form.closest(this.settings.selectors.administrationPanel.modal),
+                oldRoomName     = modal.attr('data-room-name'),
+                newRoomName     = _.findWhere(inputs, {"name": "roomName"}).value,
+                oldRoomPassword = modal.attr('data-room-password'),
+                newRoomPassword = _.findWhere(inputs, {"name": "roomPassword"}).value;
+
+            if (oldRoomName !== newRoomName || oldRoomPassword !== newRoomPassword) {
+                this.setRoomInfos(oldRoomName, newRoomName, oldRoomPassword, newRoomPassword);
+            }
+        },
+
         /*=====  End of Events  ======*/
 
         /*==================================================================
@@ -713,10 +734,10 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
         /**
          * Update a user right
          *
-         * @param  {string}  roomName   The room name
-         * @param  {string}  pseudonym  The user pseudonym
-         * @param  {string}  rightName  The right name to update
-         * @param  {boolean} rightValue The new right value
+         * @param {string}  roomName   The room name
+         * @param {string}  pseudonym  The user pseudonym
+         * @param {string}  rightName  The right name to update
+         * @param {boolean} rightValue The new right value
          */
         updateRoomUserRight: function (roomName, pseudonym, rightName, rightValue) {
             this.websocket.send(JSON.stringify({
@@ -727,6 +748,26 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                 "pseudonym" : pseudonym,
                 "rightName" : rightName,
                 "rightValue": rightValue
+            }));
+        },
+
+        /**
+         * Set a new room name / password
+         *
+         * @param {string} oldRoomName     The old room name
+         * @param {string} newRoomName     The new room name
+         * @param {string} oldRoomPassword The old room password
+         * @param {string} newRoomPassword The new room password
+         */
+        setRoomInfos: function (oldRoomName, newRoomName, oldRoomPassword, newRoomPassword) {
+            this.websocket.send(JSON.stringify({
+                "service"        : [this.settings.serviceName],
+                "action"         : "setRoomInfos",
+                "user"           : this.user.settings,
+                "oldRoomName"    : oldRoomName,
+                "newRoomName"    : newRoomName,
+                "oldRoomPassword": oldRoomPassword,
+                "newRoomPassword": newRoomPassword
             }));
         },
         
@@ -805,6 +846,16 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
 
                 case 'banUser':
                     this.banUserCallback(data);
+
+                    break;
+
+                case 'setRoomInfos':
+                    this.setRoomInfosCallback(data);
+
+                    break;
+
+                case 'changeRoomInfos':
+                    this.changeRoomInfosCallback(data);
 
                     break;
                 
@@ -991,6 +1042,61 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
         banUserCallback: function (data) {
             this.message.add(data.text);
         },
+
+        /**
+         * Callback after setting a new room name / password
+         *
+         * @param {object} data The server JSON reponse
+         */
+        setRoomInfosCallback: function (data) {
+            this.message.add(data.text);
+        },
+
+        /**
+         * Callback after a room name / password has been changed
+         *
+         * @param {object} data The server JSON reponse
+         */
+        changeRoomInfosCallback: function (data) {
+            var room = $(this.settings.selectors.global.room + '[data-name="' + data.oldRoomName + '"]');
+
+            if (data.oldRoomName !== data.newRoomName) {
+                room.attr('data-name', data.newRoomName);
+                room.find(this.settings.selectors.global.roomName).text(data.newRoomName);
+                this.mouseInRoomChat[data.newRoomName]        = this.mouseInRoomChat[data.oldRoomName];
+                this.isRoomOpened[data.newRoomName]           = this.isRoomOpened[data.oldRoomName];
+                this.messagesHistory[data.newRoomName]        = this.messagesHistory[data.oldRoomName];
+                this.messagesHistoryPointer[data.newRoomName] = this.messagesHistoryPointer[data.oldRoomName];
+                this.messagesCurrent[data.newRoomName]        = this.messagesCurrent[data.oldRoomName];
+                delete this.mouseInRoomChat[data.oldRoomName];
+                delete this.isRoomOpened[data.oldRoomName];
+                delete this.messagesHistory[data.oldRoomName];
+                delete this.messagesHistoryPointer[data.oldRoomName];
+                delete this.messagesCurrent[data.oldRoomName];
+            }
+
+            if (data.oldRoomPassword !== data.newRoomPassword) {
+                room.attr('data-password', data.newRoomPassword);
+            }
+
+            if (this.user.connected) {
+                var modal = $(this.settings.selectors.administrationPanel.modal +
+                    '[data-room-name="' + data.oldRoomName + '"]');
+
+                if (data.oldRoomName !== data.newRoomName) {
+                    modal.attr('data-room-name', data.newRoomName);
+                    modal.find(this.settings.selectors.administrationPanel.roomName).text(data.newRoomName);
+                    modal.find(this.settings.selectors.administrationPanel.inputRoomName).val(data.newRoomName);
+                }
+
+                if (data.oldRoomPassword !== data.newRoomPassword) {
+                    modal.attr('data-room-password', data.newRoomPassword);
+                    modal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(data.newRoomPassword);
+                }
+            }
+
+            this.recieveMessageCallback(data);
+        },
         
         /*=====  End of Callbacks after WebSocket server responses  ======*/
         
@@ -1070,10 +1176,14 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                         id          = _.uniqueId('chat-admin-');
 
                     newModal.attr({
-                        "id"            : id,
-                        "data-room-name": data.roomName
+                        "id"                : id,
+                        "data-room-name"    : data.roomName,
+                        "data-room-password": data.roomPassword
                     });
+
                     newModal.find(this.settings.selectors.administrationPanel.roomName).text(data.roomName);
+                    newModal.find(this.settings.selectors.administrationPanel.inputRoomName).val(data.roomName);
+                    newModal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(data.roomPassword);
                     newRoom.find(this.settings.selectors.roomAction.administration).attr('data-target', '#' + id);
                     this.updateRoomUsersRights(newModal, data.usersRights);
 
@@ -1105,25 +1215,38 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          * Format a user message in a html div
          *
          * @param  {object} data The server JSON reponse
-         * @return {object}      jQuery html div object containing the user message
+         * @return {array}       Array of jQuery html div(s) object containing the user message(s)
          */
         formatUserMessage: function (data) {
-            return $('<div>', {
-                "class": this.settings.selectors.chat.message.substr(1) + ' ' + data.type
-            }).append(
-                $('<span>', {
-                    "class": this.settings.selectors.chat.date.substr(1),
-                    "text" : '[' + data.time + ']'
-                }),
-                $('<span>', {
-                    "class": this.settings.selectors.chat.pseudonym.substr(1),
-                    "text" : data.pseudonym
-                }),
-                $('<span>', {
-                    "class": this.settings.selectors.chat.text.substr(1),
-                    "text" : data.text
-                })
-            );
+            var divs = [],
+                self = this;
+
+            if (!_.isArray(data.text)) {
+                data.text = [data.text];
+            }
+
+            _.forEach(data.text, function (text) {
+                divs.push(
+                    $('<div>', {
+                        "class": self.settings.selectors.chat.message.substr(1) + ' ' + data.type
+                    }).append(
+                        $('<span>', {
+                            "class": self.settings.selectors.chat.date.substr(1),
+                            "text" : '[' + data.time + ']'
+                        }),
+                        $('<span>', {
+                            "class": self.settings.selectors.chat.pseudonym.substr(1),
+                            "text" : data.pseudonym
+                        }),
+                        $('<span>', {
+                            "class": self.settings.selectors.chat.text.substr(1),
+                            "text" : text
+                        })
+                    )
+                );
+            });
+
+            return divs;
         },
 
         /**

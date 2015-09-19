@@ -52,7 +52,8 @@ trait ShortcutsTrait
      * @param  string  $key      The sub-array key
      * @return boolean           True if the value is found else false
      */
-    public function inSubArray($needle, $haystack, $key) {
+    public function inSubArray($needle, $haystack, $key)
+    {
         $found = false;
 
         foreach ($haystack as $subarray) {
