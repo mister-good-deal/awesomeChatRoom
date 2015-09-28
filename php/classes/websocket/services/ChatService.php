@@ -55,10 +55,6 @@ class ChatService extends Server implements Service
      */
     private $usersRooms = array();
     /**
-     * @var array $roomsInfo All the rooms basic info
-     */
-    private $roomsInfo = array();
-    /**
      * @var array $rooms Rooms live sessions
      *
      * array(
@@ -196,11 +192,6 @@ class ChatService extends Server implements Service
 
             case 'setRoomInfos':
                 $this->setRoomInfos($socket, $data);
-
-                break;
-
-            case 'getRoomsInfo':
-                $this->getRoomsInfo($socket, $data);
 
                 break;
 
@@ -874,27 +865,6 @@ class ChatService extends Server implements Service
     }
 
     /**
-     * Get the basics rooms info (name and number of connected users)
-     *
-     * @param resource $socket The user socket
-     * @param array    $data   JSON decoded client data
-     */
-    private function getRoomsInfo($socket, $data)
-    {
-        $roomsInfo = array();
-
-        foreach ($this->roomsName as $roomName) {
-            if (isset($this->rooms[$roomName])) {
-                $roomsInfo[$roomName]['connectedUsers'] = count($this->rooms[$roomName]['sockets']);
-            } else {
-                $roomsInfo[$roomName]['connectedUsers'] = 0;
-            }
-
-            $roomsInfo[$roomName]['maxUsers'] = 
-        }
-    }
-
-    /**
      * Update the connected users list in a room
      *
      * @param resource $socket   The user socket
@@ -1234,36 +1204,18 @@ class ChatService extends Server implements Service
     }
 
     /**
-     * Get the room info from its JSON file
-     *
-     * @param string $roomName The room name
-     */
-    private function getRoomInfo($roomName)
-    {
-        return json_decode(file_get_contents(
-            stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR .$roomName) .
-            DIRECTORY_SEPARATOR . 'room.json'
-        ), true);
-    }
-
-    /**
      * Load a room that was stored in a file
      *
      * @param string $roomName The room name
      */
     private function loadRoom($roomName)
     {
-        $this->rooms[$roomName] = $this->getRoomInfo($roomName);
+        $this->rooms[$roomName] = json_decode(file_get_contents(
+            stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR .$roomName) .
+            DIRECTORY_SEPARATOR . 'room.json'
+        ), true);
 
         $this->loadHistoric($roomName, $this->getLastPartNumber($roomName));
-    }
-    
-    private function loadAllRoomsInfo()
-    {
-        foreach ($this->getRoomsName as $roomName) {
-            $this->roomsInfo[$roomName]                   = $this->loadRoom($roomName);
-            $this->roomsInfo[$roomName]['connectedUsers'] = 0;
-        }
     }
 
     /**
