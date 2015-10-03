@@ -7,6 +7,7 @@ requirejs.config({
         "jquery"          : "vendors/jquery-2.1.4",
         "lodash"          : "vendors/lodash-3.10.1",
         "bootstrap"       : "vendors/bootstrap-3.3.5",
+        "bootstrap-select": "vendors/bootstrap-select-1.7.4",
         "bootstrap-switch": "vendors/bootstrap-switch-3.3.2",
         "domReady"        : "vendors/domReady",
         "chat"            : "chat",
@@ -16,13 +17,20 @@ requirejs.config({
     },
     "shim" : {
         "bootstrap" : {
-            "deps" :['jquery']
+            "deps":['jquery']
+        },
+        "bootstrap-select" : {
+            "deps":['bootstrap']
+        },
+        "bootstrap-switch" : {
+            "deps":['bootstrap']
         }
     },
     "config": {
         "websocket": {
-            "serverUrl"  : "ws://127.0.0.1:5000",
-            "serviceName": "websocketService"
+            "serverUrl"   : "ws://127.0.0.1:5000",
+            "serviceName" : "websocketService",
+            "waitInterval": 1000
         },
         "chat": {
             "serviceName"  : "chatService",
@@ -43,11 +51,13 @@ requirejs.config({
                     "roomMessagesUnread": ".messages-unread"
                 },
                 "roomConnect": {
-                    "div"      : ".connect-room",
-                    "name"     : ".room-name",
-                    "pseudonym": ".pseudonym",
-                    "password" : ".room-password",
-                    "connect"  : ".connect"
+                    "div"         : ".connect-room",
+                    "name"        : ".room-name",
+                    "publicRooms" : '.public',
+                    "privateRooms": '.private',
+                    "pseudonym"   : ".pseudonym",
+                    "password"    : ".room-password",
+                    "connect"     : ".connect"
                 },
                 "roomCreation": {
                     "div"     : ".create-room",

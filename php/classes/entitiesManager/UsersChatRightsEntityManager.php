@@ -81,4 +81,40 @@ class UsersChatRightsEntityManager extends EntityManager
 
         return (int) DB::exec($sql);
     }
+
+    /**
+     * Change a room name in the chat rights table
+     *
+     * @param  string  $roomName The new room name
+     * @return integer           The number of rows inserted
+     */
+    public function addRoomName($roomName)
+    {
+        $sqlMarks = 'INSERT INTO %s VALUES(SELECT `id`, %s, 0, 0, 0, 0, 0 FROM Users)';
+        $sql      = static::sqlFormater(
+            $sqlMarks,
+            $this->entity->getTableName(),
+            DB::quote($roomName)
+        );
+
+        return (int) DB::exec($sql);
+    }
+
+    /**
+     * Change a room name in the chat rights table
+     *
+     * @param  string  $roomName The old room name
+     * @return integer           The number of rows deleted
+     */
+    public function removeRoomName($roomName)
+    {
+        $sqlMarks = 'DELETE FROM %s WHERE `roomName` = %s';
+        $sql      = static::sqlFormater(
+            $sqlMarks,
+            $this->entity->getTableName(),
+            DB::quote($roomName)
+        );
+
+        return (int) DB::exec($sql);
+    }
 }

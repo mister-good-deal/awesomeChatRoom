@@ -6,7 +6,7 @@
 
 /*global define*/
 
-define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function ($, module, _) {
+define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'bootstrap'], function ($, module, _) {
     'use strict';
 
     /**
@@ -21,6 +21,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
      * @param       {object}       settings  Overriden settings
      */
     var ChatManager = function (Message, WebSocket, User, Forms, settings) {
+        var self = this;
+
         this.settings  = $.extend(true, {}, this.settings, settings);
         this.message   = Message;
         this.websocket = WebSocket;
@@ -30,9 +32,16 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
         // Add websocket callbacks
         this.websocket.addCallback(this.settings.serviceName, this.chatCallback, this);
 
-        // Bind forms callback
+        // Add forms callback
         Forms.addJsCallback('setReasonCallbackEvent', this.setReasonCallbackEvent, this);
-        Forms.addJsCallback('setRoomInfosCallbackEvent', this.setRoomInfosCallbackEvent, this);
+        Forms.addJsCallback('setRoomInfoCallbackEvent', this.setRoomInfoCallbackEvent, this);
+
+        // Enable selectpicker and load rooms
+        $(document).ready(function() {
+            $(self.settings.selectors.roomConnect.div + ' ' + self.settings.selectors.roomConnect.name).selectpicker();
+        });
+        
+        this.getRoomsInfo();
     };
 
     ChatManager.prototype = {
@@ -63,11 +72,13 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                     "roomMessagesUnread": module.config().selectors.global.roomMessagesUnread
                 },
                 "roomConnect": {
-                    "div"      : module.config().selectors.roomConnect.div,
-                    "name"     : module.config().selectors.roomConnect.name,
-                    "pseudonym": module.config().selectors.roomConnect.pseudonym,
-                    "password" : module.config().selectors.roomConnect.password,
-                    "connect"  : module.config().selectors.roomConnect.connect
+                    "div"         : module.config().selectors.roomConnect.div,
+                    "name"        : module.config().selectors.roomConnect.name,
+                    "publicRooms" : module.config().selectors.roomConnect.publicRooms,
+                    "privateRooms": module.config().selectors.roomConnect.privateRooms,
+                    "pseudonym"   : module.config().selectors.roomConnect.pseudonym,
+                    "password"    : module.config().selectors.roomConnect.password,
+                    "connect"     : module.config().selectors.roomConnect.connect
                 },
                 "roomCreation": {
                     "div"     : module.config().selectors.roomCreation.div,
@@ -288,6 +299,13 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                 this.settings.selectors.administrationPanel.modal + ' ' +
                 this.settings.selectors.administrationPanel.ban,
                 $.proxy(this.banUserEvent, this)
+            );
+            // Show / hide the password input when the selected room is public / private
+            $('body').on(
+                'change',
+                this.settings.selectors.roomConnect.div + ' ' +
+                this.settings.selectors.roomConnect.name,
+                $.proxy(this.selectRoomEvent, this)
             );
         },
 
@@ -574,7 +592,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          * @param {object} form   The jQuery DOM form element
          * @param {object} inputs The user inputs as object
          */
-        setRoomInfosCallbackEvent: function (form, inputs) {
+        setRoomInfoCallbackEvent: function (form, inputs) {
             var modal           = form.closest(this.settings.selectors.administrationPanel.modal),
                 oldRoomName     = modal.attr('data-room-name'),
                 newRoomName     = _.findWhere(inputs, {"name": "roomName"}).value,
@@ -582,7 +600,20 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                 newRoomPassword = _.findWhere(inputs, {"name": "roomPassword"}).value;
 
             if (oldRoomName !== newRoomName || oldRoomPassword !== newRoomPassword) {
-                this.setRoomInfos(oldRoomName, newRoomName, oldRoomPassword, newRoomPassword);
+                this.setRoomInfo(oldRoomName, newRoomName, oldRoomPassword, newRoomPassword);
+            }
+        },
+
+        /**
+         * Event fired when a user selected a room
+         *
+         * @param {event} e The fired event
+         */
+        selectRoomEvent: function (e) {
+            if ($(e.currentTarget).find('option:selected').attr('data-type') === 'public') {
+                $(this.settings.selectors.roomConnect.div + ' ' + this.settings.selectors.roomConnect.password).hide();
+            } else {
+                $(this.settings.selectors.roomConnect.div + ' ' + this.settings.selectors.roomConnect.password).show();
             }
         },
 
@@ -759,15 +790,25 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          * @param {string} oldRoomPassword The old room password
          * @param {string} newRoomPassword The new room password
          */
-        setRoomInfos: function (oldRoomName, newRoomName, oldRoomPassword, newRoomPassword) {
+        setRoomInfo: function (oldRoomName, newRoomName, oldRoomPassword, newRoomPassword) {
             this.websocket.send(JSON.stringify({
                 "service"        : [this.settings.serviceName],
-                "action"         : "setRoomInfos",
+                "action"         : "setRoomInfo",
                 "user"           : this.user.settings,
                 "oldRoomName"    : oldRoomName,
                 "newRoomName"    : newRoomName,
                 "oldRoomPassword": oldRoomPassword,
                 "newRoomPassword": newRoomPassword
+            }));
+        },
+
+        /**
+         * Get the rooms basic information (name, type, usersMax, usersConnected)
+         */
+        getRoomsInfo: function () {
+            this.websocket.send(JSON.stringify({
+                "service": [this.settings.serviceName],
+                "action" : "getRoomsInfo"
             }));
         },
         
@@ -849,13 +890,18 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
 
                     break;
 
-                case 'setRoomInfos':
-                    this.setRoomInfosCallback(data);
+                case 'setRoomInfo':
+                    this.setRoomInfoCallback(data);
 
                     break;
 
-                case 'changeRoomInfos':
-                    this.changeRoomInfosCallback(data);
+                case 'changeRoomInfo':
+                    this.changeRoomInfoCallback(data);
+
+                    break;
+
+                case 'getRoomsInfo':
+                    this.getRoomsInfoCallback(data);
 
                     break;
                 
@@ -1048,7 +1094,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          *
          * @param {object} data The server JSON reponse
          */
-        setRoomInfosCallback: function (data) {
+        setRoomInfoCallback: function (data) {
             this.message.add(data.text);
         },
 
@@ -1057,7 +1103,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
          *
          * @param {object} data The server JSON reponse
          */
-        changeRoomInfosCallback: function (data) {
+        changeRoomInfoCallback: function (data) {
             var room = $(this.settings.selectors.global.room + '[data-name="' + data.oldRoomName + '"]');
 
             if (data.oldRoomName !== data.newRoomName) {
@@ -1096,6 +1142,39 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
             }
 
             this.recieveMessageCallback(data);
+        },
+
+        /**
+         * Callback after getting the new rooms info
+         *
+         * @param {object} data The server JSON reponse
+         */
+        getRoomsInfoCallback: function (data) {
+            var publicRooms  = [],
+                privateRooms = [],
+                select       = $(
+                    this.settings.selectors.roomConnect.div + ' ' + this.settings.selectors.roomConnect.name
+                ),
+                option;
+
+            _.forEach(data.roomsInfo, function (roomInfo) {
+                option = $('<option>', {
+                    "value"       : roomInfo.name,
+                    "data-subtext": '(' + roomInfo.usersConnected + '/' + roomInfo.maxUsers + ')',
+                    "data-type"   : roomInfo.type,
+                    "text"        : roomInfo.name
+                });
+
+                if (roomInfo.type === 'public') {
+                    publicRooms.push(option);
+                } else {
+                    privateRooms.push(option);
+                }
+            });
+
+            select.find(this.settings.selectors.roomConnect.publicRooms).html(publicRooms);
+            select.find(this.settings.selectors.roomConnect.privateRooms).html(privateRooms);
+            select.selectpicker('refresh');
         },
         
         /*=====  End of Callbacks after WebSocket server responses  ======*/
@@ -1204,11 +1283,13 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
             var historicLoaded = roomChatDOM.attr('data-historic-loaded'),
                 i;
 
-            for (i = historic.length - 1; i >= 0; i--) {
-                roomChatDOM.prepend(this.formatUserMessage(historic[i]));
-            }
+            if (historic !== undefined) {
+                for (i = historic.length - 1; i >= 0; i--) {
+                    roomChatDOM.prepend(this.formatUserMessage(historic[i]));
+                }
 
-            roomChatDOM.attr('data-historic-loaded', ++historicLoaded);
+                roomChatDOM.attr('data-historic-loaded', ++historicLoaded);
+            }
         },
 
         /**
@@ -1373,15 +1454,15 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap'], function
                 newLines   = [],
                 self       = this;
             
-            _.forEach(usersBanned, function (bannedInfos) {
+            _.forEach(usersBanned, function (bannedInfo) {
                 var newLine = trSample.clone();
 
                 newLine.removeClass('hide sample');
-                newLine.find(self.settings.selectors.administrationPanel.ip).text(bannedInfos.ip);
-                newLine.find(self.settings.selectors.administrationPanel.pseudonymBanned).text(bannedInfos.pseudonym);
-                newLine.find(self.settings.selectors.administrationPanel.pseudonymAdmin).text(bannedInfos.admin);
-                newLine.find(self.settings.selectors.administrationPanel.reason).text(bannedInfos.reason);
-                newLine.find(self.settings.selectors.administrationPanel.date).text(bannedInfos.date);
+                newLine.find(self.settings.selectors.administrationPanel.ip).text(bannedInfo.ip);
+                newLine.find(self.settings.selectors.administrationPanel.pseudonymBanned).text(bannedInfo.pseudonym);
+                newLine.find(self.settings.selectors.administrationPanel.pseudonymAdmin).text(bannedInfo.admin);
+                newLine.find(self.settings.selectors.administrationPanel.reason).text(bannedInfo.reason);
+                newLine.find(self.settings.selectors.administrationPanel.date).text(bannedInfo.date);
                 newLines.push(newLine);
             });
 

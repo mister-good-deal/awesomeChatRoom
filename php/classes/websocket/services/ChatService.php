@@ -113,6 +113,7 @@ class ChatService extends Server implements Service
         $this->rooms['default'] = array(
             'sockets'      => array(),
             'pseudonyms'   => array(),
+            'usersRights'  => array(),
             'type'         => 'public',
             'password'     => '',
             'creationDate' => new \DateTime(),
@@ -190,8 +191,13 @@ class ChatService extends Server implements Service
 
                 break;
 
-            case 'setRoomInfos':
-                $this->setRoomInfos($socket, $data);
+            case 'setRoomInfo':
+                $this->setRoomInfo($socket, $data);
+
+                break;
+
+            case 'getRoomsInfo':
+                $this->getRoomsInfo($socket, $data);
 
                 break;
 
@@ -247,6 +253,7 @@ class ChatService extends Server implements Service
                 $usersChatRightsEntityManager = new UsersChatRightsEntityManager($usersChatRights);
                 $usersChatRights->idUser      = $user->id;
                 $usersChatRights->roomName    = $roomName;
+                $usersChatRightsEntityManager->addRoomName($roomName);
                 $usersChatRightsEntityManager->grantAll();
 
                 $socketHash             = $this->getClientName($socket);
@@ -255,6 +262,7 @@ class ChatService extends Server implements Service
                 $this->rooms[$roomName] = array(
                     'sockets'      => array($socketHash => $socket),
                     'pseudonyms'   => array($socketHash => $pseudonym),
+                    'usersRights'  => array(),
                     'creator'      => $user->email,
                     'type'         => $type,
                     'password'     => $roomPassword,
@@ -623,7 +631,7 @@ class ChatService extends Server implements Service
                     $message        = sprintf(_('You banned "%s" from the room "%s"'), $pseudonym, $roomName) . $reason;
                     $adminPseudonym = $this->rooms[$roomName]['pseudonyms'][$this->getClientName($socket)];
                     $userSocket     = $this->rooms[$roomName]['sockets'][$userHash];
-                    $banInfos       = array(
+                    $banInfo        = array(
                         'ip'        => $this->getClientIp($userSocket),
                         'pseudonym' => $pseudonym,
                         'admin'     => $adminPseudonym,
@@ -638,7 +646,7 @@ class ChatService extends Server implements Service
                         'roomName' => $roomName
                     ))));
 
-                    $this->rooms[$roomName]['usersBanned'][] = $banInfos;
+                    $this->rooms[$roomName]['usersBanned'][] = $banInfo;
                     $this->disconnectUser($userSocket);
 
                     foreach ($this->rooms[$roomName]['sockets'] as $userSocket) {
@@ -751,7 +759,7 @@ class ChatService extends Server implements Service
      * @param resource $socket The user socket
      * @param array    $data   JSON decoded client data
      */
-    private function setRoomInfos($socket, $data)
+    private function setRoomInfo($socket, $data)
     {
         $success        = false;
         $messageToUsers = array();
@@ -838,7 +846,7 @@ class ChatService extends Server implements Service
             foreach ($this->rooms[$newRoomName]['sockets'] as $userSocket) {
                 $this->send($userSocket, $this->encode(json_encode(array(
                     'service'         => $this->chatService,
-                    'action'          => 'changeRoomInfos',
+                    'action'          => 'changeRoomInfo',
                     'oldRoomName'     => $oldRoomName,
                     'newRoomName'     => $newRoomName,
                     'oldRoomPassword' => $oldRoomPassword,
@@ -854,13 +862,46 @@ class ChatService extends Server implements Service
 
         $this->send($socket, $this->encode(json_encode(array(
             'service'         => $this->chatService,
-            'action'          => 'setRoomInfos',
+            'action'          => 'setRoomInfo',
             'success'         => $success,
             'text'            => implode('. ', $message),
             'oldRoomName'     => $oldRoomName,
             'newRoomName'     => $newRoomName,
             'oldRoomPassword' => $oldRoomPassword,
             'newRoomPassword' => $newRoomPassword
+        ))));
+    }
+
+    /**
+     * Get the rooms basic information (name, type, usersMax, usersConnected)
+     *
+     * @param resource $socket The user socket
+     */
+    private function getRoomsInfo($socket)
+    {
+        $roomsInfo = array();
+
+        foreach ($this->roomsName as $roomName) {
+            if (isset($this->rooms[$roomName])) {
+                $roomInfo       = $this->rooms[$roomName];
+                $usersConnected = count($this->rooms[$roomName]['sockets']);
+            } else {
+                $roomInfo       = $this->getRoomInfo($roomName);
+                $usersConnected = 0;
+            }
+
+            $roomsInfo[] = array(
+                'name'           => $roomName,
+                'type'           => $roomInfo['type'],
+                'maxUsers'       => $roomInfo['maxUsers'],
+                'usersConnected' => $usersConnected
+            );
+        }
+
+        $this->send($socket, $this->encode(json_encode(array(
+            'service'   => $this->chatService,
+            'action'    => 'getRoomsInfo',
+            'roomsInfo' => $roomsInfo
         ))));
     }
 
@@ -1204,16 +1245,27 @@ class ChatService extends Server implements Service
     }
 
     /**
+     * Get the room information stored in a JSON file
+     *
+     * @param  string $roomName The room name
+     * @return array            The JSON decoded room information as associative array
+     */
+    private function getRoomInfo($roomName)
+    {
+        return json_decode(file_get_contents(
+            stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR .$roomName) .
+            DIRECTORY_SEPARATOR . 'room.json'
+        ), true);
+    }
+
+    /**
      * Load a room that was stored in a file
      *
      * @param string $roomName The room name
      */
     private function loadRoom($roomName)
     {
-        $this->rooms[$roomName] = json_decode(file_get_contents(
-            stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR .$roomName) .
-            DIRECTORY_SEPARATOR . 'room.json'
-        ), true);
+        $this->rooms[$roomName] = $this->getRoomInfo($roomName);
 
         $this->loadHistoric($roomName, $this->getLastPartNumber($roomName));
     }

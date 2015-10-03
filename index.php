@@ -36,7 +36,15 @@
         <!-- connect room -->
         <div class="connect-room">
             <input class="pseudonym" type="text" name="chatPseudo" placeholder="<?=_('Pseudonym')?>">
-            <input class="room-name" type="text" name="roomName" placeholder="<?=_('Room name')?>">
+            <select class="room-name"
+                    name="roomName"
+                    data-title="<?=_('Select a room')?>"
+                    data-show-subtext="true"
+                    data-live-search="true"
+            >
+                <optgroup class="public" label="<?=_('Public rooms')?>"></optgroup>
+                <optgroup class="private" label="<?=_('Private rooms')?>"></optgroup>
+            </select>
             <input class="room-password" type="password" name="roomPassword"  placeholder="<?=_('Room password')?>">
             <button class="connect btn btn-primary" type="button"><?=_('Connect')?></button>
         </div>

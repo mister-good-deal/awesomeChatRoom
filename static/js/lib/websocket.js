@@ -30,8 +30,9 @@ define(['jquery', 'module'], function ($, module) {
          * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
          */
         "settings": {
-            "serverUrl"  : module.config().serverUrl,
-            "serviceName": module.config().serviceName
+            "serverUrl"   : module.config().serverUrl,
+            "serviceName" : module.config().serviceName,
+            "waitInterval": module.config().waitInterval
         },
         /**
          * The websocket ressource
@@ -88,12 +89,20 @@ define(['jquery', 'module'], function ($, module) {
         },
 
         /**
-         * Shorthand method to send data to the WebSocket server
+         * Shorthand method to send data to the WebSocket server or delay until the websocket is ready
          *
          * @param {string} data Data to send to the WebSocket server
          */
         send: function (data) {
-            this.socket.send(data);
+            var self = this;
+
+            if (this.socket.readyState !== 1) {
+                setTimeout(function () {
+                    self.send(data);
+                }, self.settings.waitInterval);
+            } else {
+                this.socket.send(data);
+            }
         },
 
         /**
