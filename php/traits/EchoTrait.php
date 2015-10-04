@@ -9,6 +9,8 @@
 namespace traits;
 
 use \classes\IniManager as Ini;
+use \classes\console\ConsoleColors as ConsoleColors;
+use \vendors\ChromePhp as Console;
 
 /**
  * Utility methods to use echo with pre-encoding for console or format for html
@@ -38,8 +40,10 @@ trait EchoTrait
 
                 break;
 
-            case 'html':
-                echo static::convertConsoleToHtml($output);
+            case 'web':
+                foreach (preg_split('/' . PHP_EOL . '/', ConsoleColors::unsetColor($output)) as $line) {
+                    Console::log($line);
+                }
 
                 break;
             

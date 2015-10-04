@@ -10,6 +10,7 @@ namespace controllers;
 
 use \abstracts\AbstractController as Controller;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
+use \classes\ExceptionManager as Exception;
 
 /**
  * User controller
@@ -23,10 +24,13 @@ class UserController extends Controller
      */
     public function register()
     {
-        $userEntityManager = new UserEntityManager();
+        try {
+            $userEntityManager = new UserEntityManager();
 
-        $this->JSONresponse($userEntityManager->register($_POST));
-        unset($_POST);
+            $this->JSONresponse($userEntityManager->register($_POST));
+            unset($_POST);
+        } catch (Exception $e) {
+        }
     }
 
     /**
@@ -34,9 +38,12 @@ class UserController extends Controller
      */
     public function connect()
     {
-        $userEntityManager = new UserEntityManager();
+        try {
+            $userEntityManager = new UserEntityManager();
 
-        $this->JSONresponse($userEntityManager->connect($_POST));
-        unset($_POST);
+            $this->JSONresponse($userEntityManager->connect($_POST));
+            unset($_POST);
+        } catch (Exception $e) {
+        }
     }
 }

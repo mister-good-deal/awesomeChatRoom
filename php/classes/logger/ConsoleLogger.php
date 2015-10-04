@@ -282,10 +282,10 @@ class ConsoleLogger extends AbstractLogger
                     ConsoleColors::BLACK
                 ) . PHP_EOL;
 
-                $string .= $this->formatContextShortcut('in file:', $context, 'file');
-                $string .= $this->formatContextShortcut('in class:', $context, 'class');
-                $string .= $this->formatContextShortcut('in function:', $context, 'function');
-                $string .= $this->formatContextShortcut('at line:', $context, 'line');
+                $string .= $this->formatContextShortcut('in #file:', $context, 'file');
+                $string .= $this->formatContextShortcut('in #class:', $context, 'class');
+                $string .= $this->formatContextShortcut('in #function:', $context, 'function');
+                $string .= $this->formatContextShortcut('at #line:', $context, 'line');
                 $string .= $this->formatContextShortcut('with arguments:', $context, 'args');
             }
         }
