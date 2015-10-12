@@ -34,6 +34,10 @@ trait EchoTrait
     {
         $environment = Ini::getParam('Environment', 'environment');
 
+        if (!isset($_SERVER['REQUEST_URI'])) {
+            $environment = 'console';
+        }
+
         switch ($environment) {
             case 'console':
                 echo mb_convert_encoding($output, static::$echoEncoding);

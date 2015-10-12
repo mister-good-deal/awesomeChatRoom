@@ -15,23 +15,14 @@
     </head>
     <body>
         <h1>Test websocket</h1>
-    
-        <!-- register user -->
-        <form action="user/register" method="post" accept-charset="utf-8">
-            <input type="text" name="firstName" placeholder="<?=_('First name')?>">
-            <input type="text" name="lastName" placeholder="<?=_('Last name')?>">
-            <input type="text" name="pseudonym" placeholder="<?=_('Pseudonym')?>">
-            <input type="email" name="email" placeholder="<?=_('Email')?>">
-            <input type="password" name="password" placeholder="<?=_('Password')?>">
-            <input type="submit" value="submit">
-        </form>
         
-        <!-- connect user -->
-        <form action="user/connect" method="post" accept-charset="utf-8">
-            <input type="text" name="login" placeholder="<?=_('Login (Pseudonym or email')?>">
-            <input type="password" name="password" placeholder="<?=_('Password')?>">
-            <input type="submit" value="submit">
-        </form>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerUserModal">
+            <?=_('Register')?>
+        </button>
+
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#connectUserModal">
+            <?=_('Connect')?>
+        </button>
 
         <!-- connect room -->
         <div class="connect-room">
@@ -128,13 +119,163 @@
                 </div>
             </div>
         </div>
+
+        <!-- register user modal -->
+        <div class="modal" id="registerUserModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button"class="close" data-dismiss="modal" aria-label="<?=_('Close')?>">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="registerModalLabel"><?=_('Register')?></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="user/register" data-send-action="ajax" method="post">
+                            <div class="form-group">
+                                <label for="firstNameRegister"><?=_('First name')?></label>
+                                <input id="firstNameRegister"
+                                       class="form-control"
+                                       type="text"
+                                       name="firstName"
+                                       placeholder="<?=_('First name')?>"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="lastNameRegister"><?=_('Last name')?></label>
+                                <input id="lastNameRegister"
+                                       class="form-control"
+                                       type="text"
+                                       name="lastName"
+                                       placeholder="<?=_('Last name')?>"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="pseudonymRegister"><?=_('Pseudonym')?></label>
+                                <input id="pseudonymRegister"
+                                       class="form-control"
+                                       type="text"
+                                       name="pseudonym"
+                                       placeholder="<?=_('Pseudonym')?>"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="emailRegister"><?=_('Email')?></label>
+                                <input id="emailRegister"
+                                       class="form-control"
+                                       type="email"
+                                       name="email"
+                                       placeholder="<?=_('Email')?>"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="passwordRegister"><?=_('Password')?></label>
+                                <input id ="passwordRegister"
+                                       class="form-control"
+                                       type="password"
+                                       name="password"
+                                       placeholder="<?=_('Password')?>"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-default" value="<?=_('submit')?>">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- connect user modal -->
+        <div class="modal" id="connectUserModal" tabindex="-1" role="dialog" aria-labelledby="connectModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button"class="close" data-dismiss="modal" aria-label="<?=_('Close')?>">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="connectModalLabel"><?=_('Register')?></h4>
+                    </div>
+                    <div class="modal-body">
+                        <!-- connect user -->
+                        <form action="user/connect" data-send-action="ajax" method="post">
+                            <div class="form-group">
+                                <label for="loginConnect"><?=_('First name')?></label>
+                                <input id="loginConnect"
+                                       class="form-control"
+                                       type="text"
+                                       name="login"
+                                       placeholder="<?=_('Login (Pseudonym or email')?>"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <input type="password" name="password" placeholder="<?=_('Password')?>">
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-default" value="<?=_('submit')?>">
+                            </div>>
+                        </form>
+                        <form action="user/register" data-send-action="ajax" method="post">
+                            <div class="form-group">
+                                <label for="firstNameRegister"><?=_('First name')?></label>
+                                <input id="firstNameRegister"
+                                       class="form-control"
+                                       type="text"
+                                       name="firstName"
+                                       placeholder="<?=_('First name')?>"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="lastNameRegister"><?=_('Last name')?></label>
+                                <input id="lastNameRegister"
+                                       class="form-control"
+                                       type="text"
+                                       name="lastName"
+                                       placeholder="<?=_('Last name')?>"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="pseudonymRegister"><?=_('Pseudonym')?></label>
+                                <input id="pseudonymRegister"
+                                       class="form-control"
+                                       type="text"
+                                       name="pseudonym"
+                                       placeholder="<?=_('Pseudonym')?>"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="emailRegister"><?=_('Email')?></label>
+                                <input id="emailRegister"
+                                       class="form-control"
+                                       type="email"
+                                       name="email"
+                                       placeholder="<?=_('Email')?>"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <label for="passwordRegister"><?=_('Password')?></label>
+                                <input id ="passwordRegister"
+                                       class="form-control"
+                                       type="password"
+                                       name="password"
+                                       placeholder="<?=_('Password')?>"
+                                >
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-default" value="<?=_('submit')?>">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- admin chat modal -->
         <div class="modal chat-admin"
              id="chat-admin-sample"
              tabindex="-1"
              role="dialog"
-             aria-labelledby="<?=_('Chat administration')?>"
+             aria-labelledby="adminChatModalLabel"
              data-room-name=""
              data-room-password=""
         >
@@ -144,7 +285,9 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                        <h4 class="modal-title"><?=_('Chat administration')?> "<span class="room-name"></span>"</h4>
+                        <h4 id="adminChatModalLabel" class="modal-title">
+                            <?=_('Chat administration')?> "<span class="room-name"></span>"
+                        </h4>
                     </div>
                     <div class="modal-body">
                         <form class="form-inline"
