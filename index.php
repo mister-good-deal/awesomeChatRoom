@@ -178,7 +178,7 @@
                                 >
                             </div>
                             <div class="form-group">
-                                <input type="submit" class="btn btn-default" value="<?=_('submit')?>">
+                                <input type="submit" class="btn btn-default" value="<?=_('Register')?>">
                             </div>
                         </form>
                     </div>
@@ -194,7 +194,7 @@
                         <button type="button"class="close" data-dismiss="modal" aria-label="<?=_('Close')?>">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                        <h4 class="modal-title" id="connectModalLabel"><?=_('Register')?></h4>
+                        <h4 class="modal-title" id="connectModalLabel"><?=_('Connect')?></h4>
                     </div>
                     <div class="modal-body">
                         <!-- connect user -->
@@ -209,52 +209,8 @@
                                 >
                             </div>
                             <div class="form-group">
-                                <input type="password" name="password" placeholder="<?=_('Password')?>">
-                            </div>
-                            <div class="form-group">
-                                <input type="submit" class="btn btn-default" value="<?=_('submit')?>">
-                            </div>>
-                        </form>
-                        <form action="user/register" data-send-action="ajax" method="post">
-                            <div class="form-group">
-                                <label for="firstNameRegister"><?=_('First name')?></label>
-                                <input id="firstNameRegister"
-                                       class="form-control"
-                                       type="text"
-                                       name="firstName"
-                                       placeholder="<?=_('First name')?>"
-                                >
-                            </div>
-                            <div class="form-group">
-                                <label for="lastNameRegister"><?=_('Last name')?></label>
-                                <input id="lastNameRegister"
-                                       class="form-control"
-                                       type="text"
-                                       name="lastName"
-                                       placeholder="<?=_('Last name')?>"
-                                >
-                            </div>
-                            <div class="form-group">
-                                <label for="pseudonymRegister"><?=_('Pseudonym')?></label>
-                                <input id="pseudonymRegister"
-                                       class="form-control"
-                                       type="text"
-                                       name="pseudonym"
-                                       placeholder="<?=_('Pseudonym')?>"
-                                >
-                            </div>
-                            <div class="form-group">
-                                <label for="emailRegister"><?=_('Email')?></label>
-                                <input id="emailRegister"
-                                       class="form-control"
-                                       type="email"
-                                       name="email"
-                                       placeholder="<?=_('Email')?>"
-                                >
-                            </div>
-                            <div class="form-group">
-                                <label for="passwordRegister"><?=_('Password')?></label>
-                                <input id ="passwordRegister"
+                                <label for="loginPassword"><?=_('Password')?></label>
+                                <input id="loginPassword"
                                        class="form-control"
                                        type="password"
                                        name="password"
@@ -262,7 +218,7 @@
                                 >
                             </div>
                             <div class="form-group">
-                                <input type="submit" class="btn btn-default" value="<?=_('submit')?>">
+                                <input type="submit" class="btn btn-default" value="<?=_('Connect')?>">
                             </div>
                         </form>
                     </div>
