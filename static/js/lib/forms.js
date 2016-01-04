@@ -2,6 +2,7 @@
  * Forms module
  *
  * @module lib/forms
+ * @exports lib/vendors/jquery-2.1.4
  */
 
 /*global define*/
