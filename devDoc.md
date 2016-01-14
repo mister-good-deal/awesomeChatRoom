@@ -9,12 +9,13 @@
 
 For each developement, create a branch from **master** at the begining of the developement.
 The new branch should me names as **(*feature|hotfix|refacto*)/nameInitial-developementName[#ticketNumber]**
-Ex:
-    - feature/rl-addUserPhoneNumber
-    - hotfix/rl-httpsCertificateFail#6842
-    - refacto/rl-userClass
+*Ex:*
 
-When the developement is over, merge *master* into your branch and create a **pull request**
+- feature/rl-addUserPhoneNumber
+- hotfix/rl-httpsCertificateFail#6842
+- refacto/rl-userClass
+
+When the developement is over, merge **master** into your branch and create a **pull request**
 **Commits directly on master is forbidden**
 
 ## Indent and spacing
