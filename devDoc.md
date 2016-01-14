@@ -45,7 +45,7 @@ $tempVar1, $tempVar2;
 
 ## Documentation
 
-All methods / functions must be documented with dockBlockr and must not raise errors in phpdoc or jsdoc parsing.
+All methods / functions must be documented with docBlockr and must not raise errors in phpdoc or jsdoc parsing.
 
 *Exemples*
 
