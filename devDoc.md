@@ -9,7 +9,7 @@
 
 For each developement, create a branch from **master** at the begining of the developement.
 
-The new branch should me names as **(_feature|hotfix|refacto_)/nameInitial-developementName[#ticketNumber]**
+The new branch should me names as **(_feature|hotfix|refacto_)/nameInitial-developementName[#ticketNumber]**.
 
 *Exemples*
 
@@ -17,9 +17,9 @@ The new branch should me names as **(_feature|hotfix|refacto_)/nameInitial-devel
 - hotfix/rl-httpsCertificateFail#6842
 - refacto/rl-userClass
 
-When the developement is over, merge **master** into your branch and create a **pull request**
+When the developement is over, merge **master** into your branch and create a **pull request**.
 
-**Commits directly on master is forbidden**
+**Commits directly on master is forbidden**.
 
 ## Indent and spacing
 
@@ -45,7 +45,7 @@ $tempVar1, $tempVar2;
 
 ## Documentation
 
-All methods / functions must be documented with a dockBlockr and must not raise errors in phpdoc or jsdoc parsing.
+All methods / functions must be documented with dockBlockr and must not raise errors in phpdoc or jsdoc parsing.
 
 *Exemples*
 
