@@ -9,9 +9,9 @@
 
 For each developement, create a branch from **master** at the begining of the developement.
 
-The new branch should me names as **(*feature|hotfix|refacto*)/nameInitial-developementName[#ticketNumber]**
+The new branch should me names as **(_feature|hotfix|refacto_)/nameInitial-developementName[#ticketNumber]**
 
-*Ex:*
+*Exemples*
 
 - feature/rl-addUserPhoneNumber
 - hotfix/rl-httpsCertificateFail#6842
@@ -43,3 +43,25 @@ $aNumber    = 5,
 $tempVar1, $tempVar2;
 ```
 
+## Documentation
+
+All methods / functions must be documented with a dockBlockr and must not raise errors in phpdoc or jsdoc parsing.
+
+*Exemples*
+
+```php
+/**
+ * [aCoolFunction description]
+ *
+ * @param  {String}  $param1 [description]
+ * @param  {Integer} $param2 [description]
+ * @param  {[type]}  $param3 [description]
+ * @param  {[type]}  $param4 [description]
+ * @return {boolean}         [description]
+ */
+public function aCoolFunction($param1 = 'toto', $param2 = 3, $param3, $param4) {
+    // ...
+
+    return true;
+}
+```
