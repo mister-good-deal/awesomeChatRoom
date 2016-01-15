@@ -65,3 +65,13 @@ public function aCoolFunction($param1 = 'toto', $param2 = 3, $param3, $param4) {
     return true;
 }
 ```
+
+## Environment and IDE
+
+### Windows
+
+- Install PHP [last realese Thred Safe](http://windows.php.net/downloads/releases/php-7.0.2-Win32-VC14-x64.zip) (dezip and add the repository to the PATH windows variable)
+- Install APACHE [last realese](http://www.apachelounge.com/download/VC14/binaries/httpd-2.4.18-win64-VC14.zip) as a service
+- Install MySQL [last realese](http://dev.mysql.com/downloads/file/?id=460081) as a service
+
+For IDE I recommend [Sublime Text 3](https://download.sublimetext.com/Sublime%20Text%20Build%203083%20x64.zip) with a stack of [sublime packages](https://packagecontrol.io/) or [PhpStorm](https://download.jetbrains.com/webide/PhpStorm-10.0.3.exe) which is heavier than Sublime Text 3 but a quite nice IDE.
