@@ -1,7 +1,7 @@
 @echo.
 @echo **** Auto update phpdoc in git-hub ****
 @echo.
-call phpdoc
+call vendor/bin/phpdoc
 @echo.
 @echo **** phpDoc generated ****
 @echo.
