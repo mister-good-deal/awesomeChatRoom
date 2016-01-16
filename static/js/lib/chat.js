@@ -4,8 +4,6 @@
  * @module lib/chat
  */
 
-/*global define*/
-
 define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'bootstrap'], function ($, module, _) {
     'use strict';
 
@@ -37,10 +35,10 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         Forms.addJsCallback('setRoomInfoCallbackEvent', this.setRoomInfoCallbackEvent, this);
 
         // Enable selectpicker and load rooms
-        $(document).ready(function() {
+        $(document).ready(function () {
             $(self.settings.selectors.roomConnect.div + ' ' + self.settings.selectors.roomConnect.name).selectpicker();
         });
-        
+
         this.getRoomsInfo();
     };
 
@@ -48,7 +46,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /*====================================================
         =            Object settings / properties            =
         ====================================================*/
-        
+
         /**
          * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
          */
@@ -182,13 +180,13 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          * If the service is currently running on the server
          */
         "serviceRunning": false,
-        
+
         /*=====  End of Object settings / properties  ======*/
 
         /*==============================
         =            Events            =
         ==============================*/
-        
+
         /**
          * Initialize all the events
          */
@@ -196,15 +194,13 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
             // Connect to a room
             $('body').on(
                 'click',
-                this.settings.selectors.roomConnect.div + ' ' +
-                this.settings.selectors.roomConnect.connect,
+                this.settings.selectors.roomConnect.div + ' ' + this.settings.selectors.roomConnect.connect,
                 $.proxy(this.connectEvent, this)
             );
             // Create a room
             $('body').on(
                 'click',
-                this.settings.selectors.roomCreation.div + ' ' +
-                this.settings.selectors.roomCreation.create,
+                this.settings.selectors.roomCreation.div + ' ' + this.settings.selectors.roomCreation.create,
                 $.proxy(this.createRoomEvent, this)
             );
             // Display a room
@@ -235,30 +231,28 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
             $('body').on(
                 'keydown',
                 this.settings.selectors.global.room + ' ' +
-                this.settings.selectors.roomSend.div + ' ' +
-                this.settings.selectors.roomSend.message,
+                    this.settings.selectors.roomSend.div + ' ' +
+                    this.settings.selectors.roomSend.message,
                 $.proxy(this.chatTextKeyPressEvent, this)
             );
             // Send a message in a room
             $('body').on(
                 'click',
                 this.settings.selectors.global.room + ' ' +
-                this.settings.selectors.roomSend.div + ' ' +
-                this.settings.selectors.roomSend.send,
+                    this.settings.selectors.roomSend.div + ' ' +
+                    this.settings.selectors.roomSend.send,
                 $.proxy(this.sendMessageEvent, this)
             );
             // Load more messages in a room
             $('body').on(
                 'click',
-                this.settings.selectors.global.room + ' ' +
-                this.settings.selectors.roomAction.loadHistoric,
+                this.settings.selectors.global.room + ' ' + this.settings.selectors.roomAction.loadHistoric,
                 $.proxy(this.getHistoricEvent, this)
             );
             // Select a reciever for the chat message
             $('body').on(
                 'click',
-                this.settings.selectors.global.room + ' ' +
-                this.settings.selectors.roomSend.usersList + ' li a',
+                this.settings.selectors.global.room + ' ' + this.settings.selectors.roomSend.usersList + ' li a',
                 $.proxy(this.selectUserEvent, this)
             );
             // Monitor the mouse when it is in a roomChat div
@@ -283,28 +277,27 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
             $('body').on(
                 'click',
                 this.settings.selectors.administrationPanel.modal + ' ' +
-                this.settings.selectors.administrationPanel.toggleRights,
+                    this.settings.selectors.administrationPanel.toggleRights,
                 $.proxy(this.toggleAdministrationRights, this)
             );
             // Kick a user from a room in the administration panel
             $('body').on(
                 'click',
                 this.settings.selectors.administrationPanel.modal + ' ' +
-                this.settings.selectors.administrationPanel.kick,
+                    this.settings.selectors.administrationPanel.kick,
                 $.proxy(this.kickUserEvent, this)
             );
             // Ban a user from a room in the administration panel
             $('body').on(
                 'click',
                 this.settings.selectors.administrationPanel.modal + ' ' +
-                this.settings.selectors.administrationPanel.ban,
+                    this.settings.selectors.administrationPanel.ban,
                 $.proxy(this.banUserEvent, this)
             );
             // Show / hide the password input when the selected room is public / private
             $('body').on(
                 'change',
-                this.settings.selectors.roomConnect.div + ' ' +
-                this.settings.selectors.roomConnect.name,
+                this.settings.selectors.roomConnect.div + ' ' + this.settings.selectors.roomConnect.name,
                 $.proxy(this.selectRoomEvent, this)
             );
         },
@@ -341,8 +334,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          */
         displayRoomEvent: function (e) {
             $(e.currentTarget).closest(this.settings.selectors.global.roomHeader)
-            .next(this.settings.selectors.global.roomContents)
-            .slideDown(this.settings.animationTime);
+                .next(this.settings.selectors.global.roomContents)
+                .slideDown(this.settings.animationTime);
 
             this.isRoomOpened[$(e.currentTarget).closest(this.settings.selectors.global.room).attr('data-name')] = true;
         },
@@ -354,8 +347,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          */
         minimizeRoomEvent: function (e) {
             $(e.currentTarget).closest(this.settings.selectors.global.roomHeader)
-            .next(this.settings.selectors.global.roomContents)
-            .slideUp(this.settings.animationTime);
+                .next(this.settings.selectors.global.roomContents)
+                .slideUp(this.settings.animationTime);
 
             this.isRoomOpened[$(e.currentTarget).closest(this.settings.selectors.global.room).attr('data-name')] = false;
         },
@@ -451,7 +444,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
                 this.messagesHistoryPointer[roomName]++;
                 messageInput.val('');
             }
-            
+
             e.preventDefault();
         },
 
@@ -495,7 +488,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
 
             this.mouseInRoomChat[roomName] = true;
         },
-        
+
         /**
          * Event fired when the user mouse leaves the room chat div
          *
@@ -513,8 +506,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          * @param {event} e The fired event
          */
         setAministrationPanelEvent: function (e) {
-            var modal    = $(e.currentTarget),
-                roomName = $(e.relatedTarget).closest(this.settings.selectors.global.room).attr('data-name');
+            var modal = $(e.currentTarget);
 
             modal.find(this.settings.selectors.administrationPanel.rights + ' input[type="checkbox"]').bootstrapSwitch();
         },
@@ -539,7 +531,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
                 roomName  = modal.attr('data-room-name'),
                 self      = this;
 
-            $(modal).fadeOut(this.settings.animationTime, function() {
+            $(modal).fadeOut(this.settings.animationTime, function () {
                 $(self.settings.selectors.alertInputsChoice.div).fadeIn(self.settings.animationTime);
             });
 
@@ -560,7 +552,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
                 roomName  = modal.attr('data-room-name'),
                 self      = this;
 
-            $(modal).fadeOut(this.settings.animationTime, function() {
+            $(modal).fadeOut(this.settings.animationTime, function () {
                 $(self.settings.selectors.alertInputsChoice.div).fadeIn(self.settings.animationTime);
             });
 
@@ -579,7 +571,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         setReasonCallbackEvent: function (form, inputs) {
             var self = this;
 
-            $(this.settings.selectors.alertInputsChoice.div).fadeOut(this.settings.animationTime, function() {
+            $(this.settings.selectors.alertInputsChoice.div).fadeOut(this.settings.animationTime, function () {
                 self.promises.setReason.resolve(_.findWhere(inputs, {"name": "reason"}).value);
                 self.promises.setReason = $.Deferred();
                 form[0].reset();
@@ -622,7 +614,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /*==================================================================
         =            Actions that query to the WebSocket server            =
         ==================================================================*/
-        
+
         /**
          * Connect a user to the chat with his account
          *
@@ -811,13 +803,13 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
                 "action" : "getRoomsInfo"
             }));
         },
-        
+
         /*=====  End of Actions that query to the WebSocket server  ======*/
-        
+
         /*==================================================================
         =            Callbacks after WebSocket server responses            =
         ==================================================================*/
-        
+
         /**
          * Handle the WebSocker server response and process action then
          *
@@ -904,7 +896,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
                     this.getRoomsInfoCallback(data);
 
                     break;
-                
+
                 default:
                     if (data.text) {
                         this.message.add(data.text);
@@ -941,7 +933,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          */
         updateRoomUsersCallback: function (data) {
             var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
-                usersList;
+                usersList, newPseudonyms, oldPseudonyms, modal, users, self;
 
             if (room.length > 0) {
                 usersList = room.attr('data-users').split(',');
@@ -950,11 +942,11 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
 
                 // Update the administration panel
                 if (this.user.connected) {
-                    var newPseudonyms = _.difference(data.pseudonyms, usersList),
-                        oldPseudonyms = _.difference(usersList, data.pseudonyms),
-                        modal         = $('.modal[data-room-name="' + data.roomName + '"]'),
-                        users         = modal.find(this.settings.selectors.administrationPanel.usersList),
-                        self          = this;
+                    newPseudonyms = _.difference(data.pseudonyms, usersList);
+                    oldPseudonyms = _.difference(usersList, data.pseudonyms);
+                    modal         = $('.modal[data-room-name="' + data.roomName + '"]');
+                    users         = modal.find(this.settings.selectors.administrationPanel.usersList);
+                    self          = this;
 
                     _.forEach(newPseudonyms, function (pseudonym) {
                         users.append(
@@ -976,7 +968,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          */
         updateRoomUsersRightsCallback: function (data) {
             var modal = $('.modal[data-room-name="' + data.roomName + '"]');
-            
+
             this.updateRoomUsersRights(modal, data.usersRights);
         },
 
@@ -987,7 +979,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          */
         updateRoomUsersBannedCallback: function (data) {
             var modal = $('.modal[data-room-name="' + data.roomName + '"]');
-            
+
             this.updateRoomUsersBanned(modal, data.usersBanned);
         },
 
@@ -1104,7 +1096,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          * @param {object} data The server JSON reponse
          */
         changeRoomInfoCallback: function (data) {
-            var room = $(this.settings.selectors.global.room + '[data-name="' + data.oldRoomName + '"]');
+            var room = $(this.settings.selectors.global.room + '[data-name="' + data.oldRoomName + '"]'),
+                modal;
 
             if (data.oldRoomName !== data.newRoomName) {
                 room.attr('data-name', data.newRoomName);
@@ -1126,7 +1119,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
             }
 
             if (this.user.connected) {
-                var modal = $(this.settings.selectors.administrationPanel.modal +
+                modal = $(this.settings.selectors.administrationPanel.modal +
                     '[data-room-name="' + data.oldRoomName + '"]');
 
                 if (data.oldRoomName !== data.newRoomName) {
@@ -1176,13 +1169,13 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
             select.find(this.settings.selectors.roomConnect.privateRooms).html(privateRooms);
             select.selectpicker('refresh');
         },
-        
+
         /*=====  End of Callbacks after WebSocket server responses  ======*/
-        
+
         /*=========================================
         =            Utilities methods            =
         =========================================*/
-        
+
         /**
          * Connect the user to the chat
          *
@@ -1204,14 +1197,14 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          * @param {object} data The server JSON reponse
          */
         insertRoomInDOM: function (data) {
-            var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]');
+            var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
+                roomSample, newRoom, newRoomChat, modalSample, newModal, id;
 
             if (room.length === 0) {
                 // Room chat creation if the room does not exist yet
-                var roomSample  = $(this.settings.selectors.global.roomSample),
-                    newRoom     = roomSample.clone(true),
-                    newRoomChat = newRoom.find(this.settings.selectors.global.roomChat),
-                    i;
+                roomSample  = $(this.settings.selectors.global.roomSample);
+                newRoom     = roomSample.clone(true);
+                newRoomChat = newRoom.find(this.settings.selectors.global.roomChat);
 
                 newRoom.attr({
                     "data-name"     : data.roomName,
@@ -1245,14 +1238,14 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
                 this.messagesHistory[data.roomName]        = [];
                 this.messagesHistoryPointer[data.roomName] = 0;
                 this.messagesCurrent[data.roomName]        = '';
-                
+
                 $(this.settings.selectors.global.chat).append(newRoom);
 
                 // Modal room chat administration creation if the user is registered
                 if (data.usersRights !== undefined) {
-                    var modalSample = $(this.settings.selectors.administrationPanel.modalSample),
-                        newModal    = modalSample.clone(),
-                        id          = _.uniqueId('chat-admin-');
+                    modalSample = $(this.settings.selectors.administrationPanel.modalSample);
+                    newModal    = modalSample.clone();
+                    id          = _.uniqueId('chat-admin-');
 
                     newModal.attr({
                         "id"                : id,
@@ -1338,8 +1331,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          * @todo                       Traduction on 'all' value
          */
         updateUsersDropdown: function (room, pseudonyms) {
-            var list = [],
-                self = this;
+            var list = [];
 
             list.push($('<li>', {
                     "data-value": "all"
@@ -1453,7 +1445,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
                 trSample   = bannedList.find(this.settings.selectors.administrationPanel.trSample),
                 newLines   = [],
                 self       = this;
-            
+
             _.forEach(usersBanned, function (bannedInfo) {
                 var newLine = trSample.clone();
 
@@ -1508,7 +1500,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
 
             return isCommand;
         }
-        
+
         /*=====  End of Utilities methods  ======*/
     };
 

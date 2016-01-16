@@ -1,0 +1,8 @@
+/static/js/bower_components
+/static/js/node_modules
+/static/js/lib/vendor
+/php/.phpintel
+/php/.sonar
+/php/.phpDoc
+/php/vendor
+/php/conf.ini

@@ -71,9 +71,11 @@ public function aCoolFunction($param1 = 'toto', $param2 = 3, $param3, $param4) {
 ### Windows
 
 First create the main repository of the project by running the command
+
 `git clone https://github.com/ZiperRom1/web.git web`
 
 Then the technical documentation repository of the projet by running the command
+
 `git clone -b gh-pages --single-branch https://github.com/ZiperRom1/web.git web-doc`
 
 - Install PHP [last realese Thred Safe](http://windows.php.net/downloads/releases/php-7.0.2-Win32-VC14-x64.zip) (dezip and add the repository to the PATH windows variable)
@@ -82,5 +84,10 @@ Then the technical documentation repository of the projet by running the command
 - Install [Node.js](https://nodejs.org/dist/v5.4.1/node-v5.4.1-x64.msi) with NPM (Node packages manager) and add it to the PATH windows variable
 - Install [Composer](https://getcomposer.org/Composer-Setup.exe) (PHP packages manager)
 - Install [phpdoc](http://phpdoc.org/) with Composer (on /php PATH run `composer install`)
+- Install [gulp](http://gulpjs.com/) with NPM (run `npm install --global gulp`)
+
+In php.ini, check thoses values
+
+`short_open_tag = On`
 
 For IDE I recommend [Sublime Text 3](https://download.sublimetext.com/Sublime%20Text%20Build%203083%20x64.zip) with a stack of [sublime packages](https://packagecontrol.io/) or [PhpStorm](https://download.jetbrains.com/webide/PhpStorm-10.0.3.exe) which is heavier than Sublime Text 3 but a quite nice IDE.

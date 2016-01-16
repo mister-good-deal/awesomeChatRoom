@@ -1,0 +1,32 @@
+{
+    "name": "websocket",
+    "title": "Websocket chat",
+    "description": "websocket chat web app",
+    "version": "1.0.0",
+    "author": {
+        "name": "Romain Laneuville"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ZiperRom1/web.git"
+    },
+    "keywords": [
+        "websocket",
+        "services",
+        "chat"
+    ],
+    "bugs": {
+        "url": "https://github.com/ZiperRom1/web/issues"
+    },
+    "license": "MIT",
+    "dependencies": {
+    },
+    "devDependencies": {
+        "requirejs": "latest",
+        "jsdoc": "latest",
+        "ink-docstrap": "latest",
+        "gulp": "latest",
+        "gulp-requirejs": "latest",
+        "gulp-bower": "latest"
+    }
+}
