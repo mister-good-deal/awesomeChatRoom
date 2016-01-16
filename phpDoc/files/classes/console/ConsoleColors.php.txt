@@ -117,6 +117,18 @@ class ConsoleColors
         return array_keys(static::$backgroundColors);
     }
 
+    /**
+     * Unset the background and foreground console color formatting
+     *
+     * @param  string $string The string to unformat
+     * @return string         The unformated string
+     * @static
+     */
+    public static function unsetColor($string)
+    {
+        return preg_replace('/\033\[[0-9;]*m/', '', $string);
+    }
+
     /*-----  End of Public methods  ------*/
 }
 

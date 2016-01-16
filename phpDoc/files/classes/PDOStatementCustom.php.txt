@@ -66,6 +66,15 @@ class PDOStatementCustom extends \PDOStatement
 
         return parent::execute($inputParameters);
     }
+
+    /**
+     * Returns an array containing all of the remaining rows in the result set
+     * 
+     * @return array An associative array using the first column as the key, and the remainder as associative values
+     */
+    public function fetchIndexedByFirstColumn() {
+        return array_map('reset', $this->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_ASSOC));
+    }
     
     /*-----  End of Public methods  ------*/
 

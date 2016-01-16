@@ -21,20 +21,20 @@ use \classes\PDOStatementCustom as PDOStatementCustom;
  *
  * PDO methods that can be called directly with the __callStatic magic method
  *
- * @method bool          beginTransaction()                                              Initiates a transaction
- * @method bool          commit()                                                        Commits a transaction
- * @method mixed         errorCode()                                                     Fetch the SQLSTATE associated with the last operation on the database handle
- * @method array         errorInfo()                                                     Fetch extended error information associated with the last operation on the database handle
- * @method int           exec(string $statement)                                         Execute an SQL statement and return the number of affected rows
- * @method mixed         getAttribute(int $attribute)                                    Retrieve a database connection attribute
- * @method array         getAvailableDrivers()                                           Return an array of available PDO drivers
- * @method bool          inTransaction()                                                 Checks if inside a transaction
- * @method string        lastInsertId(string $name = NULL)                               Returns the ID of the last inserted row or sequence value
- * @method \PDOStatement prepare(string $statement, array $driver_options = array())     Prepares a statement for execution and returns a statement object
- * @method \PDOStatement query(string $statement)                                        Executes an SQL statement, returning a result set as a PDOStatement object
- * @method string        quote(string $string, int $parameter_type = PDO::PARAM_STR )    Quotes a string for use in a query
- * @method bool          rollBack()                                                      Rolls back a transaction
- * @method bool          setAttribute(int $attribute , mixed $value)                     Set an attribute
+ * @method bool               beginTransaction()                                          Initiates a transaction
+ * @method bool               commit()                                                    Commits a transaction
+ * @method mixed              errorCode()                                                 Fetch the SQLSTATE associated with the last operation on the database handle
+ * @method array              errorInfo()                                                 Fetch extended error information associated with the last operation on the database handle
+ * @method int                exec(string $statement)                                     Execute an SQL statement and return the number of affected rows
+ * @method mixed              getAttribute(int $attribute)                                Retrieve a database connection attribute
+ * @method array              getAvailableDrivers()                                       Return an array of available PDO drivers
+ * @method bool               inTransaction()                                             Checks if inside a transaction
+ * @method string             lastInsertId(string $name = NULL)                           Returns the ID of the last inserted row or sequence value
+ * @method PDOStatementCustom prepare(string $statement, array $driver_options = array()) Prepares a statement for execution and returns a statement object
+ * @method PDOStatementCustom query(string $statement)                                    Executes an SQL statement, returning a result set as a PDOStatementCustom object
+ * @method string             quote(string $string, int $parameter_type = PDO::PARAM_STR) Quotes a string for use in a query
+ * @method bool               rollBack()                                                  Rolls back a transaction
+ * @method bool               setAttribute(int $attribute , mixed $value)                 Set an attribute
  */
 class DataBase
 {
