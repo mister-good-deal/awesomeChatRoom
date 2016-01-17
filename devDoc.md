@@ -104,11 +104,11 @@ In [apache folder]/conf/httpd.conf check those lines
 
 - `PHPIniDir "[absolute path to your php folder (with slash no back-slash)]"`
 
-- In <IfModule mime_module> section: `AddHandler application/x-httpd-php .php`
+- In *IfModule mime_module* section: `AddHandler application/x-httpd-php .php`
 
 - Replace `AllowOverride None` by `AllowOverride All` in all occurences (especially the document root file section)
 
--
+- Add
 ```
 <FilesMatch \.php$>
     SetHandler application/x-httpd-php
