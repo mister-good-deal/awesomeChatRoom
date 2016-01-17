@@ -1,6 +1,4 @@
-/*global define, window*/
-
-define(
+require(
     ['jquery', 'message', 'forms', 'websocket', 'user', 'chat', 'bootstrap'],
     function ($, Message, FormsManager, WebsocketManager, User, ChatManager) {
         'use strict';
