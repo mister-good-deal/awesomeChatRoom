@@ -27,23 +27,23 @@ class Console
 
     const WELCOME = <<<'WELCOME'
 
- __        __   _                            _          _   _             ___  ____  __  __ 
+ __        __   _                            _          _   _             ___  ____  __  __
  \ \      / /__| | ___ ___  _ __ ___   ___  | |_ ___   | |_| |__   ___   / _ \|  _ \|  \/  |
   \ \ /\ / / _ \ |/ __/ _ \| '_ ` _ \ / _ \ | __/ _ \  | __| '_ \ / _ \ | | | | |_) | |\/| |
    \ V  V /  __/ | (_| (_) | | | | | |  __/ | || (_) | | |_| | | |  __/ | |_| |  _ <| |  | |
     \_/\_/ \___|_|\___\___/|_| |_| |_|\___|  \__\___/   \__|_| |_|\___|  \___/|_| \_\_|  |_|
-                                                                                            
+
 WELCOME;
-    
+
     const GODDBYE = <<<'GODDBYE'
 
-   ____                 _ _                
-  / ___| ___   ___   __| | |__  _   _  ___ 
+   ____                 _ _
+  / ___| ___   ___   __| | |__  _   _  ___
  | |  _ / _ \ / _ \ / _` | '_ \| | | |/ _ \
  | |_| | (_) | (_) | (_| | |_) | |_| |  __/
   \____|\___/ \___/ \__,_|_.__/ \__, |\___|
-                                |___/      
-                                           
+                                |___/
+
 GODDBYE;
 
     const ACTION_CANCEL = 'Canceled';
@@ -64,6 +64,7 @@ GODDBYE;
         'drop -t tableName'                                  => 'Drop the given table name',
         'show -t tableName [-s startIndex -e endIndex]'      => 'Show table data begin at startIndex and stop at endIndex',
         'desc -t tableName'                                  => 'Show table structure',
+        'create all'                                         => 'Create all the tables',
         'help'                                               => 'Display all the commands'
     );
 
@@ -193,6 +194,10 @@ GODDBYE;
 
             case 'desc':
                 $this->descTable($command);
+                break;
+
+            case 'create all':
+                $this->createAllTables();
                 break;
 
             case 'help':
@@ -330,6 +335,33 @@ GODDBYE;
         if ($this->checkTableName($args)) {
             static::out($this->prettySqlResult($args['t'], DB::descTable($args['t'])) . PHP_EOL);
         }
+    }
+
+    /**
+     * Create all the entities table
+     */
+    private function createAllTables()
+    {
+        $entityManager = new EntityManager();
+
+        foreach (DB::getAllEntites() as $entityName) {
+            /**
+             * @var Entity $entity An entity
+             */
+            $entityClassPath = Ini::getParam('Entities', 'entitiesClassPath') . DIRECTORY_SEPARATOR . $entityName;
+            $entity          = new $entityClassPath;
+            $tableName       = strtolower($entity->getTableName()); // todo bug SQL table name with uppercase
+
+            if (!in_array($tableName, DB::getAllTables())) {
+                static::out('Create table "' . $tableName . '"' . PHP_EOL);
+                $entityManager->setEntity($entity);
+                $entityManager->createEntityTable();
+            } else {
+                static::out('Table table "' . $tableName . '" already exists' . PHP_EOL);
+            }
+        }
+
+        static::out(static::ACTION_DONE . PHP_EOL);
     }
 
     /**
