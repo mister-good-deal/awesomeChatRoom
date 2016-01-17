@@ -4,7 +4,7 @@
  * @module lib/user
  */
 
-define(['jquery'], function ($, Message) {
+define(['jquery'], function ($) {
     'use strict';
 
     /**
