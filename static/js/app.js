@@ -3,8 +3,8 @@ requirejs.config({
     "paths"  : {
         "app"             : "../app",
         "jquery"          : "vendor/jquery/dist/jquery",
-        "lodash"          : "vendor/lodash/dist/lodash.core",
-        "bootstrap"       : "vendor/bootstrap/bootstrap/dist/js/bootstrap",
+        "lodash"          : "vendor/lodash/dist/lodash",
+        "bootstrap"       : "vendor/bootstrap/dist/js/bootstrap",
         "bootstrap-select": "vendor/bootstrap-select/dist/js/bootstrap-select",
         "bootstrap-switch": "vendor/bootstrap-switch/dist/js/bootstrap-switch",
         "domReady"        : "vendor/domReady/domReady",

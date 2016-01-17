@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="/static/dist/css/bootstrap.css">
         <link rel="stylesheet" href="/static/dist/css/bootstrap-theme.css">
         <script data-main="/static/js/app"
-                src="/static/js/lib/vendors/require.js"
+                src="/static/js/lib/vendor/requirejs/require.js"
                 type="text/javascript"
                 charset="utf-8"
                 async defer>
@@ -15,7 +15,7 @@
     </head>
     <body>
         <h1>Test websocket</h1>
-        
+
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerUserModal">
             <?=_('Register')?>
         </button>
@@ -27,7 +27,7 @@
         <!-- connect room -->
         <div class="connect-room">
             <input class="pseudonym" type="text" name="chatPseudo" placeholder="<?=_('Pseudonym')?>">
-            <select class="room-name"
+            <select class="room-name selectpicker"
                     name="roomName"
                     data-title="<?=_('Select a room')?>"
                     data-show-subtext="true"
@@ -39,7 +39,7 @@
             <input class="room-password" type="password" name="roomPassword"  placeholder="<?=_('Room password')?>">
             <button class="connect btn btn-primary" type="button"><?=_('Connect')?></button>
         </div>
-        
+
         <!-- create room -->
         <div class="create-room">
             <input class="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
@@ -225,7 +225,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- admin chat modal -->
         <div class="modal chat-admin"
              id="chat-admin-sample"
@@ -374,7 +374,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- alert to display user choice input on kick / ban events -->
         <div id="alert-input-choice" class="alert alert-info">
             <p><?=_('Complete the reason')?></p>

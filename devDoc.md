@@ -102,7 +102,11 @@ In [apache folder]/conf/httpd.conf check those lines
 
 - `LoadModule php7_module "[absolute path to your php folder]/php7apache2_4.dll"`
 
-- In *<IfModule mime_module>* section: `AddHandler application/x-httpd-php .php`
+- `PHPIniDir "[absolute path to your php folder (with slash no back-slash)]"`
+
+- In <IfModule mime_module> section: `AddHandler application/x-httpd-php .php`
+
+- Replace `AllowOverride None` by `AllowOverride All` in all occurences (especially the document root file section)
 
 -
 ```
@@ -127,9 +131,11 @@ In php.ini, check thoses values
 
 - `extension=php_sockets.dll`
 
+In project /php folder create a `conf.ini` based on `con-example.ini`
+
 ####Setup MySQL
 
-Create an empty database (ex: `CREATE SCHEMA ``websocket`` DEFAULT CHARACTER SET utf8 ;`) and setup its name in /php/conf.ini => `[Database]` => `dsn` dbname values
+Create an empty database (ex: `CREATE SCHEMA ``websocket`` DEFAULT CHARACTER SET utf8 ;`) and setup its name in /php/conf.ini => `[Database]` => `dsn` dbname value
 
 Create tables with the ORM, run those commands
 
@@ -141,11 +147,25 @@ Create tables with the ORM, run those commands
 
 ####Setup source files
 
-In /js project PATH run the followings commands ton install dev-dependencies
+In /js project PATH run the followings commands to install dev-dependencies
 
 `npm install`
 
 `gulp`
+
+####Run the server
+
+Finally run the websocket server with this command
+
+`php [absolute path to the project root directory]/php/devTests/testSocket.php`
+
+Then go to your web browser with javascript console enabled and hit the index.php of the project
+
+Create a new user and give him admin rights on the userRights table (put "1" in both right columns)
+
+To enable the chat service, connect with an admin user then run in the web javascript console
+
+`window.WebsocketManager.addService('chatService');`
 
 ####IDE
 

@@ -4,8 +4,6 @@
  * @module lib/user
  */
 
-/*global define*/
-
 define(['jquery'], function ($, Message) {
     'use strict';
 
@@ -26,6 +24,9 @@ define(['jquery'], function ($, Message) {
         Forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
         Forms.addOnFailCallback('user/connect', this.connectFail, this);
         Forms.addOnRequestFailCallback('user/connect', this.connectRequestFail, this);
+        Forms.addOnSuccessCallback('user/register', this.registerSuccess, this);
+        Forms.addOnFailCallback('user/register', this.registerFail, this);
+        Forms.addOnRequestFailCallback('user/register', this.registerRequestFail, this);
     };
 
     UserManager.prototype = {
@@ -78,7 +79,7 @@ define(['jquery'], function ($, Message) {
             if (pseudonym === '') {
                 pseudonym = this.settings.firstName + ' ' + this.settings.lastName;
             }
-            
+
             return pseudonym;
         },
 
@@ -143,7 +144,7 @@ define(['jquery'], function ($, Message) {
          * @param {object} data The server JSON reponse
          */
         connectFail: function (form, data) {
-            console.log('Fail !');
+            console.log('Fail !', data);
         },
 
         /**
@@ -153,6 +154,38 @@ define(['jquery'], function ($, Message) {
          * @param {object} jqXHR The jQuery jqXHR object
          */
         connectRequestFail: function (form, jqXHR) {
+            console.log(jqXHR);
+        },
+
+        /**
+         * Callback when the user connection attempt succeed
+         *
+         * @param {object} form The jQuery DOM form element
+         * @param {object} data The server JSON reponse
+         */
+        registerSuccess: function (form, data) {
+            this.setAttributes(data);
+            this.connected = true;
+            this.message.add('Register success !');
+        },
+
+        /**
+         * Callback when the user connection attempt failed
+         *
+         * @param {object} form The jQuery DOM form element
+         * @param {object} data The server JSON reponse
+         */
+        registerFail: function (form, data) {
+            console.log('Fail !', data);
+        },
+
+        /**
+         * Callback when the user connection request failed
+         *
+         * @param {object} form  The jQuery DOM form element
+         * @param {object} jqXHR The jQuery jqXHR object
+         */
+        registerRequestFail: function (form, jqXHR) {
             console.log(jqXHR);
         }
     };

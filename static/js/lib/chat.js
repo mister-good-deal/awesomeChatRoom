@@ -308,9 +308,10 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         connectEvent: function () {
             var connectDiv = $(this.settings.selectors.roomConnect.div),
                 pseudonym  = connectDiv.find(this.settings.selectors.roomConnect.pseudonym).val(),
-                roomName   = connectDiv.find(this.settings.selectors.roomConnect.name).val(),
+                roomName   = connectDiv.find('select' + this.settings.selectors.roomConnect.name).val(),
                 password   = connectDiv.find(this.settings.selectors.roomConnect.password).val();
 
+            console.log(this.settings.selectors.roomConnect.div + ' ' + this.settings.selectors.roomConnect.name);
             this.connect(pseudonym, roomName, password);
         },
 
