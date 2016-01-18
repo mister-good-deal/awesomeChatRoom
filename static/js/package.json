@@ -1,32 +1,33 @@
 {
-    "name": "websocket",
-    "title": "Websocket chat",
-    "description": "websocket chat web app",
-    "version": "1.0.0",
-    "author": {
-        "name": "Romain Laneuville"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/ZiperRom1/web.git"
-    },
-    "keywords": [
-        "websocket",
-        "services",
-        "chat"
-    ],
-    "bugs": {
-        "url": "https://github.com/ZiperRom1/web/issues"
-    },
-    "license": "MIT",
-    "dependencies": {
-    },
-    "devDependencies": {
-        "requirejs": "latest",
-        "jsdoc": "latest",
-        "ink-docstrap": "latest",
-        "gulp": "latest",
-        "gulp-requirejs": "latest",
-        "gulp-bower": "latest"
-    }
+  "name": "websocket",
+  "title": "Websocket chat",
+  "description": "websocket chat web app",
+  "version": "1.0.0",
+  "author": {
+    "name": "Romain Laneuville"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZiperRom1/web.git"
+  },
+  "keywords": [
+    "websocket",
+    "services",
+    "chat"
+  ],
+  "bugs": {
+    "url": "https://github.com/ZiperRom1/web/issues"
+  },
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "amd-optimize": "^0.6.1",
+    "gulp": "latest",
+    "gulp-bower": "latest",
+    "gulp-requirejs-optimize": "latest",
+    "gulp-sourcemaps": "latest",
+    "ink-docstrap": "latest",
+    "jsdoc": "latest",
+    "requirejs": "latest"
+  }
 }
