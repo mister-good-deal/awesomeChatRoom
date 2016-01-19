@@ -6,12 +6,13 @@
         <title>Test websocket</title>
         <link rel="stylesheet" href="/static/dist/css/bootstrap.css">
         <link rel="stylesheet" href="/static/dist/css/bootstrap-theme.css">
-        <script data-main="/static/js/app"
-                src="/static/js/lib/vendor/requirejs/require.js"
+        <script src="/static/dist/app.js" type="text/javascript" charset="utf-8" async defer></script>
+        <!--<script data-main="/static/js/lib/app"
+                src="/static/js/lib/require.js"
                 type="text/javascript"
                 charset="utf-8"
                 async defer>
-        </script>
+        </script>-->
     </head>
     <body>
         <h1>Test websocket</h1>
