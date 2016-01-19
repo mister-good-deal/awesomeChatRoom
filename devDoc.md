@@ -147,11 +147,23 @@ Create tables with the ORM, run those commands
 
 ####Setup source files
 
-In /js project PATH run the followings commands to install dev-dependencies
+In /static/js project PATH run the followings commands to install dev-dependencies
 
 `npm install`
 
 `gulp`
+
+####Setup less
+
+In /static/less project PATH run the followings commands to install dev-dependencies
+
+`npm install`
+
+`gulp`
+
+To compile less, run this command in /static/less project PATH
+
+`gulp compile`
 
 ####Run the server
 

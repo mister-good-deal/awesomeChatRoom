@@ -1,5 +1,4 @@
 ({
-    // baseUrl: "lib",
     name: "app.js",
     mainConfigFile: 'app.js',
     out: "../dist/app.js",
