@@ -1,0 +1,24 @@
+{
+  "name": "style",
+  "description": "bootstrap style custom less configuration",
+  "main": "style.css",
+  "version": "1.0.0",
+  "author": {
+    "name": "Romain Laneuville"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZiperRom1/web.git"
+  },
+  "devDependencies": {
+    "del": "latest",
+    "gulp": "latest",
+    "gulp-bower": "latest",
+    "gulp-less": "latest",
+    "gulp-bower-normalize": "latest",
+    "gulp-rename": "latest",
+    "less-plugin-clean-css": "latest",
+    "less-plugin-autoprefix": "latest",
+    "main-bower-files": "latest"
+  }
+}
