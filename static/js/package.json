@@ -25,7 +25,6 @@
     "gulp": "latest",
     "gulp-bower": "latest",
     "gulp-shell": "latest",
-    "gulp-sourcemaps": "latest",
     "ink-docstrap": "latest",
     "jsdoc": "latest",
     "main-bower-files": "latest",
