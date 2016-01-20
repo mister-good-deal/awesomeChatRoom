@@ -159,27 +159,33 @@ To compile js and less files into dist repository run
 
 Here are all the gulp commands you can run
 
-`gulp flush_bower` Flush the .bowerDependencies repository
+- `gulp flush_bower` Flush the .bowerDependencies repository
 
-`gulp flush_npm` Flush the node_modules repository
+- `gulp flush_npm` Flush the node_modules repository
 
-`gulp flush_js` Flush all js vendor sources files
+- `gulp flush_js` Flush all js vendor sources files
 
-`gulp flush_less` Flush all less vendor sources files
+- `gulp flush_less` Flush all less vendor sources files
 
-`gulp flush_dist` Flush the dist repository
+- `gulp flush_dist` Flush the dist repository
 
-`gulp flush_all` Flush all (combination of all the flushes)
+- `gulp flush_all` Flush all (combination of all the flushes)
 
-`gulp install` Retrieve and move all the js and less vendor sources files on right folders
+- `gulp install` Retrieve and move all the js and less vendor sources files on right folders
 
-`gulp build_js` Compile and optimize the js sources files into one file (app.js) in dist repository
+- `gulp build_js` Compile and optimize the js sources files into one file (app.js) in dist repository
 
-`gulp build_less` Compile and optimize the less sources files into one file (style.css) in dist repository
+- `gulp build_less` Compile and optimize the less sources files into one file (style.css) in dist repository
 
-`gulp build_all`  Compile and optimize both js and less files (combination of build_js and build_less)
+- `gulp build_all` Compile and optimize both js and less files (combination of build_js and build_less)
 
-`gulp watch`  Wait from any change in /static/less directory and run `gulp build_less` on change
+- `gulp js_jshint` Parse js source files with jshint linter and show errors
+
+- `gulp js_jslint` Parse js source files with jslint linter and show errors
+
+- `gulp js_lint` Parse js source files with jshint and jslint linters and show errors
+
+- `gulp watch`  Wait from any change in /static/less directory and run `gulp build_less` on change
 
 ####Run the server
 
