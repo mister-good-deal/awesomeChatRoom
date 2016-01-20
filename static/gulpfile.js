@@ -98,7 +98,7 @@
     /*=====  End of Build js / less and optimize  ======*/
 
     gulp.task('watch', function () {
-        watch('less/**/*.less', function (vinyl) {
+        watch('less/**/*.less', {read: false}, function (vinyl) {
             var string = vinyl.path;
 
             switch (vinyl.event) {

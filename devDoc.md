@@ -179,6 +179,7 @@ Here are all the gulp commands you can run
 
 `gulp build_all`  Compile and optimize both js and less files (combination of build_js and build_less)
 
+`gulp watch`  Wait from any change in /static/less directory and run `gulp build_less` on change
 
 ####Run the server
 
