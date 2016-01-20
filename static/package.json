@@ -28,6 +28,7 @@
         "gulp-less": "latest",
         "gulp-rename": "latest",
         "gulp-shell": "latest",
+        "gulp-watch": "latest",
         "ink-docstrap": "latest",
         "jsdoc": "latest",
         "main-bower-files": "latest",

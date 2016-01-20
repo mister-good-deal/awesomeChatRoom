@@ -147,23 +147,38 @@ Create tables with the ORM, run those commands
 
 ####Setup source files
 
-In /static/js project PATH run the followings commands to install dev-dependencies
+In /static project PATH run the followings commands to install dev-dependencies
 
 `npm install`
 
-`gulp`
+`gulp install`
 
-####Setup less
+To compile js and less files into dist repository run
 
-In /static/less project PATH run the followings commands to install dev-dependencies
+`gulp build_all`
 
-`npm install`
+Here are all the gulp commands you can run
 
-`gulp`
+`gulp flush_bower` Flush the .bowerDependencies repository
 
-To compile less, run this command in /static/less project PATH
+`gulp flush_npm` Flush the node_modules repository
 
-`gulp compile`
+`gulp flush_js` Flush all js vendor sources files
+
+`gulp flush_less` Flush all less vendor sources files
+
+`gulp flush_dist` Flush the dist repository
+
+`gulp flush_all` Flush all (combination of all the flushes)
+
+`gulp install` Retrieve and move all the js and less vendor sources files on right folders
+
+`gulp build_js` Compile and optimize the js sources files into one file (app.js) in dist repository
+
+`gulp build_less` Compile and optimize the less sources files into one file (style.css) in dist repository
+
+`gulp build_all`  Compile and optimize both js and less files (combination of build_js and build_less)
+
 
 ####Run the server
 
