@@ -194,7 +194,6 @@ define(['jquery', 'module'], function ($, module) {
                 }
             }
         }
-        
     };
 
     return Message;

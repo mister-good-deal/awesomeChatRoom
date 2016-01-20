@@ -28,12 +28,18 @@
         "gulp-less": "latest",
         "gulp-rename": "latest",
         "gulp-shell": "latest",
+        "gulp-jshint": "latest",
         "gulp-watch": "latest",
+        "gulp-jslint": "latest",
+        "gulp-plumber": "latest",
         "ink-docstrap": "latest",
         "jsdoc": "latest",
         "main-bower-files": "latest",
         "less-plugin-autoprefix": "latest",
         "less-plugin-clean-css": "latest",
+        "jshint": "latest",
+        "jshint-stylish": "latest",
+        "map-stream": "latest",
         "requirejs": "latest"
     }
 }

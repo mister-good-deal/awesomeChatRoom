@@ -818,90 +818,90 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          */
         chatCallback: function (data) {
             switch (data.action) {
-                case 'connect':
-                    this.connectRoomCallback(data);
+            case 'connect':
+                this.connectRoomCallback(data);
 
-                    break;
+                break;
 
-                case 'disconnectFromRoom':
-                    this.disconnectRoomCallback(data);
+            case 'disconnectFromRoom':
+                this.disconnectRoomCallback(data);
 
-                    break;
+                break;
 
-                case 'updateRoomUsers':
-                    this.updateRoomUsersCallback(data);
+            case 'updateRoomUsers':
+                this.updateRoomUsersCallback(data);
 
-                    break;
+                break;
 
-                case 'updateRoomUsersRights':
-                    this.updateRoomUsersRightsCallback(data);
+            case 'updateRoomUsersRights':
+                this.updateRoomUsersRightsCallback(data);
 
-                    break;
+                break;
 
-                case 'updateRoomUsersBanned':
-                    this.updateRoomUsersBannedCallback(data);
+            case 'updateRoomUsersBanned':
+                this.updateRoomUsersBannedCallback(data);
 
-                    break;
+                break;
 
-                case 'createRoom':
-                    this.createRoomCallback(data);
+            case 'createRoom':
+                this.createRoomCallback(data);
 
-                    break;
+                break;
 
-                case 'recieveMessage':
-                    this.recieveMessageCallback(data);
+            case 'recieveMessage':
+                this.recieveMessageCallback(data);
 
-                    break;
+                break;
 
-                case 'sendMessage':
-                    this.sendMessageCallback(data);
+            case 'sendMessage':
+                this.sendMessageCallback(data);
 
-                    break;
+                break;
 
-                case 'getHistoric':
-                    this.getHistoricCallback(data);
+            case 'getHistoric':
+                this.getHistoricCallback(data);
 
-                    break;
+                break;
 
-                case 'getKicked':
-                    this.getKickedCallback(data);
+            case 'getKicked':
+                this.getKickedCallback(data);
 
-                    break;
+                break;
 
-                case 'kickUser':
-                    this.kickUserCallback(data);
+            case 'kickUser':
+                this.kickUserCallback(data);
 
-                    break;
+                break;
 
-                case 'getBanned':
-                    this.getBannedCallback(data);
+            case 'getBanned':
+                this.getBannedCallback(data);
 
-                    break;
+                break;
 
-                case 'banUser':
-                    this.banUserCallback(data);
+            case 'banUser':
+                this.banUserCallback(data);
 
-                    break;
+                break;
 
-                case 'setRoomInfo':
-                    this.setRoomInfoCallback(data);
+            case 'setRoomInfo':
+                this.setRoomInfoCallback(data);
 
-                    break;
+                break;
 
-                case 'changeRoomInfo':
-                    this.changeRoomInfoCallback(data);
+            case 'changeRoomInfo':
+                this.changeRoomInfoCallback(data);
 
-                    break;
+                break;
 
-                case 'getRoomsInfo':
-                    this.getRoomsInfoCallback(data);
+            case 'getRoomsInfo':
+                this.getRoomsInfoCallback(data);
 
-                    break;
+                break;
 
-                default:
-                    if (data.text) {
-                        this.message.add(data.text);
-                    }
+            default:
+                if (data.text) {
+                    this.message.add(data.text);
+                }
             }
         },
 
@@ -934,7 +934,12 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          */
         updateRoomUsersCallback: function (data) {
             var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
-                usersList, newPseudonyms, oldPseudonyms, modal, users, self;
+                usersList,
+                newPseudonyms,
+                oldPseudonyms,
+                modal,
+                users,
+                self;
 
             if (room.length > 0) {
                 usersList = room.attr('data-users').split(',');
@@ -1199,7 +1204,12 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          */
         insertRoomInDOM: function (data) {
             var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
-                roomSample, newRoom, newRoomChat, modalSample, newModal, id;
+                roomSample,
+                newRoom,
+                newRoomChat,
+                modalSample,
+                newModal,
+                id;
 
             if (room.length === 0) {
                 // Room chat creation if the room does not exist yet
@@ -1329,22 +1339,21 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
          *
          * @param  {object} room       The room jQuery DOM element
          * @param  {array}  pseudonyms The new pseudonyms list
-         * @todo                       Traduction on 'all' value
          */
         updateUsersDropdown: function (room, pseudonyms) {
             var list = [];
 
             list.push($('<li>', {
-                    "data-value": "all"
-                }).append($('<a>', {
-                    "href" : "#",
-                    "title": "all",
-                    "text" : "all"
-                })));
+                "data-value": "all"
+            }).append($('<a>', {
+                "href" : "#",
+                "title": "all",
+                "text" : "all"
+            })));
 
             _.forEach(pseudonyms, function (pseudonym) {
                 if (pseudonym !== room.attr('data-pseudonym')) {
-                        list.push($('<li>', {
+                    list.push($('<li>', {
                         "data-value": pseudonym
                     }).append($('<a>', {
                         "href" : "#",
@@ -1355,7 +1364,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
             });
 
             room.find(this.settings.selectors.roomSend.div + ' ' + this.settings.selectors.roomSend.usersList)
-            .html(list);
+                .html(list);
         },
 
         /**
@@ -1404,7 +1413,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
             newLine.find(this.settings.selectors.administrationPanel.pseudonym).text(pseudonym);
             newLine.find(this.settings.selectors.administrationPanel.toggleRights).attr('data-refer', '.' + refer);
 
-            newLine.each(function() {
+            newLine.each(function () {
                 if ($(this).hasClass(self.settings.selectors.administrationPanel.rights.substr(1))) {
                     var input     = $(this).find('input'),
                         rightName = input.attr('name');
@@ -1424,7 +1433,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
                             input.bootstrapSwitch('readonly', true);
                         } else {
                             // Bind event on right change event to update the right instantly
-                            input.on('switchChange.bootstrapSwitch', function(e, rightValue) {
+                            input.on('switchChange.bootstrapSwitch', function (ignore, rightValue) {
                                 self.updateRoomUserRight(roomName, pseudonym, $(this).attr('name'), rightValue);
                             });
                         }
@@ -1484,15 +1493,15 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
                     isCommand = true;
 
                     switch (name) {
-                        case 'kick':
-                            self.kickUser(roomName, regexResult[1], regexResult[2] || '');
+                    case 'kick':
+                        self.kickUser(roomName, regexResult[1], regexResult[2] || '');
 
-                            break;
+                        break;
 
-                        case 'pm':
-                            self.sendMessage(regexResult[1], regexResult[2], roomName, password);
+                    case 'pm':
+                        self.sendMessage(regexResult[1], regexResult[2], roomName, password);
 
-                            break;
+                        break;
                     }
 
                     return false;

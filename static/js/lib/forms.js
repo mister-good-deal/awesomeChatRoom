@@ -69,37 +69,37 @@ define(['jquery', 'domReady!'], function ($) {
                 url;
 
             switch (form.attr('data-send-action')) {
-                case 'jsCallback':
-                    e.preventDefault();
-                    this.onJsCallback(form, form.attr('data-callback-name'), form.serializeArray());
+            case 'jsCallback':
+                e.preventDefault();
+                this.onJsCallback(form, form.attr('data-callback-name'), form.serializeArray());
 
-                    break;
+                break;
 
-                default:
-                    e.preventDefault();
+            default:
+                e.preventDefault();
 
-                    url = form.attr('action');
+                url = form.attr('action');
 
-                    if (this.xhrs[url]) {
-                        this.xhrs[url].abort();
+                if (this.xhrs[url]) {
+                    this.xhrs[url].abort();
+                }
+
+                this.xhrs[url] = $.ajax({
+                    url     : url,
+                    type    : form.attr('method'),
+                    dataType: 'json',
+                    data    : form.serialize()
+                }).done(function (data) {
+                    if (data.success) {
+                        self.onSuccess(form, url, data);
+                    } else {
+                        self.onFail(form, url, data);
                     }
-
-                    this.xhrs[url] = $.ajax({
-                        url     : url,
-                        type    : form.attr('method'),
-                        dataType: 'json',
-                        data    : form.serialize(),
-                    }).done(function (data) {
-                        if (data.success) {
-                            self.onSuccess(form, url, data);
-                        } else {
-                            self.onFail(form, url, data);
-                        }
-                    }).fail(function (jqXHR) {
-                        self.onRequestFail(form, url, jqXHR);
-                    }).always(function () {
-                        delete self.xhrs[url];
-                    });
+                }).fail(function (jqXHR) {
+                    self.onRequestFail(form, url, jqXHR);
+                }).always(function () {
+                    delete self.xhrs[url];
+                });
             }
         },
 
@@ -159,7 +159,7 @@ define(['jquery', 'domReady!'], function ($) {
          * Add a callback to process the url server success JSON repsonse
          *
          * The callback takes 2 arguments:
-         * 
+         *
          * - The jQuery DOM form element
          * - The server JSON reponse
          *
@@ -180,7 +180,7 @@ define(['jquery', 'domReady!'], function ($) {
          * Add a callback to process the url server fail JSON repsonse
          *
          * The callback takes 2 arguments:
-         * 
+         *
          * - The jQuery DOM form element
          * - The server JSON reponse
          *
@@ -201,7 +201,7 @@ define(['jquery', 'domReady!'], function ($) {
          * Add a callback to process the url server fail XHR
          *
          * The callback takes 2 arguments:
-         * 
+         *
          * - The jQuery DOM form element
          * - The jQuery jqXHR object
          *
@@ -222,7 +222,7 @@ define(['jquery', 'domReady!'], function ($) {
          * Add a callback to process the form user inputs on submit
          *
          * The callback takes 2 arguments:
-         * 
+         *
          * - The jQuery DOM form element
          * - The user inputs as object
          *

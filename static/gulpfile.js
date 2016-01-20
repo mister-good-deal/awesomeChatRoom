@@ -8,6 +8,11 @@
         mainBowerFiles   = require('main-bower-files'),
         rename           = require('gulp-rename'),
         shell            = require('gulp-shell'),
+        jshint           = require('gulp-jshint'),
+        jslint           = require('gulp-jslint'),
+        plumber          = require('gulp-plumber'),
+        stylish          = require('jshint-stylish'),
+        map              = require('map-stream'),
         watch            = require('gulp-watch'),
         del              = require('del'),
         CleanPlugin      = require('less-plugin-clean-css'),
@@ -17,7 +22,8 @@
         }),
         autoprefix = new AutoprefixPlugin({
             browsers: ["last 2 versions"]
-        });
+        }),
+        jshintReporter;
 
     /*============================================
     =            Flush vendor sources            =
@@ -97,29 +103,68 @@
 
     /*=====  End of Build js / less and optimize  ======*/
 
+    /*===============================
+    =            Linters            =
+    ===============================*/
+
+    jshintReporter = map(function (file, cb) {
+        if (!file.jshint.success) {
+            console.log('[FAIL] ' + file.path);
+        } else {
+            console.log('[OK] ' + file.path);
+        }
+
+        cb(null, file);
+    });
+
+    gulp.task('js_jshint', function () {
+        return gulp.src(['js/lib/*.js', 'js/main.js'])
+            .pipe(jshint())
+            .pipe(jshint.reporter(stylish))
+            .pipe(jshintReporter);
+    });
+
+    gulp.task('js_jslint', ['js_jshint'], function () {
+        return gulp.src(['js/lib/*.js', 'js/main.js'])
+            .pipe(plumber())
+            .pipe(jslint()).on('error', function () {
+                return true;
+            });
+    });
+
+    gulp.task('js_lint', ['js_jshint', 'js_jslint']);
+
+    /*=====  End of Linters  ======*/
+
+    /*========================================
+    =            Watch less files            =
+    ========================================*/
+
     gulp.task('watch', function () {
         watch('less/**/*.less', {read: false}, function (vinyl) {
             var string = vinyl.path;
 
             switch (vinyl.event) {
-                case 'add':
-                    string += ' has been created';
-                    break;
+            case 'add':
+                string += ' has been created';
+                break;
 
-                case 'change':
-                    string += ' has changed';
-                    break;
+            case 'change':
+                string += ' has changed';
+                break;
 
-                case 'unlink':
-                case 'unlinkDir':
-                    string += ' has been removed';
-                    break;
+            case 'unlink':
+            case 'unlinkDir':
+                string += ' has been removed';
+                break;
             }
 
             console.log(string);
             gulp.start('build_less');
         });
     });
+
+    /*=====  End of Watch less files  ======*/
 
     gulp.task('default', ['install']);
 }());
