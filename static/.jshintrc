@@ -1,0 +1,9 @@
+{
+    "nomen"   : true,
+    "plusplus": false,
+    "globals" : {
+        "define"  : false,
+        "require" : false,
+        "document": false
+    }
+}

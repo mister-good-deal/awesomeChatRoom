@@ -1,0 +1,42 @@
+{
+    "name": "websocket",
+    "description": "websocket chat web app",
+    "main": "dist/app.js",
+    "authors": [
+        "Romain Laneuville"
+    ],
+    "license": "MIT",
+    "keywords": [
+        "websocket",
+        "services",
+        "chat"
+    ],
+    "homepage": "https://github.com/ZiperRom1/web",
+    "moduleType": [
+        "amd"
+    ],
+    "dependencies": {
+        "jquery": "2.2.0",
+        "lodash": "4.0.0",
+        "bootstrap": "3.3.6",
+        "bootstrap-select": "latest",
+        "bootstrap-switch": "latest",
+        "requirejs": "latest",
+        "domReady": "latest"
+    },
+    "overrides": {
+        "bootstrap-switch": {
+          "main": [
+                "src/less/bootstrap3/bootstrap-switch.less",
+                "dist/js/bootstrap-switch.js"
+            ]
+        }
+    },
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ]
+}

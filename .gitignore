@@ -1,5 +1,4 @@
-/static/js/node_modules
-/static/less/node_modules
+/static/node_modules
 /php/.phpintel
 /php/.sonar
 /php/.phpDoc
