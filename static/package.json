@@ -31,6 +31,7 @@
     "gulp-shell": "latest",
     "gulp-sourcemaps": "latest",
     "gulp-watch": "latest",
+    "run-sequence": "latest",
     "ink-docstrap": "latest",
     "jscs-jsdoc": "latest",
     "jsdoc": "latest",

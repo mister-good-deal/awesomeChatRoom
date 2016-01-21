@@ -14,6 +14,7 @@
         map              = require('map-stream'),
         watch            = require('gulp-watch'),
         del              = require('del'),
+        runSequence      = require('run-sequence'),
         CleanPlugin      = require('less-plugin-clean-css'),
         AutoprefixPlugin = require('less-plugin-autoprefix'),
         clean            = new CleanPlugin({
@@ -48,7 +49,9 @@
         del('dist/*');
     });
 
-    gulp.task('flush_all', ['flush_bower', 'flush_npm', 'flush_js', 'flush_less', 'flush_dist']);
+    gulp.task('flush', function (done) {
+        runSequence(['flush_bower', 'flush_npm', 'flush_js', 'flush_less', 'flush_dist'], done);
+    });
 
     /*=====  End of Flush vendor sources  ======*/
 
@@ -77,7 +80,9 @@
         del(['less/vendor/*', '!less/vendor/*.less', '!less/vendor/mixins']);
     });
 
-    gulp.task('install', ['bower_install', 'bower_move_js', 'bower_move_less', 'bower_clean']);
+    gulp.task('install', function (done) {
+        runSequence('bower_install', ['bower_move_js', 'bower_move_less'], 'bower_clean', done);
+    });
 
     /*=====  End of Import vendor sources  ======*/
 
@@ -98,7 +103,9 @@
             .pipe(gulp.dest('dist'));
     });
 
-    gulp.task('build_all', ['build_js', 'build_less']);
+    gulp.task('build', function (done) {
+        runSequence(['build_js', 'build_less'], done);
+    });
 
     /*=====  End of Build js / less and optimize  ======*/
 
@@ -123,14 +130,16 @@
             .pipe(gulp.dest('js/lib'));
     });
 
-    gulp.task('js_jshint', ['js_jscs'], function () {
+    gulp.task('js_jshint', function () {
         return gulp.src(['js/lib/*.js', 'js/main.js'])
             .pipe(jshint())
             .pipe(jshint.reporter(stylish))
             .pipe(jshintReporter);
     });
 
-    gulp.task('js_lint', ['js_jscs', 'js_jshint']);
+    gulp.task('js_lint', function (done) {
+        runSequence('js_jscs', 'js_jshint', done);
+    });
 
     /*=====  End of Linters  ======*/
 

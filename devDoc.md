@@ -155,9 +155,11 @@ In /static project PATH run the followings commands to install dev-dependencies
 
 To compile js and less files into dist repository run
 
-`gulp build_all`
+`gulp build`
 
 Here are all the gulp commands you can run
+
+- `gulp install` Retrieve and move all the js and less vendor sources files on right folders
 
 - `gulp flush_bower` Flush the .bowerDependencies repository
 
@@ -169,15 +171,13 @@ Here are all the gulp commands you can run
 
 - `gulp flush_dist` Flush the dist repository
 
-- `gulp flush_all` Flush all (combination of all the flushes)
-
-- `gulp install` Retrieve and move all the js and less vendor sources files on right folders
+- `gulp flush` Flush all (combination of all the flushes)
 
 - `gulp build_js` Compile and optimize the js sources files into one file (app.js) in dist repository
 
 - `gulp build_less` Compile and optimize the less sources files into one file (style.css) in dist repository
 
-- `gulp build_all` Compile and optimize both js and less files (combination of build_js and build_less)
+- `gulp build` Compile and optimize both js and less files (combination of build_js and build_less)
 
 - `gulp js_jscs` Parse js source files with jscs linter, fix coding style and prompt non fixed ones
 
