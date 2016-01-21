@@ -179,9 +179,9 @@ Here are all the gulp commands you can run
 
 - `gulp build_all` Compile and optimize both js and less files (combination of build_js and build_less)
 
-- `gulp js_jshint` Parse js source files with jshint linter and show errors
+- `gulp js_jscs` Parse js source files with jscs linter, fix coding style and prompt non fixed ones
 
-- `gulp js_jslint` Parse js source files with jslint linter and show errors
+- `gulp js_jshint` Parse js source files with jshint linter and show errors
 
 - `gulp js_lint` Parse js source files with jshint and jslint linters and show errors
 

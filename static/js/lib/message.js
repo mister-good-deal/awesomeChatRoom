@@ -4,9 +4,10 @@
  * @module lib/message
  */
 
-/*global define*/
-
-define(['jquery', 'module'], function ($, module) {
+define([
+    'jquery',
+    'module'
+], function ($, module) {
     'use strict';
 
     /**
@@ -14,7 +15,7 @@ define(['jquery', 'module'], function ($, module) {
      *
      * @constructor
      * @alias       module:lib/message
-     * @param       {object} settings Overriden settings
+     * @param       {Object} settings Overriden settings
      */
     var Message = function (settings) {
         this.settings  = $.extend(true, {}, this.settings, settings);
@@ -78,7 +79,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Display a message on a large alert div at the top of the user screen
          *
-         * @param {object} message The message to display
+         * @param {Object} message The message to display
          */
         alert: function (message) {
             this.settings.alert.lock = true;
@@ -89,7 +90,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Display a message on a modal to the user screen
          *
-         * @param {object} message The message to display
+         * @param {Object} message The message to display
          */
         popup: function (message) {
             this.settings.popup.lock = true;
@@ -99,7 +100,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Display a message on a medium div at the bottom-right of the user screen
          *
-         * @param {object} message The message to display
+         * @param {Object} message The message to display
          */
         notification: function (message) {
             this.settings.notification.lock = true;
@@ -142,11 +143,11 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Add a message in a specific queue to display it
          *
-         * @param {string}  text     The message text to display
-         * @param {string}  type     The message type ("alert", "popup", "notification")
-         * @param {string}  level    The message level ("danger", "warning", "info", "success")
-         * @param {string}  title    The message title
-         * @param {integer} duration The message maximum duration before dismiss (-1 for infinite)
+         * @param {String}  text     The message text to display
+         * @param {String}  type     The message type ("alert", "popup", "notification")
+         * @param {String}  level    The message level ("danger", "warning", "info", "success")
+         * @param {String}  title    The message title
+         * @param {Number} duration The message maximum duration before dismiss (-1 for infinite)
          */
         add: function (text, type, level, title, duration) {
             if (!type) {
@@ -166,7 +167,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Parse the WebSocket server response to notify it
          *
-         * @param {object} data JSON encoded data recieved from the WebSocket server
+         * @param {Object} data JSON encoded data recieved from the WebSocket server
          */
         parseWebsocketData: function (data) {
             this.add(data.text, data.type, data.level, data.title, data.duration);
@@ -175,13 +176,17 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Dequeue a message from the specific queue if the queue is not empty and the queue is not locked
          *
-         * @param {string} type The message type ("alert", "popup", "notification")
+         * @param {String} type The message type ("alert", "popup", "notification")
          */
         dequeueMessage: function (type) {
+            var message,
+                dismissMethod,
+                self;
+
             if (!this.settings[type].lock) {
-                var message       = this.settings[type].queue.shift(),
-                    dismissMethod = type + 'Dismiss',
-                    self          = this;
+                message       = this.settings[type].queue.shift();
+                dismissMethod = type + 'Dismiss';
+                self          = this;
 
                 if (message) {
                     // Call the specific method to output the message

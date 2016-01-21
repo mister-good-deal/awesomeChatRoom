@@ -4,7 +4,15 @@
  * @module lib/chat
  */
 
-define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'bootstrap'], function ($, module, _) {
+define([
+    'jquery',
+    'module',
+    'lodash',
+    'message',
+    'bootstrap-switch',
+    'bootstrap-select',
+    'bootstrap'
+], function ($, module, _, Message) {
     'use strict';
 
     /**
@@ -12,35 +20,35 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
      *
      * @constructor
      * @alias       module:lib/chat
-     * @param       {Message}      Message   A Message object to output message in the IHM
      * @param       {WebSocket}    WebSocket The websocket manager
      * @param       {User}         User      The current User
      * @param       {FormsManager} Forms     A FormsManager to handle form XHR ajax calls or jsCallbacks
-     * @param       {object}       settings  Overriden settings
+     * @param       {Object}       settings  Overriden settings
      */
-    var ChatManager = function (Message, WebSocket, User, Forms, settings) {
-        var self = this;
+    var ChatManager = function (WebSocket, User, Forms, settings) {
+            var self = this;
 
-        this.settings  = $.extend(true, {}, this.settings, settings);
-        this.message   = Message;
-        this.websocket = WebSocket;
-        this.user      = User;
-        this.initEvents();
+            this.settings  = $.extend(true, {}, this.settings, settings);
+            this.websocket = WebSocket;
+            this.user      = User;
+            this.initEvents();
 
-        // Add websocket callbacks
-        this.websocket.addCallback(this.settings.serviceName, this.chatCallback, this);
+            // Add websocket callbacks
+            this.websocket.addCallback(this.settings.serviceName, this.chatCallback, this);
 
-        // Add forms callback
-        Forms.addJsCallback('setReasonCallbackEvent', this.setReasonCallbackEvent, this);
-        Forms.addJsCallback('setRoomInfoCallbackEvent', this.setRoomInfoCallbackEvent, this);
+            // Add forms callback
+            Forms.addJsCallback('setReasonCallbackEvent', this.setReasonCallbackEvent, this);
+            Forms.addJsCallback('setRoomInfoCallbackEvent', this.setRoomInfoCallbackEvent, this);
 
-        // Enable selectpicker and load rooms
-        $(document).ready(function () {
-            $(self.settings.selectors.roomConnect.div + ' ' + self.settings.selectors.roomConnect.name).selectpicker();
-        });
+            // Enable selectpicker and load rooms
+            $(document).ready(function () {
+                $(self.settings.selectors.roomConnect.div + ' ' + self.settings.selectors.roomConnect.name)
+                    .selectpicker();
+            });
 
-        this.getRoomsInfo();
-    };
+            this.getRoomsInfo();
+        },
+        messageManager = new Message();
 
     ChatManager.prototype = {
         /*====================================================
@@ -144,10 +152,6 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
             "kick": module.config().commands.kick,
             "pm"  : module.config().commands.pm
         },
-        /**
-         * A Message object to output message in the IHM
-         */
-        "message": {},
         /**
          * The WebsocketManager instance
          */
@@ -566,8 +570,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Set the reason of the admin kick / ban action
          *
-         * @param {object} form   The jQuery DOM form element
-         * @param {object} inputs The user inputs as object
+         * @param {Object} form   The jQuery DOM form element
+         * @param {Object} inputs The user inputs as object
          */
         setReasonCallbackEvent: function (form, inputs) {
             var self = this;
@@ -582,8 +586,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Set the room name / password
          *
-         * @param {object} form   The jQuery DOM form element
-         * @param {object} inputs The user inputs as object
+         * @param {Object} form   The jQuery DOM form element
+         * @param {Object} inputs The user inputs as object
          */
         setRoomInfoCallbackEvent: function (form, inputs) {
             var modal           = form.closest(this.settings.selectors.administrationPanel.modal),
@@ -619,13 +623,13 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Connect a user to the chat with his account
          *
-         * @param {string} roomName The room name to connect to
-         * @param {string} password The room password to connect to
+         * @param {String} roomName The room name to connect to
+         * @param {String} password The room password to connect to
          */
         connectRegistered: function (roomName, password) {
             this.websocket.send(JSON.stringify({
                 "service" : [this.settings.serviceName],
-                "action"  : "connect",
+                "action"  : "connectRoom",
                 "user"    : this.user.settings,
                 "roomName": roomName,
                 "password": password
@@ -635,14 +639,14 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Connect a user to the chat as a guest
          *
-         * @param {string} pseudonym The user pseudonym
-         * @param {string} roomName  The room name to connect to
-         * @param {string} password  The room password to connect to
+         * @param {String} pseudonym The user pseudonym
+         * @param {String} roomName  The room name to connect to
+         * @param {String} password  The room password to connect to
          */
         connectGuest: function (pseudonym, roomName, password) {
             this.websocket.send(JSON.stringify({
                 "service"  : [this.settings.serviceName],
-                "action"   : "connect",
+                "action"   : "connectRoom",
                 "pseudonym": pseudonym,
                 "roomName" : roomName,
                 "password" : password
@@ -652,7 +656,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Disconnect a user from a chat room
          *
-         * @param {string} roomName The room name to connect to
+         * @param {String} roomName The room name to connect to
          */
         disconnect: function (roomName) {
             this.websocket.send(JSON.stringify({
@@ -665,10 +669,10 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Send a message to all the users in the chat room or at one user in the chat room
          *
-         * @param {string} recievers The message reciever ('all' || userPseudonym)
-         * @param {string} message   The txt message to send
-         * @param {string} roomName  The chat room name
-         * @param {string} password  The chat room password if required
+         * @param {String} recievers The message reciever ('all' || userPseudonym)
+         * @param {String} message   The txt message to send
+         * @param {String} roomName  The chat room name
+         * @param {String} password  The chat room password if required
          */
         sendMessage: function (recievers, message, roomName, password) {
             this.websocket.send(JSON.stringify({
@@ -684,10 +688,10 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Create a chat room
          *
-         * @param {string}  roomName The room name
-         * @param {string}  type     The room type ('public' || 'private')
-         * @param {string}  password The room password
-         * @param {integer} maxUsers The max users number
+         * @param {String} roomName The room name
+         * @param {String} type     The room type ('public' || 'private')
+         * @param {String} password The room password
+         * @param {Number} maxUsers The max users number
          */
         createRoom: function (roomName, type, password, maxUsers) {
             this.websocket.send(JSON.stringify({
@@ -705,9 +709,9 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Get room chat historic
          *
-         * @param {string}  roomName       The room name
-         * @param {string}  password       The room password
-         * @param {integer} historicLoaded The number of historic already loaded
+         * @param {String} roomName       The room name
+         * @param {String} password       The room password
+         * @param {Number} historicLoaded The number of historic already loaded
          */
         getHistoric: function (roomName, password, historicLoaded) {
             this.websocket.send(JSON.stringify({
@@ -722,9 +726,9 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Kick a user from a room
          *
-         * @param {string} roomName  The room name
-         * @param {string} pseudonym The user pseudonym to kick
-         * @param {string} reason    OPTIONAL the reason of the kick
+         * @param {String} roomName  The room name
+         * @param {String} pseudonym The user pseudonym to kick
+         * @param {String} reason    OPTIONAL the reason of the kick
          */
         kickUser: function (roomName, pseudonym, reason) {
             this.websocket.send(JSON.stringify({
@@ -740,9 +744,9 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Ban a user from a room
          *
-         * @param {string} roomName  The room name
-         * @param {string} pseudonym The user pseudonym to ban
-         * @param {string} reason    OPTIONAL the reason of the ban
+         * @param {String} roomName  The room name
+         * @param {String} pseudonym The user pseudonym to ban
+         * @param {String} reason    OPTIONAL the reason of the ban
          */
         banUser: function (roomName, pseudonym, reason) {
             this.websocket.send(JSON.stringify({
@@ -758,10 +762,10 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Update a user right
          *
-         * @param {string}  roomName   The room name
-         * @param {string}  pseudonym  The user pseudonym
-         * @param {string}  rightName  The right name to update
-         * @param {boolean} rightValue The new right value
+         * @param {String}  roomName   The room name
+         * @param {String}  pseudonym  The user pseudonym
+         * @param {String}  rightName  The right name to update
+         * @param {Boolean} rightValue The new right value
          */
         updateRoomUserRight: function (roomName, pseudonym, rightName, rightValue) {
             this.websocket.send(JSON.stringify({
@@ -778,10 +782,10 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Set a new room name / password
          *
-         * @param {string} oldRoomName     The old room name
-         * @param {string} newRoomName     The new room name
-         * @param {string} oldRoomPassword The old room password
-         * @param {string} newRoomPassword The new room password
+         * @param {String} oldRoomName     The old room name
+         * @param {String} newRoomName     The new room name
+         * @param {String} oldRoomPassword The old room password
+         * @param {String} newRoomPassword The new room password
          */
         setRoomInfo: function (oldRoomName, newRoomName, oldRoomPassword, newRoomPassword) {
             this.websocket.send(JSON.stringify({
@@ -814,132 +818,46 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Handle the WebSocker server response and process action then
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         chatCallback: function (data) {
-            switch (data.action) {
-            case 'connect':
-                this.connectRoomCallback(data);
-
-                break;
-
-            case 'disconnectFromRoom':
-                this.disconnectRoomCallback(data);
-
-                break;
-
-            case 'updateRoomUsers':
-                this.updateRoomUsersCallback(data);
-
-                break;
-
-            case 'updateRoomUsersRights':
-                this.updateRoomUsersRightsCallback(data);
-
-                break;
-
-            case 'updateRoomUsersBanned':
-                this.updateRoomUsersBannedCallback(data);
-
-                break;
-
-            case 'createRoom':
-                this.createRoomCallback(data);
-
-                break;
-
-            case 'recieveMessage':
-                this.recieveMessageCallback(data);
-
-                break;
-
-            case 'sendMessage':
-                this.sendMessageCallback(data);
-
-                break;
-
-            case 'getHistoric':
-                this.getHistoricCallback(data);
-
-                break;
-
-            case 'getKicked':
-                this.getKickedCallback(data);
-
-                break;
-
-            case 'kickUser':
-                this.kickUserCallback(data);
-
-                break;
-
-            case 'getBanned':
-                this.getBannedCallback(data);
-
-                break;
-
-            case 'banUser':
-                this.banUserCallback(data);
-
-                break;
-
-            case 'setRoomInfo':
-                this.setRoomInfoCallback(data);
-
-                break;
-
-            case 'changeRoomInfo':
-                this.changeRoomInfoCallback(data);
-
-                break;
-
-            case 'getRoomsInfo':
-                this.getRoomsInfoCallback(data);
-
-                break;
-
-            default:
-                if (data.text) {
-                    this.message.add(data.text);
-                }
+            if (typeof this[data.action + 'Callback'] === 'function') {
+                this[data.action + 'Callback'](data);
+            } else if (data.text) {
+                messageManager.add(data.text);
             }
         },
 
         /**
          * Callback after a user attempted to connect to a room
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         connectRoomCallback: function (data) {
             if (data.success) {
                 this.insertRoomInDOM(data);
             }
 
-            this.message.add(data.text);
+            messageManager.add(data.text);
         },
 
         /**
          * Callback after a user attempted to disconnect from a room
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         disconnectRoomCallback: function (data) {
-            this.message.add(data.text);
+            messageManager.add(data.text);
         },
 
         /**
          * Callback after a user entered or left the room
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         updateRoomUsersCallback: function (data) {
             var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
-                usersList,
-                newPseudonyms,
-                oldPseudonyms,
-                modal,
-                users,
-                self;
+                usersList, newPseudonyms, oldPseudonyms, modal, users, self;
 
             if (room.length > 0) {
                 usersList = room.attr('data-users').split(',');
@@ -970,7 +888,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Callback after a registered user entered or left the room
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         updateRoomUsersRightsCallback: function (data) {
             var modal = $('.modal[data-room-name="' + data.roomName + '"]');
@@ -981,7 +899,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Callback after a user get banned or unbanned from a room
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         updateRoomUsersBannedCallback: function (data) {
             var modal = $('.modal[data-room-name="' + data.roomName + '"]');
@@ -992,20 +910,20 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Callback after a user attempted to create a room
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         createRoomCallback: function (data) {
             if (data.success) {
                 this.insertRoomInDOM(data);
             }
 
-            this.message.add(data.text);
+            messageManager.add(data.text);
         },
 
         /**
          * Callback after a user recieved a message
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         recieveMessageCallback: function (data) {
             var room                = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
@@ -1030,76 +948,76 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Callback after a user sent a message
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         sendMessageCallback: function (data) {
             if (!data.success) {
-                this.message.add(data.text);
+                messageManager.add(data.text);
             }
         },
 
         /**
          * Callback after a user attempted to laod more historic of a conversation
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         getHistoricCallback: function (data) {
             var room     = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
                 roomChat = room.find(this.settings.selectors.global.roomChat);
 
             this.loadHistoric(roomChat, data.historic);
-            this.message.add(data.text);
+            messageManager.add(data.text);
         },
 
         /**
          * Callback after being kicked from a room
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         getKickedCallback: function (data) {
-            this.message.add(data.text);
+            messageManager.add(data.text);
         },
 
         /**
          * Callback after kicking a user from a room
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         kickUserCallback: function (data) {
-            this.message.add(data.text);
+            messageManager.add(data.text);
         },
 
         /**
          * Callback after being banned from a room
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         getBannedCallback: function (data) {
-            this.message.add(data.text);
+            messageManager.add(data.text);
         },
 
         /**
          * Callback after banning a user from a room
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         banUserCallback: function (data) {
-            this.message.add(data.text);
+            messageManager.add(data.text);
         },
 
         /**
          * Callback after setting a new room name / password
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         setRoomInfoCallback: function (data) {
-            this.message.add(data.text);
+            messageManager.add(data.text);
         },
 
         /**
          * Callback after a room name / password has been changed
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         changeRoomInfoCallback: function (data) {
             var room = $(this.settings.selectors.global.room + '[data-name="' + data.oldRoomName + '"]'),
@@ -1146,7 +1064,7 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Callback after getting the new rooms info
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         getRoomsInfoCallback: function (data) {
             var publicRooms  = [],
@@ -1185,9 +1103,9 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Connect the user to the chat
          *
-         * @param {string} pseudonym The user pseudonym
-         * @param {string} roomName  The room name to connect to
-         * @param {string} password  The room password to connect to
+         * @param {String} pseudonym The user pseudonym
+         * @param {String} roomName  The room name to connect to
+         * @param {String} password  The room password to connect to
          */
         connect: function (pseudonym, roomName, password) {
             if (this.user.connected) {
@@ -1200,16 +1118,11 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Insert a room in the user DOM with data recieved from server
          *
-         * @param {object} data The server JSON reponse
+         * @param {Object} data The server JSON reponse
          */
         insertRoomInDOM: function (data) {
             var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
-                roomSample,
-                newRoom,
-                newRoomChat,
-                modalSample,
-                newModal,
-                id;
+                roomSample, newRoom, newRoomChat, modalSample, newModal, id;
 
             if (room.length === 0) {
                 // Room chat creation if the room does not exist yet
@@ -1280,8 +1193,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Load conversations historic sent by the server
          *
-         * @param  {object} roomChatDOM The room chat jQuery DOM element to insert the conversations historic in
-         * @param  {object} historic    The conversations historic
+         * @param  {Object} roomChatDOM The room chat jQuery DOM element to insert the conversations historic in
+         * @param  {Object} historic    The conversations historic
          */
         loadHistoric: function (roomChatDOM, historic) {
             var historicLoaded = roomChatDOM.attr('data-historic-loaded'),
@@ -1299,8 +1212,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Format a user message in a html div
          *
-         * @param  {object} data The server JSON reponse
-         * @return {array}       Array of jQuery html div(s) object containing the user message(s)
+         * @param  {Object} data The server JSON reponse
+         * @return {Array}       Array of jQuery html div(s) object containing the user message(s)
          */
         formatUserMessage: function (data) {
             var divs = [],
@@ -1337,8 +1250,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Update the users list in the dropdown menu recievers
          *
-         * @param  {object} room       The room jQuery DOM element
-         * @param  {array}  pseudonyms The new pseudonyms list
+         * @param  {Object} room       The room jQuery DOM element
+         * @param  {Array}  pseudonyms The new pseudonyms list
          */
         updateUsersDropdown: function (room, pseudonyms) {
             var list = [];
@@ -1370,8 +1283,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Update the users list in the administration modal
          *
-         * @param  {object} modal       The modal jQuery DOM element
-         * @param  {object} usersRights The users rights object returned by the server
+         * @param  {Object} modal       The modal jQuery DOM element
+         * @param  {Object} usersRights The users rights object returned by the server
          */
         updateRoomUsersRights: function (modal, usersRights) {
             var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),
@@ -1395,10 +1308,10 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Get a new user right line in the administration panel
          *
-         * @param  {object} modal      The modal jQuery DOM element
-         * @param  {string} pseudonym  The new user pseudonym
-         * @param  {object} usersRight The new user rights
-         * @return {object}            The new user right line jQuery DOM element
+         * @param  {Object} modal      The modal jQuery DOM element
+         * @param  {String} pseudonym  The new user pseudonym
+         * @param  {Object} usersRight The new user rights
+         * @return {Object}            The new user right line jQuery DOM element
          */
         getUserRightLine: function (modal, pseudonym, usersRight) {
             var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),
@@ -1406,7 +1319,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
                 roomName  = modal.attr('data-room-name'),
                 newLine   = trSample.clone(),
                 refer     = _.uniqueId('right-'),
-                self      = this;
+                self      = this,
+                input, rightName;
 
             newLine.removeClass('hide sample');
             newLine.attr('data-pseudonym', pseudonym);
@@ -1415,8 +1329,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
 
             newLine.each(function () {
                 if ($(this).hasClass(self.settings.selectors.administrationPanel.rights.substr(1))) {
-                    var input     = $(this).find('input'),
-                        rightName = input.attr('name');
+                    input     = $(this).find('input');
+                    rightName = input.attr('name');
 
                     $(this).addClass(refer);
                     // Unregistered user
@@ -1447,8 +1361,8 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Update the ip banned list in the administration modal
          *
-         * @param  {object} modal        The modal jQuery DOM element
-         * @param  {object} usersBanned  The users banned object returned by the server
+         * @param  {Object} modal        The modal jQuery DOM element
+         * @param  {Object} usersBanned  The users banned object returned by the server
          */
         updateRoomUsersBanned: function (modal, usersBanned) {
             var bannedList = modal.find(this.settings.selectors.administrationPanel.bannedList),
@@ -1476,10 +1390,10 @@ define(['jquery', 'module', 'lodash', 'bootstrap-switch', 'bootstrap-select', 'b
         /**
          * Check if the user input is a command and process it
          *
-         * @param  {string}  message  The user input
-         * @param  {string}  roomName The room name
-         * @param  {string}  password The room password
-         * @return {boolean}          True if the user input was a command else false
+         * @param  {String}  message  The user input
+         * @param  {String}  roomName The room name
+         * @param  {String}  password The room password
+         * @return {Boolean}          True if the user input was a command else false
          */
         isCommand: function (message, roomName, password) {
             var isCommand = false,

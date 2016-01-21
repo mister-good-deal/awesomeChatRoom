@@ -1,45 +1,45 @@
 {
-    "name": "websocket",
-    "title": "Websocket chat",
-    "description": "websocket chat web app",
-    "version": "1.0.0",
-    "author": {
-        "name": "Romain Laneuville"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/ZiperRom1/web.git"
-    },
-    "keywords": [
-        "websocket",
-        "services",
-        "chat"
-    ],
-    "bugs": {
-        "url": "https://github.com/ZiperRom1/web/issues"
-    },
-    "license": "MIT",
-    "dependencies": {},
-    "devDependencies": {
-        "del": "latest",
-        "gulp": "latest",
-        "gulp-bower": "latest",
-        "gulp-sourcemaps": "latest",
-        "gulp-less": "latest",
-        "gulp-rename": "latest",
-        "gulp-shell": "latest",
-        "gulp-jshint": "latest",
-        "gulp-watch": "latest",
-        "gulp-jslint": "latest",
-        "gulp-plumber": "latest",
-        "ink-docstrap": "latest",
-        "jsdoc": "latest",
-        "main-bower-files": "latest",
-        "less-plugin-autoprefix": "latest",
-        "less-plugin-clean-css": "latest",
-        "jshint": "latest",
-        "jshint-stylish": "latest",
-        "map-stream": "latest",
-        "requirejs": "latest"
-    }
+  "name": "websocket",
+  "title": "Websocket chat",
+  "description": "websocket chat web app",
+  "version": "1.0.0",
+  "author": {
+    "name": "Romain Laneuville"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZiperRom1/web.git"
+  },
+  "keywords": [
+    "websocket",
+    "services",
+    "chat"
+  ],
+  "bugs": {
+    "url": "https://github.com/ZiperRom1/web/issues"
+  },
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "del": "latest",
+    "gulp": "latest",
+    "gulp-bower": "latest",
+    "gulp-jscs": "^3.0.2",
+    "gulp-jshint": "latest",
+    "gulp-less": "latest",
+    "gulp-rename": "latest",
+    "gulp-shell": "latest",
+    "gulp-sourcemaps": "latest",
+    "gulp-watch": "latest",
+    "ink-docstrap": "latest",
+    "jscs-jsdoc": "^1.3.1",
+    "jsdoc": "latest",
+    "jshint": "latest",
+    "jshint-stylish": "latest",
+    "less-plugin-autoprefix": "latest",
+    "less-plugin-clean-css": "latest",
+    "main-bower-files": "latest",
+    "map-stream": "latest",
+    "requirejs": "latest"
+  }
 }

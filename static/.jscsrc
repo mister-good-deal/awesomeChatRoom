@@ -1,0 +1,22 @@
+{
+	"preset": "crockford",
+    "plugins": [
+        "jscs-jsdoc"
+    ],
+    "jsDoc": {
+        "checkAnnotations": {
+            "preset": "jsdoc3"
+        },
+        "requireParamDescription": true,
+        "requireReturnDescription": true,
+        "checkParamExistence": true,
+        "checkParamNames": true,
+        "requireParamTypes": true,
+        "checkRedundantParams": true,
+        "checkReturnTypes": true,
+        "checkRedundantReturns": true,
+        "requireReturnTypes": true,
+        "requireNewlineAfterDescription": true,
+        "checkTypes": "capitalizedNativeCase"
+    }
+}

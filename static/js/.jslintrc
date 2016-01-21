@@ -1,8 +1,0 @@
-{
-    "nomen"   : true,
-    "plusplus": true,
-    "browser" : true,
-    "indent"  : 4,
-    "white"   : true,
-    "predef"  : ["define", "requirejs"]
-}

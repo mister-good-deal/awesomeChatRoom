@@ -4,7 +4,10 @@
  * @module lib/user
  */
 
-define(['jquery'], function ($) {
+define([
+    'jquery',
+    'message'
+], function ($, Message) {
     'use strict';
 
     /**
@@ -12,22 +15,21 @@ define(['jquery'], function ($) {
      *
      * @constructor
      * @alias       module:lib/user
-     * @param       {Message}      Message  A Message object to output message in the IHM
      * @param       {FormsManager} Forms    A FormsManager to handle form XHR ajax calls or jsCallbacks
-     * @param       {object}       settings Overriden settings
+     * @param       {Object}       settings Overriden settings
      */
-    var UserManager = function (Message, Forms, settings) {
-        this.settings = $.extend(true, {}, this.settings, settings);
-        this.message  = Message;
+    var UserManager = function (Forms, settings) {
+            this.settings = $.extend(true, {}, this.settings, settings);
 
-        // Bind forms ajax callback
-        Forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
-        Forms.addOnFailCallback('user/connect', this.connectFail, this);
-        Forms.addOnRequestFailCallback('user/connect', this.connectRequestFail, this);
-        Forms.addOnSuccessCallback('user/register', this.registerSuccess, this);
-        Forms.addOnFailCallback('user/register', this.registerFail, this);
-        Forms.addOnRequestFailCallback('user/register', this.registerRequestFail, this);
-    };
+            // Bind forms ajax callback
+            Forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
+            Forms.addOnFailCallback('user/connect', this.connectFail, this);
+            Forms.addOnRequestFailCallback('user/connect', this.connectRequestFail, this);
+            Forms.addOnSuccessCallback('user/register', this.registerSuccess, this);
+            Forms.addOnFailCallback('user/register', this.registerFail, this);
+            Forms.addOnRequestFailCallback('user/register', this.registerRequestFail, this);
+        },
+        messageManager = new Message();
 
     UserManager.prototype = {
         /**
@@ -42,10 +44,6 @@ define(['jquery'], function ($) {
             "chatRights": {}
         },
         /**
-         * A Message object to output message in the IHM
-         */
-        "message": {},
-        /**
          * If the user is connected
          */
         "connected": false,
@@ -53,7 +51,7 @@ define(['jquery'], function ($) {
         /**
          * Get first name
          *
-         * @return {string} The user first name
+         * @return {String} The user first name
          */
         getFirstName: function () {
             return this.settings.firstName;
@@ -62,7 +60,7 @@ define(['jquery'], function ($) {
         /**
          * Get last name
          *
-         * @return {string} The user last name
+         * @return {String} The user last name
          */
         getLastName: function () {
             return this.settings.lastName;
@@ -71,7 +69,7 @@ define(['jquery'], function ($) {
         /**
          * Get pseudonym
          *
-         * @return {string} The user pseudonym
+         * @return {String} The user pseudonym
          */
         getPseudonym: function () {
             var pseudonym = this.settings.pseudonym;
@@ -86,7 +84,7 @@ define(['jquery'], function ($) {
         /**
          * Get email
          *
-         * @return {string} The user email
+         * @return {String} The user email
          */
         getEmail: function () {
             return this.settings.email;
@@ -95,7 +93,7 @@ define(['jquery'], function ($) {
         /**
          * Get password
          *
-         * @return {string} The user password
+         * @return {String} The user password
          */
         getPassword: function () {
             return this.settings.password;
@@ -104,8 +102,8 @@ define(['jquery'], function ($) {
         /**
          * Get chat rights
          *
-         * @param  {string} The room name
-         * @return {string} The user chat rights for the room
+         * @param  {String} roomName The room name
+         * @return {String}          The user chat rights for the room
          */
         getChatRights: function (roomName) {
             return this.settings.chatRights[roomName];
@@ -114,7 +112,7 @@ define(['jquery'], function ($) {
         /**
          * Set the User object with a JSON parameter
          *
-         * @param {object} JSON data
+         * @param {Object} data JSON data
          */
         setAttributes: function (data) {
             this.settings.firstName  = data.user.firstName  || "";
@@ -128,20 +126,20 @@ define(['jquery'], function ($) {
         /**
          * Callback when the user connection attempt succeed
          *
-         * @param {object} form The jQuery DOM form element
-         * @param {object} data The server JSON reponse
+         * @param {Object} form The jQuery DOM form element
+         * @param {Object} data The server JSON reponse
          */
         connectSuccess: function (form, data) {
             this.setAttributes(data);
             this.connected = true;
-            this.message.add('Connect success !');
+            messageManager.add('Connect success !');
         },
 
         /**
          * Callback when the user connection attempt failed
          *
-         * @param {object} form The jQuery DOM form element
-         * @param {object} data The server JSON reponse
+         * @param {Object} form The jQuery DOM form element
+         * @param {Object} data The server JSON reponse
          */
         connectFail: function (form, data) {
             console.log('Fail !', data);
@@ -150,8 +148,8 @@ define(['jquery'], function ($) {
         /**
          * Callback when the user connection request failed
          *
-         * @param {object} form  The jQuery DOM form element
-         * @param {object} jqXHR The jQuery jqXHR object
+         * @param {Object} form  The jQuery DOM form element
+         * @param {Object} jqXHR The jQuery jqXHR object
          */
         connectRequestFail: function (form, jqXHR) {
             console.log(jqXHR);
@@ -160,20 +158,20 @@ define(['jquery'], function ($) {
         /**
          * Callback when the user connection attempt succeed
          *
-         * @param {object} form The jQuery DOM form element
-         * @param {object} data The server JSON reponse
+         * @param {Object} form The jQuery DOM form element
+         * @param {Object} data The server JSON reponse
          */
         registerSuccess: function (form, data) {
             this.setAttributes(data);
             this.connected = true;
-            this.message.add('Register success !');
+            messageManager.add('Register success !');
         },
 
         /**
          * Callback when the user connection attempt failed
          *
-         * @param {object} form The jQuery DOM form element
-         * @param {object} data The server JSON reponse
+         * @param {Object} form The jQuery DOM form element
+         * @param {Object} data The server JSON reponse
          */
         registerFail: function (form, data) {
             console.log('Fail !', data);
@@ -182,8 +180,8 @@ define(['jquery'], function ($) {
         /**
          * Callback when the user connection request failed
          *
-         * @param {object} form  The jQuery DOM form element
-         * @param {object} jqXHR The jQuery jqXHR object
+         * @param {Object} form  The jQuery DOM form element
+         * @param {Object} jqXHR The jQuery jqXHR object
          */
         registerRequestFail: function (form, jqXHR) {
             console.log(jqXHR);

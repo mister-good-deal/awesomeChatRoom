@@ -9,8 +9,7 @@
         rename           = require('gulp-rename'),
         shell            = require('gulp-shell'),
         jshint           = require('gulp-jshint'),
-        jslint           = require('gulp-jslint'),
-        plumber          = require('gulp-plumber'),
+        jscs             = require('gulp-jscs'),
         stylish          = require('jshint-stylish'),
         map              = require('map-stream'),
         watch            = require('gulp-watch'),
@@ -94,7 +93,7 @@
             .pipe(less({
                 plugins: [clean, autoprefix]
             }))
-            .pipe(sourcemaps.write()) // can't write sourcemap on an external file
+            .pipe(sourcemaps.write()) // @todo can't write sourcemap on an external file
             .pipe(rename('style.css'))
             .pipe(gulp.dest('dist'));
     });
@@ -117,22 +116,21 @@
         cb(null, file);
     });
 
-    gulp.task('js_jshint', function () {
+    gulp.task('js_jscs', function () {
+        return gulp.src('js/lib/*.js')
+            .pipe(jscs({fix: true}))
+            .pipe(jscs.reporter())
+            .pipe(gulp.dest('js/lib'));
+    });
+
+    gulp.task('js_jshint', ['js_jscs'], function () {
         return gulp.src(['js/lib/*.js', 'js/main.js'])
             .pipe(jshint())
             .pipe(jshint.reporter(stylish))
             .pipe(jshintReporter);
     });
 
-    gulp.task('js_jslint', ['js_jshint'], function () {
-        return gulp.src(['js/lib/*.js', 'js/main.js'])
-            .pipe(plumber())
-            .pipe(jslint()).on('error', function () {
-                return true;
-            });
-    });
-
-    gulp.task('js_lint', ['js_jshint', 'js_jslint']);
+    gulp.task('js_lint', ['js_jscs', 'js_jshint']);
 
     /*=====  End of Linters  ======*/
 

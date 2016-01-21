@@ -4,9 +4,10 @@
  * @module lib/websocket
  */
 
-/*global define, WebSocket*/
-
-define(['jquery', 'module'], function ($, module) {
+define([
+    'jquery',
+    'module'
+], function ($, module) {
     'use strict';
 
     /**
@@ -14,16 +15,14 @@ define(['jquery', 'module'], function ($, module) {
      *
      * @constructor
      * @alias       module:lib/websocket
-     * @param       {Message} Message  A Message object to output message in the IHM
      * @param       {User}    User     The current User
-     * @param       {object}  settings Overriden settings
+     * @param       {Object}  settings Overriden settings
      */
-    var WebsocketManager = function (Message, User, settings) {
-        this.settings = $.extend(true, {}, this.settings, settings);
-        this.message  = Message;
-        this.user     = User;
-        this.init();
-    };
+    var WebsocketManager = function (User, settings) {
+            this.settings = $.extend(true, {}, this.settings, settings);
+            this.user     = User;
+            this.init();
+        };
 
     WebsocketManager.prototype = {
         /**
@@ -38,10 +37,6 @@ define(['jquery', 'module'], function ($, module) {
          * The websocket ressource
          */
         "socket": {},
-        /**
-         * A Message object to output message in the IHM
-         */
-        "message": {},
         /**
          * The current User instance
          */
@@ -91,7 +86,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Shorthand method to send data to the WebSocket server or delay until the websocket is ready
          *
-         * @param {string} data Data to send to the WebSocket server
+         * @param {String} data Data to send to the WebSocket server
          */
         send: function (data) {
             var self = this;
@@ -117,7 +112,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Treat data recieved from the WebSocket server
          *
-         * @param {string} data The text data recieved from the WebSocket server
+         * @param {String} data The text data recieved from the WebSocket server
          */
         treatData: function (data) {
             data = JSON.parse(data);
@@ -133,9 +128,9 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Add a callback to process data recieved from the WebSocket server
          *
-         * @param {string}   serviceName The callback service name
-         * @param {function} callback    The callback function
-         * @param {object}   context     The callback context
+         * @param {String}   serviceName The callback service name
+         * @param {Function} callback    The callback function
+         * @param {Object}   context     The callback context
          */
         addCallback: function (serviceName, callback, context) {
             this.callbacks[serviceName] = {
@@ -147,7 +142,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Add a service to the WebSocket server
          *
-         * @param {string} serviceName The service name to add to the WebSocket server
+         * @param {String} serviceName The service name to add to the WebSocket server
          */
         addService: function (serviceName) {
             this.socket.send(JSON.stringify({
@@ -161,7 +156,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Remove a service from the WebSocket server
          *
-         * @param {string} serviceName The service name to remove from the WebSocket server
+         * @param {String} serviceName The service name to remove from the WebSocket server
          */
         removeService: function (serviceName) {
             this.socket.send(JSON.stringify({
@@ -187,7 +182,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Parse the WebSocket server response to retrieve the services list
          *
-         * @param {object} data JSON encoded data recieved from the WebSocket server
+         * @param {Object} data JSON encoded data recieved from the WebSocket server
          */
         listServiceCallback: function (data) {
             console.log(data.services);

@@ -91,7 +91,7 @@ class ChatService extends Server implements Service
     /*=====================================
     =            Magic methods            =
     =====================================*/
-    
+
     /**
      * Constructor that sets the WebSocket server adress and create en empty default room
      *
@@ -124,13 +124,13 @@ class ChatService extends Server implements Service
 
         $this->loadHistoric('default', $this->getLastPartNumber('default'));
     }
-    
+
     /*=====  End of Magic methods  ======*/
 
     /*======================================
     =            Public methods            =
     ======================================*/
-    
+
     /**
      * Method to recieves data from the WebSocket server
      *
@@ -151,19 +151,19 @@ class ChatService extends Server implements Service
 
                 break;
 
-            case 'connect':
+            case 'connectRoom':
                 $this->connectUser($socket, $data);
 
                 break;
 
             case 'disconnect':
                 $this->disconnectUser($socket);
-                
+
                 break;
 
             case 'disconnectFromRoom':
                 $this->disconnectUserFromRoom($socket, $data);
-                
+
                 break;
 
             case 'createRoom':
@@ -209,13 +209,13 @@ class ChatService extends Server implements Service
                 ))));
         }
     }
-    
+
     /*=====  End of Public methods  ======*/
 
     /*=======================================
     =            Private methods            =
     =======================================*/
-    
+
     /**
      * Create a chat room by an authenticated user request
      *
@@ -395,7 +395,7 @@ class ChatService extends Server implements Service
             $response,
             array(
                 'service' => $this->chatService,
-                'action'  => 'connect',
+                'action'  => 'connectRoom',
                 'success' => $success,
                 'text'    => $message
             )
@@ -500,7 +500,7 @@ class ChatService extends Server implements Service
         } else {
             $success  = true;
             $lastPart = $this->getLastPartNumber($roomName);
-            
+
             if ($lastPart < $part) {
                 $message = _('There is no more conversation historic for this chat');
             } else {
@@ -1402,6 +1402,6 @@ class ChatService extends Server implements Service
         $this->send($serverSocket, Ini::getParam('Socket', 'serviceKey') . $message);
         fclose($serverSocket);
     }
-    
+
     /*=====  End of Private methods  ======*/
 }

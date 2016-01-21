@@ -5,9 +5,10 @@
  * @exports lib/vendors/jquery-2.1.4
  */
 
-/*global define*/
-
-define(['jquery', 'domReady!'], function ($) {
+define([
+    'jquery',
+    'domReady!'
+], function ($) {
     'use strict';
 
     /**
@@ -15,14 +16,12 @@ define(['jquery', 'domReady!'], function ($) {
      *
      * @constructor
      * @alias       module:lib/forms
-     * @param       {Message} Message  A Message object to output message in the IHM
-     * @param       {object}  settings Overriden settings
+     * @param       {Object}  settings Overriden settings
      */
-    var FormsManager = function (Message, settings) {
-        this.settings = $.extend(true, {}, this.settings, settings);
-        this.message  = Message;
-        this.initEvents();
-    };
+    var FormsManager = function (settings) {
+            this.settings = $.extend(true, {}, this.settings, settings);
+            this.initEvents();
+        };
 
     FormsManager.prototype = {
         /**
@@ -46,10 +45,6 @@ define(['jquery', 'domReady!'], function ($) {
          * Callbacks methods to process users input on user sumbit action
          */
         "jsCallbacks": {},
-        /**
-         * A Message object to output message in the IHM
-         */
-        "message": {},
 
         /**
          * Bind events on all form
@@ -106,9 +101,9 @@ define(['jquery', 'domReady!'], function ($) {
         /**
          * Processing method on server success response
          *
-         * @param {object} form The jQuery DOM form element
-         * @param {string} url  The URL called to send the user data
-         * @param {object} data The server JSON reponse
+         * @param {Object} form The jQuery DOM form element
+         * @param {String} url  The URL called to send the user data
+         * @param {Object} data The server JSON reponse
          */
         onSuccess: function (form, url, data) {
             if (this.callbacks.onSuccess[url] && typeof this.callbacks.onSuccess[url].callback === 'function') {
@@ -119,9 +114,9 @@ define(['jquery', 'domReady!'], function ($) {
         /**
          * Processing method on server fail response
          *
-         * @param {object} form The jQuery DOM form element
-         * @param {string} url  The URL called to send the user data
-         * @param {object} data The server JSON reponse
+         * @param {Object} form The jQuery DOM form element
+         * @param {String} url  The URL called to send the user data
+         * @param {Object} data The server JSON reponse
          */
         onFail: function (form, url, data) {
             if (this.callbacks.onFail[url] && typeof this.callbacks.onFail[url].callback === 'function') {
@@ -132,9 +127,9 @@ define(['jquery', 'domReady!'], function ($) {
         /**
          * Processing method on XHR error
          *
-         * @param {object} form  The jQuery DOM form element
-         * @param {string} url   The URL called to send the user data
-         * @param {object} jqXHR The jQuery jqXHR object
+         * @param {Object} form  The jQuery DOM form element
+         * @param {String} url   The URL called to send the user data
+         * @param {Object} jqXHR The jQuery jqXHR object
          */
         onRequestFail: function (form, url, jqXHR) {
             if (this.callbacks.onRequestFail[url] && typeof this.callbacks.onRequestFail[url].callback === 'function') {
@@ -145,9 +140,9 @@ define(['jquery', 'domReady!'], function ($) {
         /**
          * Processing method on sumbit event
          *
-         * @param {object} form          The jQuery DOM form element
-         * @param {string} callbackName  The callback function name
-         * @param {object} inputs        The user inputs as object
+         * @param {Object} form          The jQuery DOM form element
+         * @param {String} callbackName  The callback function name
+         * @param {Object} inputs        The user inputs as object
          */
         onJsCallback: function (form, callbackName, inputs) {
             if (this.jsCallbacks[callbackName] && typeof this.jsCallbacks[callbackName].callback === 'function') {
@@ -165,9 +160,9 @@ define(['jquery', 'domReady!'], function ($) {
          *
          * Example: function callback(form, data) { ... }
          *
-         * @param {string}   url      The URL called to send the user data
-         * @param {function} callback The callback function
-         * @param {object}   context  The callback context
+         * @param {String}   url      The URL called to send the user data
+         * @param {Function} callback The callback function
+         * @param {Object}   context  The callback context
          */
         addOnSuccessCallback: function (url, callback, context) {
             this.callbacks.onSuccess[url] = {
@@ -186,9 +181,9 @@ define(['jquery', 'domReady!'], function ($) {
          *
          * Example: function callback(form, data) { ... }
          *
-         * @param {string}   url      The URL called to send the user data
-         * @param {function} callback The callback function
-         * @param {object}   context  The callback context
+         * @param {String}   url      The URL called to send the user data
+         * @param {Function} callback The callback function
+         * @param {Object}   context  The callback context
          */
         addOnFailCallback: function (url, callback, context) {
             this.callbacks.onFail[url] = {
@@ -207,9 +202,9 @@ define(['jquery', 'domReady!'], function ($) {
          *
          * Example: function callback(form, jqXHR) { ... }
          *
-         * @param {string}   url      The URL called to send the user data
-         * @param {function} callback The callback function
-         * @param {object}   context  The callback context
+         * @param {String}   url      The URL called to send the user data
+         * @param {Function} callback The callback function
+         * @param {Object}   context  The callback context
          */
         addOnRequestFailCallback: function (url, callback, context) {
             this.callbacks.onRequestFail[url] = {
@@ -228,9 +223,9 @@ define(['jquery', 'domReady!'], function ($) {
          *
          * Example: function callback(form, inputs) { ... }
          *
-         * @param {string}   callbackName The callback function name
-         * @param {function} callback     The callback function
-         * @param {object}   context      The callback context
+         * @param {String}   callbackName The callback function name
+         * @param {Function} callback     The callback function
+         * @param {Object}   context      The callback context
          */
         addJsCallback: function (callbackName, callback, context) {
             this.jsCallbacks[callbackName] = {
