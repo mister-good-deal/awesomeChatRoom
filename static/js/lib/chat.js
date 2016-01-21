@@ -32,14 +32,11 @@ define([
             this.websocket = WebSocket;
             this.user      = User;
             this.initEvents();
-
             // Add websocket callbacks
             this.websocket.addCallback(this.settings.serviceName, this.chatCallback, this);
-
             // Add forms callback
             Forms.addJsCallback('setReasonCallbackEvent', this.setReasonCallbackEvent, this);
             Forms.addJsCallback('setRoomInfoCallbackEvent', this.setRoomInfoCallbackEvent, this);
-
             // Enable selectpicker and load rooms
             $(document).ready(function () {
                 $(self.settings.selectors.roomConnect.div + ' ' + self.settings.selectors.roomConnect.name)
@@ -59,12 +56,12 @@ define([
          * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
          */
         "settings": {
-            "users"            : [],
-            "serviceName"      : module.config().serviceName,
-            "maxUsers"         : module.config().maxUsers,
-            "animationTime"    : module.config().animationTime,
-            "selectors"        : {
-                "global": {
+            "users"         : [],
+            "serviceName"   : module.config().serviceName,
+            "maxUsers"      : module.config().maxUsers,
+            "animationTime" : module.config().animationTime,
+            "selectors"     : {
+                "global"             : {
                     "chat"              : module.config().selectors.global.chat,
                     "room"              : module.config().selectors.global.room,
                     "roomName"          : module.config().selectors.global.roomName,
@@ -77,7 +74,7 @@ define([
                     "roomFullscreen"    : module.config().selectors.global.roomFullscreen,
                     "roomMessagesUnread": module.config().selectors.global.roomMessagesUnread
                 },
-                "roomConnect": {
+                "roomConnect"        : {
                     "div"         : module.config().selectors.roomConnect.div,
                     "name"        : module.config().selectors.roomConnect.name,
                     "publicRooms" : module.config().selectors.roomConnect.publicRooms,
@@ -86,7 +83,7 @@ define([
                     "password"    : module.config().selectors.roomConnect.password,
                     "connect"     : module.config().selectors.roomConnect.connect
                 },
-                "roomCreation": {
+                "roomCreation"       : {
                     "div"     : module.config().selectors.roomCreation.div,
                     "name"    : module.config().selectors.roomCreation.name,
                     "type"    : module.config().selectors.roomCreation.type,
@@ -94,20 +91,20 @@ define([
                     "maxUsers": module.config().selectors.roomCreation.maxUsers,
                     "create"  : module.config().selectors.roomCreation.create
                 },
-                "roomSend": {
+                "roomSend"           : {
                     "div"      : module.config().selectors.roomSend.div,
                     "message"  : module.config().selectors.roomSend.message,
                     "recievers": module.config().selectors.roomSend.recievers,
                     "usersList": module.config().selectors.roomSend.usersList,
                     "send"     : module.config().selectors.roomSend.send
                 },
-                "roomAction": {
+                "roomAction"         : {
                     "loadHistoric"  : module.config().selectors.roomAction.loadHistoric,
                     "kickUser"      : module.config().selectors.roomAction.kickUser,
                     "showUsers"     : module.config().selectors.roomAction.showUsers,
                     "administration": module.config().selectors.roomAction.administration
                 },
-                "chat": {
+                "chat"               : {
                     "message"  : module.config().selectors.chat.message,
                     "pseudonym": module.config().selectors.chat.pseudonym,
                     "date"     : module.config().selectors.chat.date,
@@ -133,7 +130,7 @@ define([
                     "inputRoomPassword": module.config().selectors.administrationPanel.inputRoomPassword,
                     "inputRoomName"    : module.config().selectors.administrationPanel.inputRoomName
                 },
-                "alertInputsChoice": {
+                "alertInputsChoice"  : {
                     "div"   : module.config().selectors.alertInputsChoice.div,
                     "submit": module.config().selectors.alertInputsChoice.submit
                 }
@@ -355,7 +352,9 @@ define([
                 .next(this.settings.selectors.global.roomContents)
                 .slideUp(this.settings.animationTime);
 
-            this.isRoomOpened[$(e.currentTarget).closest(this.settings.selectors.global.room).attr('data-name')] = false;
+            this.isRoomOpened[
+                $(e.currentTarget).closest(this.settings.selectors.global.room).attr('data-name')
+            ] = false;
         },
 
         /**
@@ -513,7 +512,8 @@ define([
         setAministrationPanelEvent: function (e) {
             var modal = $(e.currentTarget);
 
-            modal.find(this.settings.selectors.administrationPanel.rights + ' input[type="checkbox"]').bootstrapSwitch();
+            modal.find(this.settings.selectors.administrationPanel.rights + ' input[type="checkbox"]')
+                .bootstrapSwitch();
         },
 
         /**
@@ -863,7 +863,6 @@ define([
                 usersList = room.attr('data-users').split(',');
                 room.attr('data-users', _(data.pseudonyms).toString());
                 this.updateUsersDropdown(room, data.pseudonyms);
-
                 // Update the administration panel
                 if (this.user.connected) {
                     newPseudonyms = _.difference(data.pseudonyms, usersList);
@@ -1157,14 +1156,13 @@ define([
 
                 this.updateUsersDropdown(newRoom, data.pseudonyms);
                 this.loadHistoric(newRoomChat, data.historic);
-                this.mouseInRoomChat[data.roomName]        = false;
-                this.isRoomOpened[data.roomName]           = true;
-                this.messagesHistory[data.roomName]        = [];
+                this.mouseInRoomChat[data.roomName] = false;
+                this.isRoomOpened[data.roomName] = true;
+                this.messagesHistory[data.roomName] = [];
                 this.messagesHistoryPointer[data.roomName] = 0;
-                this.messagesCurrent[data.roomName]        = '';
+                this.messagesCurrent[data.roomName] = '';
 
                 $(this.settings.selectors.global.chat).append(newRoom);
-
                 // Modal room chat administration creation if the user is registered
                 if (data.usersRights !== undefined) {
                     modalSample = $(this.settings.selectors.administrationPanel.modalSample);
@@ -1292,13 +1290,12 @@ define([
                 roomName  = modal.attr('data-room-name'),
                 room      = $(this.settings.selectors.global.room + '[data-name="' + roomName + '"]'),
                 newLines  = [],
-                self      = this;
+                self = this;
 
             if (room.length > 0) {
                 _.forEach(room.attr('data-users').split(','), function (pseudonym) {
                     newLines.push(self.getUserRightLine(modal, pseudonym, usersRights[pseudonym]));
                 });
-
                 // Clean and insert lines
                 usersList.find('tr').not(trSample).remove();
                 trSample.last().after(newLines);
@@ -1329,7 +1326,7 @@ define([
 
             newLine.each(function () {
                 if ($(this).hasClass(self.settings.selectors.administrationPanel.rights.substr(1))) {
-                    input     = $(this).find('input');
+                    input = $(this).find('input');
                     rightName = input.attr('name');
 
                     $(this).addClass(refer);
@@ -1381,7 +1378,6 @@ define([
                 newLine.find(self.settings.selectors.administrationPanel.date).text(bannedInfo.date);
                 newLines.push(newLine);
             });
-
             // Clean and insert lines
             bannedList.find('tr').not(trSample).remove();
             trSample.last().after(newLines);

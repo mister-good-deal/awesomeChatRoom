@@ -18,7 +18,7 @@ define([
      * @param       {Object} settings Overriden settings
      */
     var Message = function (settings) {
-        this.settings  = $.extend(true, {}, this.settings, settings);
+        this.settings = $.extend(true, {}, this.settings, settings);
         this.initEvents();
     };
 
@@ -27,14 +27,14 @@ define([
          * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
          */
         "settings": {
-            "alert": {
+            "alert"       : {
                 "divId"          : module.config().alert.divId,
                 "dismissClass"   : module.config().alert.dismissClass,
                 "defaultDuration": module.config().alert.defaultDuration,
                 "queue"          : [],
                 "lock"           : false
             },
-            "popup": {
+            "popup"       : {
                 "divId"          : module.config().popup.divId,
                 "dismissClass"   : module.config().popup.dismissClass,
                 "defaultDuration": module.config().popup.defaultDuration,
@@ -83,7 +83,7 @@ define([
          */
         alert: function (message) {
             this.settings.alert.lock = true;
-            // var alert = $('#' + this.settings.alert.divId);
+            // Var alert = $('#' + this.settings.alert.divId);
             console.log('alert', message);
         },
 
@@ -143,10 +143,10 @@ define([
         /**
          * Add a message in a specific queue to display it
          *
-         * @param {String}  text     The message text to display
-         * @param {String}  type     The message type ("alert", "popup", "notification")
-         * @param {String}  level    The message level ("danger", "warning", "info", "success")
-         * @param {String}  title    The message title
+         * @param {String} text     The message text to display
+         * @param {String} type     The message type ("alert", "popup", "notification")
+         * @param {String} level    The message level ("danger", "warning", "info", "success")
+         * @param {String} title    The message title
          * @param {Number} duration The message maximum duration before dismiss (-1 for infinite)
          */
         add: function (text, type, level, title, duration) {
@@ -156,8 +156,8 @@ define([
 
             this.settings[type].queue.push({
                 "text"    : text,
-                "level"   : level    || this.settings.defaultLevel,
-                "title"   : title    || '',
+                "level"   : level || this.settings.defaultLevel,
+                "title"   : title || '',
                 "duration": duration || this.settings[type].defaultDuration
             });
 
@@ -184,14 +184,13 @@ define([
                 self;
 
             if (!this.settings[type].lock) {
-                message       = this.settings[type].queue.shift();
+                message = this.settings[type].queue.shift();
                 dismissMethod = type + 'Dismiss';
-                self          = this;
+                self = this;
 
                 if (message) {
                     // Call the specific method to output the message
                     this[type](message);
-
                     // Auto dismiss the message after message.duration seconds
                     setTimeout(function () {
                         self[dismissMethod]();
