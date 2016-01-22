@@ -117,7 +117,7 @@
         if (!file.jshint.success) {
             console.log('[FAIL] ' + file.path);
         } else {
-            console.log('[OK] ' + file.path);
+            console.log('[OK]   ' + file.path);
         }
 
         cb(null, file);
