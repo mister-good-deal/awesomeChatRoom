@@ -6,6 +6,14 @@
 
 ## Features
 
+- No flash, only html 5 native technology
+- Shortcut copy / paste URL in a room to authorize a guest to join this room in one click
+- Random room to connect automatically with another user randomly with / without microphone and webcam
+- Thematic rooms
+- User account interface
+- Administraction interface
+- Small devices support for smartphones and tablet
+
 **As a guest user (pseudonym required only)**
 
 - Join public or private room
@@ -29,14 +37,6 @@
     - Change the maximum user authorized number in a room
     - Mute a user globally in a room
     - Disabled a user webcam globally in a room
-
-- No flash, only html 5 native technology
-- Shortcut copy / paste URL in a room to authorize a guest to join this room in one click
-- Random room to connect automatically with another user randomly with / without microphone and webcam
-- Thematic rooms
-- User account interface
-- Administraction interface
-- Small devices support for smartphones and tablet
 
 ### Evolution
 
