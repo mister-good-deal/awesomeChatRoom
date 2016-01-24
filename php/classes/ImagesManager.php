@@ -188,40 +188,40 @@ class ImagesManager
         $textHeight      = $textMetrics['textHeight'] + $extraTextHeight;
 
         switch ($position) {
-        case 'bottom-right':
-            $width  = $this->image->getImageWidth() - $textWidth;
-            $height = $this->image->getImageHeight() + $extraTextHeight;
-            $width  -= static::$EXTRA_TEXT_PADDING;
-            $height -= static::$EXTRA_TEXT_PADDING;
-            break;
+            case 'bottom-right':
+                $width  = $this->image->getImageWidth() - $textWidth;
+                $height = $this->image->getImageHeight() + $extraTextHeight;
+                $width  -= static::$EXTRA_TEXT_PADDING;
+                $height -= static::$EXTRA_TEXT_PADDING;
+                break;
 
-        case 'bottom-left':
-            $width  = 0;
-            $height = $this->image->getImageHeight() + $extraTextHeight;
-            $width  += static::$EXTRA_TEXT_PADDING;
-            $height -= static::$EXTRA_TEXT_PADDING;
-            break;
+            case 'bottom-left':
+                $width  = 0;
+                $height = $this->image->getImageHeight() + $extraTextHeight;
+                $width  += static::$EXTRA_TEXT_PADDING;
+                $height -= static::$EXTRA_TEXT_PADDING;
+                break;
 
-        case 'top-right':
-            $width  = $this->image->getImageWidth() - $textWidth;
-            $height = $textHeight;
-            $width  -= static::$EXTRA_TEXT_PADDING;
-            $height += static::$EXTRA_TEXT_PADDING;
-            break;
+            case 'top-right':
+                $width  = $this->image->getImageWidth() - $textWidth;
+                $height = $textHeight;
+                $width  -= static::$EXTRA_TEXT_PADDING;
+                $height += static::$EXTRA_TEXT_PADDING;
+                break;
 
-        case 'top-left':
-            $width  = 0;
-            $height = $textHeight;
-            $width  += static::$EXTRA_TEXT_PADDING;
-            $height += static::$EXTRA_TEXT_PADDING;
-            break;
+            case 'top-left':
+                $width  = 0;
+                $height = $textHeight;
+                $width  += static::$EXTRA_TEXT_PADDING;
+                $height += static::$EXTRA_TEXT_PADDING;
+                break;
             
-        default:
-            $width  = $this->image->getImageWidth() - $textWidth;
-            $height = $this->image->getImageHeight() + $extraTextHeight;
-            $width  -= static::$EXTRA_TEXT_PADDING;
-            $height -= static::$EXTRA_TEXT_PADDING;
-            break;
+            default:
+                $width  = $this->image->getImageWidth() - $textWidth;
+                $height = $this->image->getImageHeight() + $extraTextHeight;
+                $width  -= static::$EXTRA_TEXT_PADDING;
+                $height -= static::$EXTRA_TEXT_PADDING;
+                break;
         }
 
         $this->image->annotateImage($draw, $width, $height, 0, $text);

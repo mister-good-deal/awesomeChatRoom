@@ -39,22 +39,22 @@ trait EchoTrait
         }
 
         switch ($environment) {
-        case 'console':
-            echo mb_convert_encoding($output, static::$echoEncoding);
+            case 'console':
+                echo mb_convert_encoding($output, static::$echoEncoding);
 
-            break;
+                break;
 
-        case 'web':
-            foreach (preg_split('/' . PHP_EOL . '/', ConsoleColors::unsetColor($output)) as $line) {
-                Console::log($line);
-            }
+            case 'web':
+                foreach (preg_split('/' . PHP_EOL . '/', ConsoleColors::unsetColor($output)) as $line) {
+                    Console::log($line);
+                }
 
-            break;
+                break;
             
-        default:
-            echo $output;
+            default:
+                echo $output;
 
-            break;
+                break;
         }
     }
 

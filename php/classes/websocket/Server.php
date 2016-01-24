@@ -187,24 +187,24 @@ class Server
     protected function encode($message, $messageType = 'text')
     {
         switch ($messageType) {
-        case 'continuous':
-            $b1 = 0;
-            break;
-        case 'text':
-            $b1 = 1;
-            break;
-        case 'binary':
-            $b1 = 2;
-            break;
-        case 'close':
-            $b1 = 8;
-            break;
-        case 'ping':
-            $b1 = 9;
-            break;
-        case 'pong':
-            $b1 = 10;
-            break;
+            case 'continuous':
+                $b1 = 0;
+                break;
+            case 'text':
+                $b1 = 1;
+                break;
+            case 'binary':
+                $b1 = 2;
+                break;
+            case 'close':
+                $b1 = 8;
+                break;
+            case 'ping':
+                $b1 = 9;
+                break;
+            case 'pong':
+                $b1 = 10;
+                break;
         }
         
         $b1 += 128;
@@ -352,7 +352,8 @@ class Server
                                 call_user_func_array($this->services[$serviceName], array($socket, $data));
                             } else {
                                 $this->send(
-                                    $socket, $this->encode(
+                                    $socket,
+                                    $this->encode(
                                         json_encode(
                                             array(
                                             'service' => $this->notificationService,

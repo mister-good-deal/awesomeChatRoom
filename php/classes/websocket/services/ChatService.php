@@ -140,79 +140,80 @@ class ChatService extends Server implements Service
     public function service($socket, $data)
     {
         switch ($data['action']) {
-        case $this->serverKey . 'disconnect':
-            // Action called by the server
-            $this->disconnectUser($data['clientSocket']);
+            case $this->serverKey . 'disconnect':
+                // Action called by the server
+                $this->disconnectUser($data['clientSocket']);
 
-            break;
+                break;
 
-        case 'sendMessage':
-            $this->sendMessage($socket, $data);
+            case 'sendMessage':
+                $this->sendMessage($socket, $data);
 
-            break;
+                break;
 
-        case 'connectRoom':
-            $this->connectUser($socket, $data);
+            case 'connectRoom':
+                $this->connectUser($socket, $data);
 
-            break;
+                break;
 
-        case 'disconnect':
-            $this->disconnectUser($socket);
+            case 'disconnect':
+                $this->disconnectUser($socket);
 
-            break;
+                break;
 
-        case 'disconnectFromRoom':
-            $this->disconnectUserFromRoom($socket, $data);
+            case 'disconnectFromRoom':
+                $this->disconnectUserFromRoom($socket, $data);
 
-            break;
+                break;
 
-        case 'createRoom':
-            $this->createRoom($socket, $data);
+            case 'createRoom':
+                $this->createRoom($socket, $data);
 
-            break;
+                break;
 
-        case 'getHistoric':
-            $this->getHistoric($socket, $data);
+            case 'getHistoric':
+                $this->getHistoric($socket, $data);
 
-            break;
+                break;
 
-        case 'kickUser':
-            $this->kickUser($socket, $data);
+            case 'kickUser':
+                $this->kickUser($socket, $data);
 
-            break;
+                break;
 
-        case 'banUser':
-            $this->banUser($socket, $data);
+            case 'banUser':
+                $this->banUser($socket, $data);
 
-            break;
+                break;
 
-        case 'updateRoomUserRight':
-            $this->updateRoomUserRight($socket, $data);
+            case 'updateRoomUserRight':
+                $this->updateRoomUserRight($socket, $data);
 
-            break;
+                break;
 
-        case 'setRoomInfo':
-            $this->setRoomInfo($socket, $data);
+            case 'setRoomInfo':
+                $this->setRoomInfo($socket, $data);
 
-            break;
+                break;
 
-        case 'getRoomsInfo':
-            $this->getRoomsInfo($socket, $data);
+            case 'getRoomsInfo':
+                $this->getRoomsInfo($socket, $data);
 
-            break;
+                break;
 
-        default:
-            $this->send(
-                $socket, $this->encode(
-                    json_encode(
-                        array(
+            default:
+                $this->send(
+                    $socket,
+                    $this->encode(
+                        json_encode(
+                            array(
                             'service' => $this->chatService,
                             'success' => false,
                             'text'    => _('Unknown action')
                             )
+                        )
                     )
-                )
-            );
+                );
         }
     }
 
@@ -300,7 +301,8 @@ class ChatService extends Server implements Service
         }
 
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array(
                     'service'  => $this->chatService,
@@ -406,7 +408,8 @@ class ChatService extends Server implements Service
         }
 
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array_merge(
                         $response,
@@ -486,7 +489,8 @@ class ChatService extends Server implements Service
         }
 
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array_merge(
                         $response,
@@ -540,7 +544,8 @@ class ChatService extends Server implements Service
         }
 
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array(
                     'service'  => $this->chatService,
@@ -592,7 +597,8 @@ class ChatService extends Server implements Service
                     $adminPseudonym = $this->rooms[$roomName]['pseudonyms'][$this->getClientName($socket)];
 
                     $this->send(
-                        $this->rooms[$roomName]['sockets'][$userHash], $this->encode(
+                        $this->rooms[$roomName]['sockets'][$userHash],
+                        $this->encode(
                             json_encode(
                                 array(
                                 'service'  => $this->chatService,
@@ -625,7 +631,8 @@ class ChatService extends Server implements Service
         }
 
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array(
                     'service'  => $this->chatService,
@@ -686,7 +693,8 @@ class ChatService extends Server implements Service
                     );
 
                     $this->send(
-                        $userSocket, $this->encode(
+                        $userSocket,
+                        $this->encode(
                             json_encode(
                                 array(
                                 'service'  => $this->chatService,
@@ -728,7 +736,8 @@ class ChatService extends Server implements Service
         }
 
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array(
                     'service'  => $this->chatService,
@@ -805,7 +814,8 @@ class ChatService extends Server implements Service
         }
 
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array(
                     'service'  => $this->chatService,
@@ -911,7 +921,8 @@ class ChatService extends Server implements Service
 
             foreach ($this->rooms[$newRoomName]['sockets'] as $userSocket) {
                 $this->send(
-                    $userSocket, $this->encode(
+                    $userSocket,
+                    $this->encode(
                         json_encode(
                             array(
                             'service'         => $this->chatService,
@@ -933,7 +944,8 @@ class ChatService extends Server implements Service
         }
 
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array(
                     'service'         => $this->chatService,
@@ -977,7 +989,8 @@ class ChatService extends Server implements Service
         }
 
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array(
                     'service'   => $this->chatService,
@@ -998,7 +1011,8 @@ class ChatService extends Server implements Service
     private function updateRoomUsers($socket, $roomName)
     {
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array(
                     'service'    => $this->chatService,
@@ -1020,7 +1034,8 @@ class ChatService extends Server implements Service
     private function updateRoomUsersRights($socket, $roomName)
     {
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array(
                     'service'     => $this->chatService,
@@ -1042,7 +1057,8 @@ class ChatService extends Server implements Service
     private function updateRoomUsersBanned($socket, $roomName)
     {
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array(
                     'service'     => $this->chatService,
@@ -1131,7 +1147,8 @@ class ChatService extends Server implements Service
         }
 
         $this->send(
-            $socket, $this->encode(
+            $socket,
+            $this->encode(
                 json_encode(
                     array(
                     'service'  => $this->chatService,
@@ -1269,7 +1286,8 @@ class ChatService extends Server implements Service
         }
 
         $this->send(
-            $socketTo, $this->encode(
+            $socketTo,
+            $this->encode(
                 json_encode(
                     array(
                     'service'   => $this->chatService,
@@ -1370,7 +1388,8 @@ class ChatService extends Server implements Service
             file_get_contents(
                 stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR .$roomName) .
                 DIRECTORY_SEPARATOR . 'room.json'
-            ), true
+            ),
+            true
         );
     }
 
@@ -1457,7 +1476,8 @@ class ChatService extends Server implements Service
             @file_get_contents(
                 stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR . $roomName) .
                 DIRECTORY_SEPARATOR . 'historic-part-' . $part . '.json'
-            ), true
+            ),
+            true
         );
     }
 

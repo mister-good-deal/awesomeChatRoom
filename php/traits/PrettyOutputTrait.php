@@ -95,37 +95,37 @@ trait PrettyOutputTrait
     public function formatVariable($variable, $depth = 1)
     {
         switch (gettype($variable)) {
-        case 'array':
-            $argumentFormatted = $this->prettyArray($variable, $depth);
-            break;
+            case 'array':
+                $argumentFormatted = $this->prettyArray($variable, $depth);
+                break;
 
-        case 'object':
-            $argumentFormatted = 'object::' . get_class($variable);
-            break;
+            case 'object':
+                $argumentFormatted = 'object::' . get_class($variable);
+                break;
 
-        case 'resource':
-            $argumentFormatted = 'resource::' . get_resource_type($variable);
-            break;
+            case 'resource':
+                $argumentFormatted = 'resource::' . get_resource_type($variable);
+                break;
 
-        case 'boolean':
-            $argumentFormatted = $variable ? 'true' : 'false';
-            break;
+            case 'boolean':
+                $argumentFormatted = $variable ? 'true' : 'false';
+                break;
 
-        case 'integer':
-            $argumentFormatted = (int) $variable;
-            break;
+            case 'integer':
+                $argumentFormatted = (int) $variable;
+                break;
 
-        case 'string':
-            $argumentFormatted = '"' . $variable . '"';
-            break;
+            case 'string':
+                $argumentFormatted = '"' . $variable . '"';
+                break;
 
-        case 'NULL':
-            $argumentFormatted = 'null';
-            break;
+            case 'NULL':
+                $argumentFormatted = 'null';
+                break;
 
-        default:
-            $argumentFormatted = $variable;
-            break;
+            default:
+                $argumentFormatted = $variable;
+                break;
         }
 
         return $argumentFormatted;

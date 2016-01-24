@@ -168,55 +168,55 @@ class User extends Entity
         }
 
         switch ($columnName) {
-        case 'lastName':
-            $value = ucwords(strtolower($value));
-            $value = preg_replace('/ ( )*/', ' ', $value);
+            case 'lastName':
+                $value = ucwords(strtolower($value));
+                $value = preg_replace('/ ( )*/', ' ', $value);
 
-            break;
+                break;
 
-        case 'firstName':
-            $value = ucfirst(strtolower($value));
-            $value = preg_replace('/ ( )*(.)?/', '-' . strtoupper('$2'), $value);
+            case 'firstName':
+                $value = ucfirst(strtolower($value));
+                $value = preg_replace('/ ( )*(.)?/', '-' . strtoupper('$2'), $value);
 
-            break;
+                break;
 
-        case 'pseudonym':
-            if (in_array(strtolower($value), static::$pseudoBlackList)) {
-                $this->errors[$columnName][] = _('The pseudonym "' . $value . '" is not accepted');
-            }
-
-            foreach (static::$forbiddenPseudoCharacters as $forbiddenPseudoCharacter) {
-                if (strpos($value, $forbiddenPseudoCharacter) !== false) {
-                    $this->errors[$columnName][] = _(
-                        'The character "' . $forbiddenPseudoCharacter . '" is not accepted in pseudonyms'
-                    );
+            case 'pseudonym':
+                if (in_array(strtolower($value), static::$pseudoBlackList)) {
+                    $this->errors[$columnName][] = _('The pseudonym "' . $value . '" is not accepted');
                 }
-            }
 
-            if ($value === '') {
-                $value = null;
-            }
+                foreach (static::$forbiddenPseudoCharacters as $forbiddenPseudoCharacter) {
+                    if (strpos($value, $forbiddenPseudoCharacter) !== false) {
+                        $this->errors[$columnName][] = _(
+                            'The character "' . $forbiddenPseudoCharacter . '" is not accepted in pseudonyms'
+                        );
+                    }
+                }
 
-            break;
+                if ($value === '') {
+                    $value = null;
+                }
 
-        case 'email':
-            if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
-                $this->errors[$columnName][] = _('This is not a valid email address');
-            }
+                break;
 
-            break;
+            case 'email':
+                if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
+                    $this->errors[$columnName][] = _('This is not a valid email address');
+                }
 
-        case 'password':
-            Ini::setIniFileName(Ini::INI_CONF_FILE);
-            $minPasswordLength = Ini::getParam('User', 'minPasswordLength');
+                break;
 
-            if ($length < $minPasswordLength) {
-                $this->errors[$columnName][] = _('The password length must be at least ' . $minPasswordLength);
-            }
+            case 'password':
+                Ini::setIniFileName(Ini::INI_CONF_FILE);
+                $minPasswordLength = Ini::getParam('User', 'minPasswordLength');
 
-            $value = crypt($value, Ini::getParam('User', 'passwordCryptSalt'));
+                if ($length < $minPasswordLength) {
+                    $this->errors[$columnName][] = _('The password length must be at least ' . $minPasswordLength);
+                }
 
-            break;
+                $value = crypt($value, Ini::getParam('User', 'passwordCryptSalt'));
+
+                break;
         }
 
         if (count($this->errors[$columnName]) === 0) {

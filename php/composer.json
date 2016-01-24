@@ -1,6 +1,6 @@
 {
     "require-dev": {
         "phpdocumentor/phpdocumentor": "2.8.5",
-        "squizlabs/php_codesniffer": "2.*"
+        "squizlabs/php_codesniffer": "*"
     }
 }
