@@ -121,7 +121,7 @@ class User extends Entity
     /**
      * Bind user inputs to set User class attributes with inputs check
      *
-     * @param  array $inputs The user inputs
+     * @param array $inputs The user inputs
      */
     public function bindInputs($inputs)
     {
@@ -168,55 +168,55 @@ class User extends Entity
         }
 
         switch ($columnName) {
-            case 'lastName':
-                $value = ucwords(strtolower($value));
-                $value = preg_replace('/ ( )*/', ' ', $value);
+        case 'lastName':
+            $value = ucwords(strtolower($value));
+            $value = preg_replace('/ ( )*/', ' ', $value);
 
-                break;
+            break;
 
-            case 'firstName':
-                $value = ucfirst(strtolower($value));
-                $value = preg_replace('/ ( )*(.)?/', '-' . strtoupper('$2'), $value);
+        case 'firstName':
+            $value = ucfirst(strtolower($value));
+            $value = preg_replace('/ ( )*(.)?/', '-' . strtoupper('$2'), $value);
 
-                break;
+            break;
 
-            case 'pseudonym':
-                if (in_array(strtolower($value), static::$pseudoBlackList)) {
-                    $this->errors[$columnName][] = _('The pseudonym "' . $value . '" is not accepted');
+        case 'pseudonym':
+            if (in_array(strtolower($value), static::$pseudoBlackList)) {
+                $this->errors[$columnName][] = _('The pseudonym "' . $value . '" is not accepted');
+            }
+
+            foreach (static::$forbiddenPseudoCharacters as $forbiddenPseudoCharacter) {
+                if (strpos($value, $forbiddenPseudoCharacter) !== false) {
+                    $this->errors[$columnName][] = _(
+                        'The character "' . $forbiddenPseudoCharacter . '" is not accepted in pseudonyms'
+                    );
                 }
+            }
 
-                foreach (static::$forbiddenPseudoCharacters as $forbiddenPseudoCharacter) {
-                    if (strpos($value, $forbiddenPseudoCharacter) !== false) {
-                        $this->errors[$columnName][] = _(
-                            'The character "' . $forbiddenPseudoCharacter . '" is not accepted in pseudonyms'
-                        );
-                    }
-                }
+            if ($value === '') {
+                $value = null;
+            }
 
-                if ($value === '') {
-                    $value = null;
-                }
+            break;
 
-                break;
+        case 'email':
+            if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
+                $this->errors[$columnName][] = _('This is not a valid email address');
+            }
 
-            case 'email':
-                if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
-                    $this->errors[$columnName][] = _('This is not a valid email address');
-                }
+            break;
 
-                break;
+        case 'password':
+            Ini::setIniFileName(Ini::INI_CONF_FILE);
+            $minPasswordLength = Ini::getParam('User', 'minPasswordLength');
 
-            case 'password':
-                Ini::setIniFileName(Ini::INI_CONF_FILE);
-                $minPasswordLength = Ini::getParam('User', 'minPasswordLength');
+            if ($length < $minPasswordLength) {
+                $this->errors[$columnName][] = _('The password length must be at least ' . $minPasswordLength);
+            }
 
-                if ($length < $minPasswordLength) {
-                    $this->errors[$columnName][] = _('The password length must be at least ' . $minPasswordLength);
-                }
+            $value = crypt($value, Ini::getParam('User', 'passwordCryptSalt'));
 
-                $value = crypt($value, Ini::getParam('User', 'passwordCryptSalt'));
-
-                break;
+            break;
         }
 
         if (count($this->errors[$columnName]) === 0) {

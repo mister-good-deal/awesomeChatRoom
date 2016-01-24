@@ -146,23 +146,23 @@ abstract class API
         }
 
         switch ($this->method) {
-            case 'DELETE':
-            case 'POST':
-                $this->request = $_POST;
-                break;
+        case 'DELETE':
+        case 'POST':
+            $this->request = $_POST;
+            break;
 
-            case 'GET':
-                $this->request = $_GET;
-                break;
+        case 'GET':
+            $this->request = $_GET;
+            break;
 
-            case 'PUT':
-                $this->request = $_GET;
-                $this->file = file_get_contents('php://input');
-                break;
+        case 'PUT':
+            $this->request = $_GET;
+            $this->file = file_get_contents('php://input');
+            break;
 
-            default:
-                $this->response(400);
-                break;
+        default:
+            $this->response(400);
+            break;
         }
     }
 

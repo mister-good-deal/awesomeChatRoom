@@ -152,64 +152,64 @@ GODDBYE;
         static::out(PHP_EOL);
 
         switch (rtrim($commandName[0])) {
-            case 'exit':
-                $exit = true;
-                static::out(
-                    $this->colors->getColoredString(static::GODDBYE, ConsoleColors::LIGHT_RED_F, ConsoleColors::GREEN)
-                    . PHP_EOL
-                );
-                break;
+        case 'exit':
+            $exit = true;
+            static::out(
+                $this->colors->getColoredString(static::GODDBYE, ConsoleColors::LIGHT_RED_F, ConsoleColors::GREEN)
+                . PHP_EOL
+            );
+            break;
 
-            case 'last cmd':
-                static::out('The last cmd was: ' . $this->getLastCommand() . PHP_EOL);
-                break;
+        case 'last cmd':
+            static::out('The last cmd was: ' . $this->getLastCommand() . PHP_EOL);
+            break;
 
-            case 'all cmd':
-                static::out('Commands historic:' . $this->tablePrettyPrint($this->commandsHistoric) . PHP_EOL);
-                break;
+        case 'all cmd':
+            static::out('Commands historic:' . $this->tablePrettyPrint($this->commandsHistoric) . PHP_EOL);
+            break;
 
-            case 'tables':
-                static::out('Tables name: ' . PHP_EOL . $this->tablePrettyPrint(DB::getAllTables()) . PHP_EOL);
-                break;
+        case 'tables':
+            static::out('Tables name: ' . PHP_EOL . $this->tablePrettyPrint(DB::getAllTables()) . PHP_EOL);
+            break;
 
-            case 'entities':
-                static::out('Tables name: ' . PHP_EOL . $this->tablePrettyPrint(DB::getAllEntites()) . PHP_EOL);
-                break;
+        case 'entities':
+            static::out('Tables name: ' . PHP_EOL . $this->tablePrettyPrint(DB::getAllEntites()) . PHP_EOL);
+            break;
 
-            case 'entity':
-                $this->entityProcess($command);
-                break;
+        case 'entity':
+            $this->entityProcess($command);
+            break;
 
-            case 'clean':
-                $this->cleanTable($command);
-                break;
+        case 'clean':
+            $this->cleanTable($command);
+            break;
 
-            case 'drop':
-                $this->dropTable($command);
-                break;
+        case 'drop':
+            $this->dropTable($command);
+            break;
 
-            case 'show':
-                $this->showTable($command);
-                break;
+        case 'show':
+            $this->showTable($command);
+            break;
 
-            case 'desc':
-                $this->descTable($command);
-                break;
+        case 'desc':
+            $this->descTable($command);
+            break;
 
-            case 'create all':
-                $this->createAllTables();
-                break;
+        case 'create all':
+            $this->createAllTables();
+            break;
 
-            case 'help':
-                static::out('List of all commands' . PHP_EOL . $this->tableAssociativPrettyPrint(static::$COMMANDS));
-                break;
+        case 'help':
+            static::out('List of all commands' . PHP_EOL . $this->tableAssociativPrettyPrint(static::$COMMANDS));
+            break;
 
-            default:
-                static::out(
-                    'The command : "' . $command
-                    . '" is not recognized as a command, type help to display all the commands' . PHP_EOL
-                );
-                break;
+        default:
+            static::out(
+                'The command : "' . $command
+                . '" is not recognized as a command, type help to display all the commands' . PHP_EOL
+            );
+            break;
         }
 
         static::out(PHP_EOL);
@@ -226,7 +226,7 @@ GODDBYE;
     /**
      * Process the command called on the entity
      *
-     * @param  string $command The command passed with its arguments
+     * @param string $command The command passed with its arguments
      */
     private function entityProcess($command)
     {
@@ -470,7 +470,7 @@ GODDBYE;
     /**
      * Pretty output a table with keys
      *
-     * @param  array  $table The associative array to print
+     * @param  array $table The associative array to print
      * @return string        The pretty output table data
      */
     private function tableAssociativPrettyPrint($table)

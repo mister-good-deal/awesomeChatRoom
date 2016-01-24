@@ -41,7 +41,7 @@ class UsersChatRights extends Entity
      * To array overriden to handle boolean cast type
      *
      * @return array Array with columns name on keys and columns value on values
-     * @todo See if boolean cast conversation can be done automatically
+     * @todo   See if boolean cast conversation can be done automatically
      */
     public function __toArray()
     {

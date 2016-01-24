@@ -16,7 +16,7 @@ use \classes\DataBase as DB;
  * Performed database action relative to the UsersChatRights entity class
  *
  * @property UsersChatRights $entity The UsersChatRights entity
- * @class UsersRightsChatEntityManager
+ * @class    UsersRightsChatEntityManager
  */
 class UsersChatRightsEntityManager extends EntityManager
 {
@@ -65,8 +65,8 @@ class UsersChatRightsEntityManager extends EntityManager
     /**
      * Change a room name in the chat rights table
      *
-     * @param  string  $oldRoomName The old room name
-     * @param  string  $newRoomName The new room name
+     * @param  string $oldRoomName The old room name
+     * @param  string $newRoomName The new room name
      * @return integer              The number of rows updated
      */
     public function changeRoomName($oldRoomName, $newRoomName)
@@ -85,7 +85,7 @@ class UsersChatRightsEntityManager extends EntityManager
     /**
      * Change a room name in the chat rights table
      *
-     * @param  string  $roomName The new room name
+     * @param  string $roomName The new room name
      * @return integer           The number of rows inserted
      */
     public function addRoomName($roomName)
@@ -103,7 +103,7 @@ class UsersChatRightsEntityManager extends EntityManager
     /**
      * Change a room name in the chat rights table
      *
-     * @param  string  $roomName The old room name
+     * @param  string $roomName The old room name
      * @return integer           The number of rows deleted
      */
     public function removeRoomName($roomName)

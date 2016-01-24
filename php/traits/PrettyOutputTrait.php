@@ -29,10 +29,10 @@ trait PrettyOutputTrait
     /**
      * Return the value with the exact number of right extra spaces to keep all the values align
      *
-     * @param  string              $value      The value to print
-     * @param  string[]|array[]    $arrays     The array of values to align the value with (can be an array of array)
-     * @param  integer             $extraSize  An extra size to add to the max value size of the category
-     * @param  integer             $position   The position to align as str_pad constant DEFAULT STR_PAD_RIGHT
+     * @param  string           $value     The value to print
+     * @param  string[]|array[] $arrays    The array of values to align the value with (can be an array of array)
+     * @param  integer          $extraSize An extra size to add to the max value size of the category
+     * @param  integer          $position  The position to align as str_pad constant DEFAULT STR_PAD_RIGHT
      * @return string                          The formatted value with extra spaces
      */
     public function smartAlign($value, $arrays, $extraSize = 0, $position = STR_PAD_RIGHT)
@@ -95,37 +95,37 @@ trait PrettyOutputTrait
     public function formatVariable($variable, $depth = 1)
     {
         switch (gettype($variable)) {
-            case 'array':
-                $argumentFormatted = $this->prettyArray($variable, $depth);
-                break;
+        case 'array':
+            $argumentFormatted = $this->prettyArray($variable, $depth);
+            break;
 
-            case 'object':
-                $argumentFormatted = 'object::' . get_class($variable);
-                break;
+        case 'object':
+            $argumentFormatted = 'object::' . get_class($variable);
+            break;
 
-            case 'resource':
-                $argumentFormatted = 'resource::' . get_resource_type($variable);
-                break;
+        case 'resource':
+            $argumentFormatted = 'resource::' . get_resource_type($variable);
+            break;
 
-            case 'boolean':
-                $argumentFormatted = $variable ? 'true' : 'false';
-                break;
+        case 'boolean':
+            $argumentFormatted = $variable ? 'true' : 'false';
+            break;
 
-            case 'integer':
-                $argumentFormatted = (int) $variable;
-                break;
+        case 'integer':
+            $argumentFormatted = (int) $variable;
+            break;
 
-            case 'string':
-                $argumentFormatted = '"' . $variable . '"';
-                break;
+        case 'string':
+            $argumentFormatted = '"' . $variable . '"';
+            break;
 
-            case 'NULL':
-                $argumentFormatted = 'null';
-                break;
+        case 'NULL':
+            $argumentFormatted = 'null';
+            break;
 
-            default:
-                $argumentFormatted = $variable;
-                break;
+        default:
+            $argumentFormatted = $variable;
+            break;
         }
 
         return $argumentFormatted;
@@ -175,9 +175,9 @@ trait PrettyOutputTrait
      *
      * If the category is processed and the array didn't change, the category is not reprocessed
      *
-     * @param string[]   $strings   The array to calculate max size of
-     * @param integer    $minSize   OPTIONAL The minium size DEFAULT 0
-     * @param string     $arrayHash OPTIONAL The already calculated array hash DEFAULT null
+     * @param string[] $strings   The array to calculate max size of
+     * @param integer  $minSize   OPTIONAL The minium size DEFAULT 0
+     * @param string   $arrayHash OPTIONAL The already calculated array hash DEFAULT null
      */
     private function setMaxSize($strings = array(), $minSize = 0, $arrayHash = null)
     {

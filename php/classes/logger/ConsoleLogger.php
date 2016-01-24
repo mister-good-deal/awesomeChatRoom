@@ -223,8 +223,8 @@ class ConsoleLogger extends AbstractLogger
     /**
      * Informations détaillées de débogage.
      *
-     * @param string $message
-     * @param array $context
+     * @param  string $message
+     * @param  array  $context
      * @return null
      */
     public function debug($message, array $context = array())

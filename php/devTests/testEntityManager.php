@@ -14,7 +14,7 @@ use \classes\entitiesCollection\UserCollection as Collection;
 use \classes\DataBase as DB;
 use \classes\ExceptionManager as Exception;
 
-include_once '../autoloader.php';
+require_once '../autoloader.php';
 
 try {
     $userEntityManager           = new UserEntityManager();

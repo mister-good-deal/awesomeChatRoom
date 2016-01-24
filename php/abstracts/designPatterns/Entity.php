@@ -95,7 +95,7 @@ abstract class Entity
     /**
      * Tell if the column name exists
      *
-     * @param  string  $columnName The column name
+     * @param  string $columnName The column name
      * @return boolean             True if the column name exists else fale
      */
     public function __isset($columnName)
@@ -122,8 +122,8 @@ abstract class Entity
     /**
      * Set the column name
      *
-     * @param  string    $columnName The column name
-     * @param  mixed     $value      The new column value
+     * @param  string $columnName The column name
+     * @param  mixed  $value      The new column value
      * @throws Exception             If the column name does not a exist
      */
     public function __set($columnName, $value)
@@ -407,8 +407,8 @@ abstract class Entity
     /**
      * Check if a column value is not already in database if the column has a unique attribute constraint
      *
-     * @param  string  $columnName The column name
-     * @param  mixed   $value      The column value
+     * @param  string $columnName The column name
+     * @param  mixed  $value      The column value
      * @return boolean             True if the value is already in database and the column has a unique
      *                             attribute constraint else false
      */

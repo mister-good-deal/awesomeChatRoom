@@ -27,11 +27,12 @@
     "gulp-jscs": "latest",
     "gulp-jshint": "latest",
     "gulp-less": "latest",
+    "gulp-phpcbf": "^0.1.2",
+    "gulp-phpcs": "^1.0.0",
     "gulp-rename": "latest",
     "gulp-shell": "latest",
     "gulp-sourcemaps": "latest",
     "gulp-watch": "latest",
-    "run-sequence": "latest",
     "ink-docstrap": "latest",
     "jscs-jsdoc": "latest",
     "jsdoc": "latest",
@@ -41,6 +42,7 @@
     "less-plugin-clean-css": "latest",
     "main-bower-files": "latest",
     "map-stream": "latest",
-    "requirejs": "latest"
+    "requirejs": "latest",
+    "run-sequence": "latest"
   }
 }

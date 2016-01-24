@@ -72,7 +72,8 @@ class PDOStatementCustom extends \PDOStatement
      * 
      * @return array An associative array using the first column as the key, and the remainder as associative values
      */
-    public function fetchIndexedByFirstColumn() {
+    public function fetchIndexedByFirstColumn() 
+    {
         return array_map('reset', $this->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_ASSOC));
     }
     

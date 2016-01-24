@@ -7,7 +7,7 @@
  */
 use \classes\DataBase as DB;
 
-include_once '\utilities\autoloader.php';
+require_once '\utilities\autoloader.php';
 
 try {
     DB::beginTransaction();

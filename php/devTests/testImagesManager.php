@@ -9,7 +9,7 @@
 use \classes\ImagesManager as Images;
 use \classes\ExceptionManager as Exception;
 
-include_once '../autoloader.php';
+require_once '../autoloader.php';
 
 try {
     $image = new Images(__DIR__ . '\test.jpeg');

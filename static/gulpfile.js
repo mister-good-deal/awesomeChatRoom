@@ -10,6 +10,8 @@
         shell            = require('gulp-shell'),
         jshint           = require('gulp-jshint'),
         jscs             = require('gulp-jscs'),
+        phpcs            = require('gulp-phpcs'),
+        phpcbf           = require('gulp-phpcbf'),
         stylish          = require('jshint-stylish'),
         map              = require('map-stream'),
         watch            = require('gulp-watch'),
@@ -137,8 +139,32 @@
             .pipe(jshintReporter);
     });
 
+    gulp.task('php_phpcs', function () {
+        return gulp.src(['../php/**/*.php', '!../php/vendor/**/*.*'])
+            .pipe(phpcs({
+                bin            : process.cwd().replace('static', 'php') + '\\vendor\\bin\\phpcs.bat',
+                standard       : 'PSR2',
+                warningSeverity: 0
+            }))
+            .pipe(phpcs.reporter('log'));
+    });
+
+    gulp.task('php_phpcbf', function () {
+        return gulp.src(['../php/**/*.php', '!../php/vendor/**/*.*'])
+            .pipe(phpcbf({
+                bin            : process.cwd().replace('static', 'php') + '\\vendor\\bin\\phpcbf.bat',
+                standard       : 'PSR2',
+                warningSeverity: 0
+            }))
+            .pipe(gulp.dest('../php'));
+    });
+
     gulp.task('js_lint', function (done) {
         runSequence('js_jscs', 'js_jshint', done);
+    });
+
+    gulp.task('php_lint', function (done) {
+        runSequence('php_phpcbf', 'php_phpcs', done);
     });
 
     /*=====  End of Linters  ======*/

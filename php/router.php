@@ -1,15 +1,15 @@
 <?php
 
-include_once 'autoloader.php';
+require_once 'autoloader.php';
 
 function route($route)
 {
-    $path            = explode('/', $route);
-    $method          = array_pop($path);
-    $controller      = ucfirst(array_pop($path)) . 'Controller';
-    $deep            = count($path);
-    $currentDeep     = 0;
-    $route           = __DIR__ . DIRECTORY_SEPARATOR .'controllers';
+    $path        = explode('/', $route);
+    $method      = array_pop($path);
+    $controller  = ucfirst(array_pop($path)) . 'Controller';
+    $deep        = count($path);
+    $currentDeep = 0;
+    $route       = __DIR__ . DIRECTORY_SEPARATOR .'controllers';
 
     while ($currentDeep < $deep) {
         $route .= DIRECTORY_SEPARATOR . $path[$currentDeep++];
@@ -24,15 +24,17 @@ function route($route)
 
     if (stream_resolve_include_path($route) === false) {
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
-        die(file_get_contents(
-            dirname(__DIR__) . DIRECTORY_SEPARATOR .
-            'static' . DIRECTORY_SEPARATOR .
-            'html' . DIRECTORY_SEPARATOR .
-            '404NotFound.html'
-        ));
+        die(
+            file_get_contents(
+                dirname(__DIR__) . DIRECTORY_SEPARATOR .
+                'static' . DIRECTORY_SEPARATOR .
+                'html' . DIRECTORY_SEPARATOR .
+                '404NotFound.html'
+            )
+        );
     }
 
-    require_once($route);
+    include_once $route;
 
     $controllerPath    = 'controllers' . DIRECTORY_SEPARATOR . $controller;
     $controllerIntance = new $controllerPath();

@@ -9,7 +9,7 @@
 use \classes\websocket\Server as Server;
 use \classes\websocket\ChatService as ChatService;
 
-include_once '../autoloader.php';
+require_once '../autoloader.php';
 
 try {
     $server = new Server();

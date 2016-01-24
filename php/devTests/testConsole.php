@@ -8,7 +8,7 @@
 
 use \classes\console\Console as Console;
 
-include_once '../autoloader.php';
+require_once '../autoloader.php';
 
 try {
     $console = new Console();

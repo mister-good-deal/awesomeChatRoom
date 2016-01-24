@@ -75,7 +75,7 @@ trait FiltersTrait
     /**
      * Get the user input, return null if undefined or the sanitized value
      *
-     * @param  string      $input The user input
+     * @param  string $input The user input
      * @return string|null        The sanitized user input or null if the input was undefined
      */
     public function getInput($input)

@@ -4,7 +4,7 @@
  *
  * @category Singleton
  * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
- * @example /utilities/examples/dataBase.php                  Basic use of this singleton
+ * @example  /utilities/examples/dataBase.php                  Basic use of this singleton
  */
 
 namespace classes;
@@ -63,11 +63,11 @@ class DataBase
     /**
      * Is triggered when invoking inaccessible methods in a static context
      *
-     * @param  string    $name      Name of the method being called
-     * @param  array     $arguments Enumerated array containing the parameters passed to the method called
+     * @param  string $name      Name of the method being called
+     * @param  array  $arguments Enumerated array containing the parameters passed to the method called
      * @throws Exception            If the method called is not a PDO method
      * @static
-     * @note                        This is so powerfull, we can call non static methods with a static call
+     * @note   This is so powerfull, we can call non static methods with a static call
      */
     public static function __callStatic($name, $arguments = array())
     {
@@ -106,7 +106,7 @@ class DataBase
     /**
      * Set the printSQL value
      *
-     * @param  boolean   $printSQL The printSQL value
+     * @param  boolean $printSQL The printSQL value
      * @throws Exception           If the printSQL value is not a boolean
      * @static
      */
@@ -157,7 +157,7 @@ class DataBase
     /**
      * Delete all the rows of a table
      *
-     * @param  string  $tableName The table name to clean
+     * @param  string $tableName The table name to clean
      * @return boolean            True on success else false
      * @static
      */
@@ -171,7 +171,7 @@ class DataBase
     /**
      * Drop a table
      *
-     * @param  string  $tableName The table name to drop
+     * @param  string $tableName The table name to drop
      * @return boolean            True on success else false
      * @static
      */

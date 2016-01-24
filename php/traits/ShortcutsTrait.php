@@ -47,9 +47,9 @@ trait ShortcutsTrait
     /**
      * Perform an in_array research for each specified sub-array
      *
-     * @param  mixed   $needle   The value to research
-     * @param  array   $haystack The array to perform the research
-     * @param  string  $key      The sub-array key
+     * @param  mixed  $needle   The value to research
+     * @param  array  $haystack The array to perform the research
+     * @param  string $key      The sub-array key
      * @return boolean           True if the value is found else false
      */
     public function inSubArray($needle, $haystack, $key)

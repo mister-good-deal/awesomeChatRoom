@@ -18,7 +18,7 @@ use \interfaces\LoggerInterface as LoggerInterface;
  * reduce boilerplate code that a simple Logger that does the same thing with
  * messages regardless of the error level has to implement.
  *
- * @class AbstractLogger
+ * @class    AbstractLogger
  * @abstract
  */
 abstract class AbstractLogger implements LoggerInterface

@@ -117,7 +117,7 @@ class Server
     /**
      * Get the client name from his socket stream
      *
-     * @param resource $socket The client socket
+     * @param  resource $socket The client socket
      * @return string          The client name
      */
     protected function getClientName($socket)
@@ -128,7 +128,7 @@ class Server
     /**
      * Get the client ip from his socket stream
      *
-     * @param resource $socket The client socket
+     * @param  resource $socket The client socket
      * @return string          The client ip
      */
     protected function getClientIp($socket)
@@ -187,24 +187,24 @@ class Server
     protected function encode($message, $messageType = 'text')
     {
         switch ($messageType) {
-            case 'continuous':
-                $b1 = 0;
-                break;
-            case 'text':
-                $b1 = 1;
-                break;
-            case 'binary':
-                $b1 = 2;
-                break;
-            case 'close':
-                $b1 = 8;
-                break;
-            case 'ping':
-                $b1 = 9;
-                break;
-            case 'pong':
-                $b1 = 10;
-                break;
+        case 'continuous':
+            $b1 = 0;
+            break;
+        case 'text':
+            $b1 = 1;
+            break;
+        case 'binary':
+            $b1 = 2;
+            break;
+        case 'close':
+            $b1 = 8;
+            break;
+        case 'ping':
+            $b1 = 9;
+            break;
+        case 'pong':
+            $b1 = 10;
+            break;
         }
         
         $b1 += 128;
@@ -351,11 +351,17 @@ class Server
                             if (in_array($serviceName, array_keys($this->services))) {
                                 call_user_func_array($this->services[$serviceName], array($socket, $data));
                             } else {
-                                $this->send($socket, $this->encode(json_encode(array(
-                                    'service' => $this->notificationService,
-                                    'success' => false,
-                                    'text'    => sprintf(_('The service "%s" is not running'), $serviceName)
-                                ))));
+                                $this->send(
+                                    $socket, $this->encode(
+                                        json_encode(
+                                            array(
+                                            'service' => $this->notificationService,
+                                            'success' => false,
+                                            'text'    => sprintf(_('The service "%s" is not running'), $serviceName)
+                                            )
+                                        )
+                                    )
+                                );
                             }
                         }
                     }
@@ -418,7 +424,7 @@ class Server
     /**
      * Add a service to the server
      *
-     * @param  string   $serviceName The service name
+     * @param  string $serviceName The service name
      * @return string[]              Array containing error or success message
      */
     private function addService($serviceName)
@@ -451,7 +457,7 @@ class Server
     /**
      * Remove a service from the server
      *
-     * @param  string   $serviceName The service name
+     * @param  string $serviceName The service name
      * @return string[]              Array containing errors or empty array if success
      */
     private function removeService($serviceName)
@@ -487,7 +493,7 @@ class Server
     /**
      * Check the authentication to perform administration action on the WebSocket server
      *
-     * @param  array   $data JSON decoded client data
+     * @param  array $data JSON decoded client data
      * @return boolean       True if the authentication succeed else false
      */
     private function checkAuthentication($data)
