@@ -188,6 +188,12 @@ Here are all the gulp commands you can run
 
 - `gulp js_lint` Parse js source files with jshint and jslint linters and show errors
 
+- `gulp php_phpcs` Parse php source files with phpcs linter and show errors
+
+- `gulp php_phpcbf` Parse php source files with phpcbf linter, fix coding style and prompt non fixed ones
+
+- `gulp php_lint` Parse php source files with phpcbf and phpcs linters and show errors
+
 - `gulp watch`  Wait from any change in /static/less directory and run `gulp build_less` on change
 
 ####Run the server

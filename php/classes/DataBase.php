@@ -91,7 +91,7 @@ class DataBase
     /*==================================================
     =            Getters / setters (static)            =
     ==================================================*/
-    
+
     /**
      * Get the printSQL value
      *
@@ -122,7 +122,7 @@ class DataBase
             );
         }
     }
-    
+
     /*-----  End of Getters / setters (static)  ------*/
 
     /*======================================
@@ -199,12 +199,7 @@ class DataBase
                      FROM %s
                      LIMIT %d, %d';
 
-        $sql = sprintf(
-            $sqlMarks,
-            $tableName,
-            $begin,
-            $end
-        );
+        $sql = sprintf($sqlMarks, $tableName, $begin, $end);
 
         return static::$PDO->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
     }
@@ -222,10 +217,7 @@ class DataBase
 
         $sqlMarks = 'DESC %s';
 
-        $sql = sprintf(
-            $sqlMarks,
-            $tableName
-        );
+        $sql = sprintf($sqlMarks, $tableName);
 
         return static::$PDO->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
     }
