@@ -2,8 +2,8 @@
 
 ## Linters
 
-- **php** files => phpcs (*PHP_CodeSniffer*)
-- **js** files  => jslint and jshint
+- **php** files => [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer/wiki)
+- **js** files  => [jshint](http://jshint.com/) and [jscs](http://jscs.info/)
 
 ## Git process
 
