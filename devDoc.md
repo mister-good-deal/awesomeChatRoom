@@ -194,6 +194,18 @@ Here are all the gulp commands you can run
 
 - `gulp php_lint` Parse php source files with phpcbf and phpcs linters and show errors
 
+- `gulp jsdoc` Generate the jsdoc
+
+- `gulp phpdoc` Generate the phpdoc
+
+- `gulp push_jsdoc` Add commit and push the jsdoc on git gh-pages branch
+
+- `gulp push_phpdoc` Add commit and push the phpdoc on git gh-pages branch
+
+- `gulp doc` Generate the jsdoc and teh phpdoc
+
+- `gulp push_doc` Add commit and push the phpdoc and the jsdoc on git gh-pages branch
+
 - `gulp watch`  Wait from any change in /static/less directory and run `gulp build_less` on change
 
 ####Run the server

@@ -36,7 +36,7 @@
     - Change automatic voice / video activation on a room
     - Change the maximum user authorized number in a room
     - Mute a user globally in a room
-    - Disabled a user webcam globally in a room
+    - Disable a user webcam globally in a room
 
 ### Evolution
 

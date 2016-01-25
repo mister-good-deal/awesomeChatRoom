@@ -13,6 +13,7 @@
         phpcs            = require('gulp-phpcs'),
         phpcbf           = require('gulp-phpcbf'),
         stylish          = require('jshint-stylish'),
+        jsdoc            = require('gulp-jsdoc3'),
         map              = require('map-stream'),
         watch            = require('gulp-watch'),
         del              = require('del'),
@@ -168,6 +169,37 @@
     });
 
     /*=====  End of Linters  ======*/
+
+    /*================================================
+    =            Documentation generation            =
+    ================================================*/
+
+    gulp.task('jsdoc', function (cb) {
+        var config = require('./jsdocConfig.json');
+
+        gulp.src(['../README.md', './js/**/*.js'], {read: false})
+            .pipe(jsdoc(config, cb));
+    });
+
+    gulp.task('phpdoc', shell.task('cd ../php&"./vendor/bin/phpdoc"'));
+
+    gulp.task('push_phpdoc', shell.task(
+        'cd ../../web-doc&call git add phpDoc&call git commit phpDoc -m "update phpDoc"&call git push origin gh-pages'
+    ));
+
+    gulp.task('push_jsdoc', shell.task(
+        'cd ../../web-doc&call git add jsDoc&call git commit jsDoc -m "update jsDoc"&call git push origin gh-pages'
+    ));
+
+    gulp.task('doc', function (done) {
+        runSequence('jsdoc', 'phpdoc', done);
+    });
+
+    gulp.task('push_doc', shell.task(
+        'cd ../../web-doc&call git add .&call git commit -a -m "update docs"&call git push origin gh-pages'
+    ));
+
+    /*=====  End of Documentation generation  ======*/
 
     /*========================================
     =            Watch less files            =
