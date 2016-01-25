@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>PHP lib</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+    <link href="../css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/prism.css" rel="stylesheet" media="all"/>
+    <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+    <!--[if lt IE 9]>
+    <script src="../js/html5.js"></script>
+    <![endif]-->
+    <script src="../js/jquery-1.11.0.min.js"></script>
+    <script src="../js/ui/1.10.4/jquery-ui.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.smooth-scroll.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
+        <script type="text/javascript">
+        function loadExternalCodeSnippets() {
+            Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+                var src = pre.getAttribute('data-src');
+                var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+                var language = 'php';
+
+                var code = document.createElement('code');
+                code.className = 'language-' + language;
+
+                pre.textContent = '';
+
+                code.textContent = 'Loading…';
+
+                pre.appendChild(code);
+
+                var xhr = new XMLHttpRequest();
+
+                xhr.open('GET', src, true);
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+
+                        if (xhr.status < 400 && xhr.responseText) {
+                            code.textContent = xhr.responseText;
+
+                            Prism.highlightElement(code);
+                        }
+                        else if (xhr.status >= 400) {
+                            code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                        }
+                        else {
+                            code.textContent = '✖ Error: File does not exist or is empty';
+                        }
+                    }
+                };
+
+                xhr.send(null);
+            });
+        }
+
+        $(document).ready(function(){
+            loadExternalCodeSnippets();
+        });
+        $('#source-view').on('shown', function () {
+            loadExternalCodeSnippets();
+        })
+    </script>
+
+    <link rel="shortcut icon" href="../images/favicon.ico"/>
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-touch-icon-114x114.png"/>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <i class="icon-ellipsis-vertical"></i>
+            </a>
+            <a class="brand" href="../index.html">PHP lib</a>
+
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                                        <li class="dropdown">
+                        <a href="../index.html" class="dropdown-toggle" data-toggle="dropdown">
+                            API Documentation <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                                                        <li><a href="../namespaces/abstracts.html">\abstracts</a></li>
+                                                        <li><a href="../namespaces/classes.html">\classes</a></li>
+                                                        <li><a href="../namespaces/interfaces.html">\interfaces</a></li>
+                                                        <li><a href="../namespaces/traits.html">\traits</a></li>
+                                                    </ul>
+                    </li>
+                                        <li class="dropdown" id="charts-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Charts <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../graphs/class.html">
+                                    <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" id="reports-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../reports/errors.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/markers.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">7</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/deprecated.html">
+                                                                                                            <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<div class="go_to_top">-->
+    <!--<a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>-->
+    <!--</div>-->
+</div>
+
+<div id="___" class="container-fluid">
+        <section class="row-fluid">
+        <div class="span2 sidebar">
+                                <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-666251134"></a>
+                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+            </div>
+            <div id="namespace-666251134" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-344769911"></a>
+                                <a href="../namespaces/abstracts.html" style="margin-left: 30px; padding-left: 0">abstracts</a>
+            </div>
+            <div id="namespace-344769911" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-923119680"></a>
+                                <a href="../namespaces/abstracts.designPatterns.html" style="margin-left: 30px; padding-left: 0">designPatterns</a>
+            </div>
+            <div id="namespace-923119680" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/abstracts.designPatterns.Collection.html">Collection</a></li>
+                                                    <li class="class"><a href="../classes/abstracts.designPatterns.Entity.html">Entity</a></li>
+                                                    <li class="class"><a href="../classes/abstracts.designPatterns.EntityManager.html">EntityManager</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/abstracts.AbstractController.html">AbstractController</a></li>
+                                                    <li class="class"><a href="../classes/abstracts.AbstractLogger.html">AbstractLogger</a></li>
+                                                    <li class="class"><a href="../classes/abstracts.API.html">API</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1973983518"></a>
+                                <a href="../namespaces/classes.html" style="margin-left: 30px; padding-left: 0">classes</a>
+            </div>
+            <div id="namespace-1973983518" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1330344135"></a>
+                                <a href="../namespaces/classes.console.html" style="margin-left: 30px; padding-left: 0">console</a>
+            </div>
+            <div id="namespace-1330344135" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/classes.console.Console.html">Console</a></li>
+                                                    <li class="class"><a href="../classes/classes.console.ConsoleColors.html">ConsoleColors</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-727182327"></a>
+                                <a href="../namespaces/classes.entities.html" style="margin-left: 30px; padding-left: 0">entities</a>
+            </div>
+            <div id="namespace-727182327" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/classes.entities.User.html">User</a></li>
+                                                    <li class="class"><a href="../classes/classes.entities.UsersChatRights.html">UsersChatRights</a></li>
+                                                    <li class="class"><a href="../classes/classes.entities.UsersRights.html">UsersRights</a></li>
+                                                    <li class="class"><a href="../classes/classes.entities.UserStatistics.html">UserStatistics</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1859716293"></a>
+                                <a href="../namespaces/classes.entitiesCollection.html" style="margin-left: 30px; padding-left: 0">entitiesCollection</a>
+            </div>
+            <div id="namespace-1859716293" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/classes.entitiesCollection.UserCollection.html">UserCollection</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-81954205"></a>
+                                <a href="../namespaces/classes.entitiesManager.html" style="margin-left: 30px; padding-left: 0">entitiesManager</a>
+            </div>
+            <div id="namespace-81954205" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/classes.entitiesManager.GlobalEntityManager.html">GlobalEntityManager</a></li>
+                                                    <li class="class"><a href="../classes/classes.entitiesManager.UserEntityManager.html">UserEntityManager</a></li>
+                                                    <li class="class"><a href="../classes/classes.entitiesManager.UsersChatRightsEntityManager.html">UsersChatRightsEntityManager</a></li>
+                                                    <li class="class"><a href="../classes/classes.entitiesManager.UsersRightsEntityManager.html">UsersRightsEntityManager</a></li>
+                                                    <li class="class"><a href="../classes/classes.entitiesManager.UserStatisticsEntityManager.html">UserStatisticsEntityManager</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1057384034"></a>
+                                <a href="../namespaces/classes.logger.html" style="margin-left: 30px; padding-left: 0">logger</a>
+            </div>
+            <div id="namespace-1057384034" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/classes.logger.ConsoleLogger.html">ConsoleLogger</a></li>
+                                                    <li class="class"><a href="../classes/classes.logger.FileLogger.html">FileLogger</a></li>
+                                                    <li class="class"><a href="../classes/classes.logger.LogLevel.html">LogLevel</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-461759615"></a>
+                                <a href="../namespaces/classes.websocket.html" style="margin-left: 30px; padding-left: 0">websocket</a>
+            </div>
+            <div id="namespace-461759615" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1897962812"></a>
+                                <a href="../namespaces/classes.websocket.services.html" style="margin-left: 30px; padding-left: 0">services</a>
+            </div>
+            <div id="namespace-1897962812" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/classes.websocket.services.ChatService.html">ChatService</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/classes.websocket.Server.html">Server</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/classes.Benchmark.html">Benchmark</a></li>
+                                                    <li class="class"><a href="../classes/classes.DataBase.html">DataBase</a></li>
+                                                    <li class="class"><a href="../classes/classes.ExceptionManager.html">ExceptionManager</a></li>
+                                                    <li class="class"><a href="../classes/classes.ImagesManager.html">ImagesManager</a></li>
+                                                    <li class="class"><a href="../classes/classes.IniManager.html">IniManager</a></li>
+                                                    <li class="class"><a href="../classes/classes.LoggerManager.html">LoggerManager</a></li>
+                                                    <li class="class"><a href="../classes/classes.PDOStatementCustom.html">PDOStatementCustom</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-873109388"></a>
+                                <a href="../namespaces/interfaces.html" style="margin-left: 30px; padding-left: 0">interfaces</a>
+            </div>
+            <div id="namespace-873109388" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-549400043"></a>
+                                <a href="../namespaces/interfaces.http.html" style="margin-left: 30px; padding-left: 0">http</a>
+            </div>
+            <div id="namespace-549400043" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                    <li class="interface"><a href="../classes/interfaces.http.MessageInterface.html">MessageInterface</a></li>
+                                                    <li class="interface"><a href="../classes/interfaces.http.RequestInterface.html">RequestInterface</a></li>
+                                                    <li class="interface"><a href="../classes/interfaces.http.ResponseInterface.html">ResponseInterface</a></li>
+                                                    <li class="interface"><a href="../classes/interfaces.http.ServerRequestInterface.html">ServerRequestInterface</a></li>
+                                                    <li class="interface"><a href="../classes/interfaces.http.StreamInterface.html">StreamInterface</a></li>
+                                                    <li class="interface"><a href="../classes/interfaces.http.UploadedFileInterface.html">UploadedFileInterface</a></li>
+                                                    <li class="interface"><a href="../classes/interfaces.http.UriInterface.html">UriInterface</a></li>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                    <li class="interface"><a href="../classes/interfaces.LoggerInterface.html">LoggerInterface</a></li>
+                                                    <li class="interface"><a href="../classes/interfaces.ServiceInterface.html">ServiceInterface</a></li>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-229112304"></a>
+                                <a href="../namespaces/traits.html" style="margin-left: 30px; padding-left: 0">traits</a>
+            </div>
+            <div id="namespace-229112304" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                            <li class="trait"><a href="../classes/traits.EchoTrait.html">EchoTrait</a></li>
+                                                    <li class="trait"><a href="../classes/traits.FiltersTrait.html">FiltersTrait</a></li>
+                                                    <li class="trait"><a href="../classes/traits.PrettyOutputTrait.html">PrettyOutputTrait</a></li>
+                                                    <li class="trait"><a href="../classes/traits.ShortcutsTrait.html">ShortcutsTrait</a></li>
+                                                                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </section>
+    <section class="row-fluid">
+        <div class="span10 offset2">
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <nav>
+                                                <a href="../namespaces/interfaces.http.html">\interfaces\http</a>
+                                            </nav>
+                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+                    <h1><small>\interfaces\http</small>UriInterface</h1>
+                    <p><em>Value object representing a URI.</em></p>
+                    <p>This interface is meant to represent URIs according to RFC 3986 and to
+provide methods for most common operations. Additional functionality for
+working with URIs can be provided on top of the interface or externally.
+Its primary use is for HTTP requests, but may also be used in other
+contexts.</p>
+<p>Instances of this interface are considered immutable; all methods that
+might change state MUST be implemented such that they retain the internal
+state of the current instance and return an instance that contains the
+changed state.</p>
+<p>Typically the Host header will be also be present in the request message.
+For server-side requests, the scheme will typically be discoverable in the
+server parameters.</p>
+
+                    <section id="summary">
+                        <h2>Summary</h2>
+                        <section class="row-fluid heading">
+                            <section class="span6">
+                                <a href="#methods">Methods</a>
+                            </section>
+                            <section class="span6">
+                                <a href="#constants">Constants</a>
+                            </section>
+                        </section>
+                        <section class="row-fluid public">
+                            <section class="span6">
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_getScheme">getScheme()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_getAuthority">getAuthority()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_getUserInfo">getUserInfo()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_getHost">getHost()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_getPort">getPort()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_getPath">getPath()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_getQuery">getQuery()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_getFragment">getFragment()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_withScheme">withScheme()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_withUserInfo">withUserInfo()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_withHost">withHost()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_withPort">withPort()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_withPath">withPath()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_withQuery">withQuery()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method_withFragment">withFragment()</a><br />
+                                                                    <a href="../classes/interfaces.http.UriInterface.html#method___toString">__toString()</a><br />
+                                                            </section>
+                            <section class="span6">
+                                                                    <em>No constants found</em>
+                                                            </section>
+                        </section>
+                        <section class="row-fluid protected">
+                            <section class="span6">
+                                                                    <em>No protected methods found</em>
+                                                            </section>
+                            <section class="span6">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                        <section class="row-fluid private">
+                            <section class="span6">
+                                                                    <em>No private methods found</em>
+                                                            </section>
+                            <section class="span6">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                    </section>
+                </div>
+                <aside class="span4 detailsbar">
+                                        <dl>
+                        <dt>File</dt>
+                            <dd>
+                                <a href="../files/interfaces.http.UriInterface.html"><div class="path-wrapper">interfaces\http\UriInterface.php</div></a>
+                            </dd>
+                                                <dt>Package</dt>
+                            <dd><div class="namespace-wrapper">\Default</div></dd>
+                                                
+                                                                            <dt>See also</dt>
+                                                                                    <dd><a href=""><div class="namespace-wrapper">(the URI specification)</div></a></dd>
+                                                                        </dl>
+                    <h2>Tags</h2>
+                    <table class="table table-condensed">
+                                            <tr><td colspan="2"><em>None found</em></td></tr>
+                                        </table>
+                </aside>
+            </div>
+
+            
+                        <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Methods</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getScheme" name="method_getScheme" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getScheme()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getScheme() : string</pre>
+                <p><em>Retrieve the scheme component of the URI.</em></p>
+                <p>If no scheme is present, this method MUST return an empty string.</p>
+<p>The value returned MUST be normalized to lowercase, per RFC 3986
+Section 3.1.</p>
+<p>The trailing &quot;:&quot; character is not part of the scheme and MUST NOT be
+added.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The URI scheme.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getAuthority" name="method_getAuthority" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getAuthority()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getAuthority() : string</pre>
+                <p><em>Retrieve the authority component of the URI.</em></p>
+                <p>If no authority information is present, this method MUST return an empty
+string.</p>
+<p>The authority syntax of the URI is:</p>
+<pre>
+[user-info@]host[:port]
+</pre>
+<p>If the port component is not set or is the standard port for the current
+scheme, it SHOULD NOT be included.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The URI authority, in &quot;[user-info@]host[:port]&quot; format.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getUserInfo" name="method_getUserInfo" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getUserInfo()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getUserInfo() : string</pre>
+                <p><em>Retrieve the user information component of the URI.</em></p>
+                <p>If no user information is present, this method MUST return an empty
+string.</p>
+<p>If a user is present in the URI, this will return that value;
+additionally, if the password is also present, it will be appended to the
+user value, with a colon (&quot;:&quot;) separating the values.</p>
+<p>The trailing &quot;@&quot; character is not part of the user information and MUST
+NOT be added.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The URI user information, in &quot;username[:password]&quot; format.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getHost" name="method_getHost" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getHost()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getHost() : string</pre>
+                <p><em>Retrieve the host component of the URI.</em></p>
+                <p>If no host is present, this method MUST return an empty string.</p>
+<p>The value returned MUST be normalized to lowercase, per RFC 3986
+Section 3.2.2.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The URI host.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="http://tools.ietf.org/html/rfc3986#section-3.2.2"><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getPort" name="method_getPort" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getPort()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getPort() : null|integer</pre>
+                <p><em>Retrieve the port component of the URI.</em></p>
+                <p>If a port is present, and it is non-standard for the current scheme,
+this method MUST return it as an integer. If the port is the standard port
+used with the current scheme, this method SHOULD return null.</p>
+<p>If no port is present, and no scheme is present, this method MUST return
+a null value.</p>
+<p>If no port is present, but a scheme is present, this method MAY return
+the standard port for that scheme, but SHOULD return null.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    null|integer
+                                            &mdash; <p>The URI port.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getPath" name="method_getPath" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getPath()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getPath() : string</pre>
+                <p><em>Retrieve the path component of the URI.</em></p>
+                <p>The path can either be empty or absolute (starting with a slash) or
+rootless (not starting with a slash). Implementations MUST support all
+three syntaxes.</p>
+<p>Normally, the empty path &quot;&quot; and absolute path &quot;/&quot; are considered equal as
+defined in RFC 7230 Section 2.7.3. But this method MUST NOT automatically
+do this normalization because in contexts with a trimmed base path, e.g.
+the front controller, this difference becomes significant. It's the task
+of the user to handle both &quot;&quot; and &quot;/&quot;.</p>
+<p>The value returned MUST be percent-encoded, but MUST NOT double-encode
+any characters. To determine what characters to encode, please refer to
+RFC 3986, Sections 2 and 3.3.</p>
+<p>As an example, if the value should include a slash (&quot;/&quot;) not intended as
+delimiter between path segments, that value MUST be passed in encoded
+form (e.g., &quot;%2F&quot;) to the instance.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The URI path.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getQuery" name="method_getQuery" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getQuery()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getQuery() : string</pre>
+                <p><em>Retrieve the query string of the URI.</em></p>
+                <p>If no query string is present, this method MUST return an empty string.</p>
+<p>The leading &quot;?&quot; character is not part of the query and MUST NOT be
+added.</p>
+<p>The value returned MUST be percent-encoded, but MUST NOT double-encode
+any characters. To determine what characters to encode, please refer to
+RFC 3986, Sections 2 and 3.4.</p>
+<p>As an example, if a value in a key/value pair of the query string should
+include an ampersand (&quot;&amp;&quot;) not intended as a delimiter between values,
+that value MUST be passed in encoded form (e.g., &quot;%26&quot;) to the instance.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The URI query string.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getFragment" name="method_getFragment" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getFragment()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getFragment() : string</pre>
+                <p><em>Retrieve the fragment component of the URI.</em></p>
+                <p>If no fragment is present, this method MUST return an empty string.</p>
+<p>The leading &quot;#&quot; character is not part of the fragment and MUST NOT be
+added.</p>
+<p>The value returned MUST be percent-encoded, but MUST NOT double-encode
+any characters. To determine what characters to encode, please refer to
+RFC 3986, Sections 2 and 3.5.</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The URI fragment.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_withScheme" name="method_withScheme" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">withScheme()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">withScheme(string  <span class="argument">$scheme</span>) : self</pre>
+                <p><em>Return an instance with the specified scheme.</em></p>
+                <p>This method MUST retain the state of the current instance, and return
+an instance that contains the specified scheme.</p>
+<p>Implementations MUST support the schemes &quot;http&quot; and &quot;https&quot; case
+insensitively, and MAY accommodate other schemes if required.</p>
+<p>An empty scheme is equivalent to removing the scheme.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$scheme </td>
+                                <td><p>The scheme to use with the new instance.</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\InvalidArgumentException</dt>
+                            <dd><p>for invalid schemes.</p></dd>
+                                                    <dt>\InvalidArgumentException</dt>
+                            <dd><p>for unsupported schemes.</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    self
+                                            &mdash; <p>A new instance with the specified scheme.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_withUserInfo" name="method_withUserInfo" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">withUserInfo()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">withUserInfo(string  <span class="argument">$user</span>, null|string  <span class="argument">$password = null</span>) : self</pre>
+                <p><em>Return an instance with the specified user information.</em></p>
+                <p>This method MUST retain the state of the current instance, and return
+an instance that contains the specified user information.</p>
+<p>Password is optional, but the user information MUST include the
+user; an empty string for the user is equivalent to removing user
+information.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$user </td>
+                                <td><p>The user name to use for authority.</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>null|string</td>
+                                <td>$password </td>
+                                <td><p>The password associated with $user.</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    self
+                                            &mdash; <p>A new instance with the specified user information.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_withHost" name="method_withHost" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">withHost()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">withHost(string  <span class="argument">$host</span>) : self</pre>
+                <p><em>Return an instance with the specified host.</em></p>
+                <p>This method MUST retain the state of the current instance, and return
+an instance that contains the specified host.</p>
+<p>An empty host value is equivalent to removing the host.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$host </td>
+                                <td><p>The hostname to use with the new instance.</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\InvalidArgumentException</dt>
+                            <dd><p>for invalid hostnames.</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    self
+                                            &mdash; <p>A new instance with the specified host.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_withPort" name="method_withPort" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">withPort()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">withPort(null|integer  <span class="argument">$port</span>) : self</pre>
+                <p><em>Return an instance with the specified port.</em></p>
+                <p>This method MUST retain the state of the current instance, and return
+an instance that contains the specified port.</p>
+<p>Implementations MUST raise an exception for ports outside the
+established TCP and UDP port ranges.</p>
+<p>A null value provided for the port is equivalent to removing the port
+information.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>null|integer</td>
+                                <td>$port </td>
+                                <td><p>The port to use with the new instance; a null value
+removes the port information.</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\InvalidArgumentException</dt>
+                            <dd><p>for invalid ports.</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    self
+                                            &mdash; <p>A new instance with the specified port.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_withPath" name="method_withPath" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">withPath()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">withPath(string  <span class="argument">$path</span>) : self</pre>
+                <p><em>Return an instance with the specified path.</em></p>
+                <p>This method MUST retain the state of the current instance, and return
+an instance that contains the specified path.</p>
+<p>The path can either be empty or absolute (starting with a slash) or
+rootless (not starting with a slash). Implementations MUST support all
+three syntaxes.</p>
+<p>If the path is intended to be domain-relative rather than path relative then
+it must begin with a slash (&quot;/&quot;). Paths not starting with a slash (&quot;/&quot;)
+are assumed to be relative to some base path known to the application or
+consumer.</p>
+<p>Users can provide both encoded and decoded path characters.
+Implementations ensure the correct encoding as outlined in getPath().</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$path </td>
+                                <td><p>The path to use with the new instance.</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\InvalidArgumentException</dt>
+                            <dd><p>for invalid paths.</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    self
+                                            &mdash; <p>A new instance with the specified path.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_withQuery" name="method_withQuery" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">withQuery()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">withQuery(string  <span class="argument">$query</span>) : self</pre>
+                <p><em>Return an instance with the specified query string.</em></p>
+                <p>This method MUST retain the state of the current instance, and return
+an instance that contains the specified query string.</p>
+<p>Users can provide both encoded and decoded query characters.
+Implementations ensure the correct encoding as outlined in getQuery().</p>
+<p>An empty query string value is equivalent to removing the query string.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$query </td>
+                                <td><p>The query string to use with the new instance.</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\InvalidArgumentException</dt>
+                            <dd><p>for invalid query strings.</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    self
+                                            &mdash; <p>A new instance with the specified query string.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_withFragment" name="method_withFragment" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">withFragment()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">withFragment(string  <span class="argument">$fragment</span>) : self</pre>
+                <p><em>Return an instance with the specified URI fragment.</em></p>
+                <p>This method MUST retain the state of the current instance, and return
+an instance that contains the specified URI fragment.</p>
+<p>Users can provide both encoded and decoded fragment characters.
+Implementations ensure the correct encoding as outlined in getFragment().</p>
+<p>An empty fragment value is equivalent to removing the fragment.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$fragment </td>
+                                <td><p>The fragment to use with the new instance.</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    self
+                                            &mdash; <p>A new instance with the specified fragment.</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___toString" name="method___toString" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">__toString()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__toString() : string</pre>
+                <p><em>Return the string representation as a URI reference.</em></p>
+                <p>Depending on which components of the URI are present, the resulting
+string is either a full URI or relative reference according to RFC 3985,
+Section 4.1. The method concatenates the various components of the URI,
+using the appropriate delimiters:</p>
+<ul>
+<li>If a scheme is present, it MUST be suffixed by &quot;:&quot;.</li>
+<li>If an authority is present, it MUST be prefixed by &quot;//&quot;.</li>
+<li>The path can be concatenated without delimiters. But there are two
+cases where the path has to be adjusted to make the URI reference
+valid as PHP does not allow to throw an exception in __toString():
+<ul>
+<li>If the path is rootless and an authority is present, the path MUST
+be prefixed by &quot;/&quot;.</li>
+<li>If the path is starting with more than one &quot;/&quot; and no authority is
+present, the starting slashes MUST be reduced to one.</li>
+</ul></li>
+<li>If a query is present, it MUST be prefixed by &quot;?&quot;.</li>
+<li>If a fragment is present, it MUST be prefixed by &quot;#&quot;.</li>
+</ul>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href="http://tools.ietf.org/html/rfc3986#section-4.1"><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                                    </div>
+    </section>
+
+    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="source-view-label">UriInterface.php</h3>
+        </div>
+        <div class="modal-body">
+            <pre data-src="../files/interfaces\http\UriInterface.php.txt" class="language-php"></pre>
+        </div>
+    </div>
+
+    <footer class="row-fluid">
+        <section class="span10 offset2">
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <section class="row-fluid footer-sections">
+                        <section class="span4">
+                                                        <h1><i class="icon-code"></i></h1>
+                            <div>
+                                <ul>
+                                                                            <li><a href="../namespaces/abstracts.html">\abstracts</a></li>
+                                                                            <li><a href="../namespaces/classes.html">\classes</a></li>
+                                                                            <li><a href="../namespaces/interfaces.html">\interfaces</a></li>
+                                                                            <li><a href="../namespaces/traits.html">\traits</a></li>
+                                                                    </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-bar-chart"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-pushpin"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../reports/errors.html">Errors</a></li>
+                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <hr />
+                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                    on January 25th, 2016 at 19:19.
+                </section>
+            </section>
+        </section>
+    </footer>
+</div>
+
+</body>
+</html>
