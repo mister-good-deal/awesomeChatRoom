@@ -22,12 +22,12 @@
 <text text-anchor="middle" x="982" y="-1869.2" font-family="Times New Roman,serif" font-size="11.00" fill="gray">logger</text>
 </g>
 <g id="clust5" class="cluster"><title>cluster_\classes\websocket</title>
-<path fill="none" stroke="gray" d="M713.5,-968C713.5,-968 1031.5,-968 1031.5,-968 1037.5,-968 1043.5,-974 1043.5,-980 1043.5,-980 1043.5,-1064 1043.5,-1064 1043.5,-1070 1037.5,-1076 1031.5,-1076 1031.5,-1076 713.5,-1076 713.5,-1076 707.5,-1076 701.5,-1070 701.5,-1064 701.5,-1064 701.5,-980 701.5,-980 701.5,-974 707.5,-968 713.5,-968"/>
-<text text-anchor="middle" x="872.5" y="-1063.2" font-family="Times New Roman,serif" font-size="11.00" fill="gray">websocket</text>
+<path fill="none" stroke="gray" d="M713.5,-1210C713.5,-1210 1031.5,-1210 1031.5,-1210 1037.5,-1210 1043.5,-1216 1043.5,-1222 1043.5,-1222 1043.5,-1306 1043.5,-1306 1043.5,-1312 1037.5,-1318 1031.5,-1318 1031.5,-1318 713.5,-1318 713.5,-1318 707.5,-1318 701.5,-1312 701.5,-1306 701.5,-1306 701.5,-1222 701.5,-1222 701.5,-1216 707.5,-1210 713.5,-1210"/>
+<text text-anchor="middle" x="872.5" y="-1305.2" font-family="Times New Roman,serif" font-size="11.00" fill="gray">websocket</text>
 </g>
 <g id="clust6" class="cluster"><title>cluster_\classes\websocket\services</title>
-<path fill="none" stroke="gray" d="M940.5,-976C940.5,-976 1023.5,-976 1023.5,-976 1029.5,-976 1035.5,-982 1035.5,-988 1035.5,-988 1035.5,-1036 1035.5,-1036 1035.5,-1042 1029.5,-1048 1023.5,-1048 1023.5,-1048 940.5,-1048 940.5,-1048 934.5,-1048 928.5,-1042 928.5,-1036 928.5,-1036 928.5,-988 928.5,-988 928.5,-982 934.5,-976 940.5,-976"/>
-<text text-anchor="middle" x="982" y="-1035.2" font-family="Times New Roman,serif" font-size="11.00" fill="gray">services</text>
+<path fill="none" stroke="gray" d="M940.5,-1218C940.5,-1218 1023.5,-1218 1023.5,-1218 1029.5,-1218 1035.5,-1224 1035.5,-1230 1035.5,-1230 1035.5,-1278 1035.5,-1278 1035.5,-1284 1029.5,-1290 1023.5,-1290 1023.5,-1290 940.5,-1290 940.5,-1290 934.5,-1290 928.5,-1284 928.5,-1278 928.5,-1278 928.5,-1230 928.5,-1230 928.5,-1224 934.5,-1218 940.5,-1218"/>
+<text text-anchor="middle" x="982" y="-1277.2" font-family="Times New Roman,serif" font-size="11.00" fill="gray">services</text>
 </g>
 <g id="clust3" class="cluster"><title>cluster_\classes\entitiesManager</title>
 <path fill="none" stroke="gray" d="M883,-1406C883,-1406 1081,-1406 1081,-1406 1087,-1406 1093,-1412 1093,-1418 1093,-1418 1093,-1682 1093,-1682 1093,-1688 1087,-1694 1081,-1694 1081,-1694 883,-1694 883,-1694 877,-1694 871,-1688 871,-1682 871,-1682 871,-1418 871,-1418 871,-1412 877,-1406 883,-1406"/>
@@ -37,13 +37,13 @@
 <path fill="none" stroke="gray" d="M930.5,-1326C930.5,-1326 1033.5,-1326 1033.5,-1326 1039.5,-1326 1045.5,-1332 1045.5,-1338 1045.5,-1338 1045.5,-1386 1045.5,-1386 1045.5,-1392 1039.5,-1398 1033.5,-1398 1033.5,-1398 930.5,-1398 930.5,-1398 924.5,-1398 918.5,-1392 918.5,-1386 918.5,-1386 918.5,-1338 918.5,-1338 918.5,-1332 924.5,-1326 930.5,-1326"/>
 <text text-anchor="middle" x="982" y="-1385.2" font-family="Times New Roman,serif" font-size="11.00" fill="gray">entitiesCollection</text>
 </g>
-<g id="clust8" class="cluster"><title>cluster_\classes\entities</title>
-<path fill="none" stroke="gray" d="M927,-1084C927,-1084 1037,-1084 1037,-1084 1043,-1084 1049,-1090 1049,-1096 1049,-1096 1049,-1306 1049,-1306 1049,-1312 1043,-1318 1037,-1318 1037,-1318 927,-1318 927,-1318 921,-1318 915,-1312 915,-1306 915,-1306 915,-1096 915,-1096 915,-1090 921,-1084 927,-1084"/>
-<text text-anchor="middle" x="982" y="-1305.2" font-family="Times New Roman,serif" font-size="11.00" fill="gray">entities</text>
-</g>
 <g id="clust7" class="cluster"><title>cluster_\classes\console</title>
-<path fill="none" stroke="gray" d="M934,-834C934,-834 1030,-834 1030,-834 1036,-834 1042,-840 1042,-846 1042,-846 1042,-948 1042,-948 1042,-954 1036,-960 1030,-960 1030,-960 934,-960 934,-960 928,-960 922,-954 922,-948 922,-948 922,-846 922,-846 922,-840 928,-834 934,-834"/>
-<text text-anchor="middle" x="982" y="-947.2" font-family="Times New Roman,serif" font-size="11.00" fill="gray">console</text>
+<path fill="none" stroke="gray" d="M934,-1076C934,-1076 1030,-1076 1030,-1076 1036,-1076 1042,-1082 1042,-1088 1042,-1088 1042,-1190 1042,-1190 1042,-1196 1036,-1202 1030,-1202 1030,-1202 934,-1202 934,-1202 928,-1202 922,-1196 922,-1190 922,-1190 922,-1088 922,-1088 922,-1082 928,-1076 934,-1076"/>
+<text text-anchor="middle" x="982" y="-1189.2" font-family="Times New Roman,serif" font-size="11.00" fill="gray">console</text>
+</g>
+<g id="clust8" class="cluster"><title>cluster_\classes\entities</title>
+<path fill="none" stroke="gray" d="M927,-834C927,-834 1037,-834 1037,-834 1043,-834 1049,-840 1049,-846 1049,-846 1049,-1056 1049,-1056 1049,-1062 1043,-1068 1037,-1068 1037,-1068 927,-1068 927,-1068 921,-1068 915,-1062 915,-1056 915,-1056 915,-846 915,-846 915,-840 921,-834 927,-834"/>
+<text text-anchor="middle" x="982" y="-1055.2" font-family="Times New Roman,serif" font-size="11.00" fill="gray">entities</text>
 </g>
 <g id="clust10" class="cluster"><title>cluster_\interfaces</title>
 <path fill="none" stroke="gray" d="M28,-1918C28,-1918 601,-1918 601,-1918 607,-1918 613,-1924 613,-1930 613,-1930 613,-2276 613,-2276 613,-2282 607,-2288 601,-2288 601,-2288 28,-2288 28,-2288 22,-2288 16,-2282 16,-2276 16,-2276 16,-1930 16,-1930 16,-1924 22,-1918 28,-1918"/>
@@ -154,18 +154,18 @@
 </g>
 <!-- \\classes\\websocket\\services\\ChatService -->
 <g id="node9" class="node"><title>\\classes\\websocket\\services\\ChatService</title>
-<polygon fill="none" stroke="black" points="1027.5,-1020 936.5,-1020 936.5,-984 1027.5,-984 1027.5,-1020"/>
-<text text-anchor="middle" x="982" y="-999.2" font-family="Courier,monospace" font-size="11.00">ChatService</text>
+<polygon fill="none" stroke="black" points="1027.5,-1262 936.5,-1262 936.5,-1226 1027.5,-1226 1027.5,-1262"/>
+<text text-anchor="middle" x="982" y="-1241.2" font-family="Courier,monospace" font-size="11.00">ChatService</text>
 </g>
 <!-- \\classes\\websocket\\Server -->
 <g id="node10" class="node"><title>\\classes\\websocket\\Server</title>
-<polygon fill="none" stroke="black" points="766.5,-1020 709.5,-1020 709.5,-984 766.5,-984 766.5,-1020"/>
-<text text-anchor="middle" x="738" y="-999.2" font-family="Courier,monospace" font-size="11.00">Server</text>
+<polygon fill="none" stroke="black" points="766.5,-1262 709.5,-1262 709.5,-1226 766.5,-1226 766.5,-1262"/>
+<text text-anchor="middle" x="738" y="-1241.2" font-family="Courier,monospace" font-size="11.00">Server</text>
 </g>
 <!-- \\classes\\websocket\\services\\ChatService&#45;&gt;\\classes\\websocket\\Server -->
 <g id="edge2" class="edge"><title>\\classes\\websocket\\services\\ChatService&#45;&gt;\\classes\\websocket\\Server</title>
-<path fill="none" stroke="black" d="M936.331,-1002C890.532,-1002 820.073,-1002 776.906,-1002"/>
-<polygon fill="none" stroke="black" points="776.814,-998.5 766.814,-1002 776.813,-1005.5 776.814,-998.5"/>
+<path fill="none" stroke="black" d="M936.331,-1244C890.532,-1244 820.073,-1244 776.906,-1244"/>
+<polygon fill="none" stroke="black" points="776.814,-1240.5 766.814,-1244 776.813,-1247.5 776.814,-1240.5"/>
 </g>
 <!-- \\interfaces\\ServiceInterface -->
 <g id="node32" class="node"><title>\\interfaces\\ServiceInterface</title>
@@ -174,23 +174,23 @@
 </g>
 <!-- \\classes\\websocket\\services\\ChatService&#45;&gt;\\interfaces\\ServiceInterface -->
 <g id="edge3" class="edge"><title>\\classes\\websocket\\services\\ChatService&#45;&gt;\\interfaces\\ServiceInterface</title>
-<path fill="none" stroke="black" stroke-dasharray="1,5" d="M939.011,-1020.09C914.605,-1032.99 885.823,-1052.88 871,-1080 806.868,-1197.32 911.715,-2189.69 815,-2282 765.489,-2329.26 713.608,-2325.78 661,-2282 570.681,-2206.83 693.613,-2107.5 613,-2022 605.795,-2014.36 596.582,-2008.98 586.704,-2005.23"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M939.399,-1262C914.977,-1274.93 886.038,-1294.87 871,-1322 819.2,-1415.45 892.722,-2208.68 815,-2282 765.213,-2328.97 713.608,-2325.78 661,-2282 570.681,-2206.83 693.613,-2107.5 613,-2022 605.795,-2014.36 596.582,-2008.98 586.704,-2005.23"/>
 <polygon fill="none" stroke="black" points="587.666,-2001.87 577.074,-2002.11 585.508,-2008.53 587.666,-2001.87"/>
 </g>
 <!-- \\classes\\console\\Console -->
 <g id="node11" class="node"><title>\\classes\\console\\Console</title>
-<polygon fill="none" stroke="black" points="1014,-932 950,-932 950,-896 1014,-896 1014,-932"/>
-<text text-anchor="middle" x="982" y="-911.2" font-family="Courier,monospace" font-size="11.00">Console</text>
+<polygon fill="none" stroke="black" points="1014,-1174 950,-1174 950,-1138 1014,-1138 1014,-1174"/>
+<text text-anchor="middle" x="982" y="-1153.2" font-family="Courier,monospace" font-size="11.00">Console</text>
 </g>
 <!-- \\classes\\console\\ConsoleColors -->
 <g id="node12" class="node"><title>\\classes\\console\\ConsoleColors</title>
-<polygon fill="none" stroke="black" points="1034,-878 930,-878 930,-842 1034,-842 1034,-878"/>
-<text text-anchor="middle" x="982" y="-857.2" font-family="Courier,monospace" font-size="11.00">ConsoleColors</text>
+<polygon fill="none" stroke="black" points="1034,-1120 930,-1120 930,-1084 1034,-1084 1034,-1120"/>
+<text text-anchor="middle" x="982" y="-1099.2" font-family="Courier,monospace" font-size="11.00">ConsoleColors</text>
 </g>
 <!-- \\classes\\entities\\UsersRights -->
 <g id="node13" class="node"><title>\\classes\\entities\\UsersRights</title>
-<polygon fill="none" stroke="black" points="1027.5,-1290 936.5,-1290 936.5,-1254 1027.5,-1254 1027.5,-1290"/>
-<text text-anchor="middle" x="982" y="-1269.2" font-family="Courier,monospace" font-size="11.00">UsersRights</text>
+<polygon fill="none" stroke="black" points="1027.5,-1040 936.5,-1040 936.5,-1004 1027.5,-1004 1027.5,-1040"/>
+<text text-anchor="middle" x="982" y="-1019.2" font-family="Courier,monospace" font-size="11.00">UsersRights</text>
 </g>
 <!-- \\abstracts\\designPatterns\\Entity -->
 <g id="node39" class="node"><title>\\abstracts\\designPatterns\\Entity</title>
@@ -200,38 +200,38 @@
 </g>
 <!-- \\classes\\entities\\UsersRights&#45;&gt;\\abstracts\\designPatterns\\Entity -->
 <g id="edge5" class="edge"><title>\\classes\\entities\\UsersRights&#45;&gt;\\abstracts\\designPatterns\\Entity</title>
-<path fill="none" stroke="black" d="M936.451,-1280.84C913.06,-1287.91 886.175,-1300.36 871,-1322 780.387,-1451.22 914.726,-1907.68 815,-2030 808.62,-2037.83 799.639,-2042.97 790.076,-2046.33"/>
-<polygon fill="none" stroke="black" points="789.03,-2042.99 780.394,-2049.13 790.973,-2049.71 789.03,-2042.99"/>
+<path fill="none" stroke="black" d="M936.278,-1030.72C912.833,-1037.75 885.952,-1050.2 871,-1072 750.364,-1247.85 948.045,-1863.34 815,-2030 808.637,-2037.97 799.572,-2043.17 789.907,-2046.53"/>
+<polygon fill="none" stroke="black" points="788.78,-2043.21 780.12,-2049.32 790.696,-2049.95 788.78,-2043.21"/>
 </g>
 <!-- \\classes\\entities\\UsersChatRights -->
 <g id="node14" class="node"><title>\\classes\\entities\\UsersChatRights</title>
-<polygon fill="none" stroke="black" points="1041,-1236 923,-1236 923,-1200 1041,-1200 1041,-1236"/>
-<text text-anchor="middle" x="982" y="-1215.2" font-family="Courier,monospace" font-size="11.00">UsersChatRights</text>
+<polygon fill="none" stroke="black" points="1041,-986 923,-986 923,-950 1041,-950 1041,-986"/>
+<text text-anchor="middle" x="982" y="-965.2" font-family="Courier,monospace" font-size="11.00">UsersChatRights</text>
 </g>
 <!-- \\classes\\entities\\UsersChatRights&#45;&gt;\\abstracts\\designPatterns\\Entity -->
 <g id="edge6" class="edge"><title>\\classes\\entities\\UsersChatRights&#45;&gt;\\abstracts\\designPatterns\\Entity</title>
-<path fill="none" stroke="black" d="M922.938,-1219.01C903.628,-1222.41 883.805,-1229.82 871,-1245 758.246,-1378.69 924.985,-1894.03 815,-2030 808.586,-2037.93 799.499,-2043.11 789.83,-2046.47"/>
-<polygon fill="none" stroke="black" points="788.703,-2043.15 780.043,-2049.26 790.62,-2049.88 788.703,-2043.15"/>
+<path fill="none" stroke="black" d="M922.794,-968.891C903.469,-972.281 883.674,-979.709 871,-995 724.014,-1172.34 958.313,-1849.68 815,-2030 808.654,-2037.98 799.596,-2043.19 789.933,-2046.55"/>
+<polygon fill="none" stroke="black" points="788.806,-2043.23 780.146,-2049.34 790.722,-2049.97 788.806,-2043.23"/>
 </g>
 <!-- \\classes\\entities\\UserStatistics -->
 <g id="node15" class="node"><title>\\classes\\entities\\UserStatistics</title>
-<polygon fill="none" stroke="black" points="1037.5,-1182 926.5,-1182 926.5,-1146 1037.5,-1146 1037.5,-1182"/>
-<text text-anchor="middle" x="982" y="-1161.2" font-family="Courier,monospace" font-size="11.00">UserStatistics</text>
+<polygon fill="none" stroke="black" points="1037.5,-932 926.5,-932 926.5,-896 1037.5,-896 1037.5,-932"/>
+<text text-anchor="middle" x="982" y="-911.2" font-family="Courier,monospace" font-size="11.00">UserStatistics</text>
 </g>
 <!-- \\classes\\entities\\UserStatistics&#45;&gt;\\abstracts\\designPatterns\\Entity -->
 <g id="edge7" class="edge"><title>\\classes\\entities\\UserStatistics&#45;&gt;\\abstracts\\designPatterns\\Entity</title>
-<path fill="none" stroke="black" d="M926.335,-1164.42C905.965,-1167.52 884.529,-1174.89 871,-1191 750.855,-1334.11 932.181,-1884.45 815,-2030 808.604,-2037.94 799.525,-2043.13 789.857,-2046.49"/>
-<polygon fill="none" stroke="black" points="788.73,-2043.17 780.071,-2049.28 790.647,-2049.91 788.73,-2043.17"/>
+<path fill="none" stroke="black" d="M926.495,-914.268C906.021,-917.336 884.468,-924.707 871,-941 716.616,-1127.77 965.515,-1840.09 815,-2030 808.665,-2037.99 799.611,-2043.2 789.949,-2046.57"/>
+<polygon fill="none" stroke="black" points="788.822,-2043.25 780.162,-2049.35 790.738,-2049.98 788.822,-2043.25"/>
 </g>
 <!-- \\classes\\entities\\User -->
 <g id="node16" class="node"><title>\\classes\\entities\\User</title>
-<polygon fill="none" stroke="black" points="1009,-1128 955,-1128 955,-1092 1009,-1092 1009,-1128"/>
-<text text-anchor="middle" x="982" y="-1107.2" font-family="Courier,monospace" font-size="11.00">User</text>
+<polygon fill="none" stroke="black" points="1009,-878 955,-878 955,-842 1009,-842 1009,-878"/>
+<text text-anchor="middle" x="982" y="-857.2" font-family="Courier,monospace" font-size="11.00">User</text>
 </g>
 <!-- \\classes\\entities\\User&#45;&gt;\\abstracts\\designPatterns\\Entity -->
 <g id="edge9" class="edge"><title>\\classes\\entities\\User&#45;&gt;\\abstracts\\designPatterns\\Entity</title>
-<path fill="none" stroke="black" d="M954.709,-1108.36C929.105,-1108.35 891.181,-1112.86 871,-1137 743.461,-1289.54 939.379,-1874.87 815,-2030 808.62,-2037.96 799.548,-2043.15 789.881,-2046.51"/>
-<polygon fill="none" stroke="black" points="788.754,-2043.19 780.095,-2049.3 790.671,-2049.93 788.754,-2043.19"/>
+<path fill="none" stroke="black" d="M954.639,-858.302C928.98,-858.247 891.016,-862.725 871,-887 709.218,-1083.21 972.718,-1830.51 815,-2030 808.675,-2038 799.625,-2043.21 789.964,-2046.58"/>
+<polygon fill="none" stroke="black" points="788.837,-2043.26 780.177,-2049.36 790.753,-2049.99 788.837,-2043.26"/>
 </g>
 <!-- \\classes\\entitiesCollection\\UserCollection -->
 <g id="node17" class="node"><title>\\classes\\entitiesCollection\\UserCollection</title>
