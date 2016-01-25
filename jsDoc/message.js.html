@@ -20,8 +20,13 @@
 <div class="container">
 	<div class="navbar-header">
 		<a class="navbar-brand" href="index.html">WebSocket services / AMD modules</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
 	</div>
-	<div class="navbar-collapse">
+	<div class="navbar-collapse collapse" id="topNavigation">
 		<ul class="nav navbar-nav">
 			
 			<li class="dropdown">
@@ -31,36 +36,61 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="-_.html">_</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#requirejs">requirejs</a></li><li><a href="global.html#toUrl">toUrl</a></li>
+				</ul>
+			</li>
+			
 		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
 	</div>
+
 </div>
 </div>
 
 
-<div class="container">
+<div class="container" id="toc-content">
 <div class="row">
 
 	
 	<div class="col-md-12">
 	
 		<div id="main">
-    		<h1 class="page-title">Source: message.js</h1>
 			
 
 		<h1 class="page-title">Source: message.js</h1>
     
 <section>
-	<article>
-		<pre
-			class="sunlight-highlight-javascript linenums">/**
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/**
  * Message module
  *
  * @module lib/message
  */
 
-/*global define*/
-
-define(['jquery', 'module'], function ($, module) {
+define([
+    'jquery',
+    'module'
+], function ($, module) {
     'use strict';
 
     /**
@@ -68,10 +98,10 @@ define(['jquery', 'module'], function ($, module) {
      *
      * @constructor
      * @alias       module:lib/message
-     * @param       {object} settings Overriden settings
+     * @param       {Object} settings Overriden settings
      */
     var Message = function (settings) {
-        this.settings  = $.extend(true, {}, this.settings, settings);
+        this.settings = $.extend(true, {}, this.settings, settings);
         this.initEvents();
     };
 
@@ -80,14 +110,14 @@ define(['jquery', 'module'], function ($, module) {
          * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
          */
         "settings": {
-            "alert": {
+            "alert"       : {
                 "divId"          : module.config().alert.divId,
                 "dismissClass"   : module.config().alert.dismissClass,
                 "defaultDuration": module.config().alert.defaultDuration,
                 "queue"          : [],
                 "lock"           : false
             },
-            "popup": {
+            "popup"       : {
                 "divId"          : module.config().popup.divId,
                 "dismissClass"   : module.config().popup.dismissClass,
                 "defaultDuration": module.config().popup.defaultDuration,
@@ -132,18 +162,18 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Display a message on a large alert div at the top of the user screen
          *
-         * @param {object} message The message to display
+         * @param {Object} message The message to display
          */
         alert: function (message) {
             this.settings.alert.lock = true;
-            // var alert = $('#' + this.settings.alert.divId);
+            // Var alert = $('#' + this.settings.alert.divId);
             console.log('alert', message);
         },
 
         /**
          * Display a message on a modal to the user screen
          *
-         * @param {object} message The message to display
+         * @param {Object} message The message to display
          */
         popup: function (message) {
             this.settings.popup.lock = true;
@@ -153,7 +183,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Display a message on a medium div at the bottom-right of the user screen
          *
-         * @param {object} message The message to display
+         * @param {Object} message The message to display
          */
         notification: function (message) {
             this.settings.notification.lock = true;
@@ -196,11 +226,11 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Add a message in a specific queue to display it
          *
-         * @param {string}  text     The message text to display
-         * @param {string}  type     The message type ("alert", "popup", "notification")
-         * @param {string}  level    The message level ("danger", "warning", "info", "success")
-         * @param {string}  title    The message title
-         * @param {integer} duration The message maximum duration before dismiss (-1 for infinite)
+         * @param {String} text     The message text to display
+         * @param {String} type     The message type ("alert", "popup", "notification")
+         * @param {String} level    The message level ("danger", "warning", "info", "success")
+         * @param {String} title    The message title
+         * @param {Number} duration The message maximum duration before dismiss (-1 for infinite)
          */
         add: function (text, type, level, title, duration) {
             if (!type) {
@@ -209,8 +239,8 @@ define(['jquery', 'module'], function ($, module) {
 
             this.settings[type].queue.push({
                 "text"    : text,
-                "level"   : level    || this.settings.defaultLevel,
-                "title"   : title    || '',
+                "level"   : level || this.settings.defaultLevel,
+                "title"   : title || '',
                 "duration": duration || this.settings[type].defaultDuration
             });
 
@@ -220,7 +250,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Parse the WebSocket server response to notify it
          *
-         * @param {object} data JSON encoded data recieved from the WebSocket server
+         * @param {Object} data JSON encoded data recieved from the WebSocket server
          */
         parseWebsocketData: function (data) {
             this.add(data.text, data.type, data.level, data.title, data.duration);
@@ -229,18 +259,21 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Dequeue a message from the specific queue if the queue is not empty and the queue is not locked
          *
-         * @param {string} type The message type ("alert", "popup", "notification")
+         * @param {String} type The message type ("alert", "popup", "notification")
          */
         dequeueMessage: function (type) {
+            var message,
+                dismissMethod,
+                self;
+
             if (!this.settings[type].lock) {
-                var message       = this.settings[type].queue.shift(),
-                    dismissMethod = type + 'Dismiss',
-                    self          = this;
+                message = this.settings[type].queue.shift();
+                dismissMethod = type + 'Dismiss';
+                self = this;
 
                 if (message) {
                     // Call the specific method to output the message
                     this[type](message);
-
                     // Auto dismiss the message after message.duration seconds
                     setTimeout(function () {
                         self[dismissMethod]();
@@ -248,12 +281,12 @@ define(['jquery', 'module'], function ($, module) {
                 }
             }
         }
-        
     };
 
     return Message;
-});</pre>
-	</article>
+});
+</pre>
+    </article>
 </section>
 
 
@@ -270,6 +303,20 @@ define(['jquery', 'module'], function ($, module) {
 </div>
 </div>
 
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
 
 <footer>
 
@@ -277,19 +324,19 @@ define(['jquery', 'module'], function ($, module) {
 	<span class="copyright">
 	DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.
 	</span>
-	<br />
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
-	on 2015-09-07 14:21:43 using the <a
-	href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-01-25 19:37:59
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
 </footer>
 
-<!--<script src="scripts/sunlight.js"></script>-->
 <script src="scripts/docstrap.lib.js"></script>
-<script src="scripts/bootstrap-dropdown.js"></script>
 <script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
 
 <script>
 $( function () {
@@ -298,20 +345,6 @@ $( function () {
 
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
-
-	$( "#toc" ).toc( {
-		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
-		},
-		selectors   : "h1,h2,h3,h4",
-		showAndHide : false,
-		scrollTo    : "100px"
-	} );
-
-	$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
-	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-	$( '.dropdown-toggle' ).dropdown();
-	//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
 
 	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
 		var $this = $( this );
@@ -324,7 +357,8 @@ $( function () {
 			example.html( exampleText );
 			lang = lang[1];
 		} else {
-			lang = "javascript";
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
 		}
 
 		if ( lang ) {
@@ -342,6 +376,28 @@ $( function () {
 		showMenu : true,
 		enableDoclinks : true
 	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
 } );
 </script>
 
@@ -352,6 +408,12 @@ $( function () {
 
 <!--Google Analytics-->
 
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
 
 </body>
 </html>

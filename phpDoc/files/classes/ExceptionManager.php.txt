@@ -100,7 +100,7 @@ class ExceptionManager extends \Exception
     /**
      * Remove a logger to the implemented logger
      *
-     * @param  int $loggerType The logger type
+     * @param int $loggerType The logger type
      */
     public function removeLogger($loggerType)
     {

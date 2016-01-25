@@ -20,8 +20,13 @@
 <div class="container">
 	<div class="navbar-header">
 		<a class="navbar-brand" href="index.html">WebSocket services / AMD modules</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
 	</div>
-	<div class="navbar-collapse">
+	<div class="navbar-collapse collapse" id="topNavigation">
 		<ul class="nav navbar-nav">
 			
 			<li class="dropdown">
@@ -31,36 +36,61 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="-_.html">_</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#requirejs">requirejs</a></li><li><a href="global.html#toUrl">toUrl</a></li>
+				</ul>
+			</li>
+			
 		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
 	</div>
+
 </div>
 </div>
 
 
-<div class="container">
+<div class="container" id="toc-content">
 <div class="row">
 
 	
 	<div class="col-md-12">
 	
 		<div id="main">
-    		<h1 class="page-title">Source: websocket.js</h1>
 			
 
 		<h1 class="page-title">Source: websocket.js</h1>
     
 <section>
-	<article>
-		<pre
-			class="sunlight-highlight-javascript linenums">/**
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/**
  * Websocket module
  *
  * @module lib/websocket
  */
 
-/*global define, WebSocket*/
-
-define(['jquery', 'module'], function ($, module) {
+define([
+    'jquery',
+    'module'
+], function ($, module) {
     'use strict';
 
     /**
@@ -68,33 +98,28 @@ define(['jquery', 'module'], function ($, module) {
      *
      * @constructor
      * @alias       module:lib/websocket
-     * @param       {Message} Message  A Message object to output message in the IHM
      * @param       {User}    User     The current User
-     * @param       {object}  settings Overriden settings
+     * @param       {Object}  settings Overriden settings
      */
-    var WebsocketManager = function (Message, User, settings) {
-        this.settings = $.extend(true, {}, this.settings, settings);
-        this.message  = Message;
-        this.user     = User;
-        this.init();
-    };
+    var WebsocketManager = function (User, settings) {
+            this.settings = $.extend(true, {}, this.settings, settings);
+            this.user     = User;
+            this.init();
+        };
 
     WebsocketManager.prototype = {
         /**
          * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
          */
         "settings": {
-            "serverUrl"  : module.config().serverUrl,
-            "serviceName": module.config().serviceName
+            "serverUrl"   : module.config().serverUrl,
+            "serviceName" : module.config().serviceName,
+            "waitInterval": module.config().waitInterval
         },
         /**
          * The websocket ressource
          */
         "socket": {},
-        /**
-         * A Message object to output message in the IHM
-         */
-        "message": {},
         /**
          * The current User instance
          */
@@ -142,12 +167,20 @@ define(['jquery', 'module'], function ($, module) {
         },
 
         /**
-         * Shorthand method to send data to the WebSocket server
+         * Shorthand method to send data to the WebSocket server or delay until the websocket is ready
          *
-         * @param {string} data Data to send to the WebSocket server
+         * @param {String} data Data to send to the WebSocket server
          */
         send: function (data) {
-            this.socket.send(data);
+            var self = this;
+
+            if (this.socket.readyState !== 1) {
+                setTimeout(function () {
+                    self.send(data);
+                }, self.settings.waitInterval);
+            } else {
+                this.socket.send(data);
+            }
         },
 
         /**
@@ -162,7 +195,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Treat data recieved from the WebSocket server
          *
-         * @param {string} data The text data recieved from the WebSocket server
+         * @param {String} data The text data recieved from the WebSocket server
          */
         treatData: function (data) {
             data = JSON.parse(data);
@@ -178,9 +211,9 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Add a callback to process data recieved from the WebSocket server
          *
-         * @param {string}   serviceName The callback service name
-         * @param {function} callback    The callback function
-         * @param {object}   context     The callback context
+         * @param {String}   serviceName The callback service name
+         * @param {Function} callback    The callback function
+         * @param {Object}   context     The callback context
          */
         addCallback: function (serviceName, callback, context) {
             this.callbacks[serviceName] = {
@@ -192,7 +225,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Add a service to the WebSocket server
          *
-         * @param {string} serviceName The service name to add to the WebSocket server
+         * @param {String} serviceName The service name to add to the WebSocket server
          */
         addService: function (serviceName) {
             this.socket.send(JSON.stringify({
@@ -206,7 +239,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Remove a service from the WebSocket server
          *
-         * @param {string} serviceName The service name to remove from the WebSocket server
+         * @param {String} serviceName The service name to remove from the WebSocket server
          */
         removeService: function (serviceName) {
             this.socket.send(JSON.stringify({
@@ -232,7 +265,7 @@ define(['jquery', 'module'], function ($, module) {
         /**
          * Parse the WebSocket server response to retrieve the services list
          *
-         * @param {object} data JSON encoded data recieved from the WebSocket server
+         * @param {Object} data JSON encoded data recieved from the WebSocket server
          */
         listServiceCallback: function (data) {
             console.log(data.services);
@@ -240,8 +273,9 @@ define(['jquery', 'module'], function ($, module) {
     };
 
     return WebsocketManager;
-});</pre>
-	</article>
+});
+</pre>
+    </article>
 </section>
 
 
@@ -258,6 +292,20 @@ define(['jquery', 'module'], function ($, module) {
 </div>
 </div>
 
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
 
 <footer>
 
@@ -265,19 +313,19 @@ define(['jquery', 'module'], function ($, module) {
 	<span class="copyright">
 	DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.
 	</span>
-	<br />
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
-	on 2015-09-07 14:21:43 using the <a
-	href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-01-25 19:37:59
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
 </footer>
 
-<!--<script src="scripts/sunlight.js"></script>-->
 <script src="scripts/docstrap.lib.js"></script>
-<script src="scripts/bootstrap-dropdown.js"></script>
 <script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
 
 <script>
 $( function () {
@@ -286,20 +334,6 @@ $( function () {
 
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
-
-	$( "#toc" ).toc( {
-		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
-		},
-		selectors   : "h1,h2,h3,h4",
-		showAndHide : false,
-		scrollTo    : "100px"
-	} );
-
-	$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
-	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-	$( '.dropdown-toggle' ).dropdown();
-	//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
 
 	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
 		var $this = $( this );
@@ -312,7 +346,8 @@ $( function () {
 			example.html( exampleText );
 			lang = lang[1];
 		} else {
-			lang = "javascript";
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
 		}
 
 		if ( lang ) {
@@ -330,6 +365,28 @@ $( function () {
 		showMenu : true,
 		enableDoclinks : true
 	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
 } );
 </script>
 
@@ -340,6 +397,12 @@ $( function () {
 
 <!--Google Analytics-->
 
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
 
 </body>
 </html>

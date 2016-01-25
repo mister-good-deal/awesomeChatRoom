@@ -70,9 +70,9 @@ class FileLogger extends AbstractLogger
     /**
      * Utility methods to format and write the log in a file
      *
-     * @param  string $message The error message to write
-     * @param  array  $context The Exception context
-     * @todo                   Use the context
+     * @param string $message The error message to write
+     * @param array  $context The Exception context
+     * @todo  Use the context
      */
     private function writeInFile($message, $context)
     {

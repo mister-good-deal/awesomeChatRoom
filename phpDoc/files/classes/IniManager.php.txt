@@ -16,7 +16,7 @@ use \classes\LoggerManager as Logger;
  * Can set and get any parameter in the given ini file.
  *
  * @class IniManager
- * @todo make this class non static
+ * @todo  make this class non static
  */
 class IniManager
 {
@@ -103,8 +103,8 @@ class IniManager
     /**
      * Get the param value of the specified section
      *
-     * @param  string    $section The section name
-     * @param  string    $param   The param name
+     * @param  string $section The section name
+     * @param  string $param   The param name
      * @throws Exception          If the param name is not a string
      * @throws Exception          If the param doesn't exist in the specified section
      * @return mixed              The param value (can be any type)
@@ -132,7 +132,7 @@ class IniManager
     /**
      * Get all the parameters of the specified section
      *
-     * @param  string       $section The section name
+     * @param  string $section The section name
      * @throws Exception             If each final section type is not a string
      * @throws Exception             If any section doesn't exist in the ini file
      * @return array                 An array containing all the params values
@@ -247,8 +247,8 @@ class IniManager
     /**
      * Set a section comment in the ini file
      *
-     * @param  string    $section The section name
-     * @param  string    $comment The comment string
+     * @param  string $section The section name
+     * @param  string $comment The comment string
      * @throws exception          If section does not exist
      */
     public static function setSectionComment($section = null, $comment = '')
@@ -266,9 +266,9 @@ class IniManager
     /**
      * Set a param comment in the ini file
      *
-     * @param  string    $section The section name
-     * @param  string    $param   The param name
-     * @param  string    $comment The comment string
+     * @param  string $section The section name
+     * @param  string $param   The param name
+     * @param  string $comment The comment string
      * @throws exception          If section does not exist
      * @throws exception          If param does not exist for the section
      */
@@ -300,7 +300,7 @@ class IniManager
     /**
      * Check if the section exists in teh ini file
      *
-     * @param  string  $section The section name
+     * @param  string $section The section name
      * @return boolean          Section exists
      */
     private static function sectionExists($section)
@@ -311,8 +311,8 @@ class IniManager
     /**
      * Check if the parameter exists in the specified section
      *
-     * @param  string  $section The section name
-     * @param  string  $param   The parameter name
+     * @param  string $section The section name
+     * @param  string $param   The parameter name
      * @return boolean          Parameter exists
      */
     private static function paramExists($section, $param)
@@ -396,7 +396,7 @@ class IniManager
     /**
      * Get the max characters length parameters name
      *
-     * @param  array   $attributes   Parameters as associativ array
+     * @param  array $attributes Parameters as associativ array
      * @return integer               The max length parameter name
      */
     private static function getMaxLength($attributes)
@@ -515,7 +515,7 @@ class IniManager
      * Helper to parse an ini conf file and get all the params comments into an array
      *
      * @return array Multi dimensional array containg all the params comments
-     * @todo debug
+     * @todo   debug
      */
     private static function parseParamsComments()
     {

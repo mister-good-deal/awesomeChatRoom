@@ -120,7 +120,7 @@ class LoggerManager
     /**
      * Check if a logger is already implemented
      *
-     * @param  int  $loggerType The logger type
+     * @param  int $loggerType The logger type
      * @return boolean          True if the logger is already implemented else false
      */
     private function hasLogger($loggerType)

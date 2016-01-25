@@ -70,7 +70,7 @@ abstract class EntityManager
     /**
      * Set the entity object
      *
-     * @param  Entity    $entity The new entity oject
+     * @param  Entity $entity The new entity oject
      * @throws Exception         If the entity is not a subclass of Entity
      */
     public function setEntity($entity)
@@ -119,7 +119,7 @@ abstract class EntityManager
     /**
      * Load an entity by its id
      *
-     * @param  int|array The id value
+     * @param int|array The id value
      */
     public function loadEntity($id)
     {

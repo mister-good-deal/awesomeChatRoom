@@ -20,8 +20,13 @@
 <div class="container">
 	<div class="navbar-header">
 		<a class="navbar-brand" href="index.html">WebSocket services / AMD modules</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
 	</div>
-	<div class="navbar-collapse">
+	<div class="navbar-collapse collapse" id="topNavigation">
 		<ul class="nav navbar-nav">
 			
 			<li class="dropdown">
@@ -31,20 +36,44 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="-_.html">_</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#requirejs">requirejs</a></li><li><a href="global.html#toUrl">toUrl</a></li>
+				</ul>
+			</li>
+			
 		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
 	</div>
+
 </div>
 </div>
 
 
-<div class="container">
+<div class="container" id="toc-content">
 <div class="row">
 
 	
 	<div class="col-md-8">
 	
 		<div id="main">
-    		<h1 class="page-title">Module: lib/chat</h1>
 			
 
 	<h1 class="page-title">Module: lib/chat</h1>
@@ -68,13 +97,14 @@
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="module:lib/chat"><span class="type-signature"></span>new (require("lib/chat"))<span class="signature">(Message, WebSocket, User, settings)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="module:lib/chat"><span class="type-signature"></span>new (require("lib/chat"))(WebSocket, User, Forms, settings)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         ChatManager object
@@ -84,7 +114,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -92,46 +122,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>Message</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Message</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">A Message object to output message in the IHM</td>
-        </tr>
-
-	
+    <tbody>
+    
 
         <tr>
             
@@ -144,6 +151,7 @@
 <span class="param-type">WebSocket</span>
 
 
+
             
             </td>
 
@@ -154,7 +162,7 @@
             <td class="description last">The websocket manager</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -167,6 +175,7 @@
 <span class="param-type">User</span>
 
 
+
             
             </td>
 
@@ -177,7 +186,31 @@
             <td class="description last">The current User</td>
         </tr>
 
-	
+    
+
+        <tr>
+            
+                <td class="name"><code>Forms</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">FormsManager</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A FormsManager to handle form XHR ajax calls or jsCallbacks</td>
+        </tr>
+
+    
 
         <tr>
             
@@ -187,7 +220,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -200,15 +234,15 @@
             <td class="description last">Overriden settings</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -237,12 +271,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-22">line 22</a>
+				 <a href="chat.js.html#sunlight-1-line-28">line 28</a>
 			</li>
 		</ul>
 	</dd>
@@ -255,7 +289,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -263,11 +301,7 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
@@ -290,6 +324,7 @@
 
         <dl>
             
+<hr>
 <dt class="name" id="commands">
     <h4><span class="type-signature"></span>commands<span class="type-signature"></span></h4>
 
@@ -306,7 +341,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -335,12 +370,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-91">line 91</a>
+				 <a href="chat.js.html#sunlight-1-line-148">line 148</a>
 			</li>
 		</ul>
 	</dd>
@@ -359,15 +394,16 @@
 
         
             
-<dt class="name" id="message">
-    <h4><span class="type-signature"></span>message<span class="type-signature"></span></h4>
+<hr>
+<dt class="name" id="isRoomOpened">
+    <h4><span class="type-signature"></span>isRoomOpened<span class="type-signature"></span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        A Message object to output message in the IHM
+        Monitor if a room is opened or not
     </div>
     
 
@@ -375,7 +411,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -404,12 +440,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-98">line 98</a>
+				 <a href="chat.js.html#sunlight-1-line-175">line 175</a>
 			</li>
 		</ul>
 	</dd>
@@ -428,6 +464,77 @@
 
         
             
+<hr>
+<dt class="name" id="messagesCurrent">
+    <h4><span class="type-signature"></span>messagesCurrent<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The current user message (not sent) by room
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-159">line 159</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
 <dt class="name" id="messagesHistory">
     <h4><span class="type-signature"></span>messagesHistory<span class="type-signature"></span></h4>
 
@@ -436,7 +543,7 @@
 <dd>
     
     <div class="description">
-        A messages sent history
+        A messages sent history by room
     </div>
     
 
@@ -444,7 +551,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -473,12 +580,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-106">line 106</a>
+				 <a href="chat.js.html#sunlight-1-line-163">line 163</a>
 			</li>
 		</ul>
 	</dd>
@@ -497,6 +604,7 @@
 
         
             
+<hr>
 <dt class="name" id="messagesHistoryPointer">
     <h4><span class="type-signature"></span>messagesHistoryPointer<span class="type-signature"></span></h4>
 
@@ -505,7 +613,7 @@
 <dd>
     
     <div class="description">
-        Pointer in the array messagesHistory
+        Pointer in the array messagesHistory by room
     </div>
     
 
@@ -513,7 +621,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -542,12 +650,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-110">line 110</a>
+				 <a href="chat.js.html#sunlight-1-line-167">line 167</a>
 			</li>
 		</ul>
 	</dd>
@@ -566,6 +674,147 @@
 
         
             
+<hr>
+<dt class="name" id="mouseInRoomChat">
+    <h4><span class="type-signature"></span>mouseInRoomChat<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Monitor mouse position when it is in or out a room chat div
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-171">line 171</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="promises">
+    <h4><span class="type-signature"></span>promises<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Global promises handler
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-142">line 142</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
 <dt class="name" id="serviceRunning">
     <h4><span class="type-signature"></span>serviceRunning<span class="type-signature"></span></h4>
 
@@ -582,7 +831,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -611,12 +860,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-118">line 118</a>
+				 <a href="chat.js.html#sunlight-1-line-183">line 183</a>
 			</li>
 		</ul>
 	</dd>
@@ -635,6 +884,7 @@
 
         
             
+<hr>
 <dt class="name" id="settings">
     <h4><span class="type-signature"></span>settings<span class="type-signature"></span></h4>
 
@@ -651,7 +901,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -680,12 +930,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-41">line 41</a>
+				 <a href="chat.js.html#sunlight-1-line-58">line 58</a>
 			</li>
 		</ul>
 	</dd>
@@ -704,6 +954,7 @@
 
         
             
+<hr>
 <dt class="name" id="user">
     <h4><span class="type-signature"></span>user<span class="type-signature"></span></h4>
 
@@ -720,7 +971,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -749,12 +1000,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-114">line 114</a>
+				 <a href="chat.js.html#sunlight-1-line-179">line 179</a>
 			</li>
 		</ul>
 	</dd>
@@ -773,6 +1024,7 @@
 
         
             
+<hr>
 <dt class="name" id="websocket">
     <h4><span class="type-signature"></span>websocket<span class="type-signature"></span></h4>
 
@@ -789,7 +1041,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -818,12 +1070,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-102">line 102</a>
+				 <a href="chat.js.html#sunlight-1-line-155">line 155</a>
 			</li>
 		</ul>
 	</dd>
@@ -848,23 +1100,24 @@
 
         <dl>
             
+<hr>
 <dt>
-    <h4 class="name" id="chatCallback"><span class="type-signature"></span>chatCallback<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="banUser"><span class="type-signature"></span>banUser(roomName, pseudonym, reason)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Handle the WebSocker server response and process action then
+        Ban a user from a room
     </div>
     
 
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -872,318 +1125,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>data</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The server JSON reponse</td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-440">line 440</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
+    <tr>
         
-            
-<dt>
-    <h4 class="name" id="chatTextKeyPressEvent"><span class="type-signature"></span>chatTextKeyPressEvent<span class="signature">(e)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Event fired when a user press a key in a chat message input
-    </div>
-    
-
-    
-
-    
-    
-    
-    
-        <h5>Parameters:</h5>
+        <th>Name</th>
         
 
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>e</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">event</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The fired event</td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-228">line 228</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
+        <th>Type</th>
 
         
-            
-<dt>
-    <h4 class="name" id="connect"><span class="type-signature"></span>connect<span class="signature">(pseudonym, roomName, password)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Connect the user to the chat
-    </div>
-    
 
-    
-
-    
-    
-    
-    
-        <h5>Parameters:</h5>
         
 
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>pseudonym</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The user pseudonym</td>
-        </tr>
-
-	
+    <tbody>
+    
 
         <tr>
             
@@ -1193,730 +1151,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
 
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The room name to connect to</td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The room password to connect to</td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-578">line 578</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="connectEvent"><span class="type-signature"></span>connectEvent<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Event fired when a user want to connect to a chat
-    </div>
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-192">line 192</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="connectGuest"><span class="type-signature"></span>connectGuest<span class="signature">(pseudonym, roomName, password)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Connect a user to the chat as a guest
-    </div>
-    
-
-    
-
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>pseudonym</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The user pseudonym</td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>roomName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The room name to connect to</td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The room password to connect to</td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-344">line 344</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="connectRegistered"><span class="type-signature"></span>connectRegistered<span class="signature">(roomName, password)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Connect a user to the chat with his account
-    </div>
-    
-
-    
-
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>roomName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The room name to connect to</td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The room password to connect to</td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-327">line 327</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="connectRoomCallback"><span class="type-signature"></span>connectRoomCallback<span class="signature">(data)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Callback after a user attempted to connect to a room
-    </div>
-    
-
-    
-
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>data</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The server JSON reponse</td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-489">line 489</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="createRoom"><span class="type-signature"></span>createRoom<span class="signature">(roomName, type, password, maxUsers)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Create a chat room
-    </div>
-    
-
-    
-
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>roomName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
 
 
             
@@ -1929,7 +1165,1781 @@
             <td class="description last">The room name</td>
         </tr>
 
+    
+
+        <tr>
+            
+                <td class="name"><code>pseudonym</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The user pseudonym to ban</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>reason</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">OPTIONAL the reason of the ban</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
 	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-751">line 751</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="banUserCallback"><span class="type-signature"></span>banUserCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Callback after banning a user from a room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-1003">line 1003</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="banUserEvent"><span class="type-signature"></span>banUserEvent(e)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Event fired when a user wants to ban another user from a room in the administration panel
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>e</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The fired event</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-554">line 554</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="changeRoomInfoCallback"><span class="type-signature"></span>changeRoomInfoCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Callback after a room name / password has been changed
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-1021">line 1021</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="chatCallback"><span class="type-signature"></span>chatCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Handle the WebSocker server response and process action then
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-823">line 823</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="chatTextKeyPressEvent"><span class="type-signature"></span>chatTextKeyPressEvent(e)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Event fired when a user press a key in a chat message input
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>e</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The fired event</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-399">line 399</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="closeRoomEvent"><span class="type-signature"></span>closeRoomEvent(e)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Event fired when a user wants to close a room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>e</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The fired event</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-384">line 384</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="connect"><span class="type-signature"></span>connect(pseudonym, roomName, password)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Connect the user to the chat
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pseudonym</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The user pseudonym</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>roomName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room name to connect to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>password</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room password to connect to</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-1109">line 1109</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="connectEvent"><span class="type-signature"></span>connectEvent()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Event fired when a user want to connect to a chat
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-309">line 309</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="connectGuest"><span class="type-signature"></span>connectGuest(pseudonym, roomName, password)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Connect a user to the chat as a guest
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pseudonym</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The user pseudonym</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>roomName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room name to connect to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>password</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room password to connect to</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-646">line 646</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="connectRegistered"><span class="type-signature"></span>connectRegistered(roomName, password)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Connect a user to the chat with his account
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>roomName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room name to connect to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>password</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room password to connect to</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-629">line 629</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="connectRoomCallback"><span class="type-signature"></span>connectRoomCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Callback after a user attempted to connect to a room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-836">line 836</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="createRoom"><span class="type-signature"></span>createRoom(roomName, type, password, maxUsers)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Create a chat room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>roomName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room name</td>
+        </tr>
+
+    
 
         <tr>
             
@@ -1939,7 +2949,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -1952,7 +2963,7 @@
             <td class="description last">The room type ('public' || 'private')</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -1962,7 +2973,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -1975,7 +2987,7 @@
             <td class="description last">The room password</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -1985,7 +2997,8 @@
             <td class="type">
             
                 
-<span class="param-type">integer</span>
+<span class="param-type">Number</span>
+
 
 
             
@@ -1998,15 +3011,15 @@
             <td class="description last">The max users number</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -2035,12 +3048,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-381">line 381</a>
+				 <a href="chat.js.html#sunlight-1-line-696">line 696</a>
 			</li>
 		</ul>
 	</dd>
@@ -2053,7 +3066,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -2061,23 +3078,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="createRoomCallback"><span class="type-signature"></span>createRoomCallback<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="createRoomCallback"><span class="type-signature"></span>createRoomCallback(data)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Callback after a user attempted to create a room
@@ -2087,7 +3101,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -2095,23 +3109,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -2121,7 +3135,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -2134,15 +3149,15 @@
             <td class="description last">The server JSON reponse</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -2171,12 +3186,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-502">line 502</a>
+				 <a href="chat.js.html#sunlight-1-line-914">line 914</a>
 			</li>
 		</ul>
 	</dd>
@@ -2189,7 +3204,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -2197,23 +3216,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="createRoomEvent"><span class="type-signature"></span>createRoomEvent<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="createRoomEvent"><span class="type-signature"></span>createRoomEvent()</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Event fired when a user wants to create a chat room
@@ -2223,13 +3239,13 @@
     
 
     
+
     
     
-    
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -2258,12 +3274,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-204">line 204</a>
+				 <a href="chat.js.html#sunlight-1-line-322">line 322</a>
 			</li>
 		</ul>
 	</dd>
@@ -2276,7 +3292,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -2284,33 +3304,30 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="formatUserMessage"><span class="type-signature"></span>formatUserMessage<span class="signature">(data)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="disconnect"><span class="type-signature"></span>disconnect(roomName)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Format a user message in a html div
+        Disconnect a user from a chat room
     </div>
     
 
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -2318,23 +3335,161 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>roomName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room name to connect to</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
 	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-661">line 661</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="disconnectRoomCallback"><span class="type-signature"></span>disconnectRoomCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Callback after a user attempted to disconnect from a room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
 
         <tr>
             
@@ -2344,7 +3499,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -2357,15 +3513,15 @@
             <td class="description last">The server JSON reponse</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -2394,12 +3550,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-642">line 642</a>
+				 <a href="chat.js.html#sunlight-1-line-849">line 849</a>
 			</li>
 		</ul>
 	</dd>
@@ -2412,7 +3568,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -2420,46 +3580,596 @@
     
 
     
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    jQuery html div object containing the user message
-</div>
 
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">object</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="getHistoric"><span class="type-signature"></span>getHistoric<span class="signature">(roomName, password, historicLoaded)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="displayRoomEvent"><span class="type-signature"></span>displayRoomEvent(e)</h4>
     
     
 </dt>
 <dd>
+
     
+    <div class="description">
+        Event fired when a user wants to display a room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>e</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The fired event</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-337">line 337</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="formatUserMessage"><span class="type-signature"></span>formatUserMessage(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Format a user message in a html div
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-1216">line 1216</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Array of jQuery html div(s) object containing the user message(s)
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="fullscreenRoomEvent"><span class="type-signature"></span>fullscreenRoomEvent(e)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Event fired when a user wants to fullscreen / reduce a room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>e</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The fired event</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-365">line 365</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getBannedCallback"><span class="type-signature"></span>getBannedCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Callback after being banned from a room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-994">line 994</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getHistoric"><span class="type-signature"></span>getHistoric(roomName, password, historicLoaded)</h4>
+    
+    
+</dt>
+<dd>
+
     
     <div class="description">
         Get room chat historic
@@ -2469,7 +4179,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -2477,23 +4187,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -2503,7 +4213,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -2516,7 +4227,7 @@
             <td class="description last">The room name</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -2526,7 +4237,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -2539,7 +4251,7 @@
             <td class="description last">The room password</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -2549,7 +4261,8 @@
             <td class="type">
             
                 
-<span class="param-type">integer</span>
+<span class="param-type">Number</span>
+
 
 
             
@@ -2562,15 +4275,15 @@
             <td class="description last">The number of historic already loaded</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -2599,12 +4312,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-401">line 401</a>
+				 <a href="chat.js.html#sunlight-1-line-716">line 716</a>
 			</li>
 		</ul>
 	</dd>
@@ -2617,7 +4330,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -2625,23 +4342,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="getHistoricCallback"><span class="type-signature"></span>getHistoricCallback<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getHistoricCallback"><span class="type-signature"></span>getHistoricCallback(data)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Callback after a user attempted to laod more historic of a conversation
@@ -2651,7 +4365,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -2659,23 +4373,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -2685,7 +4399,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -2698,15 +4413,15 @@
             <td class="description last">The server JSON reponse</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -2735,12 +4450,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-537">line 537</a>
+				 <a href="chat.js.html#sunlight-1-line-963">line 963</a>
 			</li>
 		</ul>
 	</dd>
@@ -2753,7 +4468,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -2761,23 +4480,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="getHistoricEvent"><span class="type-signature"></span>getHistoricEvent<span class="signature">(e)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getHistoricEvent"><span class="type-signature"></span>getHistoricEvent(e)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Event fired when a user wants to get more historic of a conversation
@@ -2787,7 +4503,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -2795,23 +4511,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -2824,6 +4540,7 @@
 <span class="param-type">event</span>
 
 
+
             
             </td>
 
@@ -2834,15 +4551,15 @@
             <td class="description last">The fired event</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -2871,12 +4588,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-277">line 277</a>
+				 <a href="chat.js.html#sunlight-1-line-460">line 460</a>
 			</li>
 		</ul>
 	</dd>
@@ -2889,7 +4606,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -2897,23 +4618,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="getKickedCallback"><span class="type-signature"></span>getKickedCallback<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getKickedCallback"><span class="type-signature"></span>getKickedCallback(data)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Callback after being kicked from a room
@@ -2923,7 +4641,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -2931,23 +4649,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -2957,7 +4675,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -2970,15 +4689,15 @@
             <td class="description last">The server JSON reponse</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -3007,12 +4726,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-550">line 550</a>
+				 <a href="chat.js.html#sunlight-1-line-976">line 976</a>
 			</li>
 		</ul>
 	</dd>
@@ -3025,7 +4744,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -3033,23 +4756,456 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="initEvents"><span class="type-signature"></span>initEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getRoomsInfo"><span class="type-signature"></span>getRoomsInfo()</h4>
     
     
 </dt>
 <dd>
+
     
+    <div class="description">
+        Get the rooms basic information (name, type, usersMax, usersConnected)
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-805">line 805</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getRoomsInfoCallback"><span class="type-signature"></span>getRoomsInfoCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Callback after getting the new rooms info
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-1068">line 1068</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="getUserRightLine"><span class="type-signature"></span>getUserRightLine(modal, pseudonym, usersRight)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Get a new user right line in the administration panel
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>modal</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The modal jQuery DOM element</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pseudonym</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The new user pseudonym</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>usersRight</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The new user rights</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-1313">line 1313</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The new user right line jQuery DOM element
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="initEvents"><span class="type-signature"></span>initEvents()</h4>
+    
+    
+</dt>
+<dd>
+
     
     <div class="description">
         Initialize all the events
@@ -3059,13 +5215,13 @@
     
 
     
+
     
     
-    
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -3094,12 +5250,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-129">line 129</a>
+				 <a href="chat.js.html#sunlight-1-line-194">line 194</a>
 			</li>
 		</ul>
 	</dd>
@@ -3112,7 +5268,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -3120,23 +5280,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="insertRoomInDOM"><span class="type-signature"></span>insertRoomInDOM<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="insertRoomInDOM"><span class="type-signature"></span>insertRoomInDOM(data)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Insert a room in the user DOM with data recieved from server
@@ -3146,7 +5303,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -3154,23 +5311,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -3180,7 +5337,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -3193,15 +5351,15 @@
             <td class="description last">The server JSON reponse</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -3230,12 +5388,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-591">line 591</a>
+				 <a href="chat.js.html#sunlight-1-line-1122">line 1122</a>
 			</li>
 		</ul>
 	</dd>
@@ -3248,7 +5406,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -3256,23 +5418,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="isCommand"><span class="type-signature"></span>isCommand<span class="signature">(message, roomName, password)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    <h4 class="name" id="isCommand"><span class="type-signature"></span>isCommand(message, roomName, password)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Check if the user input is a command and process it
@@ -3282,7 +5441,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -3290,23 +5449,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -3316,7 +5475,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -3329,7 +5489,7 @@
             <td class="description last">The user input</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -3339,7 +5499,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -3352,7 +5513,7 @@
             <td class="description last">The room name</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -3362,7 +5523,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -3375,15 +5537,15 @@
             <td class="description last">The room password</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -3412,12 +5574,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-669">line 669</a>
+				 <a href="chat.js.html#sunlight-1-line-1394">line 1394</a>
 			</li>
 		</ul>
 	</dd>
@@ -3430,17 +5592,17 @@
 	
 </dl>
 
-    
-    
 
     
 
     
 
     
+
     
+
     
-    
+
     
     <h5>Returns:</h5>
     
@@ -3452,32 +5614,34 @@
 
 
 <dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">boolean</span>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
 
 
-	</dd>
+
+    </dd>
 </dl>
 
 
         
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="kickUser"><span class="type-signature"></span>kickUser<span class="signature">(roomName, pseudonym, reason)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="kickUser"><span class="type-signature"></span>kickUser(roomName, pseudonym, reason)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Kick a user from a room
@@ -3487,7 +5651,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -3495,23 +5659,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -3521,7 +5685,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -3534,7 +5699,7 @@
             <td class="description last">The room name</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -3544,7 +5709,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -3557,7 +5723,7 @@
             <td class="description last">The user pseudonym to kick</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -3567,7 +5733,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -3580,15 +5747,15 @@
             <td class="description last">OPTIONAL the reason of the kick</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -3617,12 +5784,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-418">line 418</a>
+				 <a href="chat.js.html#sunlight-1-line-733">line 733</a>
 			</li>
 		</ul>
 	</dd>
@@ -3635,7 +5802,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -3643,33 +5814,30 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="kickUserCallback"><span class="type-signature"></span>kickUserCallback<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="kickUserCallback"><span class="type-signature"></span>kickUserCallback(data)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Callback after kicked a user from a room
+        Callback after kicking a user from a room
     </div>
     
 
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -3677,23 +5845,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -3703,7 +5871,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -3716,15 +5885,15 @@
             <td class="description last">The server JSON reponse</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -3753,12 +5922,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-559">line 559</a>
+				 <a href="chat.js.html#sunlight-1-line-985">line 985</a>
 			</li>
 		</ul>
 	</dd>
@@ -3771,7 +5940,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -3779,33 +5952,30 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="kickUserEvent"><span class="type-signature"></span>kickUserEvent<span class="signature">(e)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="kickUserEvent"><span class="type-signature"></span>kickUserEvent(e)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Event fired when a user wants to kick another user from a room
+        Event fired when a user wants to kick another user from a room in the administration panel
     </div>
     
 
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -3813,23 +5983,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -3842,6 +6012,7 @@
 <span class="param-type">event</span>
 
 
+
             
             </td>
 
@@ -3852,15 +6023,15 @@
             <td class="description last">The fired event</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -3889,12 +6060,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-291">line 291</a>
+				 <a href="chat.js.html#sunlight-1-line-533">line 533</a>
 			</li>
 		</ul>
 	</dd>
@@ -3907,7 +6078,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -3915,23 +6090,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="loadHistoric"><span class="type-signature"></span>loadHistoric<span class="signature">(roomChatDOM, historic)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="loadHistoric"><span class="type-signature"></span>loadHistoric(roomChatDOM, historic)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Load conversations historic sent by the server
@@ -3941,7 +6113,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -3949,23 +6121,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -3975,7 +6147,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -3988,7 +6161,7 @@
             <td class="description last">The room chat jQuery DOM element to insert the conversations historic in</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -3998,7 +6171,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -4011,15 +6185,15 @@
             <td class="description last">The conversations historic</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -4048,12 +6222,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-625">line 625</a>
+				 <a href="chat.js.html#sunlight-1-line-1197">line 1197</a>
 			</li>
 		</ul>
 	</dd>
@@ -4066,7 +6240,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -4074,33 +6252,30 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="recieveMessageCallback"><span class="type-signature"></span>recieveMessageCallback<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="minimizeRoomEvent"><span class="type-signature"></span>minimizeRoomEvent(e)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Callback after a user recieved a message
+        Event fired when a user wants to minimize a room
     </div>
     
 
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -4108,159 +6283,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>data</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The server JSON reponse</td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-	
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-	<dt class="tag-source">Source:</dt>
-	<dd class="tag-source">
-		<ul class="dummy">
-			<li>
-				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-515">line 515</a>
-			</li>
-		</ul>
-	</dd>
-	
-
-	
-
-	
-
-	
-</dl>
-
-    
-    
-
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
+    <tr>
         
-            
-<dt>
-    <h4 class="name" id="selectUserEvent"><span class="type-signature"></span>selectUserEvent<span class="signature">(e)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Event fired when a user wants to select a reciever for his message
-    </div>
-    
-
-    
-
-    
-    
-    
-    
-        <h5>Parameters:</h5>
+        <th>Name</th>
         
 
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+        <th>Type</th>
 
-		<th>Type</th>
+        
 
-		
+        
 
-		
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -4273,6 +6312,7 @@
 <span class="param-type">event</span>
 
 
+
             
             </td>
 
@@ -4283,15 +6323,15 @@
             <td class="description last">The fired event</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -4320,12 +6360,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-304">line 304</a>
+				 <a href="chat.js.html#sunlight-1-line-350">line 350</a>
 			</li>
 		</ul>
 	</dd>
@@ -4338,7 +6378,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -4346,23 +6390,710 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="sendMessage"><span class="type-signature"></span>sendMessage<span class="signature">(recievers, message, roomName, password)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="mouseEnterRoomChatEvent"><span class="type-signature"></span>mouseEnterRoomChatEvent(e)</h4>
     
     
 </dt>
 <dd>
+
     
+    <div class="description">
+        Event fired when the user mouse enters the room chat div
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>e</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The fired event</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-490">line 490</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="mouseLeaveRoomChatEvent"><span class="type-signature"></span>mouseLeaveRoomChatEvent(e)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Event fired when the user mouse leaves the room chat div
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>e</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The fired event</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-501">line 501</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="recieveMessageCallback"><span class="type-signature"></span>recieveMessageCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Callback after a user recieved a message
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-927">line 927</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="selectRoomEvent"><span class="type-signature"></span>selectRoomEvent(e)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Event fired when a user selected a room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>e</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The fired event</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-609">line 609</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="selectUserEvent"><span class="type-signature"></span>selectUserEvent(e)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Event fired when a user wants to select a reciever for his message
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>e</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The fired event</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-474">line 474</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="sendMessage"><span class="type-signature"></span>sendMessage(recievers, message, roomName, password)</h4>
+    
+    
+</dt>
+<dd>
+
     
     <div class="description">
         Send a message to all the users in the chat room or at one user in the chat room
@@ -4372,7 +7103,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -4380,23 +7111,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -4406,7 +7137,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -4419,7 +7151,7 @@
             <td class="description last">The message reciever ('all' || userPseudonym)</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -4429,7 +7161,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -4442,7 +7175,7 @@
             <td class="description last">The txt message to send</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -4452,7 +7185,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -4465,7 +7199,7 @@
             <td class="description last">The chat room name</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -4475,7 +7209,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -4488,15 +7223,15 @@
             <td class="description last">The chat room password if required</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -4525,12 +7260,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-362">line 362</a>
+				 <a href="chat.js.html#sunlight-1-line-677">line 677</a>
 			</li>
 		</ul>
 	</dd>
@@ -4543,7 +7278,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -4551,23 +7290,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="sendMessageCallback"><span class="type-signature"></span>sendMessageCallback<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="sendMessageCallback"><span class="type-signature"></span>sendMessageCallback(data)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Callback after a user sent a message
@@ -4577,7 +7313,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -4585,23 +7321,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -4611,7 +7347,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -4624,15 +7361,15 @@
             <td class="description last">The server JSON reponse</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -4661,12 +7398,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-526">line 526</a>
+				 <a href="chat.js.html#sunlight-1-line-952">line 952</a>
 			</li>
 		</ul>
 	</dd>
@@ -4679,7 +7416,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -4687,23 +7428,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="sendMessageEvent"><span class="type-signature"></span>sendMessageEvent<span class="signature">(e)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="sendMessageEvent"><span class="type-signature"></span>sendMessageEvent(e)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Event fired when a user wants to send a message
@@ -4713,7 +7451,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -4721,23 +7459,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -4750,6 +7488,7 @@
 <span class="param-type">event</span>
 
 
+
             
             </td>
 
@@ -4760,15 +7499,15 @@
             <td class="description last">The fired event</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -4797,12 +7536,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-250">line 250</a>
+				 <a href="chat.js.html#sunlight-1-line-431">line 431</a>
 			</li>
 		</ul>
 	</dd>
@@ -4815,7 +7554,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -4823,33 +7566,30 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="toggleRoomEvent"><span class="type-signature"></span>toggleRoomEvent<span class="signature">(e)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setAministrationPanelEvent"><span class="type-signature"></span>setAministrationPanelEvent(e)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Event fired when a user wants to show / hide a room
+        Event fired when the user wants to display the administration room panel
     </div>
     
 
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -4857,23 +7597,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -4886,6 +7626,7 @@
 <span class="param-type">event</span>
 
 
+
             
             </td>
 
@@ -4896,15 +7637,15 @@
             <td class="description last">The fired event</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -4933,12 +7674,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="chat.js.html">chat.js</a>,
-				 <a href="chat.js.html#sunlight-1-line-219">line 219</a>
+				 <a href="chat.js.html#sunlight-1-line-512">line 512</a>
 			</li>
 		</ul>
 	</dd>
@@ -4951,7 +7692,36 @@
 	
 </dl>
 
+
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="setReasonCallbackEvent"><span class="type-signature"></span>setReasonCallbackEvent(form, inputs)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Set the reason of the admin kick / ban action
+    </div>
     
 
     
@@ -4960,10 +7730,1901 @@
 
     
     
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>form</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The jQuery DOM form element</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>inputs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The user inputs as object</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-576">line 576</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="setRoomInfo"><span class="type-signature"></span>setRoomInfo(oldRoomName, newRoomName, oldRoomPassword, newRoomPassword)</h4>
     
     
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Set a new room name / password
+    </div>
+    
+
+    
+
+    
+
     
     
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>oldRoomName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The old room name</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>newRoomName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The new room name</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>oldRoomPassword</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The old room password</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>newRoomPassword</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The new room password</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-790">line 790</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="setRoomInfoCallback"><span class="type-signature"></span>setRoomInfoCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Callback after setting a new room name / password
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-1012">line 1012</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="setRoomInfoCallbackEvent"><span class="type-signature"></span>setRoomInfoCallbackEvent(form, inputs)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Set the room name / password
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>form</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The jQuery DOM form element</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>inputs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The user inputs as object</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-592">line 592</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="toggleAdministrationRights"><span class="type-signature"></span>toggleAdministrationRights(e)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Event fired when the user wants to display a user rights in administration modal
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>e</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The fired event</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-524">line 524</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="updateRoomUserRight"><span class="type-signature"></span>updateRoomUserRight(roomName, pseudonym, rightName, rightValue)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Update a user right
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>roomName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room name</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pseudonym</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The user pseudonym</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rightName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The right name to update</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rightValue</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The new right value</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-770">line 770</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="updateRoomUsersBanned"><span class="type-signature"></span>updateRoomUsersBanned(modal, usersBanned)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Update the ip banned list in the administration modal
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>modal</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The modal jQuery DOM element</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>usersBanned</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The users banned object returned by the server</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-1364">line 1364</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="updateRoomUsersBannedCallback"><span class="type-signature"></span>updateRoomUsersBannedCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Callback after a user get banned or unbanned from a room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-903">line 903</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="updateRoomUsersCallback"><span class="type-signature"></span>updateRoomUsersCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Callback after a user entered or left the room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-858">line 858</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="updateRoomUsersRights"><span class="type-signature"></span>updateRoomUsersRights(modal, usersRights)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Update the users list in the administration modal
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>modal</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The modal jQuery DOM element</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>usersRights</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The users rights object returned by the server</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-1287">line 1287</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="updateRoomUsersRightsCallback"><span class="type-signature"></span>updateRoomUsersRightsCallback(data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Callback after a registered user entered or left the room
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The server JSON reponse</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-892">line 892</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="updateUsersDropdown"><span class="type-signature"></span>updateUsersDropdown(room, pseudonyms)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Update the users list in the dropdown menu recievers
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>room</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The room jQuery DOM element</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pseudonyms</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The new pseudonyms list</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="chat.js.html">chat.js</a>,
+				 <a href="chat.js.html#sunlight-1-line-1254">line 1254</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 </dd>
 
@@ -4987,13 +9648,27 @@
 
 	
 		<div class="col-md-3">
-			<div id="toc" class="hidden-xs hidden-md col-md-3"></div>
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
 		</div>
 	
 
 </div>
 </div>
 
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
 
 <footer>
 
@@ -5001,19 +9676,19 @@
 	<span class="copyright">
 	DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.
 	</span>
-	<br />
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
-	on 2015-09-07 14:21:43 using the <a
-	href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-01-25 19:37:59
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
 </footer>
 
-<!--<script src="scripts/sunlight.js"></script>-->
 <script src="scripts/docstrap.lib.js"></script>
-<script src="scripts/bootstrap-dropdown.js"></script>
 <script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
 
 <script>
 $( function () {
@@ -5022,20 +9697,6 @@ $( function () {
 
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
-
-	$( "#toc" ).toc( {
-		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
-		},
-		selectors   : "h1,h2,h3,h4",
-		showAndHide : false,
-		scrollTo    : "100px"
-	} );
-
-	$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
-	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-	$( '.dropdown-toggle' ).dropdown();
-	//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
 
 	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
 		var $this = $( this );
@@ -5048,7 +9709,8 @@ $( function () {
 			example.html( exampleText );
 			lang = lang[1];
 		} else {
-			lang = "javascript";
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
 		}
 
 		if ( lang ) {
@@ -5066,6 +9728,28 @@ $( function () {
 		showMenu : true,
 		enableDoclinks : true
 	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
 } );
 </script>
 
@@ -5076,6 +9760,12 @@ $( function () {
 
 <!--Google Analytics-->
 
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
 
 </body>
 </html>

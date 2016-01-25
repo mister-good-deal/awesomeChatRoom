@@ -19,7 +19,7 @@ use \classes\entitiesManager\UsersChatRightsEntityManager as UsersChatRightsEnti
 /**
  * Chat services to manage a chat with a WebSocket server
  *
- * @todo Sonar this class
+ * @todo  Sonar this class
  * @class ChatService
  */
 class ChatService extends Server implements Service
@@ -91,7 +91,7 @@ class ChatService extends Server implements Service
     /*=====================================
     =            Magic methods            =
     =====================================*/
-    
+
     /**
      * Constructor that sets the WebSocket server adress and create en empty default room
      *
@@ -124,13 +124,13 @@ class ChatService extends Server implements Service
 
         $this->loadHistoric('default', $this->getLastPartNumber('default'));
     }
-    
+
     /*=====  End of Magic methods  ======*/
 
     /*======================================
     =            Public methods            =
     ======================================*/
-    
+
     /**
      * Method to recieves data from the WebSocket server
      *
@@ -151,19 +151,19 @@ class ChatService extends Server implements Service
 
                 break;
 
-            case 'connect':
+            case 'connectRoom':
                 $this->connectUser($socket, $data);
 
                 break;
 
             case 'disconnect':
                 $this->disconnectUser($socket);
-                
+
                 break;
 
             case 'disconnectFromRoom':
                 $this->disconnectUserFromRoom($socket, $data);
-                
+
                 break;
 
             case 'createRoom':
@@ -202,20 +202,27 @@ class ChatService extends Server implements Service
                 break;
 
             default:
-                $this->send($socket, $this->encode(json_encode(array(
-                    'service' => $this->chatService,
-                    'success' => false,
-                    'text'    => _('Unknown action')
-                ))));
+                $this->send(
+                    $socket,
+                    $this->encode(
+                        json_encode(
+                            array(
+                            'service' => $this->chatService,
+                            'success' => false,
+                            'text'    => _('Unknown action')
+                            )
+                        )
+                    )
+                );
         }
     }
-    
+
     /*=====  End of Public methods  ======*/
 
     /*=======================================
     =            Private methods            =
     =======================================*/
-    
+
     /**
      * Create a chat room by an authenticated user request
      *
@@ -280,27 +287,36 @@ class ChatService extends Server implements Service
 
                 $success = true;
                 $message = sprintf(_('The chat room name "%s" is successfully created !'), $roomName);
-                $this->log(sprintf(
-                    _('[chatService] New room added "%s" (%s) maxUsers = %s and password = "%s" by %s'),
-                    $roomName,
-                    $type,
-                    $maxUsers,
-                    $roomPassword,
-                    $pseudonym
-                ));
+                $this->log(
+                    sprintf(
+                        _('[chatService] New room added "%s" (%s) maxUsers = %s and password = "%s" by %s'),
+                        $roomName,
+                        $type,
+                        $maxUsers,
+                        $roomPassword,
+                        $pseudonym
+                    )
+                );
             }
         }
 
-        $this->send($socket, $this->encode(json_encode(array(
-            'service'  => $this->chatService,
-            'action'   => 'createRoom',
-            'success'  => $success,
-            'roomName' => $roomName,
-            'type'     => $type,
-            'maxUsers' => $maxUsers,
-            'password' => $roomPassword,
-            'text'     => $message
-        ))));
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'  => $this->chatService,
+                    'action'   => 'createRoom',
+                    'success'  => $success,
+                    'roomName' => $roomName,
+                    'type'     => $type,
+                    'maxUsers' => $maxUsers,
+                    'password' => $roomPassword,
+                    'text'     => $message
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -391,15 +407,22 @@ class ChatService extends Server implements Service
             }
         }
 
-        $this->send($socket, $this->encode(json_encode(array_merge(
-            $response,
-            array(
-                'service' => $this->chatService,
-                'action'  => 'connect',
-                'success' => $success,
-                'text'    => $message
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array_merge(
+                        $response,
+                        array(
+                        'service' => $this->chatService,
+                        'action'  => 'connectRoom',
+                        'success' => $success,
+                        'text'    => $message
+                        )
+                    )
+                )
             )
-        ))));
+        );
     }
 
     /**
@@ -451,27 +474,36 @@ class ChatService extends Server implements Service
                 $this->sendMessageToUser($socket, $socket, $text, $roomName, 'private', $now);
             }
 
-            $this->log(sprintf(
-                _('[chatService] Message "%s" sent by "%s" to "%s" in the room "%s"'),
-                $text,
-                $pseudonym,
-                $recievers,
-                $roomName
-            ));
+            $this->log(
+                sprintf(
+                    _('[chatService] Message "%s" sent by "%s" to "%s" in the room "%s"'),
+                    $text,
+                    $pseudonym,
+                    $recievers,
+                    $roomName
+                )
+            );
 
             $this->updateHistoric($roomName, $now, $text, $pseudonym, $recievers);
             $success = true;
         }
 
-        $this->send($socket, $this->encode(json_encode(array_merge(
-            $response,
-            array(
-                'service' => $this->chatService,
-                'action'  => 'sendMessage',
-                'success' => $success,
-                'text'    => $message
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array_merge(
+                        $response,
+                        array(
+                        'service' => $this->chatService,
+                        'action'  => 'sendMessage',
+                        'success' => $success,
+                        'text'    => $message
+                        )
+                    )
+                )
             )
-        ))));
+        );
     }
 
     /**
@@ -500,7 +532,7 @@ class ChatService extends Server implements Service
         } else {
             $success  = true;
             $lastPart = $this->getLastPartNumber($roomName);
-            
+
             if ($lastPart < $part) {
                 $message = _('There is no more conversation historic for this chat');
             } else {
@@ -511,14 +543,21 @@ class ChatService extends Server implements Service
             }
         }
 
-        $this->send($socket, $this->encode(json_encode(array(
-            'service'  => $this->chatService,
-            'action'   => 'getHistoric',
-            'success'  => $success,
-            'text'     => $message,
-            'historic' => $historic,
-            'roomName' => $roomName
-        ))));
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'  => $this->chatService,
+                    'action'   => 'getHistoric',
+                    'success'  => $success,
+                    'text'     => $message,
+                    'historic' => $historic,
+                    'roomName' => $roomName
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -557,12 +596,19 @@ class ChatService extends Server implements Service
                     $message        = sprintf(_('You kicked "%s" from the room "%s"'), $pseudonym, $roomName) . $reason;
                     $adminPseudonym = $this->rooms[$roomName]['pseudonyms'][$this->getClientName($socket)];
 
-                    $this->send($this->rooms[$roomName]['sockets'][$userHash], $this->encode(json_encode(array(
-                        'service'  => $this->chatService,
-                        'action'   => 'getKicked',
-                        'text'     => sprintf(_('You got kicked from the room by "%s"'), $adminPseudonym) . $reason,
-                        'roomName' => $roomName
-                    ))));
+                    $this->send(
+                        $this->rooms[$roomName]['sockets'][$userHash],
+                        $this->encode(
+                            json_encode(
+                                array(
+                                'service'  => $this->chatService,
+                                'action'   => 'getKicked',
+                                'text'     => sprintf(_('You got kicked from the room by "%s"'), $adminPseudonym) . $reason,
+                                'roomName' => $roomName
+                                )
+                            )
+                        )
+                    );
 
                     $this->disconnectUser($this->rooms[$roomName]['sockets'][$userHash]);
 
@@ -584,13 +630,20 @@ class ChatService extends Server implements Service
             }
         }
 
-        $this->send($socket, $this->encode(json_encode(array(
-            'service'  => $this->chatService,
-            'action'   => 'kickUser',
-            'success'  => $success,
-            'text'     => $message,
-            'roomName' => $roomName
-        ))));
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'  => $this->chatService,
+                    'action'   => 'kickUser',
+                    'success'  => $success,
+                    'text'     => $message,
+                    'roomName' => $roomName
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -639,12 +692,19 @@ class ChatService extends Server implements Service
                         'date'      => date('Y-m-d H:i:s')
                     );
 
-                    $this->send($userSocket, $this->encode(json_encode(array(
-                        'service'  => $this->chatService,
-                        'action'   => 'getBanned',
-                        'text'     => sprintf(_('You got banned from the room by "%s"'), $adminPseudonym) . $reason,
-                        'roomName' => $roomName
-                    ))));
+                    $this->send(
+                        $userSocket,
+                        $this->encode(
+                            json_encode(
+                                array(
+                                'service'  => $this->chatService,
+                                'action'   => 'getBanned',
+                                'text'     => sprintf(_('You got banned from the room by "%s"'), $adminPseudonym) . $reason,
+                                'roomName' => $roomName
+                                )
+                            )
+                        )
+                    );
 
                     $this->rooms[$roomName]['usersBanned'][] = $banInfo;
                     $this->disconnectUser($userSocket);
@@ -675,13 +735,20 @@ class ChatService extends Server implements Service
             }
         }
 
-        $this->send($socket, $this->encode(json_encode(array(
-            'service'  => $this->chatService,
-            'action'   => 'banUser',
-            'success'  => $success,
-            'text'     => $message,
-            'roomName' => $roomName
-        ))));
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'  => $this->chatService,
+                    'action'   => 'banUser',
+                    'success'  => $success,
+                    'text'     => $message,
+                    'roomName' => $roomName
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -714,10 +781,12 @@ class ChatService extends Server implements Service
             $usersChatRightsEntityManager->loadEntity(array('idUser' => $user->id, 'roomName' => $roomName));
 
             if ($user->getUserRights()->chatAdmin || $usersChatRightsEntityManager->getEntity()->grant === 1) {
-                $usersChatRightsEntityManager->loadEntity(array(
+                $usersChatRightsEntityManager->loadEntity(
+                    array(
                     'idUser'   => $userEntityManager->getUserIdByPseudonym($pseudonym),
                     'roomName' => $roomName
-                ));
+                    )
+                );
 
                 $usersChatRightsEntityManager->getEntity()->{$rightName} = (int) $rightValue;
                 $usersChatRightsEntityManager->saveEntity();
@@ -744,13 +813,20 @@ class ChatService extends Server implements Service
             }
         }
 
-        $this->send($socket, $this->encode(json_encode(array(
-            'service'  => $this->chatService,
-            'action'   => 'updateRoomUserRight',
-            'success'  => $success,
-            'text'     => $message,
-            'roomName' => $roomName
-        ))));
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'  => $this->chatService,
+                    'action'   => 'updateRoomUserRight',
+                    'success'  => $success,
+                    'text'     => $message,
+                    'roomName' => $roomName
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -844,32 +920,46 @@ class ChatService extends Server implements Service
             $this->saveRoom($newRoomName);
 
             foreach ($this->rooms[$newRoomName]['sockets'] as $userSocket) {
-                $this->send($userSocket, $this->encode(json_encode(array(
-                    'service'         => $this->chatService,
-                    'action'          => 'changeRoomInfo',
-                    'oldRoomName'     => $oldRoomName,
-                    'newRoomName'     => $newRoomName,
-                    'oldRoomPassword' => $oldRoomPassword,
-                    'newRoomPassword' => $newRoomPassword,
-                    'pseudonym'       => 'SERVER',
-                    'time'            => date('Y-m-d H:i:s'),
-                    'roomName'        => $newRoomName,
-                    'type'            => 'public',
-                    'text'            => $messageToUsers
-                ))));
+                $this->send(
+                    $userSocket,
+                    $this->encode(
+                        json_encode(
+                            array(
+                            'service'         => $this->chatService,
+                            'action'          => 'changeRoomInfo',
+                            'oldRoomName'     => $oldRoomName,
+                            'newRoomName'     => $newRoomName,
+                            'oldRoomPassword' => $oldRoomPassword,
+                            'newRoomPassword' => $newRoomPassword,
+                            'pseudonym'       => 'SERVER',
+                            'time'            => date('Y-m-d H:i:s'),
+                            'roomName'        => $newRoomName,
+                            'type'            => 'public',
+                            'text'            => $messageToUsers
+                            )
+                        )
+                    )
+                );
             }
         }
 
-        $this->send($socket, $this->encode(json_encode(array(
-            'service'         => $this->chatService,
-            'action'          => 'setRoomInfo',
-            'success'         => $success,
-            'text'            => implode('. ', $message),
-            'oldRoomName'     => $oldRoomName,
-            'newRoomName'     => $newRoomName,
-            'oldRoomPassword' => $oldRoomPassword,
-            'newRoomPassword' => $newRoomPassword
-        ))));
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'         => $this->chatService,
+                    'action'          => 'setRoomInfo',
+                    'success'         => $success,
+                    'text'            => implode('. ', $message),
+                    'oldRoomName'     => $oldRoomName,
+                    'newRoomName'     => $newRoomName,
+                    'oldRoomPassword' => $oldRoomPassword,
+                    'newRoomPassword' => $newRoomPassword
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -898,11 +988,18 @@ class ChatService extends Server implements Service
             );
         }
 
-        $this->send($socket, $this->encode(json_encode(array(
-            'service'   => $this->chatService,
-            'action'    => 'getRoomsInfo',
-            'roomsInfo' => $roomsInfo
-        ))));
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'   => $this->chatService,
+                    'action'    => 'getRoomsInfo',
+                    'roomsInfo' => $roomsInfo
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -913,12 +1010,19 @@ class ChatService extends Server implements Service
      */
     private function updateRoomUsers($socket, $roomName)
     {
-        $this->send($socket, $this->encode(json_encode(array(
-            'service'    => $this->chatService,
-            'action'     => 'updateRoomUsers',
-            'roomName'   => $roomName,
-            'pseudonyms' => array_values($this->rooms[$roomName]['pseudonyms'])
-        ))));
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'    => $this->chatService,
+                    'action'     => 'updateRoomUsers',
+                    'roomName'   => $roomName,
+                    'pseudonyms' => array_values($this->rooms[$roomName]['pseudonyms'])
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -929,12 +1033,19 @@ class ChatService extends Server implements Service
      */
     private function updateRoomUsersRights($socket, $roomName)
     {
-        $this->send($socket, $this->encode(json_encode(array(
-            'service'     => $this->chatService,
-            'action'      => 'updateRoomUsersRights',
-            'roomName'    => $roomName,
-            'usersRights' => $this->rooms[$roomName]['usersRights']
-        ))));
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'     => $this->chatService,
+                    'action'      => 'updateRoomUsersRights',
+                    'roomName'    => $roomName,
+                    'usersRights' => $this->rooms[$roomName]['usersRights']
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -945,12 +1056,19 @@ class ChatService extends Server implements Service
      */
     private function updateRoomUsersBanned($socket, $roomName)
     {
-        $this->send($socket, $this->encode(json_encode(array(
-            'service'     => $this->chatService,
-            'action'      => 'updateRoomUsersBanned',
-            'roomName'    => $roomName,
-            'usersBanned' => $this->rooms[$roomName]['usersBanned']
-        ))));
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'     => $this->chatService,
+                    'action'      => 'updateRoomUsersBanned',
+                    'roomName'    => $roomName,
+                    'usersBanned' => $this->rooms[$roomName]['usersBanned']
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -1028,13 +1146,20 @@ class ChatService extends Server implements Service
             $success = true;
         }
 
-        $this->send($socket, $this->encode(json_encode(array(
-            'service'  => $this->chatService,
-            'action'   => 'disconnectFromRoom',
-            'success'  => $success,
-            'text'     => $message,
-            'roomName' => $roomName
-        ))));
+        $this->send(
+            $socket,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'  => $this->chatService,
+                    'action'   => 'disconnectFromRoom',
+                    'success'  => $success,
+                    'text'     => $message,
+                    'roomName' => $roomName
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -1072,8 +1197,8 @@ class ChatService extends Server implements Service
     /**
      * Check if a user has the right to enter a private room
      *
-     * @param  string  $roomName     The room name
-     * @param  string  $roomPassword The room password the user sent
+     * @param  string $roomName     The room name
+     * @param  string $roomPassword The room password the user sent
      * @return boolean               True if the user have the right to enter the room else false
      */
     private function checkPrivateRoomPassword($roomName, $roomPassword)
@@ -1090,8 +1215,8 @@ class ChatService extends Server implements Service
     /**
      * Check if a pseudonym is already used in the defined room
      *
-     * @param  string  $pseudonym The pseudonym
-     * @param  string  $roomName  The room name to connect to
+     * @param  string $pseudonym The pseudonym
+     * @param  string $roomName  The room name to connect to
      * @return boolean            True if the pseudonym exists in the room else false
      */
     private function pseudonymIsInRoom($pseudonym, $roomName)
@@ -1102,8 +1227,8 @@ class ChatService extends Server implements Service
     /**
      * Check if a pseudonym is usabled to be used in a room (not already in the room and not used by a registered user)
      *
-     * @param  string  $pseudonym The pseudonym
-     * @param  string  $roomName  The room name to connect to
+     * @param  string $pseudonym The pseudonym
+     * @param  string $roomName  The room name to connect to
      * @return boolean            True if the pseudonym is usabled else false
      */
     private function isPseudonymUsabled($pseudonym, $roomName)
@@ -1121,8 +1246,8 @@ class ChatService extends Server implements Service
     /**
      * Get the user hash by his pseudonym and the room name where he's connected
      *
-     * @param  string         $roomName  The room name
-     * @param  string         $pseudonym The user pseudonym
+     * @param  string $roomName  The room name
+     * @param  string $pseudonym The user pseudonym
      * @return string|boolean            The user hash or false if an the user cannot be found
      */
     private function getUserHashByPseudonym($roomName, $pseudonym)
@@ -1133,8 +1258,8 @@ class ChatService extends Server implements Service
     /**
      * Tell if a user is registered or not
      *
-     * @param  string  $roomName  The room name
-     * @param  string  $pseudonym The user pseudonym
+     * @param  string $roomName  The room name
+     * @param  string $pseudonym The user pseudonym
      * @return boolean            True if the user is registered else false
      */
     private function isRegistered($roomName, $pseudonym)
@@ -1160,15 +1285,22 @@ class ChatService extends Server implements Service
             $pseudonym = $this->rooms[$roomName]['pseudonyms'][$this->getClientName($socketFrom)];
         }
 
-        $this->send($socketTo, $this->encode(json_encode(array(
-            'service'   => $this->chatService,
-            'action'    => 'recieveMessage',
-            'pseudonym' => $pseudonym,
-            'time'      => $date,
-            'roomName'  => $roomName,
-            'type'      => $type,
-            'text'      => $message
-        ))));
+        $this->send(
+            $socketTo,
+            $this->encode(
+                json_encode(
+                    array(
+                    'service'   => $this->chatService,
+                    'action'    => 'recieveMessage',
+                    'pseudonym' => $pseudonym,
+                    'time'      => $date,
+                    'roomName'  => $roomName,
+                    'type'      => $type,
+                    'text'      => $message
+                    )
+                )
+            )
+        );
     }
 
     /**
@@ -1252,10 +1384,13 @@ class ChatService extends Server implements Service
      */
     private function getRoomInfo($roomName)
     {
-        return json_decode(file_get_contents(
-            stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR .$roomName) .
-            DIRECTORY_SEPARATOR . 'room.json'
-        ), true);
+        return json_decode(
+            file_get_contents(
+                stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR .$roomName) .
+                DIRECTORY_SEPARATOR . 'room.json'
+            ),
+            true
+        );
     }
 
     /**
@@ -1273,11 +1408,11 @@ class ChatService extends Server implements Service
     /**
      * Update a conversation historic with a new message
      *
-     * @param  string $roomName The room name
-     * @param  string $time     The server message sent time
-     * @param  string $message  The text message
-     * @param  string $from     The pseudonym of the user message owner
-     * @param  string $to       The pseudonym of the user message reviever or 'all'
+     * @param string $roomName The room name
+     * @param string $time     The server message sent time
+     * @param string $message  The text message
+     * @param string $from     The pseudonym of the user message owner
+     * @param string $to       The pseudonym of the user message reviever or 'all'
      */
     private function updateHistoric($roomName, $time, $message, $from, $to)
     {
@@ -1331,22 +1466,25 @@ class ChatService extends Server implements Service
     /**
      * Get a conversation historic part
      *
-     * @param  string      $roomName The room name
-     * @param  integer     $part     The conversation part
+     * @param  string  $roomName The room name
+     * @param  integer $part     The conversation part
      * @return array|false           The conversation historic as an array or false if an error occured
      */
     private function getHistoricPart($roomName, $part)
     {
-        return json_decode(@file_get_contents(
-            stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR . $roomName) .
-            DIRECTORY_SEPARATOR . 'historic-part-' . $part . '.json'
-        ), true);
+        return json_decode(
+            @file_get_contents(
+                stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR . $roomName) .
+                DIRECTORY_SEPARATOR . 'historic-part-' . $part . '.json'
+            ),
+            true
+        );
     }
 
     /**
      * Get the last part number of room historic
      *
-     * @param  string  $roomName The room name
+     * @param  string $roomName The room name
      * @return integer           The last part number
      */
     private function getLastPartNumber($roomName)
@@ -1402,7 +1540,7 @@ class ChatService extends Server implements Service
         $this->send($serverSocket, Ini::getParam('Socket', 'serviceKey') . $message);
         fclose($serverSocket);
     }
-    
+
     /*=====  End of Private methods  ======*/
 }
 

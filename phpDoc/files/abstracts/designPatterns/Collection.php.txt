@@ -70,7 +70,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Add an entity at the end of the collection
      *
-     * @param  Entity    $entity The entity object
+     * @param  Entity $entity The entity object
      * @throws Exception         If the entity id is already in the collection
      */
     public function add($entity)
@@ -198,8 +198,8 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Assigns an entity to the specified offset
      *
-     * @param int|string  $offset The offset to assign the entity to
-     * @param Entity      $entity The entity to set
+     * @param int|string $offset The offset to assign the entity to
+     * @param Entity     $entity The entity to set
      */
     public function offsetSet($offset, $entity)
     {
@@ -233,7 +233,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Seeks to a position
      *
-     * @param  int       $position The position to seek to
+     * @param  int $position The position to seek to
      * @throws Exception           If the position is not seekable
      */
     public function seek($position)

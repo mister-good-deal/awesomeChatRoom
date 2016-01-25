@@ -20,8 +20,13 @@
 <div class="container">
 	<div class="navbar-header">
 		<a class="navbar-brand" href="index.html">WebSocket services / AMD modules</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
 	</div>
-	<div class="navbar-collapse">
+	<div class="navbar-collapse collapse" id="topNavigation">
 		<ul class="nav navbar-nav">
 			
 			<li class="dropdown">
@@ -31,36 +36,62 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="-_.html">_</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#requirejs">requirejs</a></li><li><a href="global.html#toUrl">toUrl</a></li>
+				</ul>
+			</li>
+			
 		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
 	</div>
+
 </div>
 </div>
 
 
-<div class="container">
+<div class="container" id="toc-content">
 <div class="row">
 
 	
 	<div class="col-md-12">
 	
 		<div id="main">
-    		<h1 class="page-title">Source: forms.js</h1>
 			
 
 		<h1 class="page-title">Source: forms.js</h1>
     
 <section>
-	<article>
-		<pre
-			class="sunlight-highlight-javascript linenums">/**
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/**
  * Forms module
  *
  * @module lib/forms
+ * @exports lib/vendors/jquery-2.1.4
  */
 
-/*global define*/
-
-define(['jquery', 'domReady!'], function ($) {
+define([
+    'jquery',
+    'domReady!'
+], function ($) {
     'use strict';
 
     /**
@@ -68,14 +99,12 @@ define(['jquery', 'domReady!'], function ($) {
      *
      * @constructor
      * @alias       module:lib/forms
-     * @param       {Message} Message  A Message object to output message in the IHM
-     * @param       {object}  settings Overriden settings
+     * @param       {Object}  settings Overriden settings
      */
-    var FormsManager = function (Message, settings) {
-        this.settings = $.extend(true, {}, this.settings, settings);
-        this.message  = Message;
-        this.initEvents();
-    };
+    var FormsManager = function (settings) {
+            this.settings = $.extend(true, {}, this.settings, settings);
+            this.initEvents();
+        };
 
     FormsManager.prototype = {
         /**
@@ -88,7 +117,7 @@ define(['jquery', 'domReady!'], function ($) {
          */
         "xhrs": [],
         /**
-         * Callbacks methods to process specifics responses
+         * Callbacks methods to process specifics responses on a XHR server response
          */
         "callbacks": {
             'onSuccess'    : [],
@@ -96,9 +125,9 @@ define(['jquery', 'domReady!'], function ($) {
             'onRequestFail': []
         },
         /**
-         * A Message object to output message in the IHM
+         * Callbacks methods to process users input on user sumbit action
          */
-        "message": {},
+        "jsCallbacks": {},
 
         /**
          * Bind events on all form
@@ -108,7 +137,7 @@ define(['jquery', 'domReady!'], function ($) {
         },
 
         /**
-         * Send ajax request on form submit if data-ajax = true and process the result
+         * Process the form with specified method in the data-send-action HTML attribute (default AJAX call)
          *
          * @param {event} e The form submit event
          */
@@ -117,7 +146,14 @@ define(['jquery', 'domReady!'], function ($) {
                 self = this,
                 url;
 
-            if (form.attr('data-ajax') !== 'false') {
+            switch (form.attr('data-send-action')) {
+            case 'jsCallback':
+                e.preventDefault();
+                this.onJsCallback(form, form.attr('data-callback-name'), form.serializeArray());
+
+                break;
+
+            default:
                 e.preventDefault();
 
                 url = form.attr('action');
@@ -130,7 +166,7 @@ define(['jquery', 'domReady!'], function ($) {
                     url     : url,
                     type    : form.attr('method'),
                     dataType: 'json',
-                    data    : form.serialize(),
+                    data    : form.serialize()
                 }).done(function (data) {
                     if (data.success) {
                         self.onSuccess(form, url, data);
@@ -148,9 +184,9 @@ define(['jquery', 'domReady!'], function ($) {
         /**
          * Processing method on server success response
          *
-         * @param {object} form The jQuery DOM form element
-         * @param {string} url  The URL called to send the user data
-         * @param {object} data The server JSON reponse
+         * @param {Object} form The jQuery DOM form element
+         * @param {String} url  The URL called to send the user data
+         * @param {Object} data The server JSON reponse
          */
         onSuccess: function (form, url, data) {
             if (this.callbacks.onSuccess[url] &amp;&amp; typeof this.callbacks.onSuccess[url].callback === 'function') {
@@ -161,9 +197,9 @@ define(['jquery', 'domReady!'], function ($) {
         /**
          * Processing method on server fail response
          *
-         * @param {object} form The jQuery DOM form element
-         * @param {string} url  The URL called to send the user data
-         * @param {object} data The server JSON reponse
+         * @param {Object} form The jQuery DOM form element
+         * @param {String} url  The URL called to send the user data
+         * @param {Object} data The server JSON reponse
          */
         onFail: function (form, url, data) {
             if (this.callbacks.onFail[url] &amp;&amp; typeof this.callbacks.onFail[url].callback === 'function') {
@@ -174,9 +210,9 @@ define(['jquery', 'domReady!'], function ($) {
         /**
          * Processing method on XHR error
          *
-         * @param {object} form  The jQuery DOM form element
-         * @param {string} url   The URL called to send the user data
-         * @param {object} jqXHR The jQuery jqXHR object
+         * @param {Object} form  The jQuery DOM form element
+         * @param {String} url   The URL called to send the user data
+         * @param {Object} jqXHR The jQuery jqXHR object
          */
         onRequestFail: function (form, url, jqXHR) {
             if (this.callbacks.onRequestFail[url] &amp;&amp; typeof this.callbacks.onRequestFail[url].callback === 'function') {
@@ -185,18 +221,31 @@ define(['jquery', 'domReady!'], function ($) {
         },
 
         /**
+         * Processing method on sumbit event
+         *
+         * @param {Object} form          The jQuery DOM form element
+         * @param {String} callbackName  The callback function name
+         * @param {Object} inputs        The user inputs as object
+         */
+        onJsCallback: function (form, callbackName, inputs) {
+            if (this.jsCallbacks[callbackName] &amp;&amp; typeof this.jsCallbacks[callbackName].callback === 'function') {
+                this.jsCallbacks[callbackName].callback.call(this.jsCallbacks[callbackName].context, form, inputs);
+            }
+        },
+
+        /**
          * Add a callback to process the url server success JSON repsonse
          *
          * The callback takes 2 arguments:
-         * 
+         *
          * - The jQuery DOM form element
          * - The server JSON reponse
          *
          * Example: function callback(form, data) { ... }
          *
-         * @param {string}   url      The URL called to send the user data
-         * @param {function} callback The callback function
-         * @param {object}   context  The callback context
+         * @param {String}   url      The URL called to send the user data
+         * @param {Function} callback The callback function
+         * @param {Object}   context  The callback context
          */
         addOnSuccessCallback: function (url, callback, context) {
             this.callbacks.onSuccess[url] = {
@@ -209,15 +258,15 @@ define(['jquery', 'domReady!'], function ($) {
          * Add a callback to process the url server fail JSON repsonse
          *
          * The callback takes 2 arguments:
-         * 
+         *
          * - The jQuery DOM form element
          * - The server JSON reponse
          *
          * Example: function callback(form, data) { ... }
          *
-         * @param {string}   url      The URL called to send the user data
-         * @param {function} callback The callback function
-         * @param {object}   context  The callback context
+         * @param {String}   url      The URL called to send the user data
+         * @param {Function} callback The callback function
+         * @param {Object}   context  The callback context
          */
         addOnFailCallback: function (url, callback, context) {
             this.callbacks.onFail[url] = {
@@ -230,27 +279,49 @@ define(['jquery', 'domReady!'], function ($) {
          * Add a callback to process the url server fail XHR
          *
          * The callback takes 2 arguments:
-         * 
+         *
          * - The jQuery DOM form element
          * - The jQuery jqXHR object
          *
          * Example: function callback(form, jqXHR) { ... }
          *
-         * @param {string}   url      The URL called to send the user data
-         * @param {function} callback The callback function
-         * @param {object}   context  The callback context
+         * @param {String}   url      The URL called to send the user data
+         * @param {Function} callback The callback function
+         * @param {Object}   context  The callback context
          */
         addOnRequestFailCallback: function (url, callback, context) {
             this.callbacks.onRequestFail[url] = {
                 "callback": callback,
-                "context": context
+                "context" : context
+            };
+        },
+
+        /**
+         * Add a callback to process the form user inputs on submit
+         *
+         * The callback takes 2 arguments:
+         *
+         * - The jQuery DOM form element
+         * - The user inputs as object
+         *
+         * Example: function callback(form, inputs) { ... }
+         *
+         * @param {String}   callbackName The callback function name
+         * @param {Function} callback     The callback function
+         * @param {Object}   context      The callback context
+         */
+        addJsCallback: function (callbackName, callback, context) {
+            this.jsCallbacks[callbackName] = {
+                "callback": callback,
+                "context" : context
             };
         }
     };
 
     return FormsManager;
-});</pre>
-	</article>
+});
+</pre>
+    </article>
 </section>
 
 
@@ -267,6 +338,20 @@ define(['jquery', 'domReady!'], function ($) {
 </div>
 </div>
 
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
 
 <footer>
 
@@ -274,19 +359,19 @@ define(['jquery', 'domReady!'], function ($) {
 	<span class="copyright">
 	DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.
 	</span>
-	<br />
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
-	on 2015-09-07 14:21:43 using the <a
-	href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-01-25 19:37:59
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
 </footer>
 
-<!--<script src="scripts/sunlight.js"></script>-->
 <script src="scripts/docstrap.lib.js"></script>
-<script src="scripts/bootstrap-dropdown.js"></script>
 <script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
 
 <script>
 $( function () {
@@ -295,20 +380,6 @@ $( function () {
 
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
-
-	$( "#toc" ).toc( {
-		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
-		},
-		selectors   : "h1,h2,h3,h4",
-		showAndHide : false,
-		scrollTo    : "100px"
-	} );
-
-	$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
-	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-	$( '.dropdown-toggle' ).dropdown();
-	//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
 
 	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
 		var $this = $( this );
@@ -321,7 +392,8 @@ $( function () {
 			example.html( exampleText );
 			lang = lang[1];
 		} else {
-			lang = "javascript";
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
 		}
 
 		if ( lang ) {
@@ -339,6 +411,28 @@ $( function () {
 		showMenu : true,
 		enableDoclinks : true
 	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
 } );
 </script>
 
@@ -349,6 +443,12 @@ $( function () {
 
 <!--Google Analytics-->
 
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
 
 </body>
 </html>

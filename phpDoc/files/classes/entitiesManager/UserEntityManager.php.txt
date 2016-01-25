@@ -39,10 +39,10 @@ class UserEntityManager extends EntityManager
         }
     }
 
-   /**
+    /**
      * Load user entity and userRights entity linked to the user entity
      *
-     * @param  int|array The id value
+     * @param int|array The id value
      */
     public function loadEntity($id)
     {
@@ -55,7 +55,7 @@ class UserEntityManager extends EntityManager
     /**
      * Get a user id by his pseudonym
      *
-     * @param  string  $pseudonym The user pseudonym
+     * @param  string $pseudonym The user pseudonym
      * @return integer            The user id
      */
     public function getUserIdByPseudonym($pseudonym)
@@ -99,7 +99,7 @@ class UserEntityManager extends EntityManager
      *
      * @param  string[] $inputs Inputs array containing array('login' => 'login', 'password' => 'password')
      * @return array            The occured errors or success in a array
-     * @todo                    refacto make it shorter...
+     * @todo   refacto make it shorter...
      */
     public function connect($inputs)
     {
@@ -222,8 +222,8 @@ class UserEntityManager extends EntityManager
     /**
      * Check if a user have the admin access to the WebSocker server
      *
-     * @param  string  $login    The user login
-     * @param  string  $password The user password
+     * @param  string $login    The user login
+     * @param  string $password The user password
      * @return boolean           True if the User has the right else false
      */
     public function connectWebSocketServer($login, $password)
@@ -243,8 +243,8 @@ class UserEntityManager extends EntityManager
     /**
      * Check if a user has the right to ckick a user
      *
-     * @param  string  $login    The user login
-     * @param  string  $password The user password
+     * @param  string $login    The user login
+     * @param  string $password The user password
      * @return boolean           True if a user has the right to kick a player from a room else false
      */
     public function hasChatAdminRight($login, $password)
@@ -280,7 +280,7 @@ class UserEntityManager extends EntityManager
     /**
      * Check if a pseudonym exists in the database
      *
-     * @param  string  $pseudonym The pseudonym
+     * @param  string $pseudonym The pseudonym
      * @return boolean            True if the pseudonym exists else false
      */
     public function isPseudonymExist($pseudonym)

@@ -121,7 +121,7 @@ class User extends Entity
     /**
      * Bind user inputs to set User class attributes with inputs check
      *
-     * @param  array $inputs The user inputs
+     * @param array $inputs The user inputs
      */
     public function bindInputs($inputs)
     {

@@ -20,8 +20,13 @@
 <div class="container">
 	<div class="navbar-header">
 		<a class="navbar-brand" href="index.html">WebSocket services / AMD modules</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
 	</div>
-	<div class="navbar-collapse">
+	<div class="navbar-collapse collapse" id="topNavigation">
 		<ul class="nav navbar-nav">
 			
 			<li class="dropdown">
@@ -31,20 +36,44 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="-_.html">_</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#requirejs">requirejs</a></li><li><a href="global.html#toUrl">toUrl</a></li>
+				</ul>
+			</li>
+			
 		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
 	</div>
+
 </div>
 </div>
 
 
-<div class="container">
+<div class="container" id="toc-content">
 <div class="row">
 
 	
 	<div class="col-md-8">
 	
 		<div id="main">
-    		<h1 class="page-title">Module: lib/forms</h1>
 			
 
 	<h1 class="page-title">Module: lib/forms</h1>
@@ -68,13 +97,14 @@
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="module:lib/forms"><span class="type-signature"></span>new (require("lib/forms"))<span class="signature">(Message, settings)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="module:lib/forms"><span class="type-signature"></span>new (require("lib/forms"))(settings)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         FormsManager object
@@ -84,7 +114,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -92,46 +122,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>Message</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Message</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">A Message object to output message in the IHM</td>
-        </tr>
-
-	
+    <tbody>
+    
 
         <tr>
             
@@ -141,7 +148,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -154,15 +162,15 @@
             <td class="description last">Overriden settings</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -191,12 +199,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="forms.js.html">forms.js</a>,
-				 <a href="forms.js.html#sunlight-1-line-20">line 20</a>
+				 <a href="forms.js.html#sunlight-1-line-21">line 21</a>
 			</li>
 		</ul>
 	</dd>
@@ -209,7 +217,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -217,11 +229,7 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
@@ -244,6 +252,7 @@
 
         <dl>
             
+<hr>
 <dt class="name" id="callbacks">
     <h4><span class="type-signature"></span>callbacks<span class="type-signature"></span></h4>
 
@@ -252,7 +261,7 @@
 <dd>
     
     <div class="description">
-        Callbacks methods to process specifics responses
+        Callbacks methods to process specifics responses on a XHR server response
     </div>
     
 
@@ -260,7 +269,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -289,7 +298,7 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
@@ -313,15 +322,16 @@
 
         
             
-<dt class="name" id="message">
-    <h4><span class="type-signature"></span>message<span class="type-signature"></span></h4>
+<hr>
+<dt class="name" id="jsCallbacks">
+    <h4><span class="type-signature"></span>jsCallbacks<span class="type-signature"></span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        A Message object to output message in the IHM
+        Callbacks methods to process users input on user sumbit action
     </div>
     
 
@@ -329,7 +339,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -358,7 +368,7 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
@@ -382,6 +392,7 @@
 
         
             
+<hr>
 <dt class="name" id="settings">
     <h4><span class="type-signature"></span>settings<span class="type-signature"></span></h4>
 
@@ -398,7 +409,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -427,7 +438,7 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
@@ -451,6 +462,7 @@
 
         
             
+<hr>
 <dt class="name" id="xhrs">
     <h4><span class="type-signature"></span>xhrs<span class="type-signature"></span></h4>
 
@@ -467,7 +479,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -496,7 +508,7 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
@@ -526,13 +538,200 @@
 
         <dl>
             
+<hr>
 <dt>
-    <h4 class="name" id="addOnFailCallback"><span class="type-signature"></span>addOnFailCallback<span class="signature">(url, callback, context)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="addJsCallback"><span class="type-signature"></span>addJsCallback(callbackName, callback, context)</h4>
     
     
 </dt>
 <dd>
+
     
+    <div class="description">
+        Add a callback to process the form user inputs on submitThe callback takes 2 arguments:- The jQuery DOM form element- The user inputs as objectExample: function callback(form, inputs) { ... }
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callbackName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The callback function name</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The callback function</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The callback context</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="forms.js.html">forms.js</a>,
+				 <a href="forms.js.html#sunlight-1-line-230">line 230</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="addOnFailCallback"><span class="type-signature"></span>addOnFailCallback(url, callback, context)</h4>
+    
+    
+</dt>
+<dd>
+
     
     <div class="description">
         Add a callback to process the url server fail JSON repsonseThe callback takes 2 arguments:- The jQuery DOM form element- The server JSON reponseExample: function callback(form, data) { ... }
@@ -542,7 +741,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -550,23 +749,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -576,7 +775,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -589,7 +789,7 @@
             <td class="description last">The URL called to send the user data</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -602,6 +802,7 @@
 <span class="param-type">function</span>
 
 
+
             
             </td>
 
@@ -612,7 +813,7 @@
             <td class="description last">The callback function</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -622,7 +823,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -635,15 +837,15 @@
             <td class="description last">The callback context</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -672,12 +874,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="forms.js.html">forms.js</a>,
-				 <a href="forms.js.html#sunlight-1-line-168">line 168</a>
+				 <a href="forms.js.html#sunlight-1-line-188">line 188</a>
 			</li>
 		</ul>
 	</dd>
@@ -690,7 +892,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -698,23 +904,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="addOnRequestFailCallback"><span class="type-signature"></span>addOnRequestFailCallback<span class="signature">(url, callback, context)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="addOnRequestFailCallback"><span class="type-signature"></span>addOnRequestFailCallback(url, callback, context)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Add a callback to process the url server fail XHRThe callback takes 2 arguments:- The jQuery DOM form element- The jQuery jqXHR objectExample: function callback(form, jqXHR) { ... }
@@ -724,7 +927,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -732,23 +935,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -758,7 +961,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -771,7 +975,7 @@
             <td class="description last">The URL called to send the user data</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -784,6 +988,7 @@
 <span class="param-type">function</span>
 
 
+
             
             </td>
 
@@ -794,7 +999,7 @@
             <td class="description last">The callback function</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -804,7 +1009,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -817,15 +1023,15 @@
             <td class="description last">The callback context</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -854,12 +1060,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="forms.js.html">forms.js</a>,
-				 <a href="forms.js.html#sunlight-1-line-189">line 189</a>
+				 <a href="forms.js.html#sunlight-1-line-209">line 209</a>
 			</li>
 		</ul>
 	</dd>
@@ -872,7 +1078,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -880,23 +1090,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="addOnSuccessCallback"><span class="type-signature"></span>addOnSuccessCallback<span class="signature">(url, callback, context)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="addOnSuccessCallback"><span class="type-signature"></span>addOnSuccessCallback(url, callback, context)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Add a callback to process the url server success JSON repsonseThe callback takes 2 arguments:- The jQuery DOM form element- The server JSON reponseExample: function callback(form, data) { ... }
@@ -906,7 +1113,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -914,23 +1121,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -940,7 +1147,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -953,7 +1161,7 @@
             <td class="description last">The URL called to send the user data</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -966,6 +1174,7 @@
 <span class="param-type">function</span>
 
 
+
             
             </td>
 
@@ -976,7 +1185,7 @@
             <td class="description last">The callback function</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -986,7 +1195,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -999,15 +1209,15 @@
             <td class="description last">The callback context</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -1036,12 +1246,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="forms.js.html">forms.js</a>,
-				 <a href="forms.js.html#sunlight-1-line-147">line 147</a>
+				 <a href="forms.js.html#sunlight-1-line-167">line 167</a>
 			</li>
 		</ul>
 	</dd>
@@ -1054,7 +1264,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -1062,23 +1276,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="initEvents"><span class="type-signature"></span>initEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="initEvents"><span class="type-signature"></span>initEvents()</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Bind events on all form
@@ -1088,13 +1299,13 @@
     
 
     
+
     
     
-    
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -1123,7 +1334,7 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
@@ -1141,7 +1352,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -1149,23 +1364,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="onFail"><span class="type-signature"></span>onFail<span class="signature">(form, url, data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="onFail"><span class="type-signature"></span>onFail(form, url, data)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Processing method on server fail response
@@ -1175,7 +1387,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -1183,23 +1395,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -1209,7 +1421,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -1222,7 +1435,7 @@
             <td class="description last">The jQuery DOM form element</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -1232,7 +1445,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -1245,7 +1459,7 @@
             <td class="description last">The URL called to send the user data</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -1255,7 +1469,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -1268,15 +1483,15 @@
             <td class="description last">The server JSON reponse</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -1305,12 +1520,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="forms.js.html">forms.js</a>,
-				 <a href="forms.js.html#sunlight-1-line-114">line 114</a>
+				 <a href="forms.js.html#sunlight-1-line-121">line 121</a>
 			</li>
 		</ul>
 	</dd>
@@ -1323,7 +1538,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -1331,33 +1550,30 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="onRequestFail"><span class="type-signature"></span>onRequestFail<span class="signature">(form, url, jqXHR)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="onJsCallback"><span class="type-signature"></span>onJsCallback(form, callbackName, inputs)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Processing method on XHR error
+        Processing method on sumbit event
     </div>
     
 
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -1365,23 +1581,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -1391,7 +1607,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -1404,7 +1621,193 @@
             <td class="description last">The jQuery DOM form element</td>
         </tr>
 
+    
+
+        <tr>
+            
+                <td class="name"><code>callbackName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The callback function name</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>inputs</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The user inputs as object</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
 	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
+	<dd class="tag-source">
+		<ul class="dummy">
+			<li>
+				<a href="forms.js.html">forms.js</a>,
+				 <a href="forms.js.html#sunlight-1-line-147">line 147</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="onRequestFail"><span class="type-signature"></span>onRequestFail(form, url, jqXHR)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        Processing method on XHR error
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>form</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The jQuery DOM form element</td>
+        </tr>
+
+    
 
         <tr>
             
@@ -1414,7 +1817,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -1427,7 +1831,7 @@
             <td class="description last">The URL called to send the user data</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -1437,7 +1841,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -1450,15 +1855,15 @@
             <td class="description last">The jQuery jqXHR object</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -1487,12 +1892,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="forms.js.html">forms.js</a>,
-				 <a href="forms.js.html#sunlight-1-line-127">line 127</a>
+				 <a href="forms.js.html#sunlight-1-line-134">line 134</a>
 			</li>
 		</ul>
 	</dd>
@@ -1505,7 +1910,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -1513,23 +1922,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="onSuccess"><span class="type-signature"></span>onSuccess<span class="signature">(form, url, data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="onSuccess"><span class="type-signature"></span>onSuccess(form, url, data)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Processing method on server success response
@@ -1539,7 +1945,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -1547,23 +1953,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -1573,7 +1979,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -1586,7 +1993,7 @@
             <td class="description last">The jQuery DOM form element</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -1596,7 +2003,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -1609,7 +2017,7 @@
             <td class="description last">The URL called to send the user data</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -1619,7 +2027,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -1632,15 +2041,15 @@
             <td class="description last">The server JSON reponse</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -1669,12 +2078,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="forms.js.html">forms.js</a>,
-				 <a href="forms.js.html#sunlight-1-line-101">line 101</a>
+				 <a href="forms.js.html#sunlight-1-line-108">line 108</a>
 			</li>
 		</ul>
 	</dd>
@@ -1687,7 +2096,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -1695,33 +2108,30 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="submit"><span class="type-signature"></span>submit<span class="signature">(e)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="submit"><span class="type-signature"></span>submit(e)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Send ajax request on form submit if data-ajax = true and process the result
+        Process the form with specified method in the data-send-action HTML attribute (default AJAX call)
     </div>
     
 
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -1729,23 +2139,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -1758,6 +2168,7 @@
 <span class="param-type">event</span>
 
 
+
             
             </td>
 
@@ -1768,15 +2179,15 @@
             <td class="description last">The form submit event</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -1805,7 +2216,7 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
@@ -1823,7 +2234,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -1831,11 +2246,7 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
@@ -1859,13 +2270,27 @@
 
 	
 		<div class="col-md-3">
-			<div id="toc" class="hidden-xs hidden-md col-md-3"></div>
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
 		</div>
 	
 
 </div>
 </div>
 
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
 
 <footer>
 
@@ -1873,19 +2298,19 @@
 	<span class="copyright">
 	DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.
 	</span>
-	<br />
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
-	on 2015-09-07 14:21:43 using the <a
-	href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-01-25 19:37:59
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
 </footer>
 
-<!--<script src="scripts/sunlight.js"></script>-->
 <script src="scripts/docstrap.lib.js"></script>
-<script src="scripts/bootstrap-dropdown.js"></script>
 <script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
 
 <script>
 $( function () {
@@ -1894,20 +2319,6 @@ $( function () {
 
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
-
-	$( "#toc" ).toc( {
-		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
-		},
-		selectors   : "h1,h2,h3,h4",
-		showAndHide : false,
-		scrollTo    : "100px"
-	} );
-
-	$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
-	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-	$( '.dropdown-toggle' ).dropdown();
-	//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
 
 	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
 		var $this = $( this );
@@ -1920,7 +2331,8 @@ $( function () {
 			example.html( exampleText );
 			lang = lang[1];
 		} else {
-			lang = "javascript";
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
 		}
 
 		if ( lang ) {
@@ -1938,6 +2350,28 @@ $( function () {
 		showMenu : true,
 		enableDoclinks : true
 	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
 } );
 </script>
 
@@ -1948,6 +2382,12 @@ $( function () {
 
 <!--Google Analytics-->
 
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
 
 </body>
 </html>

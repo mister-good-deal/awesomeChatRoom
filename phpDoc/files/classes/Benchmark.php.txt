@@ -14,7 +14,7 @@ use \classes\ExceptionManager as Exception;
  * Benchmark methods by symply put them in an array sent to the constructors
  *
  * @class Benchmark
- * @todo complete the class
+ * @todo  complete the class
  */
 class Benchmark
 {
@@ -71,12 +71,12 @@ class Benchmark
     /**
      * Run the benchmark by defining a number of iteration
      *
-     * @param  integer $iterations The number of iteration to process
+     * @param integer $iterations The number of iteration to process
      */
     public function runByIteration($iterations)
     {
         for ($i = 0; $i < $iterations; $i++) {
-            # code...
+            // code...
         }
     }
 

@@ -20,8 +20,13 @@
 <div class="container">
 	<div class="navbar-header">
 		<a class="navbar-brand" href="index.html">WebSocket services / AMD modules</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
 	</div>
-	<div class="navbar-collapse">
+	<div class="navbar-collapse collapse" id="topNavigation">
 		<ul class="nav navbar-nav">
 			
 			<li class="dropdown">
@@ -31,20 +36,44 @@
 				</ul>
 			</li>
 			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="-_.html">_</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#requirejs">requirejs</a></li><li><a href="global.html#toUrl">toUrl</a></li>
+				</ul>
+			</li>
+			
 		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
 	</div>
+
 </div>
 </div>
 
 
-<div class="container">
+<div class="container" id="toc-content">
 <div class="row">
 
 	
 	<div class="col-md-8">
 	
 		<div id="main">
-    		<h1 class="page-title">Module: lib/message</h1>
 			
 
 	<h1 class="page-title">Module: lib/message</h1>
@@ -68,13 +97,14 @@
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="module:lib/message"><span class="type-signature"></span>new (require("lib/message"))<span class="signature">(settings)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="module:lib/message"><span class="type-signature"></span>new (require("lib/message"))(settings)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Message object
@@ -84,7 +114,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -92,23 +122,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -118,7 +148,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -131,15 +162,15 @@
             <td class="description last">Overriden settings</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -168,12 +199,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-19">line 19</a>
+				 <a href="message.js.html#sunlight-1-line-20">line 20</a>
 			</li>
 		</ul>
 	</dd>
@@ -186,7 +217,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -194,11 +229,7 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
@@ -221,6 +252,7 @@
 
         <dl>
             
+<hr>
 <dt class="name" id="settings">
     <h4><span class="type-signature"></span>settings<span class="type-signature"></span></h4>
 
@@ -237,7 +269,7 @@
 
     
 <dl class="details">
-	
+    
 
 	
 
@@ -266,12 +298,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-28">line 28</a>
+				 <a href="message.js.html#sunlight-1-line-29">line 29</a>
 			</li>
 		</ul>
 	</dd>
@@ -296,13 +328,14 @@
 
         <dl>
             
+<hr>
 <dt>
-    <h4 class="name" id="add"><span class="type-signature"></span>add<span class="signature">(text, type, level, title, duration)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="add"><span class="type-signature"></span>add(text, type, level, title, duration)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Add a message in a specific queue to display it
@@ -312,7 +345,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -320,23 +353,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -346,7 +379,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -359,7 +393,7 @@
             <td class="description last">The message text to display</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -369,7 +403,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -382,7 +417,7 @@
             <td class="description last">The message type ("alert", "popup", "notification")</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -392,7 +427,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -405,7 +441,7 @@
             <td class="description last">The message level ("danger", "warning", "info", "success")</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -415,7 +451,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -428,7 +465,7 @@
             <td class="description last">The message title</td>
         </tr>
 
-	
+    
 
         <tr>
             
@@ -438,7 +475,8 @@
             <td class="type">
             
                 
-<span class="param-type">integer</span>
+<span class="param-type">Number</span>
+
 
 
             
@@ -451,15 +489,15 @@
             <td class="description last">The message maximum duration before dismiss (-1 for infinite)</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -488,12 +526,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-151">line 151</a>
+				 <a href="message.js.html#sunlight-1-line-152">line 152</a>
 			</li>
 		</ul>
 	</dd>
@@ -506,7 +544,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -514,23 +556,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="alert"><span class="type-signature"></span>alert<span class="signature">(message)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="alert"><span class="type-signature"></span>alert(message)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Display a message on a large alert div at the top of the user screen
@@ -540,7 +579,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -548,23 +587,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -574,7 +613,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -587,15 +627,15 @@
             <td class="description last">The message to display</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -624,12 +664,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-83">line 83</a>
+				 <a href="message.js.html#sunlight-1-line-84">line 84</a>
 			</li>
 		</ul>
 	</dd>
@@ -642,7 +682,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -650,23 +694,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="alertDismiss"><span class="type-signature"></span>alertDismiss<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="alertDismiss"><span class="type-signature"></span>alertDismiss()</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Close the alert message
@@ -676,13 +717,13 @@
     
 
     
+
     
     
-    
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -711,12 +752,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-112">line 112</a>
+				 <a href="message.js.html#sunlight-1-line-113">line 113</a>
 			</li>
 		</ul>
 	</dd>
@@ -729,7 +770,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -737,23 +782,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="dequeueMessage"><span class="type-signature"></span>dequeueMessage<span class="signature">(type)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="dequeueMessage"><span class="type-signature"></span>dequeueMessage(type)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Dequeue a message from the specific queue if the queue is not empty and the queue is not locked
@@ -763,7 +805,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -771,23 +813,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -797,7 +839,8 @@
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">String</span>
+
 
 
             
@@ -810,15 +853,15 @@
             <td class="description last">The message type ("alert", "popup", "notification")</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -847,12 +890,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-180">line 180</a>
+				 <a href="message.js.html#sunlight-1-line-181">line 181</a>
 			</li>
 		</ul>
 	</dd>
@@ -865,7 +908,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -873,23 +920,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="initEvents"><span class="type-signature"></span>initEvents<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="initEvents"><span class="type-signature"></span>initEvents()</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Initialize events
@@ -899,13 +943,13 @@
     
 
     
+
     
     
-    
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -934,12 +978,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-58">line 58</a>
+				 <a href="message.js.html#sunlight-1-line-59">line 59</a>
 			</li>
 		</ul>
 	</dd>
@@ -952,7 +996,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -960,23 +1008,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="notification"><span class="type-signature"></span>notification<span class="signature">(message)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="notification"><span class="type-signature"></span>notification(message)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Display a message on a medium div at the bottom-right of the user screen
@@ -986,7 +1031,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -994,23 +1039,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -1020,7 +1065,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -1033,15 +1079,15 @@
             <td class="description last">The message to display</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -1070,12 +1116,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-104">line 104</a>
+				 <a href="message.js.html#sunlight-1-line-105">line 105</a>
 			</li>
 		</ul>
 	</dd>
@@ -1088,7 +1134,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -1096,23 +1146,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="notificationDismiss"><span class="type-signature"></span>notificationDismiss<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="notificationDismiss"><span class="type-signature"></span>notificationDismiss()</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Close the notification message
@@ -1122,13 +1169,13 @@
     
 
     
+
     
     
-    
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -1157,12 +1204,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-134">line 134</a>
+				 <a href="message.js.html#sunlight-1-line-135">line 135</a>
 			</li>
 		</ul>
 	</dd>
@@ -1175,7 +1222,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -1183,23 +1234,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="parseWebsocketData"><span class="type-signature"></span>parseWebsocketData<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="parseWebsocketData"><span class="type-signature"></span>parseWebsocketData(data)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Parse the WebSocket server response to notify it
@@ -1209,7 +1257,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -1217,23 +1265,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -1243,7 +1291,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -1256,15 +1305,15 @@
             <td class="description last">JSON encoded data recieved from the WebSocket server</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -1293,12 +1342,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-171">line 171</a>
+				 <a href="message.js.html#sunlight-1-line-172">line 172</a>
 			</li>
 		</ul>
 	</dd>
@@ -1311,7 +1360,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -1319,23 +1372,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="popup"><span class="type-signature"></span>popup<span class="signature">(message)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="popup"><span class="type-signature"></span>popup(message)</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Display a message on a modal to the user screen
@@ -1345,7 +1395,7 @@
     
 
     
-    
+
     
     
         <h5>Parameters:</h5>
@@ -1353,23 +1403,23 @@
 
 <table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
+    <tr>
+        
+        <th>Name</th>
+        
 
-		<th>Type</th>
+        <th>Type</th>
 
-		
+        
 
-		
+        
 
-		<th class="last">Description</th>
-	</tr>
-	</thead>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
 
-	<tbody>
-	
+    <tbody>
+    
 
         <tr>
             
@@ -1379,7 +1429,8 @@
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
+
 
 
             
@@ -1392,15 +1443,15 @@
             <td class="description last">The message to display</td>
         </tr>
 
-	
-	</tbody>
+    
+    </tbody>
 </table>
 
     
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -1429,12 +1480,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-94">line 94</a>
+				 <a href="message.js.html#sunlight-1-line-95">line 95</a>
 			</li>
 		</ul>
 	</dd>
@@ -1447,7 +1498,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -1455,23 +1510,20 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <h4 class="name" id="popupDismiss"><span class="type-signature"></span>popupDismiss<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="popupDismiss"><span class="type-signature"></span>popupDismiss()</h4>
     
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
         Close the popup message
@@ -1481,13 +1533,13 @@
     
 
     
+
     
     
-    
-    
+
     
 <dl class="details">
-	
+    
 
 	
 
@@ -1516,12 +1568,12 @@
 
 
 	
-	<dt class="tag-source">Source:</dt>
+	<dt class="tag-source method-doc-label method-doc-details-label">Source:</dt>
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
 				<a href="message.js.html">message.js</a>,
-				 <a href="message.js.html#sunlight-1-line-123">line 123</a>
+				 <a href="message.js.html#sunlight-1-line-124">line 124</a>
 			</li>
 		</ul>
 	</dd>
@@ -1534,7 +1586,11 @@
 	
 </dl>
 
+
     
+
+    
+
     
 
     
@@ -1542,11 +1598,7 @@
     
 
     
-    
-    
-    
-    
-    
+
     
 </dd>
 
@@ -1570,13 +1622,27 @@
 
 	
 		<div class="col-md-3">
-			<div id="toc" class="hidden-xs hidden-md col-md-3"></div>
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
 		</div>
 	
 
 </div>
 </div>
 
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
 
 <footer>
 
@@ -1584,19 +1650,19 @@
 	<span class="copyright">
 	DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.
 	</span>
-	<br />
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a>
-	on 2015-09-07 14:21:43 using the <a
-	href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-01-25 19:37:59
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
 </footer>
 
-<!--<script src="scripts/sunlight.js"></script>-->
 <script src="scripts/docstrap.lib.js"></script>
-<script src="scripts/bootstrap-dropdown.js"></script>
 <script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
 
 <script>
 $( function () {
@@ -1605,20 +1671,6 @@ $( function () {
 
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
-
-	$( "#toc" ).toc( {
-		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
-		},
-		selectors   : "h1,h2,h3,h4",
-		showAndHide : false,
-		scrollTo    : "100px"
-	} );
-
-	$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
-	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-	$( '.dropdown-toggle' ).dropdown();
-	//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
 
 	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
 		var $this = $( this );
@@ -1631,7 +1683,8 @@ $( function () {
 			example.html( exampleText );
 			lang = lang[1];
 		} else {
-			lang = "javascript";
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
 		}
 
 		if ( lang ) {
@@ -1649,6 +1702,28 @@ $( function () {
 		showMenu : true,
 		enableDoclinks : true
 	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
 } );
 </script>
 
@@ -1659,6 +1734,12 @@ $( function () {
 
 <!--Google Analytics-->
 
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
 
 </body>
 </html>

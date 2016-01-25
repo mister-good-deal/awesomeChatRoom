@@ -13,7 +13,7 @@ use \classes\ExceptionManager as Exception;
 /**
  * Images manipulation class with usefull utilities methods
  *
- * @link https://en.wikipedia.org/wiki/Display_resolution
+ * @link  https://en.wikipedia.org/wiki/Display_resolution
  * @class ImagesManager
  */
 class ImagesManager
@@ -95,7 +95,7 @@ class ImagesManager
     /**
      * Instantiate a new \Imagick object and destroyed the last if exists
      *
-     * @param  string    $imagePath The image path
+     * @param  string $imagePath The image path
      * @throws Exception            If there is no image at the specified path
      * @throws Exception            If there is an error on image creation
      */

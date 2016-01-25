@@ -11,7 +11,7 @@ namespace abstracts;
  * Abstract Controller class to harmonize standards controllers methods
  *
  * @abstract
- * @class AbstractController
+ * @class    AbstractController
  */
 abstract class AbstractController
 {
