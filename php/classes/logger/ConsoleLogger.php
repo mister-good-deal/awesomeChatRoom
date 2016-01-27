@@ -16,8 +16,6 @@ use \abstracts\AbstractLogger as AbstractLogger;
 
 /**
  * A logger which writes the log in the console
- *
- * @class ConsoleLogger
  */
 class ConsoleLogger extends AbstractLogger
 {
