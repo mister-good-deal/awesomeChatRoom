@@ -142,7 +142,7 @@ Create an empty database (ex: `CREATE SCHEMA ``websocket`` DEFAULT CHARACTER SET
 
 Create tables with the ORM, run those commands
 
-`php [absolute path to the project root directory]/php/devTests/testConsole.php`
+`php [absolute path to the project root directory]/php/devTests/testOrm.php`
 
 `create all`
 

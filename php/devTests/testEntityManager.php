@@ -43,12 +43,12 @@ try {
 
     $userEntityManager->setEntity($user);
     $userStatisticsEntityManager->setEntity($userStatistics);
-    
+
     $userStatisticsEntityManager->dropEntityTable();
     $userEntityManager->dropEntityTable();
 
     // DB::setPrintSQL(true);
-    
+
     $userEntityManager->createEntityTable();
     $userStatisticsEntityManager->createEntityTable();
 } catch (Exception $e) {
