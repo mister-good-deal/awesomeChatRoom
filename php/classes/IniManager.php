@@ -14,9 +14,6 @@ use \classes\LoggerManager as Logger;
 /**
  * Helper class to provide access read and write to an ini conf file.
  * Can set and get any parameter in the given ini file.
- *
- * @class IniManager
- * @todo  make this class non static
  */
 class IniManager
 {

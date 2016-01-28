@@ -223,7 +223,8 @@ GODDBYE;
     protected function getArgs($command)
     {
         // -argument = value
-        preg_match_all('/\-(?P<argKey>[a-zA-Z]+) (?P<argValue>[a-zA-Z0-9 _]+)/', $command, $matches1);
+        preg_match_all('/\-(?P<argKey>[a-zA-Z]+) (?P<argValue>("[^"]+"|[a-zA-Z0-9 _]+))/', $command, $matches1);
+        $matches1['argValue'][1] = str_replace('"', '', $matches1['argValue'][1]);
         // --argument
         preg_match_all('/\-\-(?P<argKey>[a-zA-Z]+)(?P<argValue>.*)/', $command, $matches2);
 
