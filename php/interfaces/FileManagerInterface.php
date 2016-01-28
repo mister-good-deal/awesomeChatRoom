@@ -46,6 +46,21 @@ interface FileManagerInterface
     public function makeDir($dirName);
 
     /**
+     * Create a new directory in the current working directory if this directory does not exists
+     *
+     * @param  string $dirName The new directory name
+     * @throws Exception if the creation of the new directory fails
+     */
+    public function makeDirIfNotExists($dirName);
+
+    /**
+     * Get the directories / files list on the current working directory
+     *
+     * @return string[] The list of directories / files conatained in the current working directory
+     */
+    public function listFiles();
+
+    /**
      * Upload a file on the server
      *
      * @param  string $remoteFilePath The remote file path on the server

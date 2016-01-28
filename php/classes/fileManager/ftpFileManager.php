@@ -28,10 +28,12 @@ class FtpFileManager implements FileManagerInterface
 
     /**
      * Constructor that loads connection paramaters
+     *
+     * @param string[] $parameters OPTIONAL connection paramaters
      */
-    public function __construct()
+    public function __construct($parameters = null)
     {
-        $this->params    = Ini::getSectionParams('Deployment');
+        $this->params    = ($parameters !== null ? $parameters : Ini::getSectionParams('Deployment'));
         $this->ressource = null;
     }
 
@@ -78,6 +80,24 @@ class FtpFileManager implements FileManagerInterface
         if (ftp_mkdir($this->ressource, $dirName) === false) {
             throw new Exception('Fail to create directory <' . $dirName . '>', Exception::$WARNING);
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function makeDirIfNotExists($dirName)
+    {
+        if (!in_array($dirName, $fileManager->listFiles())) {
+            $fileManager->makeDir($dirName);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function listFiles()
+    {
+        return ftp_nlist($this->ressource, ".");
     }
 
     /**

@@ -9,6 +9,7 @@
 namespace classes\console;
 
 use \classes\console\Console as Console;
+use \classes\fileManager\FileManagerInterface as FileManager;
 use \classes\fileManager\FtpFileManager as FtpFileManager;
 use \classes\IniManager as Ini;
 
@@ -32,6 +33,25 @@ class Deployment extends Console
      */
     private static $PROTOCOLS = array(
         'FTP'
+    );
+    /**
+     * @var array $PROJECT_MAIN_STRUCTURE The project directories tree
+     */
+    private static $PROJECT_MAIN_STRUCTURE = array(
+        '.' => array(
+            'static' => array(
+                'dist' => null
+            ),
+            'php' => array(
+                'abstracts'   => null,
+                'chatDumps'   => null,
+                'classes'     => null,
+                'controllers' => null,
+                'database'    => null,
+                'interfaces'  => null,
+                'traits'      => null
+            )
+        )
     );
 
     /**
@@ -150,7 +170,7 @@ class Deployment extends Console
                     }
 
                     if (isset($args['save'])) {
-                        Ini::setParam('Deployment', $args['p'], $args['v']);
+                        // Ini::setParam('Deployment', $args['p'], $args['v']);
                     }
                 } else {
                     static::out('The parameter "' . $args['p'] . '" does not exist' . PHP_EOL);
@@ -164,6 +184,47 @@ class Deployment extends Console
     private function deployWebSite()
     {
         $this->printDeploymentInformation();
+
+        switch ($this->deploymentConfiguration['protocol']) {
+            case 'FTP':
+                $fileManager = new FtpFileManager($this->deploymentConfiguration);
+                break;
+        }
+
+        // Connect, login and cd on the project directory container
+        $fileManager->connect();
+        $fileManager->login();
+        $fileManager->changeDir($this->deploymentConfiguration['remoteProjectRootDirectory']);
+
+        // Create the project directory root if it does not exist and cd into it
+        $fileManager->makeDirIfNotExists($this->deploymentConfiguration['remoteProjectRootDirectoryName']);
+        $fileManager->changeDir($this->deploymentConfiguration['remoteProjectRootDirectoryName']);
+
+        // Create main directories structure if it does not exist
+        $this->createMainProjectStructureRecursive($fileManager, '.', static::$PROJECT_MAIN_STRUCTURE);
+
+    }
+
+    /**
+     * Create a directories tree recursively
+     *
+     * @param  FileManager $fileManager      A FileManager class that implements FileManagerInterface
+     * @param  string      $workingDirectory The directory to create the current depth structure
+     * @param  array       $arrayDepth       The tree of the current depth structure
+     */
+    private function createMainProjectStructureRecursive($fileManager, $workingDirectory, $arrayDepth)
+    {
+        $fileManager->changeDir($workingDirectory);
+
+        foreach ($arrayDepth[$workingDirectory] as $directoryName => $subdir) {
+            $fileManager->makeDirIfNotExists($directoryName);
+
+            if (is_array($subdir)) {
+                $this->createMainProjectStructureRecursive($fileManager, $directoryName, $arrayDepth[$directoryName]);
+            }
+        }
+
+        $fileManager->changeDir('..');
     }
 
     private function deployWebsocketServer()
