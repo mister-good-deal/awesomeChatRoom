@@ -6,11 +6,11 @@
  * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
-namespace abstracts\designPatterns;
+namespace abstracts;
 
 use \classes\ExceptionManager as Exception;
-use \abstracts\designPatterns\Entity as Entity;
-use \abstracts\designPatterns\Collection as Collection;
+use \abstracts\Entity as Entity;
+use \abstracts\Collection as Collection;
 use \classes\DataBase as DB;
 use \classes\IniManager as Ini;
 
@@ -236,7 +236,7 @@ abstract class EntityManager
     {
         return call_user_func_array('sprintf', func_get_args());
     }
-    
+
     /*-----  End of Public methods  ------*/
 
     /*=======================================
@@ -257,7 +257,7 @@ abstract class EntityManager
         );
 
         $attributes = DB::query($sql)->fetch();
-        
+
         if ($attributes !== false) {
             $this->entity->setAttributes($attributes);
         }
@@ -378,7 +378,7 @@ abstract class EntityManager
         if ($this->entity->getComment() !== '') {
             $comment .= ' | ' . $this->entity->getComment();
         }
-        
+
         $sql .= ', COMMENT = \'' . $comment . '\'';
 
         return DB::exec($sql . ';') !== false;

@@ -6,10 +6,10 @@
  * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
-namespace abstracts\designPatterns;
+namespace abstracts;
 
 use \classes\ExceptionManager as Exception;
-use \abstracts\designPatterns\Entity as Entity;
+use \abstracts\Entity as Entity;
 
 /**
  * Abstract Collection pattern to use with Entity pattern
@@ -250,7 +250,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /*======================================
     =            Private method            =
     ======================================*/
-    
+
     /**
      * Parse the id(s) sent in array to get his key
      *
@@ -267,6 +267,6 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
 
         return $id;
     }
-    
+
     /*-----  End of Private method  ------*/
 }

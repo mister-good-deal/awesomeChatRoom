@@ -6,12 +6,12 @@
  * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
-namespace abstracts\designPatterns;
+namespace abstracts;
 
 use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
 use \classes\DataBase as DB;
-use \abstracts\designPatterns\EntityManager as EntityManager;
+use \abstracts\EntityManager as EntityManager;
 
 /**
  * Abstract Entity pattern
@@ -211,7 +211,7 @@ abstract class Entity
         foreach ($this->idKey as $columnName) {
             $idValue[] = $this->__get($columnName);
         }
-        
+
         return $idValue;
     }
 
@@ -403,7 +403,7 @@ abstract class Entity
     /*=========================================
     =            Protected methods            =
     =========================================*/
-    
+
     /**
      * Check if a column value is not already in database if the column has a unique attribute constraint
      *
@@ -425,7 +425,7 @@ abstract class Entity
 
         return $alreadyInDatabase;
     }
-    
+
     /*=====  End of Protected methods  ======*/
 
     /*=======================================
@@ -467,7 +467,7 @@ abstract class Entity
                     $constraints['primary']['name']    = key($columnAttributes['primary']);
                     $constraints['primary']['columns'] = $columnAttributes['primary'][$constraints['primary']['name']];
                 }
-                
+
                 if (isset($columnAttributes['foreignKey'])) {
                     $names                     = array_keys($columnAttributes['foreignKey']);
                     $constraints['foreignKey'] = array();
@@ -485,13 +485,13 @@ abstract class Entity
                 }
             }
         }
-        
+
         if (isset($constraints['primary'])) {
             $this->idKey = explode(', ', str_replace('`', '', $constraints['primary']['columns']));
         } else {
             $this->idKey = array();
         }
-        
+
         $this->columnsValue      = $columnsValue;
         $this->columnsAttributes = $columnsAttributes;
         $this->constraints       = $constraints;

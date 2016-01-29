@@ -8,7 +8,7 @@
 
 namespace classes\entitiesManager;
 
-use \abstracts\designPatterns\EntityManager as EntityManager;
+use \abstracts\EntityManager as EntityManager;
 use \classes\entitiesManager\UsersRightsEntityManager as UsersRightsEntityManager;
 use \classes\entitiesManager\UsersChatRightsEntityManager as UsersChatRightsEntityManager;
 use \classes\entities\User as User;
@@ -63,10 +63,10 @@ class UserEntityManager extends EntityManager
         $user       = new User();
         $sqlMarks   = 'SELECT id FROM %s WHERE pseudonym = %s';
         $sql        = static::sqlFormater($sqlMarks, $user->getTableName(), DB::quote($pseudonym));
-        
+
         return (int) DB::query($sql)->fetchColumn();
     }
-    
+
     /**
      * Register a user and return errors if errors occured
      *
@@ -82,7 +82,7 @@ class UserEntityManager extends EntityManager
             $user     = new User();
             $query    = 'SELECT MAX(id) FROM ' . $user->getTableName();
             $user->id = DB::query($query)->fetchColumn() + 1;
-            
+
             $user->bindInputs($inputs);
             $errors = $user->getErrors();
 
@@ -175,7 +175,7 @@ class UserEntityManager extends EntityManager
         }
 
         $response = array('success' => $success, 'errors' => $errors);
-        
+
         if ($success) {
             $usersChatRightsEntityManager   = new UsersChatRightsEntityManager();
             $user->password                 = $password;
@@ -218,7 +218,7 @@ class UserEntityManager extends EntityManager
     /*====================================
     =            Chat section            =
     ====================================*/
-    
+
     /**
      * Check if a user have the admin access to the WebSocker server
      *
@@ -291,7 +291,7 @@ class UserEntityManager extends EntityManager
 
         return (int) DB::query($sql)->fetchColumn() > 0;
     }
-    
+
     /*=====  End of Chat section  ======*/
 
     /**

@@ -10,8 +10,6 @@ namespace traits;
 
 /**
  * Utilities methods to minimize code and process many actions in one call
- *
- * @trait ShortcutsTrait
  */
 trait ShortcutsTrait
 {

@@ -10,8 +10,6 @@ namespace traits;
 
 /**
  * Utility methods to filter arrays or strings
- *
- * @trait FiltersTrait
  */
 trait FiltersTrait
 {

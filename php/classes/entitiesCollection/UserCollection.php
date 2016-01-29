@@ -8,7 +8,7 @@
 
 namespace classes\entitiesCollection;
 
-use \abstracts\designPatterns\Collection as Collection;
+use \abstracts\Collection as Collection;
 
 /**
  * A collection of User entity that extends the Colelction pattern

@@ -8,7 +8,7 @@
 
 namespace classes\entities;
 
-use \abstracts\designPatterns\Entity as Entity;
+use \abstracts\Entity as Entity;
 use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
 use \classes\entities\UsersRights as UsersRights;
@@ -81,7 +81,7 @@ class User extends Entity
     /*=========================================
     =            Setters / getters            =
     =========================================*/
-    
+
     /**
      * Get the occured errors when fields are set
      *
@@ -111,7 +111,7 @@ class User extends Entity
     {
         $this->userRights = $userRights;
     }
-    
+
     /*-----  End of Setters / getters  ------*/
 
     /*======================================
@@ -128,7 +128,7 @@ class User extends Entity
         foreach ($inputs as $inputName => &$inputValue) {
             $inputValue = $this->validateField($inputName, $inputValue);
         }
-        
+
         $this->setAttributes($inputs);
     }
 

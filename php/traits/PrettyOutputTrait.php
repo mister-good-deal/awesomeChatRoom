@@ -12,8 +12,6 @@ use \classes\ExceptionManager as Exception;
 
 /**
  * Utility methods to smart align values
- *
- * @trait PrettyOutputTrait
  */
 trait PrettyOutputTrait
 {

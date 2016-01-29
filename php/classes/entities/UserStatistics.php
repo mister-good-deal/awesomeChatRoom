@@ -8,7 +8,7 @@
 
 namespace classes\entities;
 
-use \abstracts\designPatterns\Entity as Entity;
+use \abstracts\Entity as Entity;
 
 /**
  * UserStatistics entity that extends the Entity abstact class

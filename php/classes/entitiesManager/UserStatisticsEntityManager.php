@@ -8,7 +8,7 @@
 
 namespace classes\entitiesManager;
 
-use \abstracts\designPatterns\EntityManager as EntityManager;
+use \abstracts\EntityManager as EntityManager;
 
 /**
  * Performed database action relative to the UserStatistics entity class

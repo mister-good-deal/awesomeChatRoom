@@ -45,10 +45,24 @@ class Deployment extends Console
             'php' => array(
                 'abstracts'   => null,
                 'chatDumps'   => null,
-                'classes'     => null,
+                'classes'     => array(
+                    'console'            => null,
+                    'entities'           => null,
+                    'entitiesCollection' => null,
+                    'entitiesManager'    => null,
+                    'fileManager'        => null,
+                    'logger'             => null,
+                    'websocket'          => array(
+                        'services' => null
+                    )
+                ),
                 'controllers' => null,
-                'database'    => null,
-                'interfaces'  => null,
+                'database'    => array(
+                    'entities' => null
+                ),
+                'interfaces'  => array(
+                    'http' => null
+                ),
                 'traits'      => null
             )
         )

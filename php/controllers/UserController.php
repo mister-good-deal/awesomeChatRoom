@@ -14,8 +14,6 @@ use \classes\ExceptionManager as Exception;
 
 /**
  * User controller
- *
- * @class UserController
  */
 class UserController extends Controller
 {

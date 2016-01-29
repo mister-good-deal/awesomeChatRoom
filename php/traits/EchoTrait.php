@@ -14,8 +14,6 @@ use \vendors\ChromePhp as Console;
 
 /**
  * Utility methods to use echo with pre-encoding for console or format for html
- *
- * @trait EchoTrait
  */
 trait EchoTrait
 {
@@ -50,7 +48,7 @@ trait EchoTrait
                 }
 
                 break;
-            
+
             default:
                 echo $output;
 

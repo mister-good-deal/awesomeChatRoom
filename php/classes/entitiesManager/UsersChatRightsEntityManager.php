@@ -8,7 +8,7 @@
 
 namespace classes\entitiesManager;
 
-use \abstracts\designPatterns\EntityManager as EntityManager;
+use \abstracts\EntityManager as EntityManager;
 use \classes\entities\UsersChatRights as UsersChatRights;
 use \classes\DataBase as DB;
 
