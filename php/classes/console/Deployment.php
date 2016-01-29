@@ -181,6 +181,11 @@ class Deployment extends Console
         }
     }
 
+    private function deployWebsocketServer()
+    {
+        $this->printDeploymentInformation();
+    }
+
     private function deployWebSite()
     {
         $this->printDeploymentInformation();
@@ -225,11 +230,6 @@ class Deployment extends Console
         }
 
         $fileManager->changeDir('..');
-    }
-
-    private function deployWebsocketServer()
-    {
-        $this->printDeploymentInformation();
     }
 
     /**

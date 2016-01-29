@@ -1,7 +1,6 @@
 {
     "name": "websocket",
     "description": "websocket chat web app",
-    "main": "dist/app.js",
     "authors": [
         "Romain Laneuville"
     ],

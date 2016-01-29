@@ -1,5 +1,9 @@
 /static/.bowerDependencies
 /static/node_modules
+/static/dist
+/static/js/lib/vendor
+/static/less/vendor
+!/static/less/vendor/variables.less
 /php/.phpintel
 /php/.sonar
 /php/.phpDoc
