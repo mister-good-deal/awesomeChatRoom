@@ -67,11 +67,22 @@ class Deployment extends Console
             )
         )
     );
+    /**
+     * @var string[] $IGNORED_FILES A list of files to not upload on the server
+     */
+    private static $IGNORED_FILES = array(
+        'conf.ini',
+        'conf-example.ini'
+    );
 
     /**
      * @var string[] $deploymentConfiguration All the deployment configuration
      */
     private $deploymentConfiguration = array();
+    /**
+     * @var string $absoluteProjectRootPath The absolute project root path
+     */
+    private $absoluteProjectRootPath;
 
     /**
      * Call the parent constructor and merge the commands list
@@ -82,6 +93,15 @@ class Deployment extends Console
         parent::$COMMANDS = array_merge(parent::$COMMANDS, static::$SELF_COMMANDS);
 
         $this->deploymentConfiguration = Ini::getSectionParams('Deployment');
+        $this->absoluteProjectRootPath = dirname(__FILE__, 4);
+
+        static::$PROJECT_MAIN_STRUCTURE[
+            $this->deploymentConfiguration['remoteProjectRootDirectoryName']
+        ] = static::$PROJECT_MAIN_STRUCTURE['.'];
+
+        unset(static::$PROJECT_MAIN_STRUCTURE['.']);
+
+        static::out('Absolute project root path is "' . $this->absoluteProjectRootPath . '"' . PHP_EOL);
     }
 
     /**
@@ -140,7 +160,7 @@ class Deployment extends Console
     }
 
     /**
-     * Launch the deployement of the website or teh websocket server or both
+     * Launch the deployement of the website or the websocket server or both
      *
      * @param string $command The command passed with its arguments
      */
@@ -184,7 +204,7 @@ class Deployment extends Console
                     }
 
                     if (isset($args['save'])) {
-                        // Ini::setParam('Deployment', $args['p'], $args['v']);
+                        // @todo Ini::setParam('Deployment', $args['p'], $args['v']);
                     }
                 } else {
                     static::out('The parameter "' . $args['p'] . '" does not exist' . PHP_EOL);
@@ -210,18 +230,29 @@ class Deployment extends Console
                 break;
         }
 
+
         // Connect, login and cd on the project directory container
         $fileManager->connect();
         $fileManager->login();
         $fileManager->changeDir($this->deploymentConfiguration['remoteProjectRootDirectory']);
 
-        // Create the project directory root if it does not exist and cd into it
+        // Create the project directory root if it does not exist
         $fileManager->makeDirIfNotExists($this->deploymentConfiguration['remoteProjectRootDirectoryName']);
-        $fileManager->changeDir($this->deploymentConfiguration['remoteProjectRootDirectoryName']);
 
         // Create main directories structure if it does not exist
-        $this->createMainProjectStructureRecursive($fileManager, '.', static::$PROJECT_MAIN_STRUCTURE);
+        $this->createMainProjectStructureRecursive(
+            $fileManager,
+            $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
+            static::$PROJECT_MAIN_STRUCTURE
+        );
 
+        // Upload files if the last modification date on local is greates than remote
+        $this->uploadFilesRecursive(
+            $fileManager,
+            $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
+            static::$PROJECT_MAIN_STRUCTURE,
+            $this->absoluteProjectRootPath
+        );
     }
 
     /**
@@ -244,6 +275,49 @@ class Deployment extends Console
         }
 
         $fileManager->changeDir('..');
+    }
+
+    /**
+     * Upload files recursively on server if the local last modification date is greatest than on the remote
+     *
+     * @param  FileManager $fileManager           A FileManager class that implements FileManagerInterface
+     * @param  string      $workingDirectory      The directory to create the current depth structure
+     * @param  array       $arrayDepth            The tree of the current depth structure
+     * @param  string      $localWorkingDirectory The curent local working directory
+     */
+    private function uploadFilesRecursive($fileManager, $workingDirectory, $arrayDepth, $localWorkingDirectory)
+    {
+        $fileManager->changeDir($workingDirectory);
+        $localWorkingDirectory .= DIRECTORY_SEPARATOR . $workingDirectory;
+
+        foreach ($arrayDepth[$workingDirectory] as $directoryName => $subdir) {
+            $currentDirectory = new \DirectoryIterator($localWorkingDirectory);
+
+            foreach ($currentDirectory as $fileInfo) {
+                if (!$fileInfo->isDot() &&
+                    $fileInfo->isFile() &&
+                    $fileInfo->getMTime() > $fileManager->lastModified($fileInfo->getFilename())
+                ) {
+                    if (in_array($fileInfo->getFilename(), static::$IGNORED_FILES)) {
+                        static::out($fileInfo->getPathname() . ' is ignored' . PHP_EOL);
+                    } else {
+                        $fileManager->upload($fileInfo->getFilename(), $fileInfo->getPathname());
+                    }
+                }
+            }
+
+            if ($subdir !== null) {
+                $this->uploadFilesRecursive(
+                    $fileManager,
+                    $directoryName,
+                    $arrayDepth[$directoryName],
+                    $localWorkingDirectory
+                );
+            }
+        }
+
+        $fileManager->changeDir('..');
+        $localWorkingDirectory = dirname($localWorkingDirectory);
     }
 
     /**

@@ -50,7 +50,7 @@ class FtpFileManager implements FileManagerInterface
      */
     public function connect()
     {
-        $this->ressource = ftp_connect($this->params['url'], $this->params['port']);
+        $this->ressource = ftp_connect($this->params['url'], (int) $this->params['port']);
 
         if ($this->ressource === false) {
             throw new Exception(
