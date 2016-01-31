@@ -38,12 +38,13 @@ class Orm extends Console
     );
 
     /**
-     * Call the parent constructor and merge the commands list
+     * Call the parent constructor, merge the commands list and launch the console
      */
     public function __construct()
     {
         parent::__construct();
         parent::$COMMANDS = array_merge(parent::$COMMANDS, static::$SELF_COMMANDS);
+        $this->launchConsole();
     }
 
     /**

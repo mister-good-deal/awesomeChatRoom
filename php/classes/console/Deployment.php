@@ -40,7 +40,8 @@ class Deployment extends Console
     private static $PROJECT_MAIN_STRUCTURE = array(
         '.' => array(
             'static' => array(
-                'dist' => null
+                'dist' => null,
+                'html' => null
             ),
             'php' => array(
                 'abstracts'   => null,
@@ -85,7 +86,7 @@ class Deployment extends Console
     private $absoluteProjectRootPath;
 
     /**
-     * Call the parent constructor and merge the commands list
+     * Call the parent constructor, merge the commands list and launch the console
      */
     public function __construct()
     {
@@ -101,11 +102,16 @@ class Deployment extends Console
 
         unset(static::$PROJECT_MAIN_STRUCTURE['.']);
 
+        $this->launchConsole();
+
         static::out('Absolute project root path is "' . $this->absoluteProjectRootPath . '"' . PHP_EOL);
     }
 
     /**
-     * @inheritDoc
+     * Process the command entered by the user and output the result in the console
+     *
+     * @param string  $command  The command passed by the user
+     * @param boolean $executed DEFAULT false, true if the command is already executed, else false
      */
     protected function processCommand($command, $executed = false)
     {
@@ -215,12 +221,31 @@ class Deployment extends Console
         }
     }
 
+    /**
+     * Deploy the websocket server on the remote server
+     */
     private function deployWebsocketServer()
     {
-        $this->printDeploymentInformation();
+        $directoriesTree = static::$PROJECT_MAIN_STRUCTURE;
+        unset($directoriesTree[$this->deploymentConfiguration['remoteProjectRootDirectoryName']]['static']);
+
+        $this->deploy($directoriesTree);
     }
 
+    /**
+     * Deploy the entire website on the remote server
+     */
     private function deployWebSite()
+    {
+        $this->deploy(static::$PROJECT_MAIN_STRUCTURE);
+    }
+
+    /**
+     * Deploy the directories tree passed in argument to the remote server
+     *
+     * @param  array $directoriesTree The directories tree to deploy
+     */
+    private function deploy($directoriesTree)
     {
         $this->printDeploymentInformation();
 
@@ -243,14 +268,14 @@ class Deployment extends Console
         $this->createMainProjectStructureRecursive(
             $fileManager,
             $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
-            static::$PROJECT_MAIN_STRUCTURE
+            $directoriesTree
         );
 
-        // Upload files if the last modification date on local is greates than remote
+        // Upload files if the last modification date on local is greater than remote
         $this->uploadFilesRecursive(
             $fileManager,
             $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
-            static::$PROJECT_MAIN_STRUCTURE,
+            $directoriesTree,
             $this->absoluteProjectRootPath
         );
     }

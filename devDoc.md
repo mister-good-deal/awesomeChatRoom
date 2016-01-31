@@ -9,13 +9,15 @@
 
 For each developement, create a branch from **master** at the begining of the developement.
 
-The new branch should me names as **(_feature|hotfix|refacto_)/nameInitial-developementName[#ticketNumber]**.
+The new branch should me names as **(_feature|hotfix|refacto_)/nameInitial-developementTopic[#ticketNumber]**.
 
 *Exemples*
 
+*(User name is Romain Laneuville)*
+
 - feature/rl-addUserPhoneNumber
 - hotfix/rl-httpsCertificateFail#6842
-- refacto/rl-userClass
+- refacto/rl-userPhpClass
 
 When the developement is over, merge **master** into your branch and create a **pull request**.
 
@@ -142,7 +144,7 @@ Create an empty database (ex: `CREATE SCHEMA ``websocket`` DEFAULT CHARACTER SET
 
 Create tables with the ORM, run those commands
 
-`php [absolute path to the project root directory]/php/devTests/testOrm.php`
+`php [absolute path to the project root directory]/php/launchORM.php`
 
 `create all`
 
@@ -212,7 +214,7 @@ Here are all the gulp commands you can run
 
 Finally run the websocket server with this command
 
-`php [absolute path to the project root directory]/php/devTests/testSocket.php`
+`php [absolute path to the project root directory]/php/launchWebsocketServer.php`
 
 Then go to your web browser with javascript console enabled and hit the index.php of the project
 

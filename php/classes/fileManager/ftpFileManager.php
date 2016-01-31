@@ -36,7 +36,7 @@ class FtpFileManager implements FileManagerInterface
      * Constructor that loads connection paramaters
      *
      * @param string[] $parameters OPTIONAL connection paramaters
-     * @param boolean  $verbose OPTIONAL true if output should be print, false if not and null will load the ini value
+     * @param boolean  $verbose    OPTIONAL true if output should be print, false if not and null will load the ini value
      */
     public function __construct($parameters = null, $verbose = null)
     {
@@ -46,7 +46,9 @@ class FtpFileManager implements FileManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * Connect to the server
+     *
+     * @throws Exception if the connection fails
      */
     public function connect()
     {
@@ -65,7 +67,9 @@ class FtpFileManager implements FileManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * Login to the server
+     *
+     * @throws Exception if the login fails
      */
     public function login()
     {
@@ -79,7 +83,10 @@ class FtpFileManager implements FileManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * Change the current directory to the one passed in parameter
+     *
+     * @param  string $path The new working directory path
+     * @throws Exception if the change directory fails
      */
     public function changeDir($path)
     {
@@ -93,7 +100,10 @@ class FtpFileManager implements FileManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * Create a new directory in the current working directory
+     *
+     * @param  string $dirName The new directory name
+     * @throws Exception if the creation of the new directory fails
      */
     public function makeDir($dirName)
     {
@@ -107,7 +117,10 @@ class FtpFileManager implements FileManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * Create a new directory in the current working directory if this directory does not exists
+     *
+     * @param  string $dirName The new directory name
+     * @throws Exception if the creation of the new directory fails
      */
     public function makeDirIfNotExists($dirName)
     {
@@ -117,7 +130,9 @@ class FtpFileManager implements FileManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * Get the directories / files list on the current working directory
+     *
+     * @return string[] The list of directories / files conatained in the current working directory
      */
     public function listFiles()
     {
@@ -125,7 +140,11 @@ class FtpFileManager implements FileManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * Upload a file on the server
+     *
+     * @param  string $remoteFilePath The remote file path on the server
+     * @param  string $localFilePath  The local file path
+     * @throws Exception if the upload fails
      */
     public function upload($remoteFilePath, $localFilePath)
     {
@@ -154,7 +173,11 @@ class FtpFileManager implements FileManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * Set a new permission on a directory / file
+     *
+     * @param  integer $value The octal permission value (ex: 0644)
+     * @param  string  $path  The path to the directory / file
+     * @throws Exception if the permission changed fails
      */
     public function chmod($value, $path)
     {
@@ -168,7 +191,10 @@ class FtpFileManager implements FileManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * Return the last modified file time as an UNIX timestamp
+     *
+     * @param  string  $path The path to the directory / file
+     * @return integer       The last modified time as an UNIX timestamp
      */
     public function lastModified($path)
     {
@@ -176,7 +202,9 @@ class FtpFileManager implements FileManagerInterface
     }
 
     /**
-     * @inheritDoc
+     * Close the remote connection
+     *
+     * @return boolean True on success else false
      */
     public function close()
     {

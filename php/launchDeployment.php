@@ -1,18 +1,17 @@
 <?php
 /**
- * Test script for the Deployment class
+ * Launch a deployment instance
  *
- * @category Test
+ * @category Launcher
  * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 use \classes\console\Deployment as Deployment;
 
-require_once '../autoloader.php';
+require_once 'autoloader.php';
 
 try {
     $console = new Deployment();
-    $console->launchConsole();
 } catch (Exception $e) {
 } finally {
     exit(0);
