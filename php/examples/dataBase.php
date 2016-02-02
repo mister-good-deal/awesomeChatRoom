@@ -2,8 +2,8 @@
 /**
  * Example of DataBase class used
  *
- * @category Example
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Example
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 use \classes\DataBase as DB;
 

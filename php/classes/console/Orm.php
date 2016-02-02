@@ -2,8 +2,8 @@
 /**
  * ORM console mode
  *
- * @category ORM
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    ORM
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\console;
@@ -24,7 +24,7 @@ class Orm extends Console
     use \traits\EchoTrait;
 
     /**
-     * @var string[] $SELF_COMMANDS List of all commands with their description
+     * @var        string[]  $SELF_COMMANDS     List of all commands with their description
      */
     private static $SELF_COMMANDS = array(
         'tables'                                             => 'Get all the tables name',
@@ -102,7 +102,7 @@ class Orm extends Console
     /**
      * Process the command called on the entity
      *
-     * @param string $command The command passed with its arguments
+     * @param      string  $command  The command passed with its arguments
      */
     private function entityProcess($command)
     {
@@ -110,7 +110,7 @@ class Orm extends Console
 
         if ($this->checkEntityName($args)) {
             /**
-             * @var Entity $entity An entity
+             * @var        Entity  $entity  An entity
              */
             $entityClassPath = Ini::getParam('Entities', 'entitiesClassPath') . DIRECTORY_SEPARATOR . $args['n'];
             $entity         = new $entityClassPath;
@@ -136,7 +136,7 @@ class Orm extends Console
     /**
      * Delete all the data in a table
      *
-     * @param string $command The command passed with its arguments
+     * @param      string  $command  The command passed with its arguments
      */
     private function cleanTable($command)
     {
@@ -158,7 +158,7 @@ class Orm extends Console
     /**
      * Drop a table
      *
-     * @param string $command The command passed with its arguments
+     * @param      string  $command  The command passed with its arguments
      */
     private function dropTable($command)
     {
@@ -180,7 +180,7 @@ class Orm extends Console
     /**
      * Display the data of a table
      *
-     * @param string $command The commande passed by the user with its arguments
+     * @param      string  $command  The commande passed by the user with its arguments
      */
     private function showTable($command)
     {
@@ -203,7 +203,7 @@ class Orm extends Console
     /**
      * Display the description of a table
      *
-     * @param string $command The commande passed by the user with its arguments
+     * @param      string  $command  The commande passed by the user with its arguments
      */
     private function descTable($command)
     {
@@ -223,7 +223,7 @@ class Orm extends Console
 
         foreach (DB::getAllEntites() as $entityName) {
             /**
-             * @var Entity $entity An entity
+             * @var        Entity  $entity  An entity
              */
             $entityClassPath = Ini::getParam('Entities', 'entitiesClassPath') . DIRECTORY_SEPARATOR . $entityName;
             $entity          = new $entityClassPath;
@@ -244,8 +244,8 @@ class Orm extends Console
     /**
      * Check if the table is set and if the table exists
      *
-     * @param  string[] $args The command arguments
-     * @return boolean        True if the table exists else false
+     * @param      string[]  $args   The command arguments
+     * @return     boolean   True if the table exists else false
      */
     private function checkTableName($args)
     {
@@ -265,8 +265,8 @@ class Orm extends Console
     /**
      * Check if the entity exists
      *
-     * @param  string[] $args The command arguments
-     * @return boolean        True if the entity exists else false
+     * @param      string[]  $args   The command arguments
+     * @return     boolean   True if the entity exists else false
      */
     private function checkEntityName($args)
     {
@@ -286,9 +286,9 @@ class Orm extends Console
     /**
      * Format the SQL result in a pretty output
      *
-     * @param  string $tableName The table name
-     * @param  array  $data      Array containing the SQL result
-     * @return string            The pretty output
+     * @param      string  $tableName  The table name
+     * @param      array   $data       Array containing the SQL result
+     * @return     string  The pretty output
      */
     private function prettySqlResult($tableName, $data)
     {

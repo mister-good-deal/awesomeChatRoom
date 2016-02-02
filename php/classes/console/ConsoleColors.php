@@ -2,16 +2,14 @@
 /**
  * Console colors to output colors in console
  *
- * @category Console
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Console
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\console;
 
 /**
  * Class to get different color to output in a console
- *
- * @class ConsoleColors
  */
 class ConsoleColors
 {
@@ -34,7 +32,7 @@ class ConsoleColors
     const MAGENTA_B      = 'magenta';
 
     /**
-     * @var string[] $foregroundColors Foreground colors
+     * @var        string[]  $foregroundColors  Foreground colors
      */
     private static $foregroundColors = array(
         self::BLACK          => '0;30',
@@ -55,7 +53,7 @@ class ConsoleColors
         self::WHITE_F        => '1;37'
     );
     /**
-     * @var string[] $backgroundColors Background colors
+     * @var        string[]  $backgroundColors  Background colors
      */
     private static $backgroundColors = array(
         self::BLACK      => '40',
@@ -75,10 +73,10 @@ class ConsoleColors
     /**
      * Return the string colored
      *
-     * @param  string $string          The string to color
-     * @param  string $foregroundColor The foreground color
-     * @param  string $backgroundColor The background color
-     * @return string                  The colored string
+     * @param      string  $string           The string to color
+     * @param      string  $foregroundColor  The foreground color
+     * @param      string  $backgroundColor  The background color
+     * @return     string  The colored string
      */
     public function getColoredString($string, $foregroundColor = null, $backgroundColor = null)
     {
@@ -100,7 +98,7 @@ class ConsoleColors
     /**
      * Returns all foreground color names
      *
-     * @return string[] Foreground color names
+     * @return     string[]  Foreground color names
      */
     public function getForegroundColors()
     {
@@ -110,7 +108,7 @@ class ConsoleColors
     /**
      * Returns all background color names
      *
-     * @return string[] Background color names
+     * @return     string[]  Background color names
      */
     public function getBackgroundColors()
     {
@@ -120,9 +118,8 @@ class ConsoleColors
     /**
      * Unset the background and foreground console color formatting
      *
-     * @param  string $string The string to unformat
-     * @return string         The unformated string
-     * @static
+     * @param      string  $string  The string to unformat
+     * @return     string  The unformated string @static
      */
     public static function unsetColor($string)
     {

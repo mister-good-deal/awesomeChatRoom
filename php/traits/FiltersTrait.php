@@ -2,8 +2,8 @@
 /**
  * Trait to use usefull filter to parse an output
  *
- * @category Trait
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Trait
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace traits;
@@ -16,10 +16,10 @@ trait FiltersTrait
     /**
      * Filter a matches array returned from a preg_match_all with named keys
      *
-     * @param  array  $matches   The matches array returned by the preg_match_all function
-     * @param  string $keyName   The key name of the future array (?P<keyName>expression)
-     * @param  string $valueName The value name of the future array (?P<valueName>expression)
-     * @return array             The filterd array with $keyName = $keyValue
+     * @param      array   $matches    The matches array returned by the preg_match_all function
+     * @param      string  $keyName    The key name of the future array (?P<keyName>expression)
+     * @param      string  $valueName  The value name of the future array (?P<valueName>expression)
+     * @return     array   The filterd array with $keyName = $keyValue
      */
     public function filterPregMatchAllWithFlags($matches, $keyName, $valueName)
     {
@@ -39,8 +39,8 @@ trait FiltersTrait
     /**
      * Filter a fetchAll PDO array to parse results in columns
      *
-     * @param  array $data The fetchAll return
-     * @return array       The filtered array by columns
+     * @param      array  $data   The fetchAll return
+     * @return     array  The filtered array by columns
      */
     public function filterFecthAllByColumn($data)
     {
@@ -62,8 +62,8 @@ trait FiltersTrait
     /**
      * Sanitize a user input by stripping unwanted blank characters
      *
-     * @param  string $input The user input
-     * @return string        The sanitized user input
+     * @param      string  $input  The user input
+     * @return     string  The sanitized user input
      */
     public function sanitizeInput($input)
     {
@@ -73,8 +73,8 @@ trait FiltersTrait
     /**
      * Get the user input, return null if undefined or the sanitized value
      *
-     * @param  string $input The user input
-     * @return string|null        The sanitized user input or null if the input was undefined
+     * @param      string       $input  The user input
+     * @return     string|null  The sanitized user input or null if the input was undefined
      */
     public function getInput($input)
     {
@@ -90,8 +90,8 @@ trait FiltersTrait
     /**
      * Convert a DateInterval object to sec
      *
-     * @param  \DateInterval $dateInterval The DateInterval object
-     * @return integer                     The converted number of seconds
+     * @param      \DateInterval  $dateInterval  The DateInterval object
+     * @return     integer        The converted number of seconds
      */
     public function dateIntervalToSec($dateInterval)
     {

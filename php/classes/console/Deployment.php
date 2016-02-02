@@ -2,8 +2,8 @@
 /**
  * Images manipulation utilities class
  *
- * @category Deployment
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Deployment
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\console;
@@ -21,7 +21,7 @@ class Deployment extends Console
     use \traits\EchoTrait;
 
     /**
-     * @var string[] $SELF_COMMANDS List of all commands with their description
+     * @var        string[]  $SELF_COMMANDS     List of all commands with their description
      */
     private static $SELF_COMMANDS = array(
         'protocol [-p protocol] [--list|set]'               => 'Get all the available deployment protocols or get/set the protocol',
@@ -29,13 +29,13 @@ class Deployment extends Console
         'configuration [-p param -v value] [--print|save]'  => 'Display or set deployment parameter (--save to save it in conf.ini'
     );
     /**
-     * @var string[] $PROTOCOLS List of available protocol
+     * @var        string[]  $PROTOCOLS     List of available protocol
      */
     private static $PROTOCOLS = array(
         'FTP'
     );
     /**
-     * @var array $PROJECT_MAIN_STRUCTURE The project directories tree
+     * @var        array  $PROJECT_MAIN_STRUCTURE   The project directories tree
      */
     private static $PROJECT_MAIN_STRUCTURE = array(
         '.' => array(
@@ -69,7 +69,7 @@ class Deployment extends Console
         )
     );
     /**
-     * @var string[] $IGNORED_FILES A list of files to not upload on the server
+     * @var        string[]  $IGNORED_FILES     A list of files to not upload on the server
      */
     private static $IGNORED_FILES = array(
         'conf.ini',
@@ -77,11 +77,11 @@ class Deployment extends Console
     );
 
     /**
-     * @var string[] $deploymentConfiguration All the deployment configuration
+     * @var        string[]  $deploymentConfiguration   All the deployment configuration
      */
     private $deploymentConfiguration = array();
     /**
-     * @var string $absoluteProjectRootPath The absolute project root path
+     * @var        string  $absoluteProjectRootPath     The absolute project root path
      */
     private $absoluteProjectRootPath;
 
@@ -110,8 +110,8 @@ class Deployment extends Console
     /**
      * Process the command entered by the user and output the result in the console
      *
-     * @param string  $command  The command passed by the user
-     * @param boolean $executed DEFAULT false, true if the command is already executed, else false
+     * @param      string   $command   The command passed by the user
+     * @param      boolean  $executed  DEFAULT false, true if the command is already executed, else false
      */
     protected function processCommand($command, $executed = false)
     {
@@ -145,7 +145,7 @@ class Deployment extends Console
     /**
      * Process the command called on the protocol
      *
-     * @param string $command The command passed with its arguments
+     * @param      string  $command  The command passed with its arguments
      */
     private function protocolProcess($command)
     {
@@ -168,7 +168,7 @@ class Deployment extends Console
     /**
      * Launch the deployement of the website or the websocket server or both
      *
-     * @param string $command The command passed with its arguments
+     * @param      string  $command  The command passed with its arguments
      */
     private function deployProcess($command)
     {
@@ -187,7 +187,7 @@ class Deployment extends Console
     /**
      * Diplay or set deployment configuraton parameters
      *
-     * @param string $command The command passed with its arguments
+     * @param      string  $command  The command passed with its arguments
      */
     private function configurationProcess($command)
     {
@@ -243,7 +243,7 @@ class Deployment extends Console
     /**
      * Deploy the directories tree passed in argument to the remote server
      *
-     * @param  array $directoriesTree The directories tree to deploy
+     * @param      array  $directoriesTree  The directories tree to deploy
      */
     private function deploy($directoriesTree)
     {
@@ -283,9 +283,9 @@ class Deployment extends Console
     /**
      * Create a directories tree recursively
      *
-     * @param  FileManager $fileManager      A FileManager class that implements FileManagerInterface
-     * @param  string      $workingDirectory The directory to create the current depth structure
-     * @param  array       $arrayDepth       The tree of the current depth structure
+     * @param      FileManager  $fileManager       A FileManager class that implements FileManagerInterface
+     * @param      string       $workingDirectory  The directory to create the current depth structure
+     * @param      array        $arrayDepth        The tree of the current depth structure
      */
     private function createMainProjectStructureRecursive($fileManager, $workingDirectory, $arrayDepth)
     {
@@ -305,10 +305,10 @@ class Deployment extends Console
     /**
      * Upload files recursively on server if the local last modification date is greatest than on the remote
      *
-     * @param  FileManager $fileManager           A FileManager class that implements FileManagerInterface
-     * @param  string      $workingDirectory      The directory to create the current depth structure
-     * @param  array       $arrayDepth            The tree of the current depth structure
-     * @param  string      $localWorkingDirectory The curent local working directory
+     * @param      FileManager  $fileManager            A FileManager class that implements FileManagerInterface
+     * @param      string       $workingDirectory       The directory to create the current depth structure
+     * @param      array        $arrayDepth             The tree of the current depth structure
+     * @param      string       $localWorkingDirectory  The curent local working directory
      */
     private function uploadFilesRecursive($fileManager, $workingDirectory, $arrayDepth, $localWorkingDirectory)
     {
@@ -356,7 +356,7 @@ class Deployment extends Console
     /**
      * Set the protocol
      *
-     * @param string $value The protocol to set
+     * @param      string  $value  The protocol to set
      */
     private function setProtocol($value)
     {

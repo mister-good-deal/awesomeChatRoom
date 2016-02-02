@@ -2,8 +2,8 @@
 /**
  * User controller
  *
- * @category Controller
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Controller
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace controllers;

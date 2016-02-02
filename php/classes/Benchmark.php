@@ -2,8 +2,8 @@
 /**
  * Bencharmark class to test methods performance
  *
- * @category Benchmark
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Benchmark
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes;
@@ -13,21 +13,20 @@ use \classes\ExceptionManager as Exception;
 /**
  * Benchmark methods by symply put them in an array sent to the constructors
  *
- * @class Benchmark
- * @todo  complete the class
+ * @todo       complete the class
  */
 class Benchmark
 {
     /**
-     * @var callable[] $functionsArray Array containing methods to test (min 2)
+     * @var        callable[]  $functionsArray  Array containing methods to test (min 2)
      */
     private $functionsArray = array();
     /**
-     * @var float $t1 Initial timestamp
+     * @var        float  $t1   Initial timestamp
      */
     private $t1;
     /**
-     * @var float $t2 Terminal timestamp
+     * @var        float  $t2   Terminal timestamp
      */
     private $t2;
 
@@ -38,8 +37,8 @@ class Benchmark
     /**
      * Constructor that takes an array of methods as first parameter and array of params as second parameter
      *
-     * @param callable[] $functions Methods to test
-     * @param array      $params    Methods parameters
+     * @param      callable[]  $functions  Methods to test
+     * @param      array       $params     Methods parameters
      */
     public function __construct($functions = null, $params = null)
     {
@@ -71,7 +70,7 @@ class Benchmark
     /**
      * Run the benchmark by defining a number of iteration
      *
-     * @param integer $iterations The number of iteration to process
+     * @param      integer  $iterations  The number of iteration to process
      */
     public function runByIteration($iterations)
     {

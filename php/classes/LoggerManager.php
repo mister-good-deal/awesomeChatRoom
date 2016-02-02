@@ -2,8 +2,8 @@
 /**
  * Factory to manage the different kind of logger to implement and shortcut methods call
  *
- * @category Factory
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Factory
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes;
@@ -12,20 +12,20 @@ use \classes\logger\ConsoleLogger as ConsoleLogger;
 use \classes\logger\FileLogger as FileLogger;
 
 /**
-* LoggerManager
-*/
+ * LoggerManager
+ */
 class LoggerManager
 {
     /**
-     * @const FILE    The file logger descriptor
-     * @const CONSOLE The console logger descriptor
+     * @const FILE    The file logger descriptor @const CONSOLE The console logger descriptor
      * @notice        If you add a Logger in const there, add it in globalConstDefine method aswell
      */
     const FILE    = 1;
     const CONSOLE = 2;
 
     /**
-     * @var int[] $implementedLoggers An array containing all the implemented loggers (represented by their descriptors)
+     * @var        int[]  $implementedLoggers   An array containing all the implemented loggers
+     *                                          (represented by their descriptors)
      */
     private $implementedLoggers = array();
 
@@ -36,7 +36,7 @@ class LoggerManager
     /**
      * Constructor which takes the logger type to implement in a parameter
      *
-     * @param int[] $loggerTypes Loggers type to implement DEFAULT FILE
+     * @param      int[]  $loggerTypes  Loggers type to implement DEFAULT FILE
      */
     public function __construct($loggerTypes = array(self::FILE))
     {
@@ -56,9 +56,9 @@ class LoggerManager
     /**
      * Logs avec un niveau arbitraire.
      *
-     * @param mixed  $level
-     * @param string $message
-     * @param array  $context
+     * @param      mixed   $level
+     * @param      string  $message
+     * @param      array   $context
      */
     public function log($level, $message, array $context = array())
     {
@@ -70,7 +70,7 @@ class LoggerManager
     /**
      * Add a logger to the implemented logger
      *
-     * @param int $loggerType The logger type
+     * @param      int   $loggerType  The logger type
      */
     public function addLogger($loggerType)
     {
@@ -88,7 +88,7 @@ class LoggerManager
     /**
      * Remove a logger to the implemented logger
      *
-     * @param int $loggerType The logger type
+     * @param      int   $loggerType  The logger type
      */
     public function removeLogger($loggerType)
     {
@@ -120,8 +120,8 @@ class LoggerManager
     /**
      * Check if a logger is already implemented
      *
-     * @param  int $loggerType The logger type
-     * @return boolean          True if the logger is already implemented else false
+     * @param      int      $loggerType  The logger type
+     * @return     boolean  True if the logger is already implemented else false
      */
     private function hasLogger($loggerType)
     {

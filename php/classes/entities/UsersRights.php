@@ -2,8 +2,8 @@
 /**
  * UsersRights entity
  *
- * @category Entity
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Entity
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\entities;
@@ -13,11 +13,9 @@ use \abstracts\Entity as Entity;
 /**
  * UsersRights entity that extends the Entity abstact class
  *
- * @property integer $idUser The user id
- * @property boolean $webSocket The user webSocket right
- * @property boolean $chatAdmin The user chatAdmin right
- *
- * @class UsersRights
+ * @property   integer  $idUser     The user id
+ * @property   boolean  $webSocket  The user webSocket right
+ * @property   boolean  $chatAdmin  The user chatAdmin right
  */
 class UsersRights extends Entity
 {

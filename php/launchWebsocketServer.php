@@ -2,8 +2,8 @@
 /**
  * Launch a websocket server instance
  *
- * @category Launcher
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Launcher
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 use \classes\websocket\Server as Server;

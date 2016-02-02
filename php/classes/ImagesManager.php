@@ -2,8 +2,8 @@
 /**
  * Images manipulation utilities class
  *
- * @category Utility
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Utility
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes;
@@ -13,61 +13,60 @@ use \classes\ExceptionManager as Exception;
 /**
  * Images manipulation class with usefull utilities methods
  *
- * @link  https://en.wikipedia.org/wiki/Display_resolution
- * @class ImagesManager
+ * @link       https://en.wikipedia.org/wiki/Display_resolution
  */
 class ImagesManager
 {
     /**
-     * @var integer[] $WIDTHS_16_9 Commons 16/9 ratios width
+     * @var        integer[]  $WIDTHS_16_9  Commons 16/9 ratios width
      */
     public static $WIDTHS_16_9 = array(2560, 2048, 1920, 1600, 1536, 1366, 1360, 1280, 1093);
     /**
-     * @var integer[] $HEIGHTS_16_9 Commons 16/9 ratios height
+     * @var        integer[]  $HEIGHTS_16_9     Commons 16/9 ratios height
      */
     public static $HEIGHTS_16_9 = array(1440, 1152, 1080, 900, 864, 768, 720, 614);
     /**
-     * @var integer[] $MOST_USE_WIDTHS Most use width
+     * @var        integer[]  $MOST_USE_WIDTHS  Most use width
      */
     public static $MOST_USE_WIDTHS = array(1920, 1600, 1440, 1366, 1280, 1024, 768, 480);
     /**
-     * @var integer[] $MOST_USE_HEIGHTS  Most use height
+     * @var        integer[]  $MOST_USE_HEIGHTS     Most use height
      */
     public static $MOST_USE_HEIGHTS = array(1080, 1050, 1024, 900, 800, 768);
     /**
-     * @var integer $EXTRA_TEXT_BORDER  A padding size to add to text added in an image
+     * @var        integer  $EXTRA_TEXT_BORDER  A padding size to add to text added in an image
      */
     public static $EXTRA_TEXT_PADDING = 10;
 
     /**
-     * @var \Imagick $image \Imagick instance DEFAULT null
+     * @var        \Imagick  $image     \Imagick instance DEFAULT null
      */
     private $image = null;
     /**
-     * @var string $imagePath The original image path
+     * @var        string  $imagePath   The original image path
      */
     private $imagePath;
      /**
-     * @var string $imageSavePath The new image path
-     */
+      * @var        string  $imageSavePath  The new image path
+      */
     private $imageSavePath;
     /**
-     * @var string $imageName The original image name
+     * @var        string  $imageName   The original image name
      */
     private $imageName;
     /**
-     * @var string $imageExtension The original image extension
+     * @var        string  $imageExtension  The original image extension
      */
     private $imageExtension;
 
     /*=====================================
     =            Magic methods            =
     =====================================*/
-    
+
     /**
      * Constructor which can instanciate a new \Imagick object if a path is specified
      *
-     * @param string $imagePath OPTIONAL the image path
+     * @param      string  $imagePath  OPTIONAL the image path
      */
     public function __construct($imagePath = '')
     {
@@ -91,13 +90,13 @@ class ImagesManager
     /*=========================================
     =            Setters / getters            =
     =========================================*/
-    
+
     /**
      * Instantiate a new \Imagick object and destroyed the last if exists
      *
-     * @param  string $imagePath The image path
-     * @throws Exception            If there is no image at the specified path
-     * @throws Exception            If there is an error on image creation
+     * @param      string     $imagePath  The image path
+     * @throws     Exception  If there is no image at the specified path
+     * @throws     Exception  If there is an error on image creation
      */
     public function setImage($imagePath)
     {
@@ -121,7 +120,7 @@ class ImagesManager
     /**
      * Set the image save path and create the repositories if the new path doesn't exist (must be an absolute path)
      *
-     * @param string $path The new save path
+     * @param      string  $path   The new save path
      */
     public function setImageSavePath($path)
     {
@@ -131,7 +130,7 @@ class ImagesManager
 
         $this->imageSavePath = $path;
     }
-    
+
     /*-----  End of Setters / getters  ------*/
 
     /*======================================
@@ -141,8 +140,8 @@ class ImagesManager
     /**
      * Generate and save scales images with specified widths
      *
-     * @param integer[] $widths The widths to resize the image with
-     *                          DEFAULT [1920, 1600, 1440, 1366, 1280, 1024, 768, 480]
+     * @param      integer[]  $widths  The widths to resize the image with DEFAULT [1920, 1600, 1440, 1366, 1280, 1024,
+     *                                 768, 480]
      */
     public function generateResizedImagesByWidth($widths = array(1920, 1600, 1440, 1366, 1280, 1024, 768, 480))
     {
@@ -154,8 +153,7 @@ class ImagesManager
     /**
      * Generate and save scales images with specified heights
      *
-     * @param integer[] $heights The heights to resize the image with
-     *                           DEFAULT [1080, 1050, 1024, 900, 800, 768]
+     * @param      integer[]  $heights  The heights to resize the image with DEFAULT [1080, 1050, 1024, 900, 800, 768]
      */
     public function generateResizedImagesByHeight($heights = array(1080, 1050, 1024, 900, 800, 768))
     {
@@ -167,11 +165,11 @@ class ImagesManager
     /**
      * Generate and save the image with a copyright text at the bottom right corner
      *
-     * @param string  $text     The copyright text
-     * @param integer $fontSize OPTIONAL the copyright font size DEFAULT 22
-     * @param string  $font     OPTIONAL the copyright font DEFAULT "Verdana"
-     * @param string  $position OPTIONAL the position to put copyright text DEFAULT "bottom-right"
-     *                          Possibles Values ("bottom-right", "bottom-left", "top-right", "top-left")
+     * @param      string   $text      The copyright text
+     * @param      integer  $fontSize  OPTIONAL the copyright font size DEFAULT 22
+     * @param      string   $font      OPTIONAL the copyright font DEFAULT "Verdana"
+     * @param      string   $position  OPTIONAL the position to put copyright text DEFAULT "bottom-right" Possibles
+     *                                 Values ("bottom-right", "bottom-left", "top-right", "top-left")
      */
     public function copyrightImage($text, $fontSize = 22, $font = 'Verdana', $position = 'bottom-right')
     {
@@ -181,7 +179,7 @@ class ImagesManager
         $draw->setFont($font);
         $draw->setFillColor('#ffffff');
         $draw->setTextUnderColor('#00000088');
-        
+
         $textMetrics     = $this->image->queryFontMetrics($draw, $text);
         $textWidth       = $textMetrics['textWidth'] + 2 * $textMetrics['boundingBox']['x1'];
         $extraTextHeight = $textMetrics['descender'];
@@ -215,7 +213,7 @@ class ImagesManager
                 $width  += static::$EXTRA_TEXT_PADDING;
                 $height += static::$EXTRA_TEXT_PADDING;
                 break;
-            
+
             default:
                 $width  = $this->image->getImageWidth() - $textWidth;
                 $height = $this->image->getImageHeight() + $extraTextHeight;
@@ -230,18 +228,18 @@ class ImagesManager
         );
 
     }
-    
+
     /*-----  End of Public methods  ------*/
-    
+
     /*=======================================
     =            Private methods            =
     =======================================*/
-    
+
     /**
      * Generate and save scales images with specified width and height
      *
-     * @param integer $width  The width to resize the image with
-     * @param integer $height The height to resize the image with
+     * @param      integer  $width   The width to resize the image with
+     * @param      integer  $height  The height to resize the image with
      */
     private function generateResizedImages($width, $height)
     {
@@ -260,6 +258,6 @@ class ImagesManager
             . '_' . $width . 'x' . $height . '.' . $this->imageExtension
         );
     }
-    
+
     /*-----  End of Private methods  ------*/
 }

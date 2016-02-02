@@ -2,8 +2,8 @@
 /**
  * Entity manager for the entity UsersChatRights
  *
- * @category EntityManager
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    EntityManager
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\entitiesManager;
@@ -15,16 +15,15 @@ use \classes\DataBase as DB;
 /**
  * Performed database action relative to the UsersChatRights entity class
  *
- * @property UsersChatRights $entity The UsersChatRights entity
- * @class    UsersRightsChatEntityManager
+ * @property   UsersChatRights  $entity  The UsersChatRights entity
  */
 class UsersChatRightsEntityManager extends EntityManager
 {
     /**
      * Constructor that can take a UsersChatRights entity as first parameter and a Collection as second parameter
      *
-     * @param UsersChatRights $entity           A UsersChatRights entity object DEFAULT null
-     * @param Collection      $entityCollection A colection oject DEFAULT null
+     * @param      UsersChatRights  $entity            A UsersChatRights entity object DEFAULT null
+     * @param      Collection       $entityCollection  A colection oject DEFAULT null
      */
     public function __construct($entity = null, $entityCollection = null)
     {
@@ -51,8 +50,8 @@ class UsersChatRightsEntityManager extends EntityManager
     /**
      * Get all the chat rooms rights for a user
      *
-     * @param  integer $idUser The user id
-     * @return array           The user chat rooms rights indexed by room names
+     * @param      integer  $idUser  The user id
+     * @return     array    The user chat rooms rights indexed by room names
      */
     public function getAllUserChatRights($idUser)
     {
@@ -65,9 +64,9 @@ class UsersChatRightsEntityManager extends EntityManager
     /**
      * Change a room name in the chat rights table
      *
-     * @param  string $oldRoomName The old room name
-     * @param  string $newRoomName The new room name
-     * @return integer              The number of rows updated
+     * @param      string   $oldRoomName  The old room name
+     * @param      string   $newRoomName  The new room name
+     * @return     integer  The number of rows updated
      */
     public function changeRoomName($oldRoomName, $newRoomName)
     {
@@ -85,8 +84,8 @@ class UsersChatRightsEntityManager extends EntityManager
     /**
      * Change a room name in the chat rights table
      *
-     * @param  string $roomName The new room name
-     * @return integer           The number of rows inserted
+     * @param      string   $roomName  The new room name
+     * @return     integer  The number of rows inserted
      */
     public function addRoomName($roomName)
     {
@@ -103,8 +102,8 @@ class UsersChatRightsEntityManager extends EntityManager
     /**
      * Change a room name in the chat rights table
      *
-     * @param  string $roomName The old room name
-     * @return integer           The number of rows deleted
+     * @param      string   $roomName  The old room name
+     * @return     integer  The number of rows deleted
      */
     public function removeRoomName($roomName)
     {

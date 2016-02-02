@@ -2,8 +2,8 @@
 /**
  * User entity
  *
- * @category Entity
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Entity
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\entities;
@@ -16,43 +16,41 @@ use \classes\entities\UsersRights as UsersRights;
 /**
  * User entity that extends the Entity abstact class
  *
- * @property integer $id                    The user id
- * @property string  $firstName             The user first name
- * @property string  $lastName              The user last name
- * @property string  $pseudonym             The user pseudonym
- * @property string  $email                 The user email
- * @property string  $password              The user password
- * @property integer $connectionAttempt     The user number of failed connection attempt
- * @property integer $ipAttempt             The user last ip connection attempt
- * @property integer $ip                    The user last ip connection
- * @property string  $lastConnectionAttempt The user last time connection attempt
- * @property string  $lastConnection        The user last time connection
- *
- * @class User
+ * @property   integer  $id                     The user id
+ * @property   string   $firstName              The user first name
+ * @property   string   $lastName               The user last name
+ * @property   string   $pseudonym              The user pseudonym
+ * @property   string   $email                  The user email
+ * @property   string   $password               The user password
+ * @property   integer  $connectionAttempt      The user number of failed connection attempt
+ * @property   integer  $ipAttempt              The user last ip connection attempt
+ * @property   integer  $ip                     The user last ip connection
+ * @property   string   $lastConnectionAttempt  The user last time connection attempt
+ * @property   string   $lastConnection         The user last time connection
  */
 class User extends Entity
 {
     /**
-     * @var string[] $mustDefinedFields Fields that must be defined when instanciate the User object
+     * @var        string[]  $mustDefinedFields     Fields that must be defined when instanciate the User object
      */
     public static $mustDefinedFields = array('firstName', 'lastName', 'email', 'password');
 
     /**
-     * @var string[] $pseudoBlackList List of unwanted pseudonyms
+     * @var        string[]  $pseudoBlackList   List of unwanted pseudonyms
      */
     public static $pseudoBlackList = array('admin', 'all', 'SERVER');
 
     /**
-     * @var string[] $forbidenPseudoCharacters List of forbidden pseudonym characters
+     * @var        string[]  $forbidenPseudoCharacters  List of forbidden pseudonym characters
      */
     public static $forbiddenPseudoCharacters = array(',', "'");
 
     /**
-     * @var array $errors An array containing the occured errors when fields are set
+     * @var        array  $errors   An array containing the occured errors when fields are set
      */
     private $errors = array();
     /**
-     * @var UsersRights $userRights The user rights
+     * @var        UsersRights  $userRights     The user rights
      */
     private $userRights;
 
@@ -63,7 +61,7 @@ class User extends Entity
     /**
      * Constructor that calls the parent Entity constructor and affect values if values are passed
      *
-     * @param array $data DEFAULT null array($columnName => $value) pairs to set the object
+     * @param      array  $data   DEFAULT null array($columnName => $value) pairs to set the object
      */
     public function __construct($data = null)
     {
@@ -85,7 +83,7 @@ class User extends Entity
     /**
      * Get the occured errors when fields are set
      *
-     * @return array An array containing the occured errors when fields are set
+     * @return     array  An array containing the occured errors when fields are set
      */
     public function getErrors()
     {
@@ -95,7 +93,7 @@ class User extends Entity
     /**
      * Get the user rights
      *
-     * @return UsersRights The user rights
+     * @return     UsersRights  The user rights
      */
     public function getUserRights()
     {
@@ -105,7 +103,7 @@ class User extends Entity
     /**
      * Set the user rights
      *
-     * @param UsersRights $userRights The user rights
+     * @param      UsersRights  $userRights  The user rights
      */
     public function setUserRights($userRights)
     {
@@ -121,7 +119,7 @@ class User extends Entity
     /**
      * Bind user inputs to set User class attributes with inputs check
      *
-     * @param array $inputs The user inputs
+     * @param      array  $inputs  The user inputs
      */
     public function bindInputs($inputs)
     {
@@ -141,10 +139,10 @@ class User extends Entity
     /**
      * Check and sanitize the input field before setting the value and keep errors trace
      *
-     * @param  string $columnName The column name
-     * @param  string $value      The new column value
-     * @throws Exception          If the column name does not a exist
-     * @return string             The sanitized value
+     * @param      string     $columnName  The column name
+     * @param      string     $value       The new column value
+     * @throws     Exception  If the column name does not a exist
+     * @return     string     The sanitized value
      */
     private function validateField($columnName, $value)
     {

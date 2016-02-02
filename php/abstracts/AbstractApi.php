@@ -2,8 +2,8 @@
 /**
  * API abstract class
  *
- * @category Abstract
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Abstract
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace abstracts;
@@ -18,8 +18,8 @@ use \classes\ExceptionManager as Exception;
 abstract class API
 {
     /**
-     * @var array $HTTP_MESSAGE_STATUS HTTP message code
-     * @link https://en.wikipedia.org/wiki/List_of_HTTP_status_codes Description there
+     * @var        array  $HTTP_MESSAGE_STATUS  HTTP message code
+     * @link       https://en.wikipedia.org/wiki/List_of_HTTP_status_codes Description there
      */
     public static $HTTP_MESSAGE_STATUS = array(
         100 => 'Continue',
@@ -93,32 +93,32 @@ abstract class API
     );
 
     /**
-     * @var string $method The HTTP method this request was made in, either GET, POST, PUT or DELETE
+     * @var        string  $method  The HTTP method this request was made in, either GET, POST, PUT or DELETE
      */
     protected $method;
     /**
-     * @var string $endpoint The Model requested in the URI. eg: /files
+     * @var        string  $endpoint    The Model requested in the URI. eg: /files
      */
     protected $endpoint;
     /**
-     * @var string $verb An optional additional descriptor about the endpoint, used for things that can not be handled
-     * by the basic methods. eg: /files/process
+     * @var        string  $verb    An optional additional descriptor about the endpoint, used for things that can not be handled
+     *                     by the basic methods. eg: /files/process
      */
     protected $verb;
     /**
-     * @var array $args Any additional URI components after the endpoint and verb have been removed, in our case, an
-     * integer ID for the resource. eg: /<endpoint>/<verb>/<arg0>/<arg1> or /<endpoint>/<arg0>
+     * @var        array  $args     Any additional URI components after the endpoint and verb have been removed, in our case, an
+     *                    integer ID for the resource. eg: /<endpoint>/<verb>/<arg0>/<arg1> or /<endpoint>/<arg0>
      */
     protected $args = array();
     /**
-     * @var string $file Stores the input of the PUT request
+     * @var        string  $file    Stores the input of the PUT request
      */
     protected $file;
 
     /**
      * Constructor, allow for CORS, assemble and pre-process the data
      *
-     * @param array $request The request to treat
+     * @param      array  $request  The request to treat
      */
     public function __construct($request)
     {
@@ -169,7 +169,7 @@ abstract class API
     /**
      * Call the API method with parameters
      *
-     * @return string The JSON response as a string
+     * @return     string  The JSON response as a string
      */
     public function processAPI()
     {
@@ -183,9 +183,9 @@ abstract class API
     /**
      * Format the response in a JSON format
      *
-     * @param  integer $status The HTTP repsonse code DEFAULT 200
-     * @param  array   $data   The respsonse data to parse DEFAULT array()
-     * @return string          The repsonse in a JSON format as a string
+     * @param      integer  $status  The HTTP repsonse code DEFAULT 200
+     * @param      array    $data    The respsonse data to parse DEFAULT array()
+     * @return     string   The repsonse in a JSON format as a string
      */
     private function response($status = 200, $data = array())
     {

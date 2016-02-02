@@ -2,8 +2,8 @@
 /**
  * WebSocket server to handle multiple clients connections and maintain WebSocket services
  *
- * @category Class
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Class
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\websocket;
@@ -14,74 +14,72 @@ use \classes\entitiesManager\UserEntityManager as UserEntityManager;
 
 /**
  * WebSocket server to handle multiple clients connections and maintain WebSocket services
- *
- * @class Server
  */
 class Server
 {
     use \traits\EchoTrait;
 
     /**
-     * @var string $protocol The server socket protocol
+     * @var        string  $protocol    The server socket protocol
      */
     private $protocol;
     /**
-     * @var string $address The server socket address
+     * @var        string  $address     The server socket address
      */
     private $address;
     /**
-     * @var integer $port The server socket port
+     * @var        integer  $port   The server socket port
      */
     private $port;
     /**
-     * @var string $serverAddress The server address
+     * @var        string  $serverAddress   The server address
      */
     private $serverAddress;
     /**
-     * @var boolean $verbose True to print info in console else false
+     * @var        boolean  $verbose    True to print info in console else false
      */
     private $verbose;
     /**
-     * @var integer $errorNum The error code if an error occured
+     * @var        integer  $errorNum   The error code if an error occured
      */
     private $errorNum;
     /**
-     * @var string $errorString The error string if an error occured
+     * @var        string  $errorString     The error string if an error occured
      */
     private $errorString;
     /**
-     * @var resource[] $clients The clients socket stream
+     * @var        resource[]  $clients     The clients socket stream
      */
     private $clients = array();
     /**
-     * @var array[] $services The services functions / methods implemented
+     * @var        array[]  $services   The services functions / methods implemented
      */
     private $services = array();
     /**
-     * @var string $serviceRegex The regex to get service log entries
+     * @var        string  $serviceRegex    The regex to get service log entries
      */
     private $serviceRegex;
     /**
-     * @var string $notificationService The notification service name
+     * @var        string  $notificationService     The notification service name
      */
     private $notificationService;
     /**
-     * @var string $websocketService The websocket service name
+     * @var        string  $websocketService    The websocket service name
      */
     private $websocketService;
     /**
-     * @var string $serverKey A key to authentificate the server when sending data to services
+     * @var        string  $serverKey   A key to authentificate the server when sending data to services
      */
     protected $serverKey;
     /**
-     * @var resource $server The server socket resource
+     * @var        resource  $server    The server socket resource
      */
     protected $server;
 
     /*=====================================
     =            Magic methods            =
     =====================================*/
-    
+
     /**
      * Constructor that load parameters in the ini conf file and run the WebSocket server
      */
@@ -107,18 +105,18 @@ class Server
 
         $this->run();
     }
-    
+
     /*=====  End of Magic methods  ======*/
 
     /*=========================================
     =            Protected methods            =
     =========================================*/
-    
+
     /**
      * Get the client name from his socket stream
      *
-     * @param  resource $socket The client socket
-     * @return string          The client name
+     * @param      resource  $socket  The client socket
+     * @return     string    The client name
      */
     protected function getClientName($socket)
     {
@@ -128,8 +126,8 @@ class Server
     /**
      * Get the client ip from his socket stream
      *
-     * @param  resource $socket The client socket
-     * @return string          The client ip
+     * @param      resource  $socket  The client socket
+     * @return     string    The client ip
      */
     protected function getClientIp($socket)
     {
@@ -146,8 +144,8 @@ class Server
     /**
      * Send data to a client via stream socket
      *
-     * @param resource $socket The client stream socket
-     * @param string   $data   The data to send
+     * @param      resource  $socket  The client stream socket
+     * @param      string    $data    The data to send
      */
     protected function send($socket, $data)
     {
@@ -157,8 +155,8 @@ class Server
     /**
      * Disconnect a client
      *
-     * @param resource $socket     The client socket
-     * @param string   $clientName OPTIONAL the client name
+     * @param      resource  $socket      The client socket
+     * @param      string    $clientName  OPTIONAL the client name
      */
     protected function disconnect($socket, $clientName = null)
     {
@@ -181,8 +179,8 @@ class Server
     /**
      * Encode a text to send to client via ws://
      *
-     * @param $text
-     * @param $messageType
+     * @param            $text
+     * @param            $messageType
      */
     protected function encode($message, $messageType = 'text')
     {
@@ -206,7 +204,7 @@ class Server
                 $b1 = 10;
                 break;
         }
-        
+
         $b1 += 128;
         $length = strlen($message);
         $lengthField = "";
@@ -251,7 +249,7 @@ class Server
 
         return chr($b1) . chr($b2) . $lengthField . $message;
     }
-    
+
     /*=====  End of Protected methods  ======*/
 
     /*=======================================
@@ -264,7 +262,7 @@ class Server
     private function run()
     {
         $this->log('[SERVER] Server running on ' . stream_socket_get_name($this->server, false));
-        
+
         while (1) {
             $sockets   = $this->clients;
             $sockets[] = $this->server;
@@ -297,8 +295,8 @@ class Server
     /**
      * Get data from a client via stream socket
      *
-     * @param  resource $socket The client stream socket
-     * @return string           The client data
+     * @param      resource  $socket  The client stream socket
+     * @return     string    The client data
      */
     private function get($socket)
     {
@@ -307,10 +305,9 @@ class Server
 
     /**
      * Treat recieved data from a client socket and perform actions depending on data recieved and services implemented
-     * The ping / pong protocol is handled
-     * Server management is processing here (add / remove / list services)
+     * The ping / pong protocol is handled Server management is processing here (add / remove / list services)
      *
-     * @param resource $socket The client socket
+     * @param      resource  $socket  The client socket
      */
     private function treatDataRecieved($socket)
     {
@@ -374,8 +371,8 @@ class Server
     /**
      * Perform an handshake with the remote client by sending a specific HTTP response
      *
-     * @param resource $client The client socket
-     * @param string   $data   The client data sent to perform the handshake
+     * @param      resource  $client  The client socket
+     * @param      string    $data    The client data sent to perform the handshake
      */
     private function handshake($client, $data)
     {
@@ -396,7 +393,7 @@ class Server
     /**
      * Unmask a received payload
      *
-     * @param string $payload The buffer string
+     * @param      string  $payload  The buffer string
      */
     private function unmask($payload)
     {
@@ -413,7 +410,7 @@ class Server
             $masks = substr($payload, 2, 4);
             $data  = substr($payload, 6);
         }
-        
+
 
         for ($i = 0; $i < strlen($data); $i++) {
             $text .= $data[$i] ^ $masks[$i%4];
@@ -425,8 +422,8 @@ class Server
     /**
      * Add a service to the server
      *
-     * @param  string $serviceName The service name
-     * @return string[]              Array containing error or success message
+     * @param      string    $serviceName  The service name
+     * @return     string[]  Array containing error or success message
      */
     private function addService($serviceName)
     {
@@ -458,8 +455,8 @@ class Server
     /**
      * Remove a service from the server
      *
-     * @param  string $serviceName The service name
-     * @return string[]              Array containing errors or empty array if success
+     * @param      string    $serviceName  The service name
+     * @return     string[]  Array containing errors or empty array if success
      */
     private function removeService($serviceName)
     {
@@ -473,7 +470,7 @@ class Server
             $success = true;
             $this->log('[SERVER] Service "' . $serviceName . '" is now stopped');
         }
-        
+
         return array(
             'service' => $this->notificationService,
             'success' => $success,
@@ -484,7 +481,7 @@ class Server
     /**
      * List all the service name which are currently running
      *
-     * @return string[] The services name list
+     * @return     string[]  The services name list
      */
     private function listServices()
     {
@@ -494,8 +491,8 @@ class Server
     /**
      * Check the authentication to perform administration action on the WebSocket server
      *
-     * @param  array $data JSON decoded client data
-     * @return boolean       True if the authentication succeed else false
+     * @param      array    $data   JSON decoded client data
+     * @return     boolean  True if the authentication succeed else false
      */
     private function checkAuthentication($data)
     {
@@ -514,7 +511,7 @@ class Server
     /**
      * Log a message to the server if verbose mode is activated
      *
-     * @param string $message The message to output
+     * @param      string  $message  The message to output
      */
     private function log($message)
     {

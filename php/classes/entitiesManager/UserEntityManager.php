@@ -2,8 +2,8 @@
 /**
  * Entity manager for he entity User
  *
- * @category EntityManager
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    EntityManager
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\entitiesManager;
@@ -18,7 +18,7 @@ use \classes\IniManager as Ini;
 /**
  * Performed database action relative to the User entity class
  *
- * @property User $entity The user entity
+ * @property   User  $entity  The user entity
  */
 class UserEntityManager extends EntityManager
 {
@@ -27,8 +27,8 @@ class UserEntityManager extends EntityManager
     /**
      * Constructor that can take a User entity as first parameter and a Collection as second parameter
      *
-     * @param User       $entity           A user entity object DEFAULT null
-     * @param Collection $entityCollection A colection oject DEFAULT null
+     * @param      User        $entity            A user entity object DEFAULT null
+     * @param      Collection  $entityCollection  A colection oject DEFAULT null
      */
     public function __construct($entity = null, $entityCollection = null)
     {
@@ -42,7 +42,7 @@ class UserEntityManager extends EntityManager
     /**
      * Load user entity and userRights entity linked to the user entity
      *
-     * @param int|array The id value
+     * @param      int|array          The id value
      */
     public function loadEntity($id)
     {
@@ -55,8 +55,8 @@ class UserEntityManager extends EntityManager
     /**
      * Get a user id by his pseudonym
      *
-     * @param  string $pseudonym The user pseudonym
-     * @return integer            The user id
+     * @param      string   $pseudonym  The user pseudonym
+     * @return     integer  The user id
      */
     public function getUserIdByPseudonym($pseudonym)
     {
@@ -70,8 +70,8 @@ class UserEntityManager extends EntityManager
     /**
      * Register a user and return errors if errors occured
      *
-     * @param  array $inputs The user inputs in an array($columnName => $value) pairs to set the object
-     * @return array         The occured errors or success in a array
+     * @param      array  $inputs  The user inputs in an array($columnName => $value) pairs to set the object
+     * @return     array  The occured errors or success in a array
      */
     public function register($inputs)
     {
@@ -97,9 +97,9 @@ class UserEntityManager extends EntityManager
     /**
      * Connect a user with his login / password combinaison
      *
-     * @param  string[] $inputs Inputs array containing array('login' => 'login', 'password' => 'password')
-     * @return array            The occured errors or success in a array
-     * @todo   refacto make it shorter...
+     * @param      string[]  $inputs  Inputs array containing array('login' => 'login', 'password' => 'password')
+     * @return     array     The occured errors or success in a array
+     * @todo       refacto make it shorter...
      */
     public function connect($inputs)
     {
@@ -189,9 +189,9 @@ class UserEntityManager extends EntityManager
     /**
      * Authenticate a User by his login / password combinaison and return the User object on success or false on fail
      *
-     * @param  string $login    The user login (email or pseudonym)
-     * @param  string $password The user password
-     * @return User|false       The User instanciated object or false is the authentication failed
+     * @param      string      $login     The user login (email or pseudonym)
+     * @param      string      $password  The user password
+     * @return     User|false  The User instanciated object or false is the authentication failed
      */
     public function authenticateUser($login, $password)
     {
@@ -222,9 +222,9 @@ class UserEntityManager extends EntityManager
     /**
      * Check if a user have the admin access to the WebSocker server
      *
-     * @param  string $login    The user login
-     * @param  string $password The user password
-     * @return boolean           True if the User has the right else false
+     * @param      string   $login     The user login
+     * @param      string   $password  The user password
+     * @return     boolean  True if the User has the right else false
      */
     public function connectWebSocketServer($login, $password)
     {
@@ -243,9 +243,9 @@ class UserEntityManager extends EntityManager
     /**
      * Check if a user has the right to ckick a user
      *
-     * @param  string $login    The user login
-     * @param  string $password The user password
-     * @return boolean           True if a user has the right to kick a player from a room else false
+     * @param      string   $login     The user login
+     * @param      string   $password  The user password
+     * @return     boolean  True if a user has the right to kick a player from a room else false
      */
     public function hasChatAdminRight($login, $password)
     {
@@ -264,7 +264,7 @@ class UserEntityManager extends EntityManager
     /**
      * Get a user pseudonym
      *
-     * @return string The user pseudonym (first name + last name if not defined)
+     * @return     string  The user pseudonym (first name + last name if not defined)
      */
     public function getPseudonymForChat()
     {
@@ -280,8 +280,8 @@ class UserEntityManager extends EntityManager
     /**
      * Check if a pseudonym exists in the database
      *
-     * @param  string $pseudonym The pseudonym
-     * @return boolean            True if the pseudonym exists else false
+     * @param      string   $pseudonym  The pseudonym
+     * @return     boolean  True if the pseudonym exists else false
      */
     public function isPseudonymExist($pseudonym)
     {
@@ -297,8 +297,8 @@ class UserEntityManager extends EntityManager
     /**
      * Check all the must defined fields and fill an errors array if not
      *
-     * @param  array $fields The fields to check
-     * @return array         The errors array with any missing must defined fields
+     * @param      array  $fields  The fields to check
+     * @return     array  The errors array with any missing must defined fields
      */
     private function checkMustDefinedField($fields)
     {

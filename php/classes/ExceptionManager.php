@@ -2,8 +2,8 @@
 /**
  * Custom exception class
  *
- * @category Exception
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Exception
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes;
@@ -20,44 +20,44 @@ use \classes\IniManager as Ini;
 class ExceptionManager extends \Exception
 {
     /**
-     * @var int $EMERGENCY EMERGENCY log level
+     * @var        int   $EMERGENCY     EMERGENCY log level
      */
     public static $EMERGENCY =  LogLevel::EMERGENCY;
     /**
-     * @var int $ALERT ALERT log level
+     * @var        int   $ALERT     ALERT log level
      */
     public static $ALERT     =  LogLevel::ALERT;
     /**
-     * @var int $CRITICAL CRITICAL log level
+     * @var        int   $CRITICAL  CRITICAL log level
      */
     public static $CRITICAL  =  LogLevel::CRITICAL;
     /**
-     * @var int $ERROR ERROR log level
+     * @var        int   $ERROR     ERROR log level
      */
     public static $ERROR     =  LogLevel::ERROR;
     /**
-     * @var int $WARNING  WARNING log level
+     * @var        int   $WARNING   WARNING log level
      */
     public static $WARNING   =  LogLevel::WARNING;
     /**
-     * @var int $NOTICE NOTICE log level
+     * @var        int   $NOTICE    NOTICE log level
      */
     public static $NOTICE    =  LogLevel::NOTICE;
     /**
-     * @var int $INFO INFO log level
+     * @var        int   $INFO  INFO log level
      */
     public static $INFO      =  LogLevel::INFO;
     /**
-     * @var int $DEBUG DEBUG log level
+     * @var        int   $DEBUG     DEBUG log level
      */
     public static $DEBUG     =  LogLevel::DEBUG;
     /**
-     * @var int $PARAMETER PARAMETER log level
+     * @var        int   $PARAMETER     PARAMETER log level
      */
     public static $PARAMETER =  LogLevel::PARAMETER;
 
     /**
-     * @var Logger $logger A LoggerManager instance
+     * @var        Logger  $logger  A LoggerManager instance
      */
     private $logger;
 
@@ -68,9 +68,9 @@ class ExceptionManager extends \Exception
     /**
      * Constructor that called the parent \Exception constructor
      *
-     * @param string         $message  Error message
-     * @param integer        $code     Error level
-     * @param Exception|null $previous Previous \Exception
+     * @param      string          $message   Error message
+     * @param      integer         $code      Error level
+     * @param      Exception|null  $previous  Previous \Exception
      */
     public function __construct($message, $code = 0, Exception $previous = null)
     {
@@ -90,7 +90,7 @@ class ExceptionManager extends \Exception
     /**
      * Add a logger to the implemented logger
      *
-     * @param int $loggerType The logger type
+     * @param      int   $loggerType  The logger type
      */
     public function addLogger($loggerType)
     {
@@ -100,7 +100,7 @@ class ExceptionManager extends \Exception
     /**
      * Remove a logger to the implemented logger
      *
-     * @param int $loggerType The logger type
+     * @param      int   $loggerType  The logger type
      */
     public function removeLogger($loggerType)
     {

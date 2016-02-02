@@ -2,8 +2,8 @@
 /**
  * Logger interface
  *
- * @category Interface
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Interface
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\logger;
@@ -23,7 +23,7 @@ class ConsoleLogger extends AbstractLogger
     use \traits\EchoTrait;
 
     /**
-     * @var array $LEVELS Logger level based on LogLevel class
+     * @var        array  $LEVELS   Logger level based on LogLevel class
      */
     public static $LEVELS = array(
         LogLevel::EMERGENCY => 'emergency',
@@ -37,7 +37,7 @@ class ConsoleLogger extends AbstractLogger
     );
 
     /**
-     * @var ConsoleColors $colors ConsoleColors instance to color console output
+     * @var        ConsoleColors  $colors   ConsoleColors instance to color console output
      */
     private $colors;
 
@@ -61,13 +61,13 @@ class ConsoleLogger extends AbstractLogger
     ======================================*/
 
      /**
-     * System is unusable.
-     *
-     * @param string $message
-     * @param array  $context
-     *
-     * @return null
-     */
+      * System is unusable.
+      *
+      * @param      string  $message
+      * @param      array   $context
+      *
+      * @return     null
+      */
     public function emergency($message, array $context = array())
     {
         static::out(
@@ -84,13 +84,12 @@ class ConsoleLogger extends AbstractLogger
     /**
      * Action must be taken immediately.
      *
-     * Example: Entire website down, database unavailable, etc. This should
-     * trigger the SMS alerts and wake you up.
+     * Example: Entire website down, database unavailable, etc. This should trigger the SMS alerts and wake you up.
      *
-     * @param string $message
-     * @param array  $context
+     * @param      string  $message
+     * @param      array   $context
      *
-     * @return null
+     * @return     null
      */
     public function alert($message, array $context = array())
     {
@@ -110,10 +109,10 @@ class ConsoleLogger extends AbstractLogger
      *
      * Example: Application component unavailable, unexpected exception.
      *
-     * @param string $message
-     * @param array  $context
+     * @param      string  $message
+     * @param      array   $context
      *
-     * @return null
+     * @return     null
      */
     public function critical($message, array $context = array())
     {
@@ -129,13 +128,12 @@ class ConsoleLogger extends AbstractLogger
     }
 
     /**
-     * Runtime errors that do not require immediate action but should typically
-     * be logged and monitored.
+     * Runtime errors that do not require immediate action but should typically be logged and monitored.
      *
-     * @param string $message
-     * @param array  $context
+     * @param      string  $message
+     * @param      array   $context
      *
-     * @return null
+     * @return     null
      */
     public function error($message, array $context = array())
     {
@@ -153,13 +151,12 @@ class ConsoleLogger extends AbstractLogger
     /**
      * Exceptional occurrences that are not errors.
      *
-     * Example: Use of deprecated APIs, poor use of an API, undesirable things
-     * that are not necessarily wrong.
+     * Example: Use of deprecated APIs, poor use of an API, undesirable things that are not necessarily wrong.
      *
-     * @param string $message
-     * @param array  $context
+     * @param      string  $message
+     * @param      array   $context
      *
-     * @return null
+     * @return     null
      */
     public function warning($message, array $context = array())
     {
@@ -179,10 +176,10 @@ class ConsoleLogger extends AbstractLogger
      *
      * Example: User logs in, SQL logs.
      *
-     * @param string $message
-     * @param array  $context
+     * @param      string  $message
+     * @param      array   $context
      *
-     * @return null
+     * @return     null
      */
     public function notice($message, array $context = array())
     {
@@ -200,10 +197,10 @@ class ConsoleLogger extends AbstractLogger
     /**
      * Detailed debug information.
      *
-     * @param string $message
-     * @param array  $context
+     * @param      string  $message
+     * @param      array   $context
      *
-     * @return null
+     * @return     null
      */
     public function info($message, array $context = array())
     {
@@ -221,9 +218,10 @@ class ConsoleLogger extends AbstractLogger
     /**
      * Informations détaillées de débogage.
      *
-     * @param  string $message
-     * @param  array  $context
-     * @return null
+     * @param      string  $message
+     * @param      array   $context
+     *
+     * @return     null
      */
     public function debug($message, array $context = array())
     {
@@ -241,11 +239,11 @@ class ConsoleLogger extends AbstractLogger
     /**
      * Logs with an arbitrary level.
      *
-     * @param mixed  $level
-     * @param string $message
-     * @param array  $context
+     * @param      mixed   $level
+     * @param      string  $message
+     * @param      array   $context
      *
-     * @return null
+     * @return     null
      */
     public function log($level, $message, array $context = array())
     {
@@ -265,8 +263,9 @@ class ConsoleLogger extends AbstractLogger
     /**
      * Helper method to pretty output info with colors defined for each type of context
      *
-     * @param  array $contexts The context
-     * @return string          The output result as a string
+     * @param      array   $contexts  The context
+     *
+     * @return     string  The output result as a string
      */
     private function formatContext($contexts)
     {
@@ -294,8 +293,9 @@ class ConsoleLogger extends AbstractLogger
     /**
      * Return arguments in a formatted string with type and value
      *
-     * @param  array $arguments The arguments
-     * @return string           The arguments in a formatted string
+     * @param      array   $arguments  The arguments
+     *
+     * @return     string  The arguments in a formatted string
      */
     private function formatArguments($arguments)
     {
@@ -311,14 +311,15 @@ class ConsoleLogger extends AbstractLogger
     /**
      * Utility method to format a context string
      *
-     * @param  string   $description Context description
-     * @param  string[] $context     Context array
-     * @param  string   $type        Context type
-     * @param  string   $fgColor1    Description foreground color DEFAULT ConsoleColors::PURPLE_F
-     * @param  string   $bgColor1    Description background color DEFAULT ConsoleColors::BLACK
-     * @param  string   $fgColor2    Context foreground color DEFAULT ConsoleColors::YELLOW
-     * @param  string   $bgColor2    Context background color DEFAULT ConsoleColors::BLACK
-     * @return string                The formatted context string
+     * @param      string    $description  Context description
+     * @param      string[]  $context      Context array
+     * @param      string    $type         Context type
+     * @param      string    $fgColor1     Description foreground color DEFAULT ConsoleColors::PURPLE_F
+     * @param      string    $bgColor1     Description background color DEFAULT ConsoleColors::BLACK
+     * @param      string    $fgColor2     Context foreground color DEFAULT ConsoleColors::YELLOW
+     * @param      string    $bgColor2     Context background color DEFAULT ConsoleColors::BLACK
+     *
+     * @return     string    The formatted context string
      */
     private function formatContextShortcut(
         $description,

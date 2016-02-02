@@ -2,8 +2,8 @@
 /**
  * Entity manager pattern abstract class
  *
- * @category Abstract
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Abstract
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace abstracts;
@@ -22,11 +22,11 @@ use \classes\IniManager as Ini;
 abstract class EntityManager
 {
     /**
-     * @var Entity $entity An Entity object
+     * @var        Entity  $entity  An Entity object
      */
     protected $entity;
     /**
-     * @var Collection $entityCollection An EntityCollection object
+     * @var        Collection  $entityCollection    An EntityCollection object
      */
     protected $entityCollection;
 
@@ -37,8 +37,8 @@ abstract class EntityManager
     /**
      * Constructor that can take an Entity as first parameter and a Collection as second parameter
      *
-     * @param Entity     $entity           An entity object DEFAULT null
-     * @param Collection $entityCollection A colection oject DEFAULT null
+     * @param      Entity      $entity            An entity object DEFAULT null
+     * @param      Collection  $entityCollection  A colection oject DEFAULT null
      */
     public function __construct($entity = null, $entityCollection = null)
     {
@@ -60,7 +60,7 @@ abstract class EntityManager
     /**
      * Get the entity object
      *
-     * @return Entity The entity object
+     * @return     Entity  The entity object
      */
     public function getEntity()
     {
@@ -70,8 +70,8 @@ abstract class EntityManager
     /**
      * Set the entity object
      *
-     * @param  Entity $entity The new entity oject
-     * @throws Exception         If the entity is not a subclass of Entity
+     * @param      Entity     $entity  The new entity oject
+     * @throws     Exception  If the entity is not a subclass of Entity
      */
     public function setEntity($entity)
     {
@@ -85,7 +85,7 @@ abstract class EntityManager
     /**
      * Get the entity collection object
      *
-     * @return Collection The entity colection object
+     * @return     Collection  The entity colection object
      */
     public function getEntityCollection()
     {
@@ -95,8 +95,8 @@ abstract class EntityManager
     /**
      * Set the entity collection object
      *
-     * @param  Collection $entityCollection The new entity collection object
-     * @throws Exception                    If the entityCollection is not a subclass of Collection
+     * @param      Collection  $entityCollection  The new entity collection object
+     * @throws     Exception   If the entityCollection is not a subclass of Collection
      */
     public function setEntityCollection($entityCollection)
     {
@@ -119,7 +119,7 @@ abstract class EntityManager
     /**
      * Load an entity by its id
      *
-     * @param int|array The id value
+     * @param      int|array          The id value
      */
     public function loadEntity($id)
     {
@@ -130,9 +130,9 @@ abstract class EntityManager
     /**
      * Save the entity in the database
      *
-     * @param  Entity $entity OPTIONAL If an entity is passed, this entity becomes the EntityManager Entity DEFAULT null
-     * @throws Exception      If the entity is not a subclass of Entity
-     * @return boolean        True if the entity has been saved or updated else false
+     * @param      Entity     $entity  OPTIONAL If an entity is passed, this entity becomes the EntityManager Entity DEFAULT null
+     * @throws     Exception  If the entity is not a subclass of Entity
+     * @return     boolean    True if the entity has been saved or updated else false
      */
     public function saveEntity($entity = null)
     {
@@ -154,10 +154,10 @@ abstract class EntityManager
     /**
      * Save the entity colection in the database
      *
-     * @param  Collection $collection OPTIONAL If an collection is passed, this collection becomes
-     *                                the EntityManager Collection DEFAULT null
-     * @throws Exception              If the entityCollection is not a subclass of Collection
-     * @return boolean                True if the entity collection has been saved else false
+     * @param      Collection  $collection  OPTIONAL If an collection is passed, this collection becomes the
+     *                                      EntityManager Collection DEFAULT null
+     * @throws     Exception   If the entityCollection is not a subclass of Collection
+     * @return     boolean     True if the entity collection has been saved else false
      */
     public function saveCollection($collection = null)
     {
@@ -194,7 +194,7 @@ abstract class EntityManager
     /**
      * Delete an entity in the database
      *
-     * @return boolean True if the entity has beed deleted else false
+     * @return     boolean  True if the entity has beed deleted else false
      */
     public function deleteEntity()
     {
@@ -204,7 +204,7 @@ abstract class EntityManager
     /**
      * Drop the entity table in the database
      *
-     * @throws Exception If the table is not dropped
+     * @throws     Exception  If the table is not dropped
      */
     public function dropEntityTable()
     {
@@ -216,7 +216,7 @@ abstract class EntityManager
     /**
      * Create the entity table in the database
      *
-     * @throws Exception If the table is not created
+     * @throws     Exception  If the table is not created
      */
     public function createEntityTable()
     {
@@ -226,11 +226,10 @@ abstract class EntityManager
     }
 
     /**
-     * Format a sql query with sprintf function
-     * First arg must be the sql string with markers (%s, %d, ...)
-     * Others args should be the values for the markers
+     * Format a sql query with sprintf function First arg must be the sql string with markers (%s, %d, ...) Others args
+     * should be the values for the markers
      *
-     * @return string The SQL formated string
+     * @return     string  The SQL formated string
      */
     public static function sqlFormater()
     {
@@ -266,7 +265,7 @@ abstract class EntityManager
     /**
      * Check if the entity already exists in the database
      *
-     * @return boolean True if the entity exists else false
+     * @return     boolean  True if the entity exists else false
      */
     private function entityAlreadyExists()
     {
@@ -284,7 +283,7 @@ abstract class EntityManager
     /**
      * Save the entity in the database
      *
-     * @return boolean True if the entity has beed saved else false
+     * @return     boolean  True if the entity has beed saved else false
      */
     private function saveInDatabase()
     {
@@ -302,7 +301,7 @@ abstract class EntityManager
     /**
      * Uddape the entity in the database
      *
-     * @return integer The number of rows updated
+     * @return     integer  The number of rows updated
      */
     private function updateInDatabase()
     {
@@ -321,7 +320,7 @@ abstract class EntityManager
     /**
      * Delete the entity from the database
      *
-     * @return boolean True if the entity has beed deleted else false
+     * @return     boolean  True if the entity has beed deleted else false
      */
     private function deleteInDatabse()
     {
@@ -339,7 +338,7 @@ abstract class EntityManager
     /**
      * Drop the entity table
      *
-     * @return boolean True if the table is dropped else false
+     * @return     boolean  True if the table is dropped else false
      */
     private function dropTable()
     {
@@ -351,7 +350,7 @@ abstract class EntityManager
     /**
      * Create a table based on the entity ini conf file
      *
-     * @return boolean True if the table is created else false
+     * @return     boolean  True if the table is created else false
      */
     private function createTable()
     {
@@ -389,7 +388,7 @@ abstract class EntityManager
     /**
      * Get the "?" markers of the entity
      *
-     * @return string The string markers (?, ?, ?)
+     * @return     string  The string markers (?, ?, ?)
      */
     private function getEntityAttributesMarks()
     {
@@ -399,7 +398,7 @@ abstract class EntityManager
     /**
      * Get the "columnName = 'columnValue'" markers of the entity for the update sql command
      *
-     * @return string The string markers (columnName1 = 'value1', columnName2 = 'value2') primary keys EXCLUDED
+     * @return     string  The string markers (columnName1 = 'value1', columnName2 = 'value2') primary keys EXCLUDED
      */
     private function getEntityUpdateMarksValue()
     {
@@ -423,7 +422,7 @@ abstract class EntityManager
     /**
      * Get the "primaryKey1 = 'primaryKey1Value' AND primaryKey2 = 'primaryKey2Value'" of the entity
      *
-     * @return string The SQL segment string "primaryKey1 = 'primaryKey1Value' AND primaryKey2 = 'primaryKey2Value'"
+     * @return     string  The SQL segment string "primaryKey1 = 'primaryKey1Value' AND primaryKey2 = 'primaryKey2Value'"
      */
     private function getEntityPrimaryKeysWhereClause()
     {
@@ -445,9 +444,9 @@ abstract class EntityManager
     /**
      * Utility method to set and return a column definition to put in a SQL create table query
      *
-     * @param  string $columnName       The column name
-     * @param  array  $columnAttributes The columns attributes
-     * @return string                   The formatted string to put in a SQL create table query
+     * @param      string  $columnName        The column name
+     * @param      array   $columnAttributes  The columns attributes
+     * @return     string  The formatted string to put in a SQL create table query
      */
     private function createColumnDefinition($columnName, $columnAttributes)
     {
@@ -490,7 +489,7 @@ abstract class EntityManager
     /**
      * Utility method to set en return the table constraints to put in a SQL create table query
      *
-     * @return string The formatted string to put in a SQL create table query
+     * @return     string  The formatted string to put in a SQL create table query
      */
     private function createTableConstraints()
     {

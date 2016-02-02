@@ -2,8 +2,8 @@
 /**
  * Autoloader function to not worry about including stuff anymore
  *
- * @category Autoloader
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Autoloader
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 set_include_path(__DIR__);

@@ -19,39 +19,38 @@ use \classes\entitiesManager\UsersChatRightsEntityManager as UsersChatRightsEnti
 /**
  * Chat services to manage a chat with a WebSocket server
  *
- * @todo  Sonar this class
- * @class ChatService
+ * @todo       Sonar this class
  */
 class ChatService extends Server implements Service
 {
     use \traits\ShortcutsTrait;
 
     /**
-     * @var string $serverAddress The server adress to connect
+     * @var        string  $serverAddress   The server adress to connect
      */
     private $serverAddress;
     /**
-     * @var string $chatService The chat service name
+     * @var        string  $chatService     The chat service name
      */
     private $chatService;
     /**
-     * @var string $savingDir The absolute path from the lib path where conversations will be stored
+     * @var        string  $savingDir   The absolute path from the lib path where conversations will be stored
      */
     private $savingDir;
     /**
-     * @var integer $maxMessagesPerFile The maximum number of messages per file saved
+     * @var        integer  $maxMessagesPerFile     The maximum number of messages per file saved
      */
     private $maxMessagesPerFile;
     /**
-     * @var string[] $roomsName Array containing all the rooms name that exists
+     * @var        string[]  $roomsName     Array containing all the rooms name that exists
      */
     private $roomsName;
     /**
-     * @var string $roomsNamePath The path of the file storing the list of rooms name
+     * @var        string  $roomsNamePath   The path of the file storing the list of rooms name
      */
     private $roomsNamePath;
     /**
-     * @var string[] $usersRooms All rooms where users are connected to indexed by their socketHash
+     * @var        string[]  $usersRooms    All rooms where users are connected to indexed by their socketHash
      */
     private $usersRooms = array();
     /**
@@ -95,7 +94,7 @@ class ChatService extends Server implements Service
     /**
      * Constructor that sets the WebSocket server adress and create en empty default room
      *
-     * @param string $serverAddress The WebSocket server adress
+     * @param      string  $serverAddress  The WebSocket server adress
      */
     public function __construct($serverAddress)
     {
@@ -134,8 +133,8 @@ class ChatService extends Server implements Service
     /**
      * Method to recieves data from the WebSocket server
      *
-     * @param resource $socket The client socket
-     * @param array    $data   JSON decoded client data
+     * @param      resource  $socket  The client socket
+     * @param      array     $data    JSON decoded client data
      */
     public function service($socket, $data)
     {
@@ -226,8 +225,8 @@ class ChatService extends Server implements Service
     /**
      * Create a chat room by an authenticated user request
      *
-     * @param resource $socket The user socket
-     * @param array    $data   JSON decoded client data
+     * @param      resource  $socket  The user socket
+     * @param      array     $data    JSON decoded client data
      */
     private function createRoom($socket, $data)
     {
@@ -322,8 +321,8 @@ class ChatService extends Server implements Service
     /**
      * Connect a user to one chat room as a registered or a guest user
      *
-     * @param resource $socket The user socket
-     * @param array    $data   JSON decoded client data
+     * @param      resource  $socket  The user socket
+     * @param      array     $data    JSON decoded client data
      */
     private function connectUser($socket, $data)
     {
@@ -428,8 +427,8 @@ class ChatService extends Server implements Service
     /**
      * Send a public message to all the users in the room or a private message to one user in the room
      *
-     * @param resource $socket The user socket
-     * @param array    $data   JSON decoded client data
+     * @param      resource  $socket  The user socket
+     * @param      array     $data    JSON decoded client data
      */
     private function sendMessage($socket, $data)
     {
@@ -509,8 +508,8 @@ class ChatService extends Server implements Service
     /**
      * Get the next chat conversation historic part of a room
      *
-     * @param resource $socket The user socket
-     * @param array    $data   JSON decoded client data
+     * @param      resource  $socket  The user socket
+     * @param      array     $data    JSON decoded client data
      */
     private function getHistoric($socket, $data)
     {
@@ -563,8 +562,8 @@ class ChatService extends Server implements Service
     /**
      * Kick a user from a room
      *
-     * @param resource $socket The user socket
-     * @param array    $data   JSON decoded client data
+     * @param      resource  $socket  The user socket
+     * @param      array     $data    JSON decoded client data
      */
     private function kickUser($socket, $data)
     {
@@ -649,8 +648,8 @@ class ChatService extends Server implements Service
     /**
      * Ban a user from a room
      *
-     * @param resource $socket The user socket
-     * @param array    $data   JSON decoded client data
+     * @param      resource  $socket  The user socket
+     * @param      array     $data    JSON decoded client data
      */
     private function banUser($socket, $data)
     {
@@ -754,8 +753,8 @@ class ChatService extends Server implements Service
     /**
      * Update a user right for a room
      *
-     * @param resource $socket The user socket
-     * @param array    $data   JSON decoded client data
+     * @param      resource  $socket  The user socket
+     * @param      array     $data    JSON decoded client data
      */
     private function updateRoomUserRight($socket, $data)
     {
@@ -832,8 +831,8 @@ class ChatService extends Server implements Service
     /**
      * Change a room name / password
      *
-     * @param resource $socket The user socket
-     * @param array    $data   JSON decoded client data
+     * @param      resource  $socket  The user socket
+     * @param      array     $data    JSON decoded client data
      */
     private function setRoomInfo($socket, $data)
     {
@@ -965,7 +964,7 @@ class ChatService extends Server implements Service
     /**
      * Get the rooms basic information (name, type, usersMax, usersConnected)
      *
-     * @param resource $socket The user socket
+     * @param      resource  $socket  The user socket
      */
     private function getRoomsInfo($socket)
     {
@@ -1005,8 +1004,8 @@ class ChatService extends Server implements Service
     /**
      * Update the connected users list in a room
      *
-     * @param resource $socket   The user socket
-     * @param string   $roomName The room name
+     * @param      resource  $socket    The user socket
+     * @param      string    $roomName  The room name
      */
     private function updateRoomUsers($socket, $roomName)
     {
@@ -1051,8 +1050,8 @@ class ChatService extends Server implements Service
     /**
      * Update the ip banned list in a room
      *
-     * @param resource $socket   The user socket
-     * @param string   $roomName The room name
+     * @param      resource  $socket    The user socket
+     * @param      string    $roomName  The room name
      */
     private function updateRoomUsersBanned($socket, $roomName)
     {
@@ -1074,8 +1073,8 @@ class ChatService extends Server implements Service
     /**
      * Disconnect a user from a room
      *
-     * @param string $socketHash The user socket hash
-     * @param string $roomName   The room name
+     * @param      string  $socketHash  The user socket hash
+     * @param      string  $roomName    The room name
      */
     private function disconnectUserFromRoomAction($socketHash, $roomName)
     {
@@ -1111,7 +1110,7 @@ class ChatService extends Server implements Service
     /**
      * Disconnet a user from all the chat he was connected to
      *
-     * @param resource $socket The user socket
+     * @param      resource  $socket  The user socket
      */
     private function disconnectUser($socket)
     {
@@ -1127,8 +1126,8 @@ class ChatService extends Server implements Service
     /**
      * Disconnet a user from a room he was connected to
      *
-     * @param resource $socket The user socket
-     * @param array    $data   JSON decoded client data
+     * @param      resource  $socket  The user socket
+     * @param      array     $data    JSON decoded client data
      */
     private function disconnectUserFromRoom($socket, $data)
     {
@@ -1165,8 +1164,8 @@ class ChatService extends Server implements Service
     /**
      * Add a room to the user when he is connected to this room
      *
-     * @param string $socketHash The user socket hash
-     * @param string $roomName   The room name
+     * @param      string  $socketHash  The user socket hash
+     * @param      string  $roomName    The room name
      */
     private function addUserRoom($socketHash, $roomName)
     {
@@ -1197,9 +1196,10 @@ class ChatService extends Server implements Service
     /**
      * Check if a user has the right to enter a private room
      *
-     * @param  string $roomName     The room name
-     * @param  string $roomPassword The room password the user sent
-     * @return boolean               True if the user have the right to enter the room else false
+     * @param      string   $roomName      The room name
+     * @param      string   $roomPassword  The room password the user sent
+     *
+     * @return     boolean  True if the user have the right to enter the room else false
      */
     private function checkPrivateRoomPassword($roomName, $roomPassword)
     {
@@ -1215,9 +1215,10 @@ class ChatService extends Server implements Service
     /**
      * Check if a pseudonym is already used in the defined room
      *
-     * @param  string $pseudonym The pseudonym
-     * @param  string $roomName  The room name to connect to
-     * @return boolean            True if the pseudonym exists in the room else false
+     * @param      string   $pseudonym  The pseudonym
+     * @param      string   $roomName   The room name to connect to
+     *
+     * @return     boolean  True if the pseudonym exists in the room else false
      */
     private function pseudonymIsInRoom($pseudonym, $roomName)
     {
@@ -1227,9 +1228,10 @@ class ChatService extends Server implements Service
     /**
      * Check if a pseudonym is usabled to be used in a room (not already in the room and not used by a registered user)
      *
-     * @param  string $pseudonym The pseudonym
-     * @param  string $roomName  The room name to connect to
-     * @return boolean            True if the pseudonym is usabled else false
+     * @param      string   $pseudonym  The pseudonym
+     * @param      string   $roomName   The room name to connect to
+     *
+     * @return     boolean  True if the pseudonym is usabled else false
      */
     private function isPseudonymUsabled($pseudonym, $roomName)
     {
@@ -1246,9 +1248,10 @@ class ChatService extends Server implements Service
     /**
      * Get the user hash by his pseudonym and the room name where he's connected
      *
-     * @param  string $roomName  The room name
-     * @param  string $pseudonym The user pseudonym
-     * @return string|boolean            The user hash or false if an the user cannot be found
+     * @param      string          $roomName   The room name
+     * @param      string          $pseudonym  The user pseudonym
+     *
+     * @return     string|boolean  The user hash or false if an the user cannot be found
      */
     private function getUserHashByPseudonym($roomName, $pseudonym)
     {
@@ -1258,9 +1261,10 @@ class ChatService extends Server implements Service
     /**
      * Tell if a user is registered or not
      *
-     * @param  string $roomName  The room name
-     * @param  string $pseudonym The user pseudonym
-     * @return boolean            True if the user is registered else false
+     * @param      string   $roomName   The room name
+     * @param      string   $pseudonym  The user pseudonym
+     *
+     * @return     boolean  True if the user is registered else false
      */
     private function isRegistered($roomName, $pseudonym)
     {
@@ -1270,12 +1274,12 @@ class ChatService extends Server implements Service
     /**
      * Send a message to a user
      *
-     * @param resource $socketFrom The user socket to send the message from
-     * @param resource $socketTo   The user socket to send the message to
-     * @param string   $message    The text message
-     * @param string   $roomName   The room name
-     * @param string   $type       The message type ('public' || 'private')
-     * @param string   $date       The server date at the moment the message was processed (Y-m-d H:i:s)
+     * @param      resource  $socketFrom  The user socket to send the message from
+     * @param      resource  $socketTo    The user socket to send the message to
+     * @param      string    $message     The text message
+     * @param      string    $roomName    The room name
+     * @param      string    $type        The message type ('public' || 'private')
+     * @param      string    $date        The server date at the moment the message was processed (Y-m-d H:i:s)
      */
     private function sendMessageToUser($socketFrom, $socketTo, $message, $roomName, $type, $date)
     {
@@ -1306,11 +1310,11 @@ class ChatService extends Server implements Service
     /**
      * Send a message to all the room users
      *
-     * @param resource $socketFrom The user socket to send the message from
-     * @param string   $message    The text message
-     * @param string   $roomName   The room name
-     * @param string   $type       The message type ('public' || 'private')
-     * @param string   $date       The server date at the moment the message was processed (Y-m-d H:i:s)
+     * @param      resource  $socketFrom  The user socket to send the message from
+     * @param      string    $message     The text message
+     * @param      string    $roomName    The room name
+     * @param      string    $type        The message type ('public' || 'private')
+     * @param      string    $date        The server date at the moment the message was processed (Y-m-d H:i:s)
      */
     private function sendMessageToRoom($socketFrom, $message, $roomName, $type, $date)
     {
@@ -1322,9 +1326,10 @@ class ChatService extends Server implements Service
     /**
      * Filter conversations to delete private message which must not be viewed by the user and parse the content
      *
-     * @param  array  $conversations The conversations
-     * @param  string $pseudonym     The user pseudonym
-     * @return array                 The filtered conversations
+     * @param      array   $conversations  The conversations
+     * @param      string  $pseudonym      The user pseudonym
+     *
+     * @return     array   The filtered conversations
      */
     private function filterConversations($conversations, $pseudonym)
     {
@@ -1354,7 +1359,7 @@ class ChatService extends Server implements Service
     /**
      * Store a room in a file to recover it later
      *
-     * @param string $roomName The room name
+     * @param      string  $roomName  The room name
      */
     private function saveRoom($roomName)
     {
@@ -1379,8 +1384,9 @@ class ChatService extends Server implements Service
     /**
      * Get the room information stored in a JSON file
      *
-     * @param  string $roomName The room name
-     * @return array            The JSON decoded room information as associative array
+     * @param      string  $roomName  The room name
+     *
+     * @return     array   The JSON decoded room information as associative array
      */
     private function getRoomInfo($roomName)
     {
@@ -1396,7 +1402,7 @@ class ChatService extends Server implements Service
     /**
      * Load a room that was stored in a file
      *
-     * @param string $roomName The room name
+     * @param      string  $roomName  The room name
      */
     private function loadRoom($roomName)
     {
@@ -1408,11 +1414,11 @@ class ChatService extends Server implements Service
     /**
      * Update a conversation historic with a new message
      *
-     * @param string $roomName The room name
-     * @param string $time     The server message sent time
-     * @param string $message  The text message
-     * @param string $from     The pseudonym of the user message owner
-     * @param string $to       The pseudonym of the user message reviever or 'all'
+     * @param      string  $roomName  The room name
+     * @param      string  $time      The server message sent time
+     * @param      string  $message   The text message
+     * @param      string  $from      The pseudonym of the user message owner
+     * @param      string  $to        The pseudonym of the user message reviever or 'all'
      */
     private function updateHistoric($roomName, $time, $message, $from, $to)
     {
@@ -1433,7 +1439,7 @@ class ChatService extends Server implements Service
     /**
      * Store the conversation historic into a JSON text file
      *
-     * @param string $roomName The room name
+     * @param      string  $roomName  The room name
      */
     private function saveHistoric($roomName)
     {
@@ -1449,8 +1455,8 @@ class ChatService extends Server implements Service
     /**
      * Load an historic
      *
-     * @param string  $roomName The room name
-     * @param integer $part     The historic part
+     * @param      string   $roomName  The room name
+     * @param      integer  $part      The historic part
      */
     private function loadHistoric($roomName, $part)
     {
@@ -1466,9 +1472,10 @@ class ChatService extends Server implements Service
     /**
      * Get a conversation historic part
      *
-     * @param  string  $roomName The room name
-     * @param  integer $part     The conversation part
-     * @return array|false           The conversation historic as an array or false if an error occured
+     * @param      string       $roomName  The room name
+     * @param      integer      $part      The conversation part
+     *
+     * @return     array|false  The conversation historic as an array or false if an error occured
      */
     private function getHistoricPart($roomName, $part)
     {
@@ -1484,8 +1491,9 @@ class ChatService extends Server implements Service
     /**
      * Get the last part number of room historic
      *
-     * @param  string $roomName The room name
-     * @return integer           The last part number
+     * @param      string   $roomName  The room name
+     *
+     * @return     integer  The last part number
      */
     private function getLastPartNumber($roomName)
     {
@@ -1498,8 +1506,8 @@ class ChatService extends Server implements Service
     /**
      * Set the last part number of room historic
      *
-     * @param string  $roomName The room name
-     * @param integer $part     The last part number
+     * @param      string   $roomName  The room name
+     * @param      integer  $part      The last part number
      */
     private function setLastPartNumber($roomName, $part)
     {
@@ -1513,7 +1521,7 @@ class ChatService extends Server implements Service
     /**
      * Get the rooms name
      *
-     * @return string[] The rooms name
+     * @return     string[]  The rooms name
      */
     private function getRoomsName()
     {
@@ -1531,7 +1539,7 @@ class ChatService extends Server implements Service
     /**
      * Log a message to the server if verbose mode is activated
      *
-     * @param string $message The message to output
+     * @param      string  $message  The message to output
      */
     private function log($message)
     {

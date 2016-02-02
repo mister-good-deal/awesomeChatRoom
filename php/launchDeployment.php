@@ -2,8 +2,8 @@
 /**
  * Launch a deployment instance
  *
- * @category Launcher
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Launcher
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 use \classes\console\Deployment as Deployment;

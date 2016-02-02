@@ -2,9 +2,9 @@
 /**
  * Singleton database manager
  *
- * @category Singleton
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
- * @example  /utilities/examples/dataBase.php                  Basic use of this singleton
+ * @package    Singleton
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @example    /utilities/examples/dataBase.php Basic use of this singleton
  */
 
 namespace classes;
@@ -16,8 +16,6 @@ use \classes\PDOStatementCustom as PDOStatementCustom;
 
 /**
  * Singleton pattern style to handle DB connection using PDO
- *
- * @class Database
  *
  * PDO methods that can be called directly with the __callStatic magic method
  *
@@ -41,11 +39,11 @@ class DataBase
     use \traits\EchoTrait;
 
     /**
-     * @var \PDO $PDO A PDO object DEFAULT null
+     * @var        \PDO  $PDO   A PDO object DEFAULT null
      */
     private static $PDO = null;
     /**
-     * @var boolean $printSql If the SQL requests should be printed in a console DEFAULT null
+     * @var        boolean  $printSql   If the SQL requests should be printed in a console DEFAULT null
      */
     private static $printSQL = null;
 
@@ -63,9 +61,9 @@ class DataBase
     /**
      * Is triggered when invoking inaccessible methods in a static context
      *
-     * @param  string $name      Name of the method being called
-     * @param  array  $arguments Enumerated array containing the parameters passed to the method called
-     * @throws Exception            If the method called is not a PDO method
+     * @param      string     $name       Name of the method being called
+     * @param      array      $arguments  Enumerated array containing the parameters passed to the method called
+     * @throws     Exception  If the method called is not a PDO method
      * @static
      * @note   This is so powerfull, we can call non static methods with a static call
      */
@@ -95,7 +93,7 @@ class DataBase
     /**
      * Get the printSQL value
      *
-     * @return boolean The printSQL value
+     * @return     boolean  The printSQL value
      * @static
      */
     public static function getPrintSQL()
@@ -132,7 +130,8 @@ class DataBase
     /**
      * Get a list of all existing entities
      *
-     * @return string[] List of all existing entities
+     * @return     string[]  List of all existing entities
+     * @static
      */
     public static function getAllEntites()
     {
@@ -144,7 +143,7 @@ class DataBase
     /**
      * Get all the table name of he current database
      *
-     * @return string[] The table name as a string array
+     * @return     string[]  The table name as a string array
      * @static
      */
     public static function getAllTables()
@@ -157,8 +156,8 @@ class DataBase
     /**
      * Delete all the rows of a table
      *
-     * @param  string $tableName The table name to clean
-     * @return boolean            True on success else false
+     * @param      string   $tableName  The table name to clean
+     * @return     boolean  True on success else false
      * @static
      */
     public static function cleanTable($tableName)
@@ -171,8 +170,8 @@ class DataBase
     /**
      * Drop a table
      *
-     * @param  string $tableName The table name to drop
-     * @return boolean            True on success else false
+     * @param      string   $tableName  The table name to drop
+     * @return     boolean  True on success else false
      * @static
      */
     public static function dropTable($tableName)
@@ -185,10 +184,10 @@ class DataBase
     /**
      * Show all the table data with limit default (0, 100)
      *
-     * @param  string  $tableName The table name
-     * @param  integer $begin     Data start at this index DEFAULT 0
-     * @param  integer $end       Data stop at this index DEFAULT 100
-     * @return array              Array containing the result
+     * @param      string   $tableName  The table name
+     * @param      integer  $begin      Data start at this index DEFAULT 0
+     * @param      integer  $end        Data stop at this index DEFAULT 100
+     * @return     array    Array containing the result
      * @static
      */
     public static function showTable($tableName, $begin = 0, $end = 100)
@@ -207,8 +206,8 @@ class DataBase
     /**
      * Show the table description
      *
-     * @param  string $tableName The table name
-     * @return array             Array containing the result
+     * @param      string  $tableName  The table name
+     * @return     array   Array containing the result
      * @static
      */
     public static function descTable($tableName)
@@ -231,10 +230,10 @@ class DataBase
     /**
      * Utility method to reuse the same PDO instance at each call (work like a Singleton pattern)
      *
-     * @param  string $dsn      The Data Source Name, or DSN, contains the information required to connect to the database
-     * @param  string $username The user name for the DSN string. This parameter is optional for some PDO drivers
-     * @param  string $password The password for the DSN string. This parameter is optional for some PDO drivers
-     * @param  array  $options  A key => value array of driver-specific connection options
+     * @param      string  $dsn       The Data Source Name, or DSN, contains the information required to connect to the database
+     * @param      string  $username  The user name for the DSN string. This parameter is optional for some PDO drivers
+     * @param      string  $password  The password for the DSN string. This parameter is optional for some PDO drivers
+     * @param      array   $options   A key => value array of driver-specific connection options
      * @static
      */
     private static function initialize($dsn = '', $username = '', $password = '', $options = array())

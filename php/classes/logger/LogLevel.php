@@ -2,8 +2,8 @@
 /**
  * Log Level to report an exception
  *
- * @category Constants
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Constants
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 namespace classes\logger;
 

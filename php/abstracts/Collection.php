@@ -2,8 +2,8 @@
 /**
  * Abstarct Collection pattern
  *
- * @category Abstract
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Abstract
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace abstracts;
@@ -21,15 +21,15 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     use \traits\PrettyOutputTrait;
 
     /**
-     * @var Entity[] $collection An array of entity object
+     * @var        Entity[]  $collection    An array of entity object
      */
     private $collection = array();
     /**
-     * @var int[]|string[] $indexId An array of entity id key
+     * @var        int[]|string[]  $indexId     An array of entity id key
      */
     private $indexId = array();
     /**
-     * @var integer $current Current position of the pointer in the $collection
+     * @var        integer  $current    Current position of the pointer in the $collection
      */
     private $current = 0;
 
@@ -47,7 +47,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Pretty print the Collection
      *
-     * @return string String output
+     * @return     string  String output
      */
     public function __toString()
     {
@@ -70,8 +70,8 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Add an entity at the end of the collection
      *
-     * @param  Entity $entity The entity object
-     * @throws Exception         If the entity id is already in the collection
+     * @param      Entity     $entity  The entity object
+     * @throws     Exception  If the entity id is already in the collection
      */
     public function add($entity)
     {
@@ -91,9 +91,9 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Get an entity by its id
      *
-     * @param  int[]|string[] $entityId The entity id(s) in a array
-     * @throws Exception                If the entity id is not in the collection
-     * @return Entity                   The entity
+     * @param      int[]|string[]  $entityId  The entity id(s) in a array
+     * @throws     Exception       If the entity id is not in the collection
+     * @return     Entity          The entity
      */
     public function getEntityById($entityId)
     {
@@ -112,8 +112,8 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Get an entity by its index
      *
-     * @param  integer $index The entity index in the Collection
-     * @return Entity         The entity
+     * @param      integer  $index  The entity index in the Collection
+     * @return     Entity   The entity
      */
     public function getEntityByIndex($index)
     {
@@ -129,7 +129,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Returns the current element
      *
-     * @return Entity The current entity
+     * @return     Entity  The current entity
      */
     public function current()
     {
@@ -139,7 +139,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Returns the key of the current entity
      *
-     * @return int|null Returns the key on success, or NULL on failure
+     * @return     int|null  Returns the key on success, or NULL on failure
      */
     public function key()
     {
@@ -165,7 +165,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Checks if current position is valid
      *
-     * @return boolean Returns true on success or false on failure
+     * @return     boolean  Returns true on success or false on failure
      */
     public function valid()
     {
@@ -177,7 +177,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Whether an offset exists
      *
-     * @param int|string $offset An offset to check for
+     * @param      int|string  $offset  An offset to check for
      */
     public function offsetExists($offset)
     {
@@ -187,8 +187,8 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Returns the entity at specified offset
      *
-     * @param  int|string $offset The offset to retrieve
-     * @return Entity             Return the matching entity
+     * @param      int|string  $offset  The offset to retrieve
+     * @return     Entity      Return the matching entity
      */
     public function offsetGet($offset)
     {
@@ -198,8 +198,8 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Assigns an entity to the specified offset
      *
-     * @param int|string $offset The offset to assign the entity to
-     * @param Entity     $entity The entity to set
+     * @param      int|string  $offset  The offset to assign the entity to
+     * @param      Entity      $entity  The entity to set
      */
     public function offsetSet($offset, $entity)
     {
@@ -209,7 +209,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Unset an offset
      *
-     * @param int|string $offset The offset to unset
+     * @param      int|string  $offset  The offset to unset
      */
     public function offsetUnset($offset)
     {
@@ -221,7 +221,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Count elements of an object
      *
-     * @return int The custom count as an integer
+     * @return     int   The custom count as an integer
      */
     public function count()
     {
@@ -233,8 +233,8 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Seeks to a position
      *
-     * @param  int $position The position to seek to
-     * @throws Exception           If the position is not seekable
+     * @param      int        $position  The position to seek to
+     * @throws     Exception  If the position is not seekable
      */
     public function seek($position)
     {
@@ -254,8 +254,8 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Parse the id(s) sent in array to get his key
      *
-     * @param  int[]|string[] $id The id(s) in an array
-     * @return string             The id(s) key
+     * @param      int[]|string[]  $id     The id(s) in an array
+     * @return     string          The id(s) key
      */
     private function parseId($id)
     {

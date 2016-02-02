@@ -2,8 +2,8 @@
 /**
  * ORM console mode
  *
- * @category Console
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Console
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\console;
@@ -46,7 +46,7 @@ GODDBYE;
     const ACTION_FAIL   = 'Failed';
 
     /**
-     * @var string[] $COMMANDS List of all commands with their description
+     * @var        string[]  $COMMANDS  List of all commands with their description
      */
     protected static $COMMANDS = array(
         'exit'                                               => 'Exit the ORM console',
@@ -56,15 +56,15 @@ GODDBYE;
     );
 
     /**
-     * @var string[] $commandsHistoric Historic of all the command written by the user in the current console session
+     * @var        string[]  $commandsHistoric  Historic of all the command written by the user in the current console session
      */
     protected $commandsHistoric = array();
     /**
-     * @var int $maxLength The console max characters length in a row
+     * @var        int   $maxLength     The console max characters length in a row
      */
     protected $maxLength;
     /**
-     * @var ConsoleColors $colors A ConsoleColors instance
+     * @var        ConsoleColors  $colors   A ConsoleColors instance
      */
     protected $colors;
 
@@ -112,7 +112,7 @@ GODDBYE;
     /**
      * Let the user enter a command in his console input
      *
-     * @return string The command written by the user
+     * @return     string  The command written by the user
      */
     protected function userInput()
     {
@@ -129,8 +129,8 @@ GODDBYE;
     /**
      * Process the command entered by the user and output the result in the console
      *
-     * @param string  $command  The command passed by the user
-     * @param boolean $executed DEFAULT false, true if the command is already executed, else false
+     * @param      string   $command   The command passed by the user
+     * @param      boolean  $executed  DEFAULT false, true if the command is already executed, else false
      */
     protected function processCommand($command, $executed = false)
     {
@@ -186,7 +186,7 @@ GODDBYE;
     /**
      * Get the last command passed by the user
      *
-     * @return string The last command
+     * @return     string  The last command
      */
     protected function getLastCommand()
     {
@@ -204,8 +204,8 @@ GODDBYE;
     /**
      * Ask the user to confirm the action
      *
-     * @param  string $message The message to prompt
-     * @return string          The user response casted in lower case
+     * @param      string  $message  The message to prompt
+     * @return     string  The user response casted in lower case
      */
     protected function confirmAction($message)
     {
@@ -217,8 +217,8 @@ GODDBYE;
     /**
      * Get the command arguments in an array (argName => argValue)
      *
-     * @param  string $command The command
-     * @return array           The arguments in an array (argName => argValue)
+     * @param      string  $command  The command
+     * @return     array   The arguments in an array (argName => argValue)
      */
     protected function getArgs($command)
     {
@@ -241,8 +241,8 @@ GODDBYE;
     /**
      * Pretty output a table without keys
      *
-     * @param  array $table The table to print
-     * @return string       The pretty output table data
+     * @param      array   $table  The table to print
+     * @return     string  The pretty output table data
      */
     protected function tablePrettyPrint($table)
     {
@@ -252,8 +252,8 @@ GODDBYE;
     /**
      * Pretty output a table with keys
      *
-     * @param  array $table The associative array to print
-     * @return string        The pretty output table data
+     * @param      array   $table  The associative array to print
+     * @return     string  The pretty output table data
      */
     protected function tableAssociativPrettyPrint($table)
     {

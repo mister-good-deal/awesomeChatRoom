@@ -2,8 +2,8 @@
 /**
  * Entity pattern abstract class
  *
- * @category Abstract
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Abstract
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace abstracts;
@@ -29,48 +29,48 @@ abstract class Entity
     const ENTITIES_CONF_PATH = 'database/entities/';
 
     /**
-     * @var array $conf All the ini params
+     * @var        array  $conf     All the ini params
      */
     private $conf;
     /**
-     * @var string $tableName The table entity name
+     * @var        string  $tableName   The table entity name
      */
     private $tableName;
     /**
-     * @var string $engine The table engine
+     * @var        string  $engine  The table engine
      */
     private $engine;
     /**
-     * @var string $charset The table default charset DEFAULT ''
+     * @var        string  $charset     The table default charset DEFAULT ''
      */
     private $charset = '';
     /**
-     * @var string $collation The table charset collation DEFAULT ''
+     * @var        string  $collation   The table charset collation DEFAULT ''
      */
     private $collation = '';
     /**
-     * @var string $comment The table comment DEFAULT ''
+     * @var        string  $comment     The table comment DEFAULT ''
      */
     private $comment = '';
     /**
-     * @var array $constraints The table constraints
+     * @var        array  $constraints  The table constraints
      */
     private $constraints;
     /**
-     * @var The entity name
+     * @var        The   entity     name
      */
     private $entityName;
     /**
-     * @var string[] $idKey Id key name(s)
+     * @var        string[]  $idKey     Id key name(s)
      */
     private $idKey;
 
     /**
-     * @var array $columnsValue An associative array with column name on key and its value on value
+     * @var        array  $columnsValue     An associative array with column name on key and its value on value
      */
     protected $columnsValue = array();
     /**
-     * @var array $columnsAttributes An associative array with column name on key and column attributes on value
+     * @var        array  $columnsAttributes    An associative array with column name on key and column attributes on value
      */
     protected $columnsAttributes = array();
 
@@ -81,7 +81,7 @@ abstract class Entity
     /**
      * Constructor that takes the entity name as first parameter to call the parent constructor
      *
-     * @param string $entityName The entity name
+     * @param      string  $entityName  The entity name
      */
     public function __construct($entityName)
     {
@@ -95,8 +95,8 @@ abstract class Entity
     /**
      * Tell if the column name exists
      *
-     * @param  string $columnName The column name
-     * @return boolean             True if the column name exists else fale
+     * @param      string   $columnName  The column name
+     * @return     boolean  True if the column name exists else fale
      */
     public function __isset($columnName)
     {
@@ -106,9 +106,9 @@ abstract class Entity
     /**
      * Get the column name value
      *
-     * @param  string $columnName The column name
-     * @throws Exception          If the column name does not a exist
-     * @return mixed              The column value
+     * @param      string     $columnName  The column name
+     * @throws     Exception  If the column name does not a exist
+     * @return     mixed      The column value
      */
     public function __get($columnName)
     {
@@ -122,9 +122,9 @@ abstract class Entity
     /**
      * Set the column name
      *
-     * @param  string $columnName The column name
-     * @param  mixed  $value      The new column value
-     * @throws Exception             If the column name does not a exist
+     * @param      string     $columnName  The column name
+     * @param      mixed      $value       The new column value
+     * @throws     Exception  If the column name does not a exist
      */
     public function __set($columnName, $value)
     {
@@ -138,7 +138,7 @@ abstract class Entity
     /**
      * Pretty output the entity
      *
-     * @return string The pretty output entity
+     * @return     string  The pretty output entity
      */
     public function __toString()
     {
@@ -166,7 +166,7 @@ abstract class Entity
     /**
      * Return the entity in an array format
      *
-     * @return array Array with columns name on keys and columns value on values
+     * @return     array  Array with columns name on keys and columns value on values
      */
     public function __toArray()
     {
@@ -176,7 +176,7 @@ abstract class Entity
     /**
      * Info to display when using a var_dump on the entity
      *
-     * @return array The var_dump info
+     * @return     array  The var_dump info
      */
     public function __debugInfo()
     {
@@ -192,7 +192,7 @@ abstract class Entity
     /**
      * Get the key(s) id of an entity
      *
-     * @return string[] The entity key id
+     * @return     string[]  The entity key id
      */
     public function getIdKey()
     {
@@ -202,7 +202,7 @@ abstract class Entity
     /**
      * Get the id value of the entity
      *
-     * @return int[] The id value(s)
+     * @return     int[]  The id value(s)
      */
     public function getIdValue()
     {
@@ -218,7 +218,7 @@ abstract class Entity
     /**
      * Get the associative array idKey => idValue
      *
-     * @return array The associative array idKey => idValue
+     * @return     array  The associative array idKey => idValue
      */
     public function getIdKeyValue()
     {
@@ -234,7 +234,7 @@ abstract class Entity
     /**
      * Get the associative array columnName => columnValue primary keys EXCLUDED
      *
-     * @return array The associative array columnName => columnValue primary keys EXCLUDED
+     * @return     array  The associative array columnName => columnValue primary keys EXCLUDED
      */
     public function getColumnsKeyValueNoPrimary()
     {
@@ -252,9 +252,9 @@ abstract class Entity
     /**
      * Set the id value(s) of the entity (can be an array if several primary keys)
      *
-     * @param  int|array The id value
-     * @throws Exception If the id is on several columns and $value is not an array
-     * @throws Exception If the id key is not found
+     * @param      int|array          The id value
+     * @throws     Exception  If the id is on several columns and $value is not an array
+     * @throws     Exception  If the id key is not found
      */
     public function setIdValue($value)
     {
@@ -285,7 +285,7 @@ abstract class Entity
     /**
      * Get the entity table name
      *
-     * @return string The entity table name
+     * @return     string  The entity table name
      */
     public function getTableName()
     {
@@ -295,7 +295,7 @@ abstract class Entity
     /**
      * Get the entity table engine
      *
-     * @return string The entity table engine
+     * @return     string  The entity table engine
      */
     public function getEngine()
     {
@@ -305,7 +305,7 @@ abstract class Entity
     /**
      * Get the entity table default charset
      *
-     * @return string The entity table default charset
+     * @return     string  The entity table default charset
      */
     public function getCharset()
     {
@@ -315,7 +315,7 @@ abstract class Entity
     /**
      * Get the entity table charset collation
      *
-     * @return string The entity table charset collation
+     * @return     string  The entity table charset collation
      */
     public function getCollation()
     {
@@ -325,7 +325,7 @@ abstract class Entity
     /**
      * Get the entity table comment
      *
-     * @return string The entity table comment
+     * @return     string  The entity table comment
      */
     public function getComment()
     {
@@ -335,7 +335,7 @@ abstract class Entity
     /**
      * Get the entity table constraints
      *
-     * @return array The entity table constraints
+     * @return     array  The entity table constraints
      */
     public function getConstraints()
     {
@@ -345,7 +345,7 @@ abstract class Entity
     /**
      * Get the columns attributes
      *
-     * @return array The columns attributes
+     * @return     array  The columns attributes
      */
     public function getColumnsAttributes()
     {
@@ -355,7 +355,7 @@ abstract class Entity
     /**
      * Get the columns value
      *
-     * @return array The columns value
+     * @return     array  The columns value
      */
     public function getColumnsValue()
     {
@@ -365,7 +365,7 @@ abstract class Entity
     /**
      * Get the entity name
      *
-     * @return string The entity name
+     * @return     string  The entity name
      */
     public function getEntityName()
     {
@@ -375,9 +375,9 @@ abstract class Entity
     /**
      * Get a column max size
      *
-     * @param  string $columnName The column name
-     * @throws Exception          If the column name does not a exist
-     * @return integer            The column max size
+     * @param      string     $columnName  The column name
+     * @throws     Exception  If the column name does not a exist
+     * @return     integer    The column max size
      */
     public function getColumnMaxSize($columnName)
     {
@@ -391,7 +391,7 @@ abstract class Entity
     /**
      * Set multiples attributes at once
      *
-     * @param array $attributes The attributes to set
+     * @param      array  $attributes  The attributes to set
      */
     public function setAttributes($attributes)
     {
@@ -407,10 +407,10 @@ abstract class Entity
     /**
      * Check if a column value is not already in database if the column has a unique attribute constraint
      *
-     * @param  string $columnName The column name
-     * @param  mixed  $value      The column value
-     * @return boolean             True if the value is already in database and the column has a unique
-     *                             attribute constraint else false
+     * @param      string   $columnName  The column name
+     * @param      mixed    $value       The column value
+     * @return     boolean  True if the value is already in database and the column has a unique attribute constraint
+     *                      else false
      */
     protected function checkUniqueField($columnName, $value)
     {

@@ -2,8 +2,8 @@
 /**
  * UserStatistics entity
  *
- * @category Entity
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Entity
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\entities;
@@ -12,8 +12,6 @@ use \abstracts\Entity as Entity;
 
 /**
  * UserStatistics entity that extends the Entity abstact class
- *
- * @class UserStatistics
  */
 class UserStatistics extends Entity
 {

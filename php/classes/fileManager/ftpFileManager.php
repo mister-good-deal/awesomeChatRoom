@@ -2,8 +2,8 @@
 /**
  * FTP protocol file manager implementation
  *
- * @category Utility
- * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
+ * @package    Utility
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\fileManager;
@@ -20,23 +20,23 @@ class FtpFileManager implements FileManagerInterface
     use \traits\EchoTrait;
 
     /**
-     * @var array $params Connection parameters
+     * @var        array  $params   Connection parameters
      */
     private $params;
     /**
-     * @var ressource $ressource The connection ressource
+     * @var        ressource  $ressource    The connection ressource
      */
     private $ressource;
     /**
-     * @var boolean $output True if the output should be printed else false
+     * @var        boolean  $output     True if the output should be printed else false
      */
     private $verbose;
 
     /**
      * Constructor that loads connection paramaters
      *
-     * @param string[] $parameters OPTIONAL connection paramaters
-     * @param boolean  $verbose    OPTIONAL true if output should be print, false if not and null will load the ini value
+     * @param      string[]  $parameters  OPTIONAL connection paramaters
+     * @param      boolean   $verbose     OPTIONAL true if output should be print, false if not and null will load the ini value
      */
     public function __construct($parameters = null, $verbose = null)
     {
@@ -48,7 +48,7 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Connect to the server
      *
-     * @throws Exception if the connection fails
+     * @throws     Exception  If the connection fails
      */
     public function connect()
     {
@@ -69,7 +69,7 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Login to the server
      *
-     * @throws Exception if the login fails
+     * @throws     Exception  If the login fails
      */
     public function login()
     {
@@ -85,8 +85,8 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Change the current directory to the one passed in parameter
      *
-     * @param  string $path The new working directory path
-     * @throws Exception if the change directory fails
+     * @param      string     $path   The new working directory path
+     * @throws     Exception  If the change directory fails
      */
     public function changeDir($path)
     {
@@ -102,8 +102,8 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Create a new directory in the current working directory
      *
-     * @param  string $dirName The new directory name
-     * @throws Exception if the creation of the new directory fails
+     * @param      string     $dirName  The new directory name
+     * @throws     Exception  If the creation of the new directory fails
      */
     public function makeDir($dirName)
     {
@@ -119,8 +119,8 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Create a new directory in the current working directory if this directory does not exists
      *
-     * @param  string $dirName The new directory name
-     * @throws Exception if the creation of the new directory fails
+     * @param      string     $dirName  The new directory name
+     * @throws     Exception  If the creation of the new directory fails
      */
     public function makeDirIfNotExists($dirName)
     {
@@ -132,7 +132,7 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Get the directories / files list on the current working directory
      *
-     * @return string[] The list of directories / files conatained in the current working directory
+     * @return     string[]  The list of directories / files conatained in the current working directory
      */
     public function listFiles()
     {
@@ -142,9 +142,9 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Upload a file on the server
      *
-     * @param  string $remoteFilePath The remote file path on the server
-     * @param  string $localFilePath  The local file path
-     * @throws Exception if the upload fails
+     * @param      string     $remoteFilePath  The remote file path on the server
+     * @param      string     $localFilePath   The local file path
+     * @throws     Exception  If the upload fails
      */
     public function upload($remoteFilePath, $localFilePath)
     {
@@ -175,9 +175,9 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Set a new permission on a directory / file
      *
-     * @param  integer $value The octal permission value (ex: 0644)
-     * @param  string  $path  The path to the directory / file
-     * @throws Exception if the permission changed fails
+     * @param      integer    $value  The octal permission value (ex: 0644)
+     * @param      string     $path   The path to the directory / file
+     * @throws     Exception  If the permission changed fails
      */
     public function chmod($value, $path)
     {
@@ -193,8 +193,8 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Return the last modified file time as an UNIX timestamp
      *
-     * @param  string  $path The path to the directory / file
-     * @return integer       The last modified time as an UNIX timestamp
+     * @param      string   $path   The path to the directory / file
+     * @return     integer  The last modified time as an UNIX timestamp
      */
     public function lastModified($path)
     {
@@ -204,7 +204,7 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Close the remote connection
      *
-     * @return boolean True on success else false
+     * @return     boolean  True on success else false
      */
     public function close()
     {
