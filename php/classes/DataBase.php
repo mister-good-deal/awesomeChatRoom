@@ -19,20 +19,87 @@ use \classes\PDOStatementCustom as PDOStatementCustom;
  *
  * PDO methods that can be called directly with the __callStatic magic method
  *
- * @method bool               beginTransaction()                                          Initiates a transaction
- * @method bool               commit()                                                    Commits a transaction
- * @method mixed              errorCode()                                                 Fetch the SQLSTATE associated with the last operation on the database handle
- * @method array              errorInfo()                                                 Fetch extended error information associated with the last operation on the database handle
- * @method int                exec(string $statement)                                     Execute an SQL statement and return the number of affected rows
- * @method mixed              getAttribute(int $attribute)                                Retrieve a database connection attribute
- * @method array              getAvailableDrivers()                                       Return an array of available PDO drivers
- * @method bool               inTransaction()                                             Checks if inside a transaction
- * @method string             lastInsertId(string $name = NULL)                           Returns the ID of the last inserted row or sequence value
- * @method PDOStatementCustom prepare(string $statement, array $driver_options = array()) Prepares a statement for execution and returns a statement object
- * @method PDOStatementCustom query(string $statement)                                    Executes an SQL statement, returning a result set as a PDOStatementCustom object
- * @method string             quote(string $string, int $parameter_type = PDO::PARAM_STR) Quotes a string for use in a query
- * @method bool               rollBack()                                                  Rolls back a transaction
- * @method bool               setAttribute(int $attribute , mixed $value)                 Set an attribute
+ * @method bool beginTransaction() {
+ *      Initiates a transaction
+ *
+ *      @return boolean
+ * }
+ *
+ * @method bool commit() {
+ *      Commits a transaction
+ *
+ *      @return boolean
+ * }
+ *
+ * @method mixed errorCode() {
+ *      Fetch the SQLSTATE associated with the last operation on the database handle
+ * }
+ *
+ * @method array errorInfo() {
+ *      Fetch extended error information associated with the last operation on the database handle
+ *
+ *      @return array
+ * }
+ *
+ * @method int exec(string $statement) {
+ *      Execute an SQL statement and return the number of affected rows
+ *
+ *      @return integer|boolean
+ * }
+ *
+ * @method mixed getAttribute(int $attribute) {
+ *      Retrieve a database connection attribute
+ *
+ *      @return string|null
+ * }
+ *
+ * @method array getAvailableDrivers() {
+ *      Return an array of available PDO drivers
+ *
+ *      @return array
+ * }
+ *
+ * @method bool inTransaction() {
+ *      Checks if inside a transaction
+ *
+ *      @return boolean
+ * }
+ *
+ * @method string lastInsertId(string $name = NULL) {
+ *      Returns the ID of the last inserted row or sequence value
+ *
+ *      @return string
+ * }
+ *
+ * @method PDOStatementCustom prepare(string $statement, array $driver_options = array()) {
+ *      Prepares a statement for execution and returns a statement object
+ *
+ *      @return PDOStatementCustom|boolean
+ * }
+ *
+ * @method PDOStatementCustom query(string $statement) {
+ *      Executes an SQL statement, returning a result set as a PDOStatementCustom object
+ *
+ *      @return PDOStatementCustom|boolean
+ * }
+ *
+ * @method string quote(string $string, int $parameter_type = PDO::PARAM_STR) {
+ *      Quotes a string for use in a query
+ *
+ *      @return string|boolean
+ * }
+ *
+ * @method bool rollBack() {
+ *      Rolls back a transaction
+ *
+ *      @return boolean
+ * }
+ *
+ * @method bool setAttribute(int $attribute , mixed $value) {
+ *      Set an attribute
+ *
+ *      @return boolean
+ * }
  */
 class DataBase
 {
@@ -230,7 +297,8 @@ class DataBase
     /**
      * Utility method to reuse the same PDO instance at each call (work like a Singleton pattern)
      *
-     * @param      string  $dsn       The Data Source Name, or DSN, contains the information required to connect to the database
+     * @param      string  $dsn       The Data Source Name, or DSN, contains the information required to connect to the
+     *                                database
      * @param      string  $username  The user name for the DSN string. This parameter is optional for some PDO drivers
      * @param      string  $password  The password for the DSN string. This parameter is optional for some PDO drivers
      * @param      array   $options   A key => value array of driver-specific connection options
