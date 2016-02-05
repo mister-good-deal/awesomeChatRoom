@@ -17,7 +17,7 @@ try {
     } else {
         DB::commit();
     }
-} catch (\Exception $e) {
+} catch (\Throwable $t) {
     echo $e->getMessage() . PHP_EOL;
 } finally {
     exit(0);

@@ -11,7 +11,7 @@ namespace classes;
 /**
  * PDOStatement custom class to print sql query on demand
  *
- * {@inheritdoc}
+ * @inheritdoc
  */
 class PDOStatementCustom extends \PDOStatement
 {
@@ -22,7 +22,7 @@ class PDOStatementCustom extends \PDOStatement
      */
     protected $pdo;
     /**
-     * @var        boolean  $printSQL   If the SQL queries should be printed or not
+     * @var        bool  $printSQL  If the SQL queries should be printed or not
      */
     protected $printSQL;
 
@@ -33,8 +33,8 @@ class PDOStatementCustom extends \PDOStatement
      /**
       * Constructor
       *
-      * @param      \PDO     $pdo       $pdo value
-      * @param      boolean  $printSQL  $printSQL value
+      * @param      \PDO  $pdo       $pdo value
+      * @param      bool  $printSQL  $printSQL value
       */
     protected function __construct($pdo, $printSQL)
     {
@@ -53,10 +53,11 @@ class PDOStatementCustom extends \PDOStatement
      *
      * {@inheritdoc}
      *
-     * @param      array|null  $inputParameters  The inputs parameters sent to replace the "?" markers tags in the SQL request
-     * @return     boolean     True if the request succeeded else false
+     * @param      array  $inputParameters  The inputs parameters sent to replace the "?" markers tags in the SQL request
+     *
+     * @return     bool   True if the request succeeded else false
      */
-    public function execute($inputParameters = null)
+    public function execute(array $inputParameters = null)
     {
         if ($this->printSQL && is_array($inputParameters)) {
             $this->printQuery($inputParameters);
@@ -70,7 +71,7 @@ class PDOStatementCustom extends \PDOStatement
      *
      * @return     array  An associative array using the first column as the key, and the remainder as associative values
      */
-    public function fetchIndexedByFirstColumn()
+    public function fetchIndexedByFirstColumn(): array
     {
         return array_map('reset', $this->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_ASSOC));
     }
@@ -86,7 +87,7 @@ class PDOStatementCustom extends \PDOStatement
      *
      * @param      array  $inputParameters  The input parameters
      */
-    private function printQuery($inputParameters)
+    private function printQuery(array $inputParameters)
     {
         $query = str_replace('?', '\'%s\'', $this->queryString);
 

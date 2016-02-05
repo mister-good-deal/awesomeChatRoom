@@ -25,7 +25,7 @@ class UsersChatRightsEntityManager extends EntityManager
      * @param      UsersChatRights  $entity            A UsersChatRights entity object DEFAULT null
      * @param      Collection       $entityCollection  A colection oject DEFAULT null
      */
-    public function __construct($entity = null, $entityCollection = null)
+    public function __construct(UsersChatRights $entity = null, Collection $entityCollection = null)
     {
         parent::__construct($entity, $entityCollection);
 
@@ -50,10 +50,11 @@ class UsersChatRightsEntityManager extends EntityManager
     /**
      * Get all the chat rooms rights for a user
      *
-     * @param      integer  $idUser  The user id
-     * @return     array    The user chat rooms rights indexed by room names
+     * @param      int    $idUser  The user id
+     *
+     * @return     array  The user chat rooms rights indexed by room names
      */
-    public function getAllUserChatRights($idUser)
+    public function getAllUserChatRights(int $idUser)
     {
         $sqlMarks = 'SELECT `roomName`, `kick`, `ban`, `grant`, `rename`, `password` FROM %s WHERE idUser = %s';
         $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($idUser));
@@ -64,11 +65,12 @@ class UsersChatRightsEntityManager extends EntityManager
     /**
      * Change a room name in the chat rights table
      *
-     * @param      string   $oldRoomName  The old room name
-     * @param      string   $newRoomName  The new room name
-     * @return     integer  The number of rows updated
+     * @param      string  $oldRoomName  The old room name
+     * @param      string  $newRoomName  The new room name
+     *
+     * @return     int     The number of rows updated
      */
-    public function changeRoomName($oldRoomName, $newRoomName)
+    public function changeRoomName(string $oldRoomName, string $newRoomName): int
     {
         $sqlMarks = 'UPDATE %s SET `roomName` = %s WHERE `roomName` = %s';
         $sql      = static::sqlFormater(
@@ -84,10 +86,11 @@ class UsersChatRightsEntityManager extends EntityManager
     /**
      * Change a room name in the chat rights table
      *
-     * @param      string   $roomName  The new room name
-     * @return     integer  The number of rows inserted
+     * @param      string  $roomName  The new room name
+     *
+     * @return     int     The number of rows inserted
      */
-    public function addRoomName($roomName)
+    public function addRoomName(string $roomName): int
     {
         $sqlMarks = 'INSERT INTO %s VALUES(SELECT `id`, %s, 0, 0, 0, 0, 0 FROM Users)';
         $sql      = static::sqlFormater(
@@ -102,10 +105,11 @@ class UsersChatRightsEntityManager extends EntityManager
     /**
      * Change a room name in the chat rights table
      *
-     * @param      string   $roomName  The old room name
-     * @return     integer  The number of rows deleted
+     * @param      string  $roomName  The old room name
+     *
+     * @return     int     The number of rows deleted
      */
-    public function removeRoomName($roomName)
+    public function removeRoomName(string $roomName): int
     {
         $sqlMarks = 'DELETE FROM %s WHERE `roomName` = %s';
         $sql      = static::sqlFormater(

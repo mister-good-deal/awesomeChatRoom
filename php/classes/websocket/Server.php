@@ -28,7 +28,7 @@ class Server
      */
     private $address;
     /**
-     * @var        integer  $port   The server socket port
+     * @var        int   $port  The server socket port
      */
     private $port;
     /**
@@ -40,7 +40,7 @@ class Server
      */
     private $verbose;
     /**
-     * @var        integer  $errorNum   The error code if an error occured
+     * @var        int   $errorNum  The error code if an error occured
      */
     private $errorNum;
     /**
@@ -52,7 +52,7 @@ class Server
      */
     private $clients = array();
     /**
-     * @var        array[]  $services   The services functions / methods implemented
+     * @var        array  $services     The services functions / methods implemented
      */
     private $services = array();
     /**
@@ -116,9 +116,10 @@ class Server
      * Get the client name from his socket stream
      *
      * @param      resource  $socket  The client socket
+     *
      * @return     string    The client name
      */
-    protected function getClientName($socket)
+    protected function getClientName($socket): string
     {
         return md5(stream_socket_get_name($socket, true));
     }
@@ -127,9 +128,10 @@ class Server
      * Get the client ip from his socket stream
      *
      * @param      resource  $socket  The client socket
+     *
      * @return     string    The client ip
      */
-    protected function getClientIp($socket)
+    protected function getClientIp($socket): string
     {
         $ipClient = stream_socket_get_name($socket, true);
 
@@ -147,7 +149,7 @@ class Server
      * @param      resource  $socket  The client stream socket
      * @param      string    $data    The data to send
      */
-    protected function send($socket, $data)
+    protected function send($socket, string $data)
     {
         stream_socket_sendto($socket, $data);
     }
@@ -158,7 +160,7 @@ class Server
      * @param      resource  $socket      The client socket
      * @param      string    $clientName  OPTIONAL the client name
      */
-    protected function disconnect($socket, $clientName = null)
+    protected function disconnect($socket, string $clientName = null)
     {
         if ($clientName === null) {
             $clientName = $this->getClientName($socket);
@@ -179,10 +181,12 @@ class Server
     /**
      * Encode a text to send to client via ws://
      *
-     * @param            $text
-     * @param            $messageType
+     * @param      string  $message      The message to encode
+     * @param      string  $messageType
+     *
+     * @return     string
      */
-    protected function encode($message, $messageType = 'text')
+    protected function encode(string $message, string $messageType = 'text')
     {
         switch ($messageType) {
             case 'continuous':
@@ -296,9 +300,10 @@ class Server
      * Get data from a client via stream socket
      *
      * @param      resource  $socket  The client stream socket
+     *
      * @return     string    The client data
      */
-    private function get($socket)
+    private function get($socket): string
     {
         return stream_socket_recvfrom($socket, 1500);
     }
@@ -374,7 +379,7 @@ class Server
      * @param      resource  $client  The client socket
      * @param      string    $data    The client data sent to perform the handshake
      */
-    private function handshake($client, $data)
+    private function handshake($client, string $data)
     {
         // Retrieves the header and get the WebSocket-Key
         preg_match('/Sec-WebSocket-Key\: (.*)/', $data, $match);
@@ -394,8 +399,10 @@ class Server
      * Unmask a received payload
      *
      * @param      string  $payload  The buffer string
+     *
+     * @return     string
      */
-    private function unmask($payload)
+    private function unmask(string $payload)
     {
         $length = ord($payload[1]) & 127;
         $text   = '';
@@ -423,9 +430,10 @@ class Server
      * Add a service to the server
      *
      * @param      string    $serviceName  The service name
+     *
      * @return     string[]  Array containing error or success message
      */
-    private function addService($serviceName)
+    private function addService(string $serviceName): array
     {
         $message = sprintf(_('The service "%s" is now running'), $serviceName);
         $success = false;
@@ -456,9 +464,10 @@ class Server
      * Remove a service from the server
      *
      * @param      string    $serviceName  The service name
+     *
      * @return     string[]  Array containing errors or empty array if success
      */
-    private function removeService($serviceName)
+    private function removeService(string $serviceName): array
     {
         $message  = sprintf(_('The service "%s" is now stopped'), $serviceName);
         $success = false;
@@ -483,7 +492,7 @@ class Server
      *
      * @return     string[]  The services name list
      */
-    private function listServices()
+    private function listServices(): array
     {
         return array('service' => $this->websocketService, 'services' => array_keys($this->services));
     }
@@ -491,10 +500,11 @@ class Server
     /**
      * Check the authentication to perform administration action on the WebSocket server
      *
-     * @param      array    $data   JSON decoded client data
-     * @return     boolean  True if the authentication succeed else false
+     * @param      array  $data   JSON decoded client data
+     *
+     * @return     bool   True if the authentication succeed else false
      */
-    private function checkAuthentication($data)
+    private function checkAuthentication(array $data): bool
     {
         $userEntityManager = new UserEntityManager();
         $user              = $userEntityManager->authenticateUser($data['login'], $data['password']);
@@ -513,7 +523,7 @@ class Server
      *
      * @param      string  $message  The message to output
      */
-    private function log($message)
+    private function log(string $message)
     {
         if ($this->verbose) {
             static::out('[' . date('Y-m-d H:i:s') . '] ' . $message . PHP_EOL);

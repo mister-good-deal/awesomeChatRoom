@@ -110,10 +110,10 @@ class Deployment extends Console
     /**
      * Process the command entered by the user and output the result in the console
      *
-     * @param      string   $command   The command passed by the user
-     * @param      boolean  $executed  DEFAULT false, true if the command is already executed, else false
+     * @param      string  $command   The command passed by the user
+     * @param      bool    $executed  DEFAULT false, true if the command is already executed, else false
      */
-    protected function processCommand($command, $executed = false)
+    protected function processCommand(string $command, bool $executed = false)
     {
         $executed = true;
 
@@ -147,7 +147,7 @@ class Deployment extends Console
      *
      * @param      string  $command  The command passed with its arguments
      */
-    private function protocolProcess($command)
+    private function protocolProcess(string $command)
     {
         $args = $this->getArgs($command);
 
@@ -170,7 +170,7 @@ class Deployment extends Console
      *
      * @param      string  $command  The command passed with its arguments
      */
-    private function deployProcess($command)
+    private function deployProcess(string $command)
     {
         $args = $this->getArgs($command);
 
@@ -189,7 +189,7 @@ class Deployment extends Console
      *
      * @param      string  $command  The command passed with its arguments
      */
-    private function configurationProcess($command)
+    private function configurationProcess(string $command)
     {
         $args = $this->getArgs($command);
 
@@ -245,7 +245,7 @@ class Deployment extends Console
      *
      * @param      array  $directoriesTree  The directories tree to deploy
      */
-    private function deploy($directoriesTree)
+    private function deploy(array $directoriesTree)
     {
         $this->printDeploymentInformation();
 
@@ -287,8 +287,11 @@ class Deployment extends Console
      * @param      string       $workingDirectory  The directory to create the current depth structure
      * @param      array        $arrayDepth        The tree of the current depth structure
      */
-    private function createMainProjectStructureRecursive($fileManager, $workingDirectory, $arrayDepth)
-    {
+    private function createMainProjectStructureRecursive(
+        FileManager $fileManager,
+        string $workingDirectory,
+        array $arrayDepth
+    ) {
         $fileManager->changeDir($workingDirectory);
 
         foreach ($arrayDepth[$workingDirectory] as $directoryName => $subdir) {
@@ -310,8 +313,12 @@ class Deployment extends Console
      * @param      array        $arrayDepth             The tree of the current depth structure
      * @param      string       $localWorkingDirectory  The curent local working directory
      */
-    private function uploadFilesRecursive($fileManager, $workingDirectory, $arrayDepth, $localWorkingDirectory)
-    {
+    private function uploadFilesRecursive(
+        FileManager $fileManager,
+        string $workingDirectory,
+        array $arrayDepth,
+        string $localWorkingDirectory
+    ) {
         $fileManager->changeDir($workingDirectory);
         $localWorkingDirectory .= DIRECTORY_SEPARATOR . $workingDirectory;
 
@@ -358,7 +365,7 @@ class Deployment extends Console
      *
      * @param      string  $value  The protocol to set
      */
-    private function setProtocol($value)
+    private function setProtocol(string $value)
     {
         if (in_array($value, static::$PROTOCOLS)) {
             $this->deploymentConfiguration['protocol'] = $value;

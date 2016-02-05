@@ -13,9 +13,9 @@ use \abstracts\Entity as Entity;
 /**
  * UsersRights entity that extends the Entity abstact class
  *
- * @property   integer  $idUser     The user id
- * @property   boolean  $webSocket  The user webSocket right
- * @property   boolean  $chatAdmin  The user chatAdmin right
+ * @property   int   $idUser     The user id
+ * @property   bool  $webSocket  The user webSocket right
+ * @property   bool  $chatAdmin  The user chatAdmin right
  */
 class UsersRights extends Entity
 {

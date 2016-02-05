@@ -2,6 +2,11 @@
 
 require_once 'autoloader.php';
 
+/**
+ * Routing function
+ *
+ * @param      string  $route  The given route to map
+ */
 function route($route)
 {
     $path        = explode('/', $route);

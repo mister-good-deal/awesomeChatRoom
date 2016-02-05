@@ -47,7 +47,7 @@ $tempVar1, $tempVar2;
 
 ## Documentation
 
-All methods / functions must be documented with docBlockr and must not raise errors in phpdoc or jsdoc parsing.
+All methods / functions must be documented with phpDoc / jsDoc and must not raise errors in phpdoc or jsdoc parsing.
 
 *Exemples*
 
@@ -55,18 +55,30 @@ All methods / functions must be documented with docBlockr and must not raise err
 /**
  * [aCoolFunction description]
  *
- * @param  {String}  $param1 [description]
- * @param  {Integer} $param2 [description]
- * @param  {[type]}  $param3 [description]
- * @param  {[type]}  $param4 [description]
- * @return {boolean}         [description]
+ * @param  string  $param1 [description]
+ * @param  int     $param2 [description]
+ * @param  [type]  $param3 [description]
+ * @param  [type]  $param4 [description]
+ *
+ * @return bool            [description]
  */
-public function aCoolFunction($param1 = 'toto', $param2 = 3, $param3, $param4) {
+public function aCoolFunction(string $param1 = 'toto', int $param2 = 3, $param3, $param4): bool
+{
     // ...
 
     return true;
 }
 ```
+
+All PHP methods parameters type and methods return type must be specified as the PHP7 type hint feature which are
+
+- self
+- array
+- callable
+- bool
+- float
+- int
+- string
 
 ## Environment and IDE
 
@@ -100,6 +112,8 @@ In [apache folder]/conf/httpd.conf check those lines
 - `DirectoryIndex index.php index.html`
 
 - `LoadModule rewrite_module modules/mod_rewrite.so`
+
+- `LoadModule proxy_ftp_module modules/mod_proxy_ftp.so`
 
 - `LoadModule php7_module "[absolute path to your php folder]/php7apache2_4.dll"`
 

@@ -28,7 +28,7 @@ class FtpFileManager implements FileManagerInterface
      */
     private $ressource;
     /**
-     * @var        boolean  $output     True if the output should be printed else false
+     * @var        bool  $output    True if the output should be printed else false
      */
     private $verbose;
 
@@ -36,9 +36,9 @@ class FtpFileManager implements FileManagerInterface
      * Constructor that loads connection paramaters
      *
      * @param      string[]  $parameters  OPTIONAL connection paramaters
-     * @param      boolean   $verbose     OPTIONAL true if output should be print, false if not and null will load the ini value
+     * @param      bool      $verbose     OPTIONAL true if output should be print, false if not and null will load the ini value
      */
-    public function __construct($parameters = null, $verbose = null)
+    public function __construct(array $parameters = null, bool $verbose = null)
     {
         $this->params    = ($parameters !== null ? $parameters : Ini::getSectionParams('Deployment'));
         $this->verbose   =  Ini::getParam('Deployment', 'verbose');
@@ -86,9 +86,10 @@ class FtpFileManager implements FileManagerInterface
      * Change the current directory to the one passed in parameter
      *
      * @param      string     $path   The new working directory path
+     *
      * @throws     Exception  If the change directory fails
      */
-    public function changeDir($path)
+    public function changeDir(string $path)
     {
         if (ftp_chdir($this->ressource, $path) === false) {
             throw new Exception('PATH incorrect, impossible to access to "' . $path . '"', Exception::$WARNING);
@@ -103,9 +104,10 @@ class FtpFileManager implements FileManagerInterface
      * Create a new directory in the current working directory
      *
      * @param      string     $dirName  The new directory name
+     *
      * @throws     Exception  If the creation of the new directory fails
      */
-    public function makeDir($dirName)
+    public function makeDir(string $dirName)
     {
         if (ftp_mkdir($this->ressource, $dirName) === false) {
             throw new Exception('Fail to create directory <' . $dirName . '>', Exception::$WARNING);
@@ -120,9 +122,10 @@ class FtpFileManager implements FileManagerInterface
      * Create a new directory in the current working directory if this directory does not exists
      *
      * @param      string     $dirName  The new directory name
+     *
      * @throws     Exception  If the creation of the new directory fails
      */
-    public function makeDirIfNotExists($dirName)
+    public function makeDirIfNotExists(string $dirName)
     {
         if (!in_array($dirName, $fileManager->listFiles())) {
             $fileManager->makeDir($dirName);
@@ -144,9 +147,10 @@ class FtpFileManager implements FileManagerInterface
      *
      * @param      string     $remoteFilePath  The remote file path on the server
      * @param      string     $localFilePath   The local file path
+     *
      * @throws     Exception  If the upload fails
      */
-    public function upload($remoteFilePath, $localFilePath)
+    public function upload(string $remoteFilePath, string $localFilePath)
     {
         ftp_pasv($this->ressource, true);
 
@@ -175,11 +179,12 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Set a new permission on a directory / file
      *
-     * @param      integer    $value  The octal permission value (ex: 0644)
+     * @param      int        $value  The octal permission value (ex: 0644)
      * @param      string     $path   The path to the directory / file
+     *
      * @throws     Exception  If the permission changed fails
      */
-    public function chmod($value, $path)
+    public function chmod(int $value, string $path)
     {
         if (ftp_chmod($this->ressource, $value, $path) === false) {
             throw new Exception('Fail to change rights on directory / file "'. $path . '"', Exception::$WARNING);
@@ -193,10 +198,11 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Return the last modified file time as an UNIX timestamp
      *
-     * @param      string   $path   The path to the directory / file
-     * @return     integer  The last modified time as an UNIX timestamp
+     * @param      string  $path   The path to the directory / file
+     *
+     * @return     int     The last modified time as an UNIX timestamp
      */
-    public function lastModified($path)
+    public function lastModified(string $path): int
     {
         return ftp_mdtm($this->ressource, $path);
     }
@@ -204,9 +210,9 @@ class FtpFileManager implements FileManagerInterface
     /**
      * Close the remote connection
      *
-     * @return     boolean  True on success else false
+     * @return     bool  True on success else false
      */
-    public function close()
+    public function close(): bool
     {
         $success = ftp_close($this->ressource);
 

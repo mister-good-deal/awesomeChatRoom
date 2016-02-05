@@ -18,5 +18,5 @@ interface ServiceInterface
      * @param      resource  $socket  The client socket
      * @param      array     $data    JSON decoded client data
      */
-    public function service($socket, $data);
+    public function service($socket, array $data);
 }

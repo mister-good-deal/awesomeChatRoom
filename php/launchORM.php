@@ -12,7 +12,7 @@ require_once 'autoloader.php';
 
 try {
     $console = new Orm();
-} catch (Exception $e) {
+} catch (\Throwable $t) {
 } finally {
     exit(0);
 }

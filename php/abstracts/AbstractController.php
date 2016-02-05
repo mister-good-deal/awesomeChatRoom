@@ -19,7 +19,7 @@ abstract class AbstractController
      *
      * @param      array  $data   The data to output
      */
-    public function JSONresponse($data)
+    public function JSONresponse(array $data)
     {
         echo json_encode($data, true);
     }

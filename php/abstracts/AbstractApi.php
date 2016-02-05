@@ -120,7 +120,7 @@ abstract class API
      *
      * @param      array  $request  The request to treat
      */
-    public function __construct($request)
+    public function __construct(array $request)
     {
         header('Access-Control-Allow-Orgin: *');
         header('Access-Control-Allow-Methods: *');
@@ -171,7 +171,7 @@ abstract class API
      *
      * @return     string  The JSON response as a string
      */
-    public function processAPI()
+    public function processAPI(): string
     {
         if (method_exists($this, $this->endpoint)) {
             return $this->response($this->{$this->endpoint}($this->args));
@@ -183,11 +183,12 @@ abstract class API
     /**
      * Format the response in a JSON format
      *
-     * @param      integer  $status  The HTTP repsonse code DEFAULT 200
-     * @param      array    $data    The respsonse data to parse DEFAULT array()
-     * @return     string   The repsonse in a JSON format as a string
+     * @param      int     $status  The HTTP repsonse code DEFAULT 200
+     * @param      array   $data    The respsonse data to parse DEFAULT array()
+     *
+     * @return     string  The repsonse in a JSON format as a string
      */
-    private function response($status = 200, $data = array())
+    private function response(int $status = 200, array $data = array()): string
     {
         header('HTTP/1.1 ' . $status . ' ' . static::$HTTP_MESSAGE_STATUS[$status]);
 

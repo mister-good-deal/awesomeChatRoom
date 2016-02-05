@@ -13,13 +13,13 @@ use \abstracts\Entity as Entity;
 /**
  * UsersChatRights entity that extends the Entity abstact class
  *
- * @property   integer  $idUser    The user id
- * @property   string   $roomName  The room name
- * @property   boolean  $kick      The kick right
- * @property   boolean  $ban       The ban right
- * @property   boolean  $grant     The grant right
- * @property   boolean  $rename    The rename right
- * @property   boolean  $password  The change password right
+ * @property   int     $idUser    The user id
+ * @property   string  $roomName  The room name
+ * @property   bool    $kick      The kick right
+ * @property   bool    $ban       The ban right
+ * @property   bool    $grant     The grant right
+ * @property   bool    $rename    The rename right
+ * @property   bool    $password  The change password right
  */
 class UsersChatRights extends Entity
 {
@@ -42,7 +42,7 @@ class UsersChatRights extends Entity
      *
      * @todo       See if boolean cast conversation can be done automatically
      */
-    public function __toArray()
+    public function __toArray(): array
     {
         return array(
             'roomName' => $this->roomName,

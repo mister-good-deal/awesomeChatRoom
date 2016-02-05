@@ -14,8 +14,6 @@ use \classes\IniManager as Ini;
 
 /**
  * Add a logger process to the class exception throw
- *
- * @class ExceptionManager
  */
 class ExceptionManager extends \Exception
 {
@@ -69,10 +67,10 @@ class ExceptionManager extends \Exception
      * Constructor that called the parent \Exception constructor
      *
      * @param      string          $message   Error message
-     * @param      integer         $code      Error level
+     * @param      int             $code      Error level
      * @param      Exception|null  $previous  Previous \Exception
      */
-    public function __construct($message, $code = 0, Exception $previous = null)
+    public function __construct(string $message, int $code = 0, Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
         Ini::setIniFileName('conf.ini');
@@ -92,7 +90,7 @@ class ExceptionManager extends \Exception
      *
      * @param      int   $loggerType  The logger type
      */
-    public function addLogger($loggerType)
+    public function addLogger(int $loggerType)
     {
         $this->logger->addLogger($loggerType);
     }
@@ -102,7 +100,7 @@ class ExceptionManager extends \Exception
      *
      * @param      int   $loggerType  The logger type
      */
-    public function removeLogger($loggerType)
+    public function removeLogger(int $loggerType)
     {
         $this->logger->removeLogger($loggerType);
     }

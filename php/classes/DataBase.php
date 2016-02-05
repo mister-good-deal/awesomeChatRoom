@@ -18,17 +18,18 @@ use \classes\PDOStatementCustom as PDOStatementCustom;
  * Singleton pattern style to handle DB connection using PDO
  *
  * PDO methods that can be called directly with the __callStatic magic method
+ * @todo complete the phpDoc with @method params
  *
  * @method bool beginTransaction() {
  *      Initiates a transaction
  *
- *      @return boolean
+ *      @return bool
  * }
  *
  * @method bool commit() {
  *      Commits a transaction
  *
- *      @return boolean
+ *      @return bool
  * }
  *
  * @method mixed errorCode() {
@@ -44,7 +45,7 @@ use \classes\PDOStatementCustom as PDOStatementCustom;
  * @method int exec(string $statement) {
  *      Execute an SQL statement and return the number of affected rows
  *
- *      @return integer|boolean
+ *      @return int|bool
  * }
  *
  * @method mixed getAttribute(int $attribute) {
@@ -62,7 +63,7 @@ use \classes\PDOStatementCustom as PDOStatementCustom;
  * @method bool inTransaction() {
  *      Checks if inside a transaction
  *
- *      @return boolean
+ *      @return bool
  * }
  *
  * @method string lastInsertId(string $name = NULL) {
@@ -74,31 +75,31 @@ use \classes\PDOStatementCustom as PDOStatementCustom;
  * @method PDOStatementCustom prepare(string $statement, array $driver_options = array()) {
  *      Prepares a statement for execution and returns a statement object
  *
- *      @return PDOStatementCustom|boolean
+ *      @return PDOStatementCustom|bool
  * }
  *
  * @method PDOStatementCustom query(string $statement) {
  *      Executes an SQL statement, returning a result set as a PDOStatementCustom object
  *
- *      @return PDOStatementCustom|boolean
+ *      @return PDOStatementCustom|bool
  * }
  *
  * @method string quote(string $string, int $parameter_type = PDO::PARAM_STR) {
  *      Quotes a string for use in a query
  *
- *      @return string|boolean
+ *      @return string|bool
  * }
  *
  * @method bool rollBack() {
  *      Rolls back a transaction
  *
- *      @return boolean
+ *      @return bool
  * }
  *
  * @method bool setAttribute(int $attribute , mixed $value) {
  *      Set an attribute
  *
- *      @return boolean
+ *      @return bool
  * }
  */
 class DataBase
@@ -110,7 +111,7 @@ class DataBase
      */
     private static $PDO = null;
     /**
-     * @var        boolean  $printSql   If the SQL requests should be printed in a console DEFAULT null
+     * @var        bool  $printSql  If the SQL requests should be printed in a console DEFAULT null
      */
     private static $printSQL = null;
 
@@ -131,10 +132,11 @@ class DataBase
      * @param      string     $name       Name of the method being called
      * @param      array      $arguments  Enumerated array containing the parameters passed to the method called
      * @throws     Exception  If the method called is not a PDO method
+     *
      * @static
-     * @note   This is so powerfull, we can call non static methods with a static call
+     * @note                  This is so powerfull, we can call non static methods with a static call
      */
-    public static function __callStatic($name, $arguments = array())
+    public static function __callStatic(string $name, array $arguments = array())
     {
         $PDO = new \ReflectionClass('\PDO');
 
@@ -160,10 +162,11 @@ class DataBase
     /**
      * Get the printSQL value
      *
-     * @return     boolean  The printSQL value
+     * @return     bool  The printSQL value
+     *
      * @static
      */
-    public static function getPrintSQL()
+    public static function getPrintSQL(): bool
     {
         return static::$printSQL;
     }
@@ -171,11 +174,12 @@ class DataBase
     /**
      * Set the printSQL value
      *
-     * @param  boolean $printSQL The printSQL value
-     * @throws Exception           If the printSQL value is not a boolean
+     * @param      bool       $printSQL  The printSQL value
+     * @throws     Exception  If the printSQL value is not a boolean
+     *
      * @static
      */
-    public static function setPrintSQL($printSQL)
+    public static function setPrintSQL(bool $printSQL)
     {
         if (is_bool($printSQL)) {
             static::$printSQL = $printSQL;
@@ -198,9 +202,10 @@ class DataBase
      * Get a list of all existing entities
      *
      * @return     string[]  List of all existing entities
+     *
      * @static
      */
-    public static function getAllEntites()
+    public static function getAllEntites(): array
     {
         Ini::setIniFileName(Ini::INI_CONF_FILE);
 
@@ -211,9 +216,10 @@ class DataBase
      * Get all the table name of he current database
      *
      * @return     string[]  The table name as a string array
+     *
      * @static
      */
-    public static function getAllTables()
+    public static function getAllTables(): array
     {
         static::initialize();
 
@@ -223,11 +229,12 @@ class DataBase
     /**
      * Delete all the rows of a table
      *
-     * @param      string   $tableName  The table name to clean
-     * @return     boolean  True on success else false
+     * @param      string  $tableName  The table name to clean
+     * @return     bool    True on success else false
+     *
      * @static
      */
-    public static function cleanTable($tableName)
+    public static function cleanTable($tableName): bool
     {
         static::initialize();
 
@@ -237,11 +244,12 @@ class DataBase
     /**
      * Drop a table
      *
-     * @param      string   $tableName  The table name to drop
-     * @return     boolean  True on success else false
+     * @param      string  $tableName  The table name to drop
+     * @return     bool    True on success else false
+     *
      * @static
      */
-    public static function dropTable($tableName)
+    public static function dropTable(string $tableName): bool
     {
         static::initialize();
 
@@ -251,13 +259,14 @@ class DataBase
     /**
      * Show all the table data with limit default (0, 100)
      *
-     * @param      string   $tableName  The table name
-     * @param      integer  $begin      Data start at this index DEFAULT 0
-     * @param      integer  $end        Data stop at this index DEFAULT 100
-     * @return     array    Array containing the result
+     * @param      string  $tableName  The table name
+     * @param      int     $begin      Data start at this index DEFAULT 0
+     * @param      int     $end        Data stop at this index DEFAULT 100
+     * @return     array   Array containing the result
+     *
      * @static
      */
-    public static function showTable($tableName, $begin = 0, $end = 100)
+    public static function showTable(string $tableName, int $begin = 0, int $end = 100): array
     {
         static::initialize();
 
@@ -275,9 +284,10 @@ class DataBase
      *
      * @param      string  $tableName  The table name
      * @return     array   Array containing the result
+     *
      * @static
      */
-    public static function descTable($tableName)
+    public static function descTable(string $tableName): array
     {
         static::initialize();
 
@@ -302,10 +312,15 @@ class DataBase
      * @param      string  $username  The user name for the DSN string. This parameter is optional for some PDO drivers
      * @param      string  $password  The password for the DSN string. This parameter is optional for some PDO drivers
      * @param      array   $options   A key => value array of driver-specific connection options
+     *
      * @static
      */
-    private static function initialize($dsn = '', $username = '', $password = '', $options = array())
-    {
+    private static function initialize(
+        string $dsn = '',
+        string $username = '',
+        string $password = '',
+        array $options = array()
+    ) {
         Ini::setIniFileName(Ini::INI_CONF_FILE);
 
         if (static::$printSQL === null) {

@@ -104,7 +104,7 @@ class Orm extends Console
      *
      * @param      string  $command  The command passed with its arguments
      */
-    private function entityProcess($command)
+    private function entityProcess(string $command)
     {
         $args = $this->getArgs($command);
 
@@ -138,7 +138,7 @@ class Orm extends Console
      *
      * @param      string  $command  The command passed with its arguments
      */
-    private function cleanTable($command)
+    private function cleanTable(string $command)
     {
         $args = $this->getArgs($command);
 
@@ -160,7 +160,7 @@ class Orm extends Console
      *
      * @param      string  $command  The command passed with its arguments
      */
-    private function dropTable($command)
+    private function dropTable(string $command)
     {
         $args = $this->getArgs($command);
 
@@ -182,7 +182,7 @@ class Orm extends Console
      *
      * @param      string  $command  The commande passed by the user with its arguments
      */
-    private function showTable($command)
+    private function showTable(string $command)
     {
         $args = $this->getArgs($command);
         $data = null;
@@ -205,7 +205,7 @@ class Orm extends Console
      *
      * @param      string  $command  The commande passed by the user with its arguments
      */
-    private function descTable($command)
+    private function descTable(string $command)
     {
         $args = $this->getArgs($command);
 
@@ -245,9 +245,10 @@ class Orm extends Console
      * Check if the table is set and if the table exists
      *
      * @param      string[]  $args   The command arguments
-     * @return     boolean   True if the table exists else false
+     *
+     * @return     bool      True if the table exists else false
      */
-    private function checkTableName($args)
+    private function checkTableName(array $args): bool
     {
         $check = true;
 
@@ -266,9 +267,10 @@ class Orm extends Console
      * Check if the entity exists
      *
      * @param      string[]  $args   The command arguments
-     * @return     boolean   True if the entity exists else false
+     *
+     * @return     bool      True if the entity exists else false
      */
-    private function checkEntityName($args)
+    private function checkEntityName(array $args): bool
     {
         $check = true;
 
@@ -288,9 +290,10 @@ class Orm extends Console
      *
      * @param      string  $tableName  The table name
      * @param      array   $data       Array containing the SQL result
+     *
      * @return     string  The pretty output
      */
-    private function prettySqlResult($tableName, $data)
+    private function prettySqlResult(string $tableName, array $data): string
     {
         $columns       = $this->filterFecthAllByColumn($data);
         $colmunsNumber = count($columns);

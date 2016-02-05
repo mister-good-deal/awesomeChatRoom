@@ -76,10 +76,14 @@ class ConsoleColors
      * @param      string  $string           The string to color
      * @param      string  $foregroundColor  The foreground color
      * @param      string  $backgroundColor  The background color
+     *
      * @return     string  The colored string
      */
-    public function getColoredString($string, $foregroundColor = null, $backgroundColor = null)
-    {
+    public function getColoredString(
+        string $string,
+        string $foregroundColor = null,
+        string $backgroundColor = null
+    ): string {
         $coloredString = '';
 
         // Check if given foreground color found
@@ -100,7 +104,7 @@ class ConsoleColors
      *
      * @return     string[]  Foreground color names
      */
-    public function getForegroundColors()
+    public function getForegroundColors(): array
     {
         return array_keys(static::$foregroundColors);
     }
@@ -110,7 +114,7 @@ class ConsoleColors
      *
      * @return     string[]  Background color names
      */
-    public function getBackgroundColors()
+    public function getBackgroundColors(): array
     {
         return array_keys(static::$backgroundColors);
     }
@@ -119,9 +123,10 @@ class ConsoleColors
      * Unset the background and foreground console color formatting
      *
      * @param      string  $string  The string to unformat
-     * @return     string  The unformated string @static
+     * @return     string  The unformated string
+     * @static
      */
-    public static function unsetColor($string)
+    public static function unsetColor(string $string): string
     {
         return preg_replace('/\033\[[0-9;]*m/', '', $string);
     }

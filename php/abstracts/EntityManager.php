@@ -40,7 +40,7 @@ abstract class EntityManager
      * @param      Entity      $entity            An entity object DEFAULT null
      * @param      Collection  $entityCollection  A colection oject DEFAULT null
      */
-    public function __construct($entity = null, $entityCollection = null)
+    public function __construct(Entity $entity = null, Collection $entityCollection = null)
     {
         if ($entity !== null) {
             $this->setEntity($entity);
@@ -62,7 +62,7 @@ abstract class EntityManager
      *
      * @return     Entity  The entity object
      */
-    public function getEntity()
+    public function getEntity(): Entity
     {
         return $this->entity;
     }
@@ -70,16 +70,11 @@ abstract class EntityManager
     /**
      * Set the entity object
      *
-     * @param      Entity     $entity  The new entity oject
-     * @throws     Exception  If the entity is not a subclass of Entity
+     * @param      Entity  $entity  The new entity oject
      */
-    public function setEntity($entity)
+    public function setEntity(Entity $entity)
     {
-        if ($entity instanceof Entity) {
-            $this->entity = $entity;
-        } else {
-            throw new Exception('The entity object must be a children of the class "Entity"', Exception::$PARAMETER);
-        }
+        $this->entity = $entity;
     }
 
     /**
@@ -87,7 +82,7 @@ abstract class EntityManager
      *
      * @return     Collection  The entity colection object
      */
-    public function getEntityCollection()
+    public function getEntityCollection(): Collection
     {
         return $this->entityCollection;
     }
@@ -96,18 +91,10 @@ abstract class EntityManager
      * Set the entity collection object
      *
      * @param      Collection  $entityCollection  The new entity collection object
-     * @throws     Exception   If the entityCollection is not a subclass of Collection
      */
-    public function setEntityCollection($entityCollection)
+    public function setEntityCollection(Collection $entityCollection)
     {
-        if ($entityCollection instanceof Collection) {
-            $this->entityCollection = $entityCollection;
-        } else {
-            throw new Exception(
-                'The entityCollection object must be a children of the class "Collection"',
-                Exception::$PARAMETER
-            );
-        }
+        $this->entityCollection = $entityCollection;
     }
 
     /*-----  End of Getters and setter  ------*/
@@ -130,11 +117,11 @@ abstract class EntityManager
     /**
      * Save the entity in the database
      *
-     * @param      Entity     $entity  OPTIONAL If an entity is passed, this entity becomes the EntityManager Entity DEFAULT null
-     * @throws     Exception  If the entity is not a subclass of Entity
-     * @return     boolean    True if the entity has been saved or updated else false
+     * @param      Entity  $entity  OPTIONAL If an entity is passed, this entity becomes the EntityManager Entity DEFAULT null
+     *
+     * @return     bool    True if the entity has been saved or updated else false
      */
-    public function saveEntity($entity = null)
+    public function saveEntity(Entity $entity = null): bool
     {
         if ($entity !== null) {
             $this->setEntity($entity);
@@ -156,10 +143,12 @@ abstract class EntityManager
      *
      * @param      Collection  $collection  OPTIONAL If an collection is passed, this collection becomes the
      *                                      EntityManager Collection DEFAULT null
+     *
      * @throws     Exception   If the entityCollection is not a subclass of Collection
-     * @return     boolean     True if the entity collection has been saved else false
+     *
+     * @return     bool        True if the entity collection has been saved else false
      */
-    public function saveCollection($collection = null)
+    public function saveCollection(Collection $collection = null): bool
     {
         if ($collection !== null) {
             $this->setEntityCollection($collection);
@@ -194,9 +183,9 @@ abstract class EntityManager
     /**
      * Delete an entity in the database
      *
-     * @return     boolean  True if the entity has beed deleted else false
+     * @return     bool  True if the entity has beed deleted else false
      */
-    public function deleteEntity()
+    public function deleteEntity(): bool
     {
         return $this->deleteInDatabse();
     }
@@ -231,7 +220,7 @@ abstract class EntityManager
      *
      * @return     string  The SQL formated string
      */
-    public static function sqlFormater()
+    public static function sqlFormater(): string
     {
         return call_user_func_array('sprintf', func_get_args());
     }
@@ -265,9 +254,9 @@ abstract class EntityManager
     /**
      * Check if the entity already exists in the database
      *
-     * @return     boolean  True if the entity exists else false
+     * @return     bool  True if the entity exists else false
      */
-    private function entityAlreadyExists()
+    private function entityAlreadyExists(): bool
     {
         $sqlMarks = " SELECT COUNT(*)\n FROM %s\n WHERE %s";
 
@@ -283,9 +272,9 @@ abstract class EntityManager
     /**
      * Save the entity in the database
      *
-     * @return     boolean  True if the entity has beed saved else false
+     * @return     bool  True if the entity has beed saved else false
      */
-    private function saveInDatabase()
+    private function saveInDatabase(): bool
     {
         $sqlMarks = " INSERT INTO %s\n VALUES %s";
 
@@ -301,9 +290,9 @@ abstract class EntityManager
     /**
      * Uddape the entity in the database
      *
-     * @return     integer  The number of rows updated
+     * @return     int   The number of rows updated
      */
-    private function updateInDatabase()
+    private function updateInDatabase(): int
     {
         $sqlMarks = " UPDATE %s\n SET %s\n WHERE %s";
 
@@ -320,9 +309,9 @@ abstract class EntityManager
     /**
      * Delete the entity from the database
      *
-     * @return     boolean  True if the entity has beed deleted else false
+     * @return     bool  True if the entity has beed deleted else false
      */
-    private function deleteInDatabse()
+    private function deleteInDatabse(): bool
     {
         $sqlMarks = " DELETE FROM %s\n WHERE %s";
 
@@ -338,9 +327,9 @@ abstract class EntityManager
     /**
      * Drop the entity table
      *
-     * @return     boolean  True if the table is dropped else false
+     * @return     bool  True if the table is dropped else false
      */
-    private function dropTable()
+    private function dropTable(): bool
     {
         $sql = 'DROP TABLE `' . $this->entity->getTableName() . '`;';
 
@@ -350,9 +339,9 @@ abstract class EntityManager
     /**
      * Create a table based on the entity ini conf file
      *
-     * @return     boolean  True if the table is created else false
+     * @return     bool  True if the table is created else false
      */
-    private function createTable()
+    private function createTable(): bool
     {
         $columns     = array();
         $comment     = 'AUTO GENERATED THE ' . date('Y-m-d H:i:s');
@@ -390,7 +379,7 @@ abstract class EntityManager
      *
      * @return     string  The string markers (?, ?, ?)
      */
-    private function getEntityAttributesMarks()
+    private function getEntityAttributesMarks(): string
     {
         return '(' . implode(array_fill(0, count($this->entity->getColumnsAttributes()), '?'), ', ') . ')';
     }
@@ -400,7 +389,7 @@ abstract class EntityManager
      *
      * @return     string  The string markers (columnName1 = 'value1', columnName2 = 'value2') primary keys EXCLUDED
      */
-    private function getEntityUpdateMarksValue()
+    private function getEntityUpdateMarksValue(): string
     {
         $marks = array();
 
@@ -424,7 +413,7 @@ abstract class EntityManager
      *
      * @return     string  The SQL segment string "primaryKey1 = 'primaryKey1Value' AND primaryKey2 = 'primaryKey2Value'"
      */
-    private function getEntityPrimaryKeysWhereClause()
+    private function getEntityPrimaryKeysWhereClause(): string
     {
         $columnsValue = array();
 
@@ -446,9 +435,10 @@ abstract class EntityManager
      *
      * @param      string  $columnName        The column name
      * @param      array   $columnAttributes  The columns attributes
+     *
      * @return     string  The formatted string to put in a SQL create table query
      */
-    private function createColumnDefinition($columnName, $columnAttributes)
+    private function createColumnDefinition(string $columnName, array $columnAttributes): string
     {
         $col = PHP_EOL . "\t`" . $columnName . '` ' . $columnAttributes['type'];
 
@@ -491,7 +481,7 @@ abstract class EntityManager
      *
      * @return     string  The formatted string to put in a SQL create table query
      */
-    private function createTableConstraints()
+    private function createTableConstraints(): string
     {
         $constraints = $this->entity->getConstraints();
         $sql = '';

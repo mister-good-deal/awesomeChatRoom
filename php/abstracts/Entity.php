@@ -83,7 +83,7 @@ abstract class Entity
      *
      * @param      string  $entityName  The entity name
      */
-    public function __construct($entityName)
+    public function __construct(string $entityName)
     {
         Ini::setIniFileName(static::ENTITIES_CONF_PATH . $entityName . '.ini');
 
@@ -95,10 +95,11 @@ abstract class Entity
     /**
      * Tell if the column name exists
      *
-     * @param      string   $columnName  The column name
-     * @return     boolean  True if the column name exists else fale
+     * @param      string  $columnName  The column name
+     *
+     * @return     bool    True if the column name exists else fale
      */
-    public function __isset($columnName)
+    public function __isset(string $columnName): bool
     {
         return array_key_exists($columnName, $this->columnsValue);
     }
@@ -107,10 +108,12 @@ abstract class Entity
      * Get the column name value
      *
      * @param      string     $columnName  The column name
+     *
      * @throws     Exception  If the column name does not a exist
+     *
      * @return     mixed      The column value
      */
-    public function __get($columnName)
+    public function __get(string $columnName)
     {
         if (!$this->__isset($columnName)) {
             throw new Exception('The attribute ' . $columnName . ' is undefined', Exception::$PARAMETER);
@@ -124,9 +127,10 @@ abstract class Entity
      *
      * @param      string     $columnName  The column name
      * @param      mixed      $value       The new column value
+     *
      * @throws     Exception  If the column name does not a exist
      */
-    public function __set($columnName, $value)
+    public function __set(string $columnName, $value)
     {
         if (!$this->__isset($columnName)) {
             throw new Exception('The attribute ' . $columnName . ' is undefined', Exception::$PARAMETER);
@@ -140,7 +144,7 @@ abstract class Entity
      *
      * @return     string  The pretty output entity
      */
-    public function __toString()
+    public function __toString(): string
     {
         $string = '['  . $this->entityName . ']' . PHP_EOL;
         $keys   = array_keys($this->columnsValue);
@@ -168,7 +172,7 @@ abstract class Entity
      *
      * @return     array  Array with columns name on keys and columns value on values
      */
-    public function __toArray()
+    public function __toArray(): array
     {
         return $this->columnsValue;
     }
@@ -178,7 +182,7 @@ abstract class Entity
      *
      * @return     array  The var_dump info
      */
-    public function __debugInfo()
+    public function __debugInfo(): array
     {
         return $this->columnsValue;
     }
@@ -194,7 +198,7 @@ abstract class Entity
      *
      * @return     string[]  The entity key id
      */
-    public function getIdKey()
+    public function getIdKey(): array
     {
         return $this->idKey;
     }
@@ -204,7 +208,7 @@ abstract class Entity
      *
      * @return     int[]  The id value(s)
      */
-    public function getIdValue()
+    public function getIdValue(): array
     {
         $idValue = array();
 
@@ -220,7 +224,7 @@ abstract class Entity
      *
      * @return     array  The associative array idKey => idValue
      */
-    public function getIdKeyValue()
+    public function getIdKeyValue(): array
     {
         $idKeyValue = array();
 
@@ -236,7 +240,7 @@ abstract class Entity
      *
      * @return     array  The associative array columnName => columnValue primary keys EXCLUDED
      */
-    public function getColumnsKeyValueNoPrimary()
+    public function getColumnsKeyValueNoPrimary(): array
     {
         $columnsKeyValue = array();
 
@@ -252,7 +256,8 @@ abstract class Entity
     /**
      * Set the id value(s) of the entity (can be an array if several primary keys)
      *
-     * @param      int|array          The id value
+     * @param      int|array  $value  The id value
+     *
      * @throws     Exception  If the id is on several columns and $value is not an array
      * @throws     Exception  If the id key is not found
      */
@@ -287,7 +292,7 @@ abstract class Entity
      *
      * @return     string  The entity table name
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return $this->tableName;
     }
@@ -297,7 +302,7 @@ abstract class Entity
      *
      * @return     string  The entity table engine
      */
-    public function getEngine()
+    public function getEngine(): string
     {
         return $this->engine;
     }
@@ -307,7 +312,7 @@ abstract class Entity
      *
      * @return     string  The entity table default charset
      */
-    public function getCharset()
+    public function getCharset(): string
     {
         return $this->charset;
     }
@@ -317,7 +322,7 @@ abstract class Entity
      *
      * @return     string  The entity table charset collation
      */
-    public function getCollation()
+    public function getCollation(): string
     {
         return $this->collation;
     }
@@ -327,7 +332,7 @@ abstract class Entity
      *
      * @return     string  The entity table comment
      */
-    public function getComment()
+    public function getComment(): string
     {
         return $this->comment;
     }
@@ -337,7 +342,7 @@ abstract class Entity
      *
      * @return     array  The entity table constraints
      */
-    public function getConstraints()
+    public function getConstraints(): array
     {
         return $this->constraints;
     }
@@ -347,7 +352,7 @@ abstract class Entity
      *
      * @return     array  The columns attributes
      */
-    public function getColumnsAttributes()
+    public function getColumnsAttributes(): array
     {
         return $this->columnsAttributes;
     }
@@ -357,7 +362,7 @@ abstract class Entity
      *
      * @return     array  The columns value
      */
-    public function getColumnsValue()
+    public function getColumnsValue(): array
     {
         return $this->columnsValue;
     }
@@ -367,7 +372,7 @@ abstract class Entity
      *
      * @return     string  The entity name
      */
-    public function getEntityName()
+    public function getEntityName(): string
     {
         return $this->entityName;
     }
@@ -376,10 +381,12 @@ abstract class Entity
      * Get a column max size
      *
      * @param      string     $columnName  The column name
+     *
      * @throws     Exception  If the column name does not a exist
-     * @return     integer    The column max size
+     *
+     * @return     int        The column max size
      */
-    public function getColumnMaxSize($columnName)
+    public function getColumnMaxSize(sstring $columnName): int
     {
         if (!$this->__isset($columnName)) {
             throw new Exception('The attribute ' . $columnName . ' is undefined', Exception::$PARAMETER);
@@ -393,7 +400,7 @@ abstract class Entity
      *
      * @param      array  $attributes  The attributes to set
      */
-    public function setAttributes($attributes)
+    public function setAttributes(array $attributes)
     {
         foreach ($attributes as $columnName => $value) {
             $this->{$columnName} = $value;
@@ -407,12 +414,13 @@ abstract class Entity
     /**
      * Check if a column value is not already in database if the column has a unique attribute constraint
      *
-     * @param      string   $columnName  The column name
-     * @param      mixed    $value       The column value
-     * @return     boolean  True if the value is already in database and the column has a unique attribute constraint
-     *                      else false
+     * @param      string  $columnName  The column name
+     * @param      mixed   $value       The column value
+     *
+     * @return     bool    True if the value is already in database and the column has a unique attribute constraint
+     *                     else false
      */
-    protected function checkUniqueField($columnName, $value)
+    protected function checkUniqueField(string $columnName, $value): bool
     {
         $alreadyInDatabase = false;
 

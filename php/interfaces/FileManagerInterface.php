@@ -18,14 +18,14 @@ interface FileManagerInterface
     /**
      * Connect to the server
      *
-     * @throws     Exception  if the connection fails
+     * @throws     Exception  If the connection fails
      */
     public function connect();
 
     /**
      * Login to the server
      *
-     * @throws     Exception  if the login fails
+     * @throws     Exception  If the login fails
      */
     public function login();
 
@@ -33,63 +33,69 @@ interface FileManagerInterface
      * Change the current directory to the one passed in parameter
      *
      * @param      string     $path   The new working directory path
-     * @throws     Exception  if the change directory fails
+     *
+     * @throws     Exception  If the change directory fails
      */
-    public function changeDir($path);
+    public function changeDir(string $path);
 
     /**
      * Create a new directory in the current working directory
      *
      * @param      string     $dirName  The new directory name
-     * @throws     Exception  if the creation of the new directory fails
+     *
+     * @throws     Exception  If the creation of the new directory fails
      */
-    public function makeDir($dirName);
+    public function makeDir(string $dirName);
 
     /**
      * Create a new directory in the current working directory if this directory does not exists
      *
      * @param      string     $dirName  The new directory name
+     *
      * @throws     Exception  if the creation of the new directory fails
      */
-    public function makeDirIfNotExists($dirName);
+    public function makeDirIfNotExists(string $dirName);
 
     /**
      * Get the directories / files list on the current working directory
      *
      * @return     string[]  The list of directories / files conatained in the current working directory
      */
-    public function listFiles();
+    public function listFiles(): array;
 
     /**
      * Upload a file on the server
      *
      * @param      string     $remoteFilePath  The remote file path on the server
      * @param      string     $localFilePath   The local file path
+     *
      * @throws     Exception  if the upload fails
      */
-    public function upload($remoteFilePath, $localFilePath);
+    public function upload(string $remoteFilePath, string $localFilePath);
 
     /**
      * Set a new permission on a directory / file
      *
-     * @param      integer    $value  The octal permission value (ex: 0644)
+     * @param      int        $value  The octal permission value (ex: 0644)
      * @param      string     $path   The path to the directory / file
+     *
      * @throws     Exception  if the permission changed fails
      */
-    public function chmod($value, $path);
+    public function chmod(int $value, string $path);
 
     /**
      * Return the last modified file time as an UNIX timestamp
      *
-     * @param      string   $path   The path to the directory / file
-     * @return     integer  The last modified time as an UNIX timestamp
+     * @param      string  $path   The path to the directory / file
+     *
+     * @return     int     The last modified time as an UNIX timestamp
      */
-    public function lastModified($path);
+    public function lastModified(string $path): int;
 
     /**
      * Close the remote connection
      *
-     * @return     boolean  True on success else false
+     * @return     bool  True on success else false
      */
-    public function close();
+    public function close(): bool;
 }

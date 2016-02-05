@@ -16,17 +16,17 @@ use \classes\entities\UsersRights as UsersRights;
 /**
  * User entity that extends the Entity abstact class
  *
- * @property   integer  $id                     The user id
- * @property   string   $firstName              The user first name
- * @property   string   $lastName               The user last name
- * @property   string   $pseudonym              The user pseudonym
- * @property   string   $email                  The user email
- * @property   string   $password               The user password
- * @property   integer  $connectionAttempt      The user number of failed connection attempt
- * @property   integer  $ipAttempt              The user last ip connection attempt
- * @property   integer  $ip                     The user last ip connection
- * @property   string   $lastConnectionAttempt  The user last time connection attempt
- * @property   string   $lastConnection         The user last time connection
+ * @property   int     $id                     The user id
+ * @property   string  $firstName              The user first name
+ * @property   string  $lastName               The user last name
+ * @property   string  $pseudonym              The user pseudonym
+ * @property   string  $email                  The user email
+ * @property   string  $password               The user password
+ * @property   int     $connectionAttempt      The user number of failed connection attempt
+ * @property   int     $ipAttempt              The user last ip connection attempt
+ * @property   int     $ip                     The user last ip connection
+ * @property   string  $lastConnectionAttempt  The user last time connection attempt
+ * @property   string  $lastConnection         The user last time connection
  */
 class User extends Entity
 {
@@ -63,7 +63,7 @@ class User extends Entity
      *
      * @param      array  $data   DEFAULT null array($columnName => $value) pairs to set the object
      */
-    public function __construct($data = null)
+    public function __construct(array $data = null)
     {
         parent::__construct('User');
 
@@ -85,7 +85,7 @@ class User extends Entity
      *
      * @return     array  An array containing the occured errors when fields are set
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->errors;
     }
@@ -95,7 +95,7 @@ class User extends Entity
      *
      * @return     UsersRights  The user rights
      */
-    public function getUserRights()
+    public function getUserRights(): UsersRights
     {
         return $this->userRights;
     }
@@ -105,7 +105,7 @@ class User extends Entity
      *
      * @param      UsersRights  $userRights  The user rights
      */
-    public function setUserRights($userRights)
+    public function setUserRights(UsersRights $userRights)
     {
         $this->userRights = $userRights;
     }
@@ -121,7 +121,7 @@ class User extends Entity
      *
      * @param      array  $inputs  The user inputs
      */
-    public function bindInputs($inputs)
+    public function bindInputs(array $inputs)
     {
         foreach ($inputs as $inputName => &$inputValue) {
             $inputValue = $this->validateField($inputName, $inputValue);
@@ -141,10 +141,11 @@ class User extends Entity
      *
      * @param      string     $columnName  The column name
      * @param      string     $value       The new column value
+     *
      * @throws     Exception  If the column name does not a exist
-     * @return     string     The sanitized value
+     * @return     string  The sanitized value
      */
-    private function validateField($columnName, $value)
+    private function validateField(string $columnName, string $value): string
     {
         if ($columnName !== 'password') {
             $value = trim($value);

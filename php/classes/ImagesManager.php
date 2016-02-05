@@ -18,23 +18,23 @@ use \classes\ExceptionManager as Exception;
 class ImagesManager
 {
     /**
-     * @var        integer[]  $WIDTHS_16_9  Commons 16/9 ratios width
+     * @var        int[]  $WIDTHS_16_9  Commons 16/9 ratios width
      */
     public static $WIDTHS_16_9 = array(2560, 2048, 1920, 1600, 1536, 1366, 1360, 1280, 1093);
     /**
-     * @var        integer[]  $HEIGHTS_16_9     Commons 16/9 ratios height
+     * @var        int[]  $HEIGHTS_16_9     Commons 16/9 ratios height
      */
     public static $HEIGHTS_16_9 = array(1440, 1152, 1080, 900, 864, 768, 720, 614);
     /**
-     * @var        integer[]  $MOST_USE_WIDTHS  Most use width
+     * @var        int[]  $MOST_USE_WIDTHS  Most use width
      */
     public static $MOST_USE_WIDTHS = array(1920, 1600, 1440, 1366, 1280, 1024, 768, 480);
     /**
-     * @var        integer[]  $MOST_USE_HEIGHTS     Most use height
+     * @var        int[]  $MOST_USE_HEIGHTS     Most use height
      */
     public static $MOST_USE_HEIGHTS = array(1080, 1050, 1024, 900, 800, 768);
     /**
-     * @var        integer  $EXTRA_TEXT_BORDER  A padding size to add to text added in an image
+     * @var        int  $EXTRA_TEXT_BORDER  A padding size to add to text added in an image
      */
     public static $EXTRA_TEXT_PADDING = 10;
 
@@ -68,7 +68,7 @@ class ImagesManager
      *
      * @param      string  $imagePath  OPTIONAL the image path
      */
-    public function __construct($imagePath = '')
+    public function __construct(string $imagePath = '')
     {
         if ($imagePath !== '') {
             $this->setImage($imagePath);
@@ -95,10 +95,11 @@ class ImagesManager
      * Instantiate a new \Imagick object and destroyed the last if exists
      *
      * @param      string     $imagePath  The image path
+     *
      * @throws     Exception  If there is no image at the specified path
      * @throws     Exception  If there is an error on image creation
      */
-    public function setImage($imagePath)
+    public function setImage(string $imagePath)
     {
         if (stream_resolve_include_path($imagePath) === false) {
             throw new Exception('There is no image at this path : "' . $imagePath . '"', Exception::$PARAMETER);
@@ -122,7 +123,7 @@ class ImagesManager
      *
      * @param      string  $path   The new save path
      */
-    public function setImageSavePath($path)
+    public function setImageSavePath(string $path)
     {
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
@@ -140,10 +141,10 @@ class ImagesManager
     /**
      * Generate and save scales images with specified widths
      *
-     * @param      integer[]  $widths  The widths to resize the image with DEFAULT [1920, 1600, 1440, 1366, 1280, 1024,
-     *                                 768, 480]
+     * @param      int[]  $widths  The widths to resize the image with DEFAULT [1920, 1600, 1440, 1366, 1280, 1024, 768,
+     *                             480]
      */
-    public function generateResizedImagesByWidth($widths = array(1920, 1600, 1440, 1366, 1280, 1024, 768, 480))
+    public function generateResizedImagesByWidth(array $widths = array(1920, 1600, 1440, 1366, 1280, 1024, 768, 480))
     {
         foreach ($widths as $width) {
             $this->generateResizedImages($width, 0);
@@ -153,9 +154,9 @@ class ImagesManager
     /**
      * Generate and save scales images with specified heights
      *
-     * @param      integer[]  $heights  The heights to resize the image with DEFAULT [1080, 1050, 1024, 900, 800, 768]
+     * @param      int[]  $heights  The heights to resize the image with DEFAULT [1080, 1050, 1024, 900, 800, 768]
      */
-    public function generateResizedImagesByHeight($heights = array(1080, 1050, 1024, 900, 800, 768))
+    public function generateResizedImagesByHeight(array $heights = array(1080, 1050, 1024, 900, 800, 768))
     {
         foreach ($heights as $height) {
             $this->generateResizedImages(0, $height);
@@ -165,14 +166,18 @@ class ImagesManager
     /**
      * Generate and save the image with a copyright text at the bottom right corner
      *
-     * @param      string   $text      The copyright text
-     * @param      integer  $fontSize  OPTIONAL the copyright font size DEFAULT 22
-     * @param      string   $font      OPTIONAL the copyright font DEFAULT "Verdana"
-     * @param      string   $position  OPTIONAL the position to put copyright text DEFAULT "bottom-right" Possibles
-     *                                 Values ("bottom-right", "bottom-left", "top-right", "top-left")
+     * @param      string  $text      The copyright text
+     * @param      int     $fontSize  OPTIONAL the copyright font size DEFAULT 22
+     * @param      string  $font      OPTIONAL the copyright font DEFAULT "Verdana"
+     * @param      string  $position  OPTIONAL the position to put copyright text DEFAULT "bottom-right" Possibles
+     *                                Values ("bottom-right", "bottom-left", "top-right", "top-left")
      */
-    public function copyrightImage($text, $fontSize = 22, $font = 'Verdana', $position = 'bottom-right')
-    {
+    public function copyrightImage(
+        string $text,
+        int $fontSize = 22,
+        string $font = 'Verdana',
+        string $position = 'bottom-right'
+    ) {
         $draw  = new \ImagickDraw();
 
         $draw->setFontSize($fontSize);
@@ -238,10 +243,10 @@ class ImagesManager
     /**
      * Generate and save scales images with specified width and height
      *
-     * @param      integer  $width   The width to resize the image with
-     * @param      integer  $height  The height to resize the image with
+     * @param      int   $width   The width to resize the image with
+     * @param      int   $height  The height to resize the image with
      */
-    private function generateResizedImages($width, $height)
+    private function generateResizedImages(int $width, int $height)
     {
         $this->image->scaleImage($width, $height);
 

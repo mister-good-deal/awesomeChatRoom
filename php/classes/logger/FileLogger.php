@@ -32,7 +32,7 @@ class FileLogger extends AbstractLogger
      *
      * @param      string  $filePath  OPTIONAL the file path
      */
-    public function __construct($filePath = null)
+    public function __construct(string $filePath = null)
     {
         if ($filePath !== null && is_string($filePath)) {
             $this->filePath = $filePath;
@@ -54,7 +54,7 @@ class FileLogger extends AbstractLogger
      * @param      string  $message
      * @param      array   $context
      */
-    public function log($level, $message, array $context = array())
+    public function log($level, string $message, array $context = array())
     {
         $this->writeInFile($message, $context);
     }
@@ -70,9 +70,10 @@ class FileLogger extends AbstractLogger
      *
      * @param      string  $message  The error message to write
      * @param      array   $context  The Exception context
+     *
      * @todo       Use the context
      */
-    private function writeInFile($message, $context)
+    private function writeInFile(string $message, array $context)
     {
         $string = date('Y-m-d H:i:s')
             . "\t\t"

@@ -26,9 +26,10 @@ trait EchoTrait
      * Echo shortcut but with a encoding conversion before output
      *
      * @param      string  $output  The string to output in the console
+     *
      * @static
      */
-    public static function out($output)
+    public static function out(sring $output)
     {
         $environment = Ini::getParam('Environment', 'environment');
 
@@ -61,9 +62,10 @@ trait EchoTrait
      *
      * @param      string  $output  The console formatted output
      * @return     string  The HTML formated output
+     *
      * @static
      */
-    private static function convertConsoleToHtml($output)
+    private static function convertConsoleToHtml(string $output): string
     {
         return preg_replace('/' . PHP_EOL . '/', '<br>', $output);
     }

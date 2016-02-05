@@ -30,13 +30,12 @@ abstract class AbstractLogger implements LoggerInterface
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function emergency($message, array $context = array())
+    public function emergency(string $message, array $context = array())
     {
         $this->log(LogLevel::EMERGENCY, $message, $context);
     }
+
     /**
      * Action must be taken immediately.
      *
@@ -44,13 +43,12 @@ abstract class AbstractLogger implements LoggerInterface
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function alert($message, array $context = array())
+    public function alert(string $message, array $context = array())
     {
         $this->log(LogLevel::ALERT, $message, $context);
     }
+
     /**
      * Critical conditions.
      *
@@ -58,25 +56,23 @@ abstract class AbstractLogger implements LoggerInterface
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function critical($message, array $context = array())
+    public function critical(string $message, array $context = array())
     {
         $this->log(LogLevel::CRITICAL, $message, $context);
     }
+
     /**
      * Runtime errors that do not require immediate action but should typically be logged and monitored.
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function error($message, array $context = array())
+    public function error(string $message, array $context = array())
     {
         $this->log(LogLevel::ERROR, $message, $context);
     }
+
     /**
      * Exceptional occurrences that are not errors.
      *
@@ -84,25 +80,23 @@ abstract class AbstractLogger implements LoggerInterface
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function warning($message, array $context = array())
+    public function warning(string $message, array $context = array())
     {
         $this->log(LogLevel::WARNING, $message, $context);
     }
+
     /**
      * Normal but significant events.
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function notice($message, array $context = array())
+    public function notice(string $message, array $context = array())
     {
         $this->log(LogLevel::NOTICE, $message, $context);
     }
+
     /**
      * Interesting events.
      *
@@ -110,22 +104,19 @@ abstract class AbstractLogger implements LoggerInterface
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function info($message, array $context = array())
+    public function info(string $message, array $context = array())
     {
         $this->log(LogLevel::INFO, $message, $context);
     }
+
     /**
      * Detailed debug information.
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function debug($message, array $context = array())
+    public function debug(string $message, array $context = array())
     {
         $this->log(LogLevel::DEBUG, $message, $context);
     }

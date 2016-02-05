@@ -38,7 +38,7 @@ class LoggerManager
      *
      * @param      int[]  $loggerTypes  Loggers type to implement DEFAULT FILE
      */
-    public function __construct($loggerTypes = array(self::FILE))
+    public function __construct(array $loggerTypes = array(self::FILE))
     {
         if (is_array($loggerTypes)) {
             foreach ($loggerTypes as $loggerType) {
@@ -60,7 +60,7 @@ class LoggerManager
      * @param      string  $message
      * @param      array   $context
      */
-    public function log($level, $message, array $context = array())
+    public function log($level, string $message, array $context = array())
     {
         foreach ($this->implementedLoggers as $logger) {
             $logger->log($level, $message, $context);
@@ -72,7 +72,7 @@ class LoggerManager
      *
      * @param      int   $loggerType  The logger type
      */
-    public function addLogger($loggerType)
+    public function addLogger(int $loggerType)
     {
         $loggerType = (int) $loggerType;
 
@@ -90,7 +90,7 @@ class LoggerManager
      *
      * @param      int   $loggerType  The logger type
      */
-    public function removeLogger($loggerType)
+    public function removeLogger(int $loggerType)
     {
         if ($this->hasLogger($loggerType)) {
             unset($this->implementedLoggers[$loggerType]);
@@ -121,9 +121,10 @@ class LoggerManager
      * Check if a logger is already implemented
      *
      * @param      int      $loggerType  The logger type
+     *
      * @return     boolean  True if the logger is already implemented else false
      */
-    private function hasLogger($loggerType)
+    private function hasLogger(int $loggerType): bool
     {
         return array_key_exists($loggerType, $this->implementedLoggers);
     }

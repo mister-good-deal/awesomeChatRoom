@@ -114,7 +114,7 @@ GODDBYE;
      *
      * @return     string  The command written by the user
      */
-    protected function userInput()
+    protected function userInput(): string
     {
         static::out($this->colors->getColoredString('> ', ConsoleColors::LIGHT_GREEN_F, ConsoleColors::BLACK));
 
@@ -129,10 +129,10 @@ GODDBYE;
     /**
      * Process the command entered by the user and output the result in the console
      *
-     * @param      string   $command   The command passed by the user
-     * @param      boolean  $executed  DEFAULT false, true if the command is already executed, else false
+     * @param      string  $command   The command passed by the user
+     * @param      bool    $executed  DEFAULT false, true if the command is already executed, else false
      */
-    protected function processCommand($command, $executed = false)
+    protected function processCommand(string $command, bool $executed = false)
     {
         $exit = false;
         preg_match('/^[a-zA-Z ]*/', $command, $commandName);
@@ -188,7 +188,7 @@ GODDBYE;
      *
      * @return     string  The last command
      */
-    protected function getLastCommand()
+    protected function getLastCommand(): string
     {
         $nbCommands = count($this->commandsHistoric);
 
@@ -205,9 +205,10 @@ GODDBYE;
      * Ask the user to confirm the action
      *
      * @param      string  $message  The message to prompt
+     *
      * @return     string  The user response casted in lower case
      */
-    protected function confirmAction($message)
+    protected function confirmAction(string $message): string
     {
         static::out($message . PHP_EOL);
 
@@ -218,9 +219,10 @@ GODDBYE;
      * Get the command arguments in an array (argName => argValue)
      *
      * @param      string  $command  The command
+     *
      * @return     array   The arguments in an array (argName => argValue)
      */
-    protected function getArgs($command)
+    protected function getArgs(string $command): array
     {
         // -argument = value
         preg_match_all('/\-(?P<argKey>[a-zA-Z]+) (?P<argValue>("[^"]+"|[a-zA-Z0-9 _]+))/', $command, $matches1);
@@ -242,9 +244,10 @@ GODDBYE;
      * Pretty output a table without keys
      *
      * @param      array   $table  The table to print
+     *
      * @return     string  The pretty output table data
      */
-    protected function tablePrettyPrint($table)
+    protected function tablePrettyPrint(array $table): string
     {
         return PHP_EOL . '- ' . implode(PHP_EOL . '- ', $table);
     }
@@ -253,9 +256,10 @@ GODDBYE;
      * Pretty output a table with keys
      *
      * @param      array   $table  The associative array to print
+     *
      * @return     string  The pretty output table data
      */
-    protected function tableAssociativPrettyPrint($table)
+    protected function tableAssociativPrettyPrint(array $table): string
     {
         $keys =  array_keys($table);
 

@@ -19,9 +19,10 @@ trait FiltersTrait
      * @param      array   $matches    The matches array returned by the preg_match_all function
      * @param      string  $keyName    The key name of the future array (?P<keyName>expression)
      * @param      string  $valueName  The value name of the future array (?P<valueName>expression)
+     *
      * @return     array   The filterd array with $keyName = $keyValue
      */
-    public function filterPregMatchAllWithFlags($matches, $keyName, $valueName)
+    public function filterPregMatchAllWithFlags(array $matches, string $keyName, string $valueName): array
     {
         $cleanArray = array();
 
@@ -40,9 +41,10 @@ trait FiltersTrait
      * Filter a fetchAll PDO array to parse results in columns
      *
      * @param      array  $data   The fetchAll return
+     *
      * @return     array  The filtered array by columns
      */
-    public function filterFecthAllByColumn($data)
+    public function filterFecthAllByColumn(array $data): array
     {
         $columnsArray = array();
 
@@ -63,9 +65,10 @@ trait FiltersTrait
      * Sanitize a user input by stripping unwanted blank characters
      *
      * @param      string  $input  The user input
+     *
      * @return     string  The sanitized user input
      */
-    public function sanitizeInput($input)
+    public function sanitizeInput(string $input): string
     {
         return trim($input);
     }
@@ -74,9 +77,10 @@ trait FiltersTrait
      * Get the user input, return null if undefined or the sanitized value
      *
      * @param      string       $input  The user input
+     *
      * @return     string|null  The sanitized user input or null if the input was undefined
      */
-    public function getInput($input)
+    public function getInput(string $input): string
     {
         if (!isset($input)) {
             $input = null;
@@ -91,9 +95,10 @@ trait FiltersTrait
      * Convert a DateInterval object to sec
      *
      * @param      \DateInterval  $dateInterval  The DateInterval object
-     * @return     integer        The converted number of seconds
+     *
+     * @return     int            The converted number of seconds
      */
-    public function dateIntervalToSec($dateInterval)
+    public function dateIntervalToSec(\DateInterval $dateInterval): int
     {
         $sec = 0;
 

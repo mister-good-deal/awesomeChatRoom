@@ -65,10 +65,8 @@ class ConsoleLogger extends AbstractLogger
       *
       * @param      string  $message
       * @param      array   $context
-      *
-      * @return     null
       */
-    public function emergency($message, array $context = array())
+    public function emergency(string $message, array $context = array())
     {
         static::out(
             $this->colors->getColoredString(
@@ -88,10 +86,8 @@ class ConsoleLogger extends AbstractLogger
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function alert($message, array $context = array())
+    public function alert(string $message, array $context = array())
     {
         static::out(
             $this->colors->getColoredString(
@@ -111,10 +107,8 @@ class ConsoleLogger extends AbstractLogger
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function critical($message, array $context = array())
+    public function critical(string $message, array $context = array())
     {
         static::out(
             $this->colors->getColoredString(
@@ -132,10 +126,8 @@ class ConsoleLogger extends AbstractLogger
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function error($message, array $context = array())
+    public function error(string $message, array $context = array())
     {
         static::out(
             $this->colors->getColoredString(
@@ -155,10 +147,8 @@ class ConsoleLogger extends AbstractLogger
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function warning($message, array $context = array())
+    public function warning(string $message, array $context = array())
     {
         static::out(
             $this->colors->getColoredString(
@@ -178,10 +168,8 @@ class ConsoleLogger extends AbstractLogger
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function notice($message, array $context = array())
+    public function notice(string $message, array $context = array())
     {
         static::out(
             $this->colors->getColoredString(
@@ -199,10 +187,8 @@ class ConsoleLogger extends AbstractLogger
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function info($message, array $context = array())
+    public function info(string $message, array $context = array())
     {
         static::out(
             $this->colors->getColoredString(
@@ -220,10 +206,8 @@ class ConsoleLogger extends AbstractLogger
      *
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function debug($message, array $context = array())
+    public function debug(string $message, array $context = array())
     {
         static::out(
             $this->colors->getColoredString(
@@ -242,10 +226,8 @@ class ConsoleLogger extends AbstractLogger
      * @param      mixed   $level
      * @param      string  $message
      * @param      array   $context
-     *
-     * @return     null
      */
-    public function log($level, $message, array $context = array())
+    public function log($level, string $message, array $context = array())
     {
         if (in_array($level, array_keys(static::$LEVELS))) {
             call_user_func(__CLASS__ . '::' . static::$LEVELS[$level], $message, $context);
@@ -267,7 +249,7 @@ class ConsoleLogger extends AbstractLogger
      *
      * @return     string  The output result as a string
      */
-    private function formatContext($contexts)
+    private function formatContext(array $contexts): string
     {
         $string = '';
 
@@ -297,7 +279,7 @@ class ConsoleLogger extends AbstractLogger
      *
      * @return     string  The arguments in a formatted string
      */
-    private function formatArguments($arguments)
+    private function formatArguments(array $arguments): string
     {
         $argumentsFormatted = array();
 
@@ -322,14 +304,14 @@ class ConsoleLogger extends AbstractLogger
      * @return     string    The formatted context string
      */
     private function formatContextShortcut(
-        $description,
-        $context,
-        $type,
-        $fgColor1 = ConsoleColors::PURPLE_F,
-        $bgColor1 = ConsoleColors::BLACK,
-        $fgColor2 = ConsoleColors::YELLOW,
-        $bgColor2 = ConsoleColors::BLACK
-    ) {
+        string $description,
+        array $context,
+        string $type,
+        string $fgColor1 = ConsoleColors::PURPLE_F,
+        string $bgColor1 = ConsoleColors::BLACK,
+        string $fgColor2 = ConsoleColors::YELLOW,
+        string $bgColor2 = ConsoleColors::BLACK
+    ): string {
         $formatedString = '';
 
         if (isset($context[$type])) {

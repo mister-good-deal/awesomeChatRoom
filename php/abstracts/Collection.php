@@ -49,7 +49,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      *
      * @return     string  String output
      */
-    public function __toString()
+    public function __toString(): string
     {
         $string = PHP_EOL . 'Collection of (' . $this->count() . ') ' . $this->getEntityByIndex(0)->getEntityName()
             . ' entity' . PHP_EOL . implode(array_fill(0, 116, '-'));
@@ -71,9 +71,10 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      * Add an entity at the end of the collection
      *
      * @param      Entity     $entity  The entity object
+     *
      * @throws     Exception  If the entity id is already in the collection
      */
-    public function add($entity)
+    public function add(Entity $entity)
     {
         $id = $this->parseId($entity->getIdValue());
 
@@ -92,10 +93,12 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      * Get an entity by its id
      *
      * @param      int[]|string[]  $entityId  The entity id(s) in a array
+     *
      * @throws     Exception       If the entity id is not in the collection
+     *
      * @return     Entity          The entity
      */
-    public function getEntityById($entityId)
+    public function getEntityById(array $entityId): Entity
     {
         $id = $this->parseId($entityId);
 
@@ -112,10 +115,11 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Get an entity by its index
      *
-     * @param      integer  $index  The entity index in the Collection
-     * @return     Entity   The entity
+     * @param      int     $index  The entity index in the Collection
+     *
+     * @return     Entity  The entity
      */
-    public function getEntityByIndex($index)
+    public function getEntityByIndex(int $index): Entity
     {
         if (!isset($this->collection[$index])) {
             throw new Exception('There is no entity at index ' . $index, Exception::$PARAMETER);
@@ -131,7 +135,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      *
      * @return     Entity  The current entity
      */
-    public function current()
+    public function current(): Entity
     {
         return $this->collection[$this->current];
     }
@@ -141,7 +145,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      *
      * @return     int|null  Returns the key on success, or NULL on failure
      */
-    public function key()
+    public function key(): int
     {
         return $this->current;
     }
@@ -165,9 +169,9 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Checks if current position is valid
      *
-     * @return     boolean  Returns true on success or false on failure
+     * @return     bool  Returns true on success or false on failure
      */
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->collection[$this->current]);
     }
@@ -178,8 +182,10 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      * Whether an offset exists
      *
      * @param      int|string  $offset  An offset to check for
+     *
+     * @return     bool        True if the offset exists, else false
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->collection[$offset]);
     }
@@ -188,9 +194,10 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      * Returns the entity at specified offset
      *
      * @param      int|string  $offset  The offset to retrieve
+     *
      * @return     Entity      Return the matching entity
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): Entity
     {
         return $this->collection[$offset];
     }
@@ -201,7 +208,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      * @param      int|string  $offset  The offset to assign the entity to
      * @param      Entity      $entity  The entity to set
      */
-    public function offsetSet($offset, $entity)
+    public function offsetSet($offset, $entity): Entity
     {
         $this->collection[$offset] = $entity;
     }
@@ -223,7 +230,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      *
      * @return     int   The custom count as an integer
      */
-    public function count()
+    public function count(): int
     {
         return count($this->collection);
     }
@@ -234,9 +241,10 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      * Seeks to a position
      *
      * @param      int        $position  The position to seek to
+     *
      * @throws     Exception  If the position is not seekable
      */
-    public function seek($position)
+    public function seek(int $position)
     {
         if (!isset($this->collection[$position])) {
             throw new Exception('There is no data in this iterator at index ' . $position, Exception::$ERROR);
@@ -255,9 +263,10 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      * Parse the id(s) sent in array to get his key
      *
      * @param      int[]|string[]  $id     The id(s) in an array
+     *
      * @return     string          The id(s) key
      */
-    private function parseId($id)
+    private function parseId(array $id): string
     {
         if (count($id) > 1) {
             $id = $this->md5Array($id);

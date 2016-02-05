@@ -11,7 +11,7 @@ namespace classes;
 use \classes\ExceptionManager as Exception;
 
 /**
- * Benchmark methods by symply put them in an array sent to the constructors
+ * Benchmark methods by simply put them in an array sent to the constructor
  *
  * @todo       complete the class
  */
@@ -40,7 +40,7 @@ class Benchmark
      * @param      callable[]  $functions  Methods to test
      * @param      array       $params     Methods parameters
      */
-    public function __construct($functions = null, $params = null)
+    public function __construct(array $functions = null, array $params = null)
     {
         if ($functions === null) {
             throw new Exception("ERROR::There is no parameter", Exception::$PARAMETER);
@@ -70,9 +70,9 @@ class Benchmark
     /**
      * Run the benchmark by defining a number of iteration
      *
-     * @param      integer  $iterations  The number of iteration to process
+     * @param      int   $iterations  The number of iteration to process
      */
-    public function runByIteration($iterations)
+    public function runByIteration($iterations): int
     {
         for ($i = 0; $i < $iterations; $i++) {
             // code...

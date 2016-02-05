@@ -34,7 +34,7 @@ trait ShortcutsTrait
      *
      * @param      mixed  $variable  The variable to set the value
      * @param      mixed  $value     The value to set
-     * @param      mixed  $default   OPTIONAL default value to set if the value is not set
+     * @param      mixed  $default  OPTIONAL default value to set if the value is not set
      */
     public function setIfIsSetAndTrim(&$variable, $value)
     {
@@ -45,12 +45,13 @@ trait ShortcutsTrait
     /**
      * Perform an in_array research for each specified sub-array
      *
-     * @param      mixed    $needle    The value to research
-     * @param      array    $haystack  The array to perform the research
-     * @param      string   $key       The sub-array key
-     * @return     boolean  True if the value is found else false
+     * @param      mixed   $needle    The value to research
+     * @param      array   $haystack  The array to perform the research
+     * @param      string  $key       The sub-array key
+     *
+     * @return     bool    True if the value is found else false
      */
-    public function inSubArray($needle, $haystack, $key)
+    public function inSubArray($needle, array $haystack, string $key): bool
     {
         $found = false;
 
