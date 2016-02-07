@@ -114,6 +114,23 @@ class DataBase
      * @var        bool  $printSql  If the SQL requests should be printed in a console DEFAULT null
      */
     private static $printSQL = null;
+    /**
+     * @var        string  $dsn       The Data Source Name, or DSN, contains the information required to connect to the
+     *                                database
+     */
+    private static $dsn = null;
+    /**
+     * @var       string  $username  The user name for the DSN string. This parameter is optional for some PDO drivers
+     */
+    private static $username = null;
+    /**
+     * @var       string  $password  The password for the DSN string. This parameter is optional for some PDO drivers
+     */
+    private static $password = null;
+    /**
+     * @var       array   $options   A key => value array of driver-specific connection options
+     */
+    private static $options = null;
 
     /*=====================================
     =            Magic methods            =
@@ -174,22 +191,110 @@ class DataBase
     /**
      * Set the printSQL value
      *
-     * @param      bool       $printSQL  The printSQL value
-     * @throws     Exception  If the printSQL value is not a boolean
+     * @param      bool  $printSQL  The printSQL value
      *
      * @static
      */
     public static function setPrintSQL(bool $printSQL)
     {
-        if (is_bool($printSQL)) {
-            static::$printSQL = $printSQL;
-            static::setPDOStatement();
-        } else {
-            throw new Exception(
-                'The printSQL value must be a boolean',
-                Exception::$PARAMETER
-            );
-        }
+        static::$printSQL = $printSQL;
+        static::setPDOStatement();
+    }
+
+    /**
+     * Set the dsn value
+     *
+     * @param      string  $dsn    The dsn value
+     *
+     * @static
+     */
+    public static function setDsn(string $dsn)
+    {
+        static::$dsn = $dsn;
+    }
+
+    /**
+     * Get the dsn value
+     *
+     * @return     string  The dsn value
+     *
+     * @static
+     */
+    public static function getDsn(): string
+    {
+        return static::$dsn;
+    }
+
+    /**
+     * Set the username value
+     *
+     * @param      string  $username  The username value
+     *
+     * @static
+     */
+    public static function setUsername(string $username)
+    {
+        static::$username = $username;
+    }
+
+    /**
+     * Get the username value
+     *
+     * @return     string  The username value
+     *
+     * @static
+     */
+    public static function getUsername(): string
+    {
+        return static::$username;
+    }
+
+    /**
+     * Set the password value
+     *
+     * @param      string  $password  The password value
+     *
+     * @static
+     */
+    public static function setPassword(string $password)
+    {
+        static::$password = $password;
+    }
+
+    /**
+     * Get the password value
+     *
+     * @return     string  The password value
+     *
+     * @static
+     */
+    public static function getPassword(): string
+    {
+        return static::$password;
+    }
+
+    /**
+     * Set the options value
+     *
+     * @param      array  $options  The options value
+     *
+     * @static
+     */
+    public static function setOptions(array $options)
+    {
+        static::$options = $options;
+    }
+
+    /**
+     * Get the options value
+     *
+     * @return     array  The options value
+     *
+     * @static
+     */
+    public static function getOptions(): array
+    {
+        return static::$options;
     }
 
     /*-----  End of Getters / setters (static)  ------*/
@@ -307,20 +412,10 @@ class DataBase
     /**
      * Utility method to reuse the same PDO instance at each call (work like a Singleton pattern)
      *
-     * @param      string  $dsn       The Data Source Name, or DSN, contains the information required to connect to the
-     *                                database
-     * @param      string  $username  The user name for the DSN string. This parameter is optional for some PDO drivers
-     * @param      string  $password  The password for the DSN string. This parameter is optional for some PDO drivers
-     * @param      array   $options   A key => value array of driver-specific connection options
-     *
      * @static
      */
-    private static function initialize(
-        string $dsn = '',
-        string $username = '',
-        string $password = '',
-        array $options = array()
-    ) {
+    private static function initialize()
+    {
         Ini::setIniFileName(Ini::INI_CONF_FILE);
 
         if (static::$printSQL === null) {
@@ -330,19 +425,19 @@ class DataBase
 
         try {
             if (static::$PDO === null) {
-                if ($username !== '' && $password !== '') {
-                    if (count($options) > 0) {
-                        static::$PDO = new \PDO($dsn, $username, $password, $options);
+                if (static::$username !== '' && static::$password !== '') {
+                    if (count(static::$options) > 0) {
+                        static::$PDO = new \PDO(static::$dsn, static::$username, static::$password, static::$options);
                     } else {
-                        static::$PDO = new \PDO($dsn, $username, $password);
+                        static::$PDO = new \PDO(static::$dsn, static::$username, static::$password);
                     }
-                } elseif ($dsn !== '') {
-                    static::$PDO = new \PDO($dsn);
+                } elseif (static::$dsn !== '') {
+                    static::$PDO = new \PDO(static::$dsn);
                 } else {
                     // Load default database parameters
-                    $params = Ini::getSectionParams('Database');
+                    $param = Ini::getSectionParams('Database');
 
-                    static::$PDO = new \PDO($params['dsn'], $params['username'], $params['password'], $params['options']);
+                    static::$PDO = new \PDO($param['dsn'], $param['username'], $param['password'], $param['options']);
                 }
 
                 // Load default PDO parameters

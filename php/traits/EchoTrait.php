@@ -29,7 +29,7 @@ trait EchoTrait
      *
      * @static
      */
-    public static function out(sring $output)
+    public static function out(string $output)
     {
         $environment = Ini::getParam('Environment', 'environment');
 
