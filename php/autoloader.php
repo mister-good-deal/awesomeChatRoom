@@ -25,3 +25,6 @@ spl_autoload_register(
         include_once $fileName;
     }
 );
+
+// Require the vendor composer autoloader
+require 'vendor/autoload.php';

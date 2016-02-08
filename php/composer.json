@@ -1,4 +1,8 @@
 {
+    "require": {
+        "elasticsearch/elasticsearch": "~2.0",
+        "icicleio/icicle": "^0.9.4"
+    },
     "require-dev": {
         "phpdocumentor/phpdocumentor": "2.8.5",
         "squizlabs/php_codesniffer": "*"

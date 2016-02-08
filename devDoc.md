@@ -138,6 +138,8 @@ In php.ini, check thoses values
 
 - `extension_dir = "ext"`
 
+- `extension=php_curl.dll`
+
 - `extension=php_gettext.dll`
 
 - `extension=php_mbstring.dll`

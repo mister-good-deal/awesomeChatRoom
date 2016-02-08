@@ -6,6 +6,8 @@
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
+declare(strict_types=1);
+
 namespace tests;
 
 use \classes\DataBase as DB;
@@ -19,8 +21,8 @@ const DSN      = 'mysql:dbname=websocket;host=127.0.0.1';
 const USERNAME = 'root';
 const PASSWORD = 'root';
 
-ini_set('zend.assertions', 1);
-ini_set('assert.exception', 1);
+ini_set('zend.assertions', '1');
+ini_set('assert.exception', '1');
 
 class Traits
 {
