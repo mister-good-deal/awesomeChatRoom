@@ -50,7 +50,7 @@ class Orm extends Console
     /**
      * @inheritDoc
      */
-    protected function processCommand($command, $executed = false)
+    protected function processCommand(string $command, bool $executed = false)
     {
         $executed = true;
 

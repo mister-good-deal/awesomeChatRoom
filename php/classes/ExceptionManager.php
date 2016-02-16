@@ -72,6 +72,7 @@ class ExceptionManager extends \Exception
      */
     public function __construct(string $message, int $code = 0, \Exception $previous = null)
     {
+        echo 'ExceptionManager.php called' . PHP_EOL;
         parent::__construct($message, $code, $previous);
         Ini::setIniFileName('conf.ini');
 

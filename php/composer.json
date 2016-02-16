@@ -1,7 +1,9 @@
 {
+    "minimum-stability": "dev",
     "require": {
         "elasticsearch/elasticsearch": "~2.0",
-        "icicleio/icicle": "^0.9.4"
+        "icicleio/icicle": "^0.9.4",
+        "icicleio/websocket": "dev-master"
     },
     "require-dev": {
         "phpdocumentor/phpdocumentor": "2.8.5",
