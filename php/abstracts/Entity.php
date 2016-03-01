@@ -386,7 +386,7 @@ abstract class Entity
      *
      * @return     int        The column max size
      */
-    public function getColumnMaxSize(sstring $columnName): int
+    public function getColumnMaxSize(string $columnName): int
     {
         if (!$this->__isset($columnName)) {
             throw new Exception('The attribute ' . $columnName . ' is undefined', Exception::$PARAMETER);

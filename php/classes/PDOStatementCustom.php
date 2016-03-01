@@ -57,7 +57,7 @@ class PDOStatementCustom extends \PDOStatement
      *
      * @return     bool   True if the request succeeded else false
      */
-    public function execute(array $inputParameters = null)
+    public function execute($inputParameters = null)
     {
         if ($this->printSQL && is_array($inputParameters)) {
             $this->printQuery($inputParameters);

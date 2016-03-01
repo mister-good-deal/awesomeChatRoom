@@ -93,7 +93,7 @@ class UserEntityManager extends EntityManager
             }
         }
 
-        return array('success' => $success, 'errors' => $errors);
+        return array('success' => $success, 'errors' => $errors, 'user' => $user->__toArray());
     }
 
     /**
