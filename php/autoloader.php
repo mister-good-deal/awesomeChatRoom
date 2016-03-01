@@ -22,9 +22,11 @@ spl_autoload_register(
 
         $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
 
-        include_once $fileName;
+        if (stream_resolve_include_path($fileName) !== false) {
+            include_once $fileName;
+        }
     }
 );
 
 // Require the vendor composer autoloader
-require 'vendor/autoload.php';
+require_once 'vendor/autoload.php';
