@@ -35,17 +35,23 @@ define([
          * Default settings will get overriden if they are set when the UserManager will be instanciated
          */
         "settings" : {
-            "firstName" : "",
-            "lastName"  : "",
-            "pseudonym" : "",
-            "email"     : "",
-            "password"  : "",
+            "attributes": {
+                "firstName" : "",
+                "lastName"  : "",
+                "pseudonym" : "",
+                "email"     : "",
+                "password"  : ""
+            },
             "chatRights": {}
         },
         /**
          * If the user is connected
          */
         "connected": false,
+        /**
+         * Callback when the user is successfully connected
+         */
+        "connectSuccessCallback": null,
 
         /**
          * Get first name
@@ -53,7 +59,7 @@ define([
          * @return {String} The user first name
          */
         getFirstName: function () {
-            return this.settings.firstName;
+            return this.settings.attributes.firstName;
         },
 
         /**
@@ -62,7 +68,7 @@ define([
          * @return {String} The user last name
          */
         getLastName: function () {
-            return this.settings.lastName;
+            return this.settings.attributes.lastName;
         },
 
         /**
@@ -71,10 +77,10 @@ define([
          * @return {String} The user pseudonym
          */
         getPseudonym: function () {
-            var pseudonym = this.settings.pseudonym;
+            var pseudonym = this.settings.attributes.pseudonym;
 
             if (pseudonym === '') {
-                pseudonym = this.settings.firstName + ' ' + this.settings.lastName;
+                pseudonym = this.settings.attributes.firstName + ' ' + this.settings.attributes.lastName;
             }
 
             return pseudonym;
@@ -86,7 +92,7 @@ define([
          * @return {String} The user email
          */
         getEmail: function () {
-            return this.settings.email;
+            return this.settings.attributes.email;
         },
 
         /**
@@ -95,7 +101,7 @@ define([
          * @return {String} The user password
          */
         getPassword: function () {
-            return this.settings.password;
+            return this.settings.attributes.password;
         },
 
         /**
@@ -114,12 +120,12 @@ define([
          * @param {Object} data JSON data
          */
         setAttributes: function (data) {
-            this.settings.firstName  = data.user.firstName || "";
-            this.settings.lastName   = data.user.lastName || "";
-            this.settings.pseudonym  = data.user.pseudonym || "";
-            this.settings.email      = data.user.email || "";
-            this.settings.password   = data.user.password || "";
-            this.settings.chatRights = data.user.chatRights || {};
+            this.settings.attributes.firstName  = data.user.firstName || "";
+            this.settings.attributes.lastName   = data.user.lastName || "";
+            this.settings.attributes.pseudonym  = data.user.pseudonym || "";
+            this.settings.attributes.email      = data.user.email || "";
+            this.settings.attributes.password   = data.user.password || "";
+            this.settings.chatRights            = data.user.chatRights || {};
         },
 
         /**
@@ -132,6 +138,10 @@ define([
             this.setAttributes(data);
             this.connected = true;
             messageManager.add('Connect success !');
+
+            if (typeof this.connectSuccessCallback === 'function') {
+                this.connectSuccessCallback.call(this);
+            }
         },
 
         /**

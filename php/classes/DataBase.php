@@ -113,24 +113,24 @@ class DataBase
     /**
      * @var        bool  $printSql  If the SQL requests should be printed in a console DEFAULT null
      */
-    private static $printSQL = null;
+    private static $printSQL = '';
     /**
      * @var        string  $dsn       The Data Source Name, or DSN, contains the information required to connect to the
      *                                database
      */
-    private static $dsn = null;
+    private static $dsn = '';
     /**
      * @var       string  $username  The user name for the DSN string. This parameter is optional for some PDO drivers
      */
-    private static $username = null;
+    private static $username = '';
     /**
      * @var       string  $password  The password for the DSN string. This parameter is optional for some PDO drivers
      */
-    private static $password = null;
+    private static $password = '';
     /**
      * @var       array   $options   A key => value array of driver-specific connection options
      */
-    private static $options = null;
+    private static $options = array();
 
     /*=====================================
     =            Magic methods            =
