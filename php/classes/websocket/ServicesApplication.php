@@ -4,24 +4,31 @@ namespace classes\websocket;
 
 use Icicle\Http\Message\Request;
 use Icicle\Http\Message\Response;
-use Icicle\Log as LogNS;
-use Icicle\Log\Log;
+use Icicle\Log\{Log, function log};
 use Icicle\Socket\Socket;
 use Icicle\WebSocket\Application as Application;
 use Icicle\WebSocket\Connection;
+use classes\entities\User as User;
 
 class ServicesApplication implements Application
 {
+    use \traits\PrettyOutputTrait;
+
     /**
      * @var \Icicle\Log\Log
      */
     private $log;
     /**
+     * @var $clients array The clients pool
+     */
+    private $clients;
+    /**
      * @param \Icicle\Log\Log|null $log
      */
     public function __construct(Log $log = null)
     {
-        $this->log = $log ?: LogNS\log();
+        $this->log = $log ?: log();
+        $this->clients = array();
     }
     /**
      * {@inheritdoc}
@@ -37,23 +44,27 @@ class ServicesApplication implements Application
      */
     public function onConnection(Connection $connection, Response $response, Request $request)
     {
-        // The Response and Request objects used to initiate the connection are provided for informational purposes.
-        // This method will primarily interact with the Connection object.
-        yield $connection->send('Connected to echo WebSocket server powered by Icicle.');
+        $message = array(
+            'service' => 'notificationService',
+            'text'    => 'Connected to echo WebSocket server powered by Icicle'
+        );
+
+        yield $connection->send(json_encode($message));
+        yield $this->log->log(
+            Log::INFO,
+            'WebSocket connection from %s:%d opened',
+            $connection->getRemoteAddress(),
+            $connection->getRemotePort()
+        );
+
+        $this->clients[$this->getConnectionHash($connection)] = array('connection' => $connection, 'user' => false);
         // Messages are read through an Observable that represents an asynchronous set. There are a variety of ways
         // to use this asynchronous set, including an asynchronous iterator as shown in the example below.
         $iterator = $connection->read()->getIterator();
         while (yield $iterator->isValid()) {
             /** @var \Icicle\WebSocket\Message $message */
             $message = $iterator->getCurrent();
-
-            $this->log->log(Log::INFO, 'Data: %s', $message->getData());
-
-            if ($message->getData() === 'close') {
-                yield $connection->close();
-            } else {
-                yield $connection->send($message);
-            }
+            yield $this->treatData(json_decode($message->getData(), true), $connection);
         }
         /** @var \Icicle\WebSocket\Close $close */
         $close = $iterator->getReturn(); // Only needs to be called if the close reason is needed.
@@ -65,5 +76,27 @@ class ServicesApplication implements Application
             $close->getCode(),
             $close->getData()
         );
+    }
+
+    private function treatData(array $data, Connection $connection)
+    {
+        yield $this->log->log(Log::INFO, 'Data: %s', $this->formatVariable($data));
+
+        if ($data['action'] === 'register') {
+            $this->clients[$this->getConnectionHash($connection)]['user'] = new User($data['user']);
+            yield $this->log->log(Log::INFO, 'Data: %s', $this->formatVariable($this->clients));
+        }
+    }
+
+    /**
+     * Get the connection hash like a Connecton ID
+     *
+     * @param      Connection  $connection  The connection to get the hash from
+     *
+     * @return     string The connection hash
+     */
+    private function getConnectionHash(Connection $connection): string
+    {
+        return md5($connection->getRemoteAddress() + $connection->getRemotePort());
     }
 }
