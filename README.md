@@ -41,3 +41,5 @@
 ### Evolution
 
 - Chat messages end to end encryption
+- 
+This has been forked
