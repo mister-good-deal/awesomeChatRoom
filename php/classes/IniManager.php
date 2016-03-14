@@ -7,7 +7,6 @@
  */
 
 namespace classes;
-
 use \classes\ExceptionManager as Exception;
 use \classes\LoggerManager as Logger;
 
@@ -495,14 +494,12 @@ class IniManager
         $iniSectionsComments = array();
 
         preg_match_all(
-            '/(?P<comment>(;.*\R)+)\[(?P<section>[A-Za-z0-9_ ]*)\]/',
+            '/(?:(?:;(?P<comment>.*)\R)+)\[(?P<section>[A-Za-z0-9_ ]*)\]/',
             file_get_contents(static::$INI_FILE_NAME, true),
-            $matches,
-            PREG_SET_ORDER
+            $matches
         );
-
-        foreach ($matches as $match) {
-            $iniSectionsComments[$match['section']] = trim(str_replace('; ', '', $match['comment']));
+        for ($i=0; $i < count($matches[0]); $i++) {
+            $iniSectionsComments[$matches[2][$i]] = trim(str_replace('; ', '', $matches[1][$i]));
         }
 
         return $iniSectionsComments;
@@ -519,32 +516,30 @@ class IniManager
         $paramsComments = array();
 
         preg_match_all(
-            '/\[(?P<name>[A-Za-z0-9_ ]*)\](?<content>\n.+)*/',
+            '/\[(?P<name>[A-Za-z0-9_ ]+)\](?<content>(?:\n.+)*)/',
             file_get_contents(static::$INI_FILE_NAME, true),
             $sections
         );
-        // var_dump($sections);
+        // echo 'Sections\n';
+        // var_dump($sections[2]);
         // echo "\n.....................................\n";
 
-        foreach ($sections as $key => $section) {
+        for ($i=0; $i < count($sections[0]); $i++){
             // echo $key . "\n";
             // var_dump($section);
             // echo "\n.....................................\n";
-            if (isset($section['name'])) {
-                // var_dump($section['name']);
                 preg_match_all(
                     '/(?P<param>.*) = .*; (?P<content>.*)/',
-                    $section['content'],
-                    $comments,
-                    PREG_SET_ORDER
+                    $sections[2][$i],
+                    $comments
                 );
 
-                foreach ($comments as $comment) {
-                    $paramsComments[$section['name']][trim($comment['param'])] = trim($comment['content']);
+        #        var_dump($comments);
+                for ($j=0; $j < count($comments[0]); $j++) {
+                    $paramsComments[$sections[1][$i]][trim($comments[1][$j])] = trim($comments[2][$j]);
                 }
 
                 unset($comments);
-            }
         }
 
         return $paramsComments;
