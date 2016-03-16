@@ -1,0 +1,103 @@
+/*----------  Chat room connect  ----------*/
+
+.connect-room {
+    .room-password {
+        display: none;
+    }
+}
+
+/*----------  Chat rooms container  ----------*/
+
+#chat {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+
+    .room {
+        width: 25em;
+
+        .header {
+            height: 1.5em;
+            background: linear-gradient(to bottom, #7d7e7d 0%,#0e0e0e 100%);
+            margin: 0 0;
+            text-align: center;
+            border-right: 1px solid #000;
+            border-left: 1px solid #000;
+            color: #E6E6E6;
+            font-size: 1.2em;
+            display: inline-block;
+            width: 100%;
+            line-height: 1.3em;
+
+            .glyphicon, .room-name {
+                cursor: pointer;
+            };
+
+            .glyphicon {
+                margin-right: 0.4em;
+                line-height: 1.3em;
+            };
+
+            .glyphicon:first-child {
+                margin-left: 0.4em;
+            };
+
+            .popover {
+                color: #000;
+
+                li {
+                    list-style: none;
+                };
+            };
+        };
+
+        .chat {
+            position: relative;
+            height: 18.5em;
+            width: 100%;
+            padding-top: 2.2em;
+            margin-bottom: 1.2em;
+            overflow-y: scroll;
+
+            .load-historic {
+                position: absolute;
+                top: 0.1em;
+            };
+
+            .pseudonym {
+                color: blue;
+                padding-right: 0.2em;
+            };
+        };
+    };
+}
+
+/*----------  Chat modal admin  ----------*/
+
+.chat-admin {
+    tr.right {
+        display: none;
+
+        td.warper {
+            position: relative;
+
+            .bootstrap-switch {
+                position: absolute;
+                right: 0.5em;
+            };
+
+            label {
+                margin-bottom: 0;
+            };
+        };
+    };
+}
+
+#alert-input-choice {
+    display: none;
+    position: absolute;
+    top: 25%;
+    right: 25%;
+    width: 50%;
+    z-index: @zindex-modal;
+}

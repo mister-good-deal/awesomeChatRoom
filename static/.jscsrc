@@ -1,0 +1,46 @@
+{
+	"preset": "crockford",
+    "maximumLineLength": 120,
+    "requireAlignedMultilineParams": "firstParam",
+    "requireAlignedObjectValues": "ignoreFunction",
+    "requireCamelCaseOrUpperCaseIdentifiers": true,
+    "requireCapitalizedComments": true,
+    "requireCapitalizedConstructors": true,
+    "requireCommaBeforeLineBreak": true,
+    "requireDotNotation": true,
+    "requireEarlyReturn": true,
+    "validateAlignedFunctionParameters": true,
+    "safeContextKeyword": ["self"],
+    "validateCommentPosition": {
+        "position": "above",
+        "allExcept": ["@todo", "todo"]
+    },
+    "validateIndentation": {
+        "value": 4,
+        "allExcept": ["comments"]
+    },
+    "disallowMixedSpacesAndTabs": "smart",
+    "disallowMultipleLineBreaks": true,
+    "disallowPaddingNewLinesBeforeLineComments": true,
+    "disallowPaddingNewlinesInBlocks": true,
+    "disallowSpaceBeforeSemicolon": true,
+    "plugins": [
+        "jscs-jsdoc"
+    ],
+    "jsDoc": {
+        "checkAnnotations": {
+            "preset": "jsdoc3"
+        },
+        "requireParamDescription": true,
+        "requireReturnDescription": true,
+        "checkParamExistence": true,
+        "checkParamNames": true,
+        "requireParamTypes": true,
+        "checkRedundantParams": true,
+        "checkReturnTypes": true,
+        "checkRedundantReturns": true,
+        "requireReturnTypes": true,
+        "requireNewlineAfterDescription": true,
+        "checkTypes": "capitalizedNativeCase"
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "tags": {
+        "allowUnknownTags": true
+    },
+    "source": {
+        "exclude"       : ["app.js", "app.build.js"],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "plugins": [],
+    "templates": {
+        "cleverLinks"          : false,
+        "monospaceLinks"       : false,
+        "outputSourcePath"     : true,
+        "footer"               : "",
+        "copyright"            : "DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.",
+        "protocol"             : "html://",
+        "systemName"           : "WebSocket services / AMD modules",
+        "navType"              : "inline",
+        "theme"                : "journal",
+        "linenums"             : true,
+        "collapseSymbols"      : false,
+        "inverseNav"           : true,
+        "outputSourceFiles"    : true,
+        "dateFormat"           : "YYYY-MM-DD H:mm:ss",
+        "highlightTutorialCode": false
+      },
+    "opts": {
+        "destination": "../../web-doc/jsDoc/"
+    }
+}

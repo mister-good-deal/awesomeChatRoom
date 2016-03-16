@@ -1,0 +1,18 @@
+# Enabled url rewritting
+Options +FollowSymlinks
+RewriteEngine On
+
+# Exclude url that will not be interpreted by the router
+RewriteCond  %{REQUEST_URI} !^\/$
+RewriteCond  %{REQUEST_URI} !^\/index\.php$
+RewriteCond  %{REQUEST_URI} !^\/static\/?$
+RewriteCond  %{REQUEST_URI} !^\/static\/js\/.*$
+RewriteCond  %{REQUEST_URI} !^\/static\/html\/.*$
+RewriteCond  %{REQUEST_URI} !^\/static\/dist\/.*$
+RewriteCond  %{REQUEST_URI} !^\/static\/fonts\/.*$
+
+# Redirect all the left urls to the router
+RewriteRule ^(.*)$ php/router.php?action=$1 [B,NE,QSA,L]
+
+# Custom 404 not found error page
+ErrorDocument 404 /static/html/404NotFound.html
