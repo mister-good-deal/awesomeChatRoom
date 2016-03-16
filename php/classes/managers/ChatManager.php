@@ -27,4 +27,24 @@ class ChatManager extends Manager
      * @var        ChatRoomsBanEntityManager  $chatRoomsBanEntityManager    A chat rooms ban entity manager
      */
     private $chatRoomsBanEntityManager;
+
+    /*=====================================
+    =            Magic Methods            =
+    =====================================*/
+
+    /**
+     * Constructor that can take a User entity as first parameter and a Collection as second parameter
+     *
+     * @param      ChatRooms        $entity      A user entity object DEFAULT null
+     * @param      Collection  $collection  A colection oject DEFAULT null
+     */
+    public function __construct(User $entity = null, Collection $collection = null)
+    {
+        parent::__construct();
+
+        $this->chatRoomsEntityManager    = new ChatRoomsEntityManager($entity, $collection);
+        $this->chatRoomsBanEntityManager = new ChatRoomsBanEntityManager();
+    }
+
+    /*=====  End of Magic Methods  ======*/
 }
