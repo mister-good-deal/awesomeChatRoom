@@ -17,15 +17,16 @@ use Icicle\Coroutine\Coroutine;
 use Icicle\Loop;
 use \classes\IniManager as Ini;
 use \classes\entities\User as User;
-use \classes\entities\UsersChatRights as UsersChatRights;
-use \classes\entitiesManager\UserEntityManager as UserEntityManager;
-use \classes\entitiesManager\UsersChatRightsEntityManager as UsersChatRightsEntityManager;
+use \classes\entities\ChatRoom as ChatRoom;
+use \classes\managers\UserManager as UserManager;
+use \classes\managers\ChatManager as ChatManager;
 use Icicle\WebSocket\Connection as Connection;
 
 /**
  * Chat services to manage a chat with a WebSocket server
  *
  * @todo       Refacto all this class with Icicle lib [in progress]
+ *             Get all rooms name in $this->roomsName
  */
 class ChatService extends ServicesDispatcher implements Service
 {
@@ -68,18 +69,7 @@ class ChatService extends ServicesDispatcher implements Service
      *         'users'        => array(userHash1 => user, userHash2 => user, ...),
      *         'pseudonyms'   => array(userHash1 => pseudonym1, userHash2 => pseudonym2, ...)
      *         'usersRights'  => array(pseudonym1 => UsersChatRights, pseudonym2 => UsersChatRights, ...)
-     *         'creator'      => User,
-     *         'type'         => 'public' || 'private',
-     *         'password'     => 'password',
-     *         'creationDate' => DateTime,
-     *         'maxUsers'     => integer,
-     *         'usersBanned'  => array(
-     *             'ip'        => ipAddress,
-     *             'pseudonym' => the banned user pseudonym,
-     *             'admin'     => the admin pseudonym who banned the user,
-     *             'reason'    => the reason of the ban,
-     *             'date'      => the banned timestamp
-     *         ),
+     *         'room'         => ChatRoom,
      *         'historic'     => array(
      *             'part'          => the part number,
      *             'conversations' => array(
@@ -133,11 +123,7 @@ class ChatService extends ServicesDispatcher implements Service
             'users'        => array(),
             'pseudonyms'   => array(),
             'usersRights'  => array(),
-            'type'         => 'public',
-            'password'     => '',
-            'creationDate' => new \DateTime(),
-            'maxUsers'     => $params['maxUsers'],
-            'usersBanned'  => array(),
+            'room'         => new ChatRoom()
             'historic'     => array('part' => 0, 'conversations' => array())
         );
 
@@ -259,8 +245,9 @@ class ChatService extends ServicesDispatcher implements Service
      */
     private function connectUser(array $client, array $data)
     {
-        $success  = false;
-        $response = array();
+        $success         = false;
+        $response        = array();
+
         @$this->setIfIsSet($roomPassword, $data['password'], null);
         @$this->setIfIsSetAndTrim($roomName, $data['roomName'], null);
         @$this->setIfIsSetAndTrim($pseudonym, $data['pseudonym'], null);
@@ -275,25 +262,19 @@ class ChatService extends ServicesDispatcher implements Service
                 $this->loadRoom($roomName);
             }
 
-            if (count($this->rooms[$roomName]['users']) >= $this->rooms[$roomName]['maxUsers']) {
+            $chatManager = new ChatManager($this->rooms[$roomName]);
+
+            if (count($this->rooms[$roomName]['users']) >= $this->rooms[$roomName]->maxUsers) {
                 $message = _('The room is full');
             } elseif (!$this->checkPrivateRoomPassword($roomName, $roomPassword)) {
                 $message = _('You cannot access to this room or the password is incorrect');
-            } elseif ($this->inSubArray(
-                $client['Connection']->getRemoteAddress(),
-                $this->rooms[$roomName]['usersBanned'],
-                'ip'
-            )) {
+            } elseif ($chatManager->isIpBanned($client['Connection']->getRemoteAddress()) {
                 $message = _('You are banned from this room');
             } elseif ($client['User'] !== null) {
                 // Authenticated user
-                $userEntityManager            = new UserEntityManager($client['User']);
-                $usersChatRightsEntityManager = new UsersChatRightsEntityManager();
-                $usersChatRightsEntityManager->loadEntity(array('idUser' => $client['User']->id, 'roomName' => $roomName));
-                $success                                           = true;
-                $pseudonym                                         = $userEntityManager->getPseudonymForChat();
-                $this->rooms[$roomName]['usersRights'][$pseudonym] = $usersChatRightsEntityManager->getEntity()
-                    ->__toArray();
+                $userManager = new UserManager($client['User']);
+                $pseudonym   = $userManager->getPseudonymForChat();
+                $success     = true;
             } elseif ($pseudonym !== null && $pseudonym !== '') {
                 // Guest user
                 if ($this->isPseudonymUsabled($pseudonym, $roomName)) {
@@ -320,17 +301,16 @@ class ChatService extends ServicesDispatcher implements Service
                 );
 
                 $message                = sprintf(_('You\'re connected to the chat room "%s" !'), $roomName);
-                $response['roomName']   = $roomName;
-                $response['type']       = $this->rooms[$roomName]['type'];
+                $response['room']       = $this->rooms[$roomName]->__toArray();
                 $response['pseudonym']  = $pseudonym;
-                $response['maxUsers']   = $this->rooms[$roomName]['maxUsers'];
-                $response['password']   = $this->rooms[$roomName]['password'];
                 $response['pseudonyms'] = array_values($this->rooms[$roomName]['pseudonyms']);
                 $response['historic']   = $this->filterConversations(
                     $this->rooms[$roomName]['historic']['conversations'],
                     $pseudonym
                 );
 
+
+                // @todo check this
                 if ($client['User'] !== null) {
                     $response['usersRights'] = $this->rooms[$roomName]['usersRights'];
                     $response['usersBanned'] = $this->rooms[$roomName]['usersBanned'];
@@ -1128,8 +1108,8 @@ class ChatService extends ServicesDispatcher implements Service
         $isUsabled = !$this->pseudonymIsInRoom($pseudonym, $roomName);
 
         if ($isUsabled) {
-            $userEntityManager = new UserEntityManager();
-            $isUsabled         = !$userEntityManager->isPseudonymExist($pseudonym);
+            $userManager = new UserManager();
+            $isUsabled   = !$userManager->isPseudonymExist($pseudonym);
         }
 
         return $isUsabled;

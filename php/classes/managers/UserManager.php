@@ -6,7 +6,7 @@
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
-namespace classes\entitiesManager;
+namespace classes\managers;
 
 use \abstracts\Manager as Manager;
 use \classes\entities\User as User;

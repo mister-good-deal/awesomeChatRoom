@@ -45,6 +45,7 @@ class UserEntityManager extends EntityManager
             $this->entity = new User();
         }
 
+        Ini::setIniFileName('conf.ini');
         $this->params = Ini::getSectionParams('User');
     }
 

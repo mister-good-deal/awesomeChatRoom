@@ -24,6 +24,13 @@ define([
      * @param       {User}         User      The current User
      * @param       {FormsManager} Forms     A FormsManager to handle form XHR ajax calls or jsCallbacks
      * @param       {Object}       settings  Overriden settings
+     *
+     * @todo check the id value of the followings
+     * this.mouseInRoomChat
+     * this.isRoomOpened
+     * this.messagesHistory
+     * this.messagesHistoryPointer
+     * this.messagesCurrent
      */
     var ChatManager = function (WebSocket, User, Forms, settings) {
             var self = this;
@@ -1004,7 +1011,8 @@ define([
          * @param {Object} data The server JSON reponse
          */
         insertRoomInDOM: function (data) {
-            var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
+            var roomData = data.room,
+                room     = $(this.settings.selectors.global.room + '[data-id="' + roomData.id + '"]'),
                 roomSample, newRoom, newRoomChat, modalSample, newModal, id;
 
             if (room.length === 0) {
@@ -1014,16 +1022,17 @@ define([
                 newRoomChat = newRoom.find(this.settings.selectors.global.roomChat);
 
                 newRoom.attr({
-                    "data-name"     : data.roomName,
-                    "data-type"     : data.type,
+                    "data-id"       : roomData.id,
+                    "data-name"     : roomData.name,
+                    "data-type"     : roomData.password === '' ? 'public' : 'private',
                     "data-pseudonym": data.pseudonym,
-                    "data-password" : data.password,
-                    "data-max-users": data.maxUsers,
+                    "data-password" : roomData.password,
+                    "data-max-users": roomData.maxUsers,
                     "data-users"    : _(data.pseudonyms).toString()
                 });
                 newRoom.removeAttr('id');
                 newRoom.removeClass('hide');
-                newRoom.find(this.settings.selectors.global.roomName).text(data.roomName);
+                newRoom.find(this.settings.selectors.global.roomName).text(roomData.name);
                 newRoom.find(this.settings.selectors.roomAction.showUsers).popover({
                     content: function () {
                         var list = $('<ul>');
@@ -1039,29 +1048,30 @@ define([
                 newRoomChat.attr('data-historic-loaded', 0);
 
                 this.updateUsersDropdown(newRoom, data.pseudonyms);
+                // @todo historic
                 this.loadHistoric(newRoomChat, data.historic);
-                this.mouseInRoomChat[data.roomName] = false;
-                this.isRoomOpened[data.roomName] = true;
-                this.messagesHistory[data.roomName] = [];
-                this.messagesHistoryPointer[data.roomName] = 0;
-                this.messagesCurrent[data.roomName] = '';
+                this.mouseInRoomChat[roomData.id] = false;
+                this.isRoomOpened[roomData.id] = true;
+                this.messagesHistory[roomData.id] = [];
+                this.messagesHistoryPointer[roomData.id] = 0;
+                this.messagesCurrent[roomData.id] = '';
 
                 $(this.settings.selectors.global.chat).append(newRoom);
                 // Modal room chat administration creation if the user is registered
-                if (data.usersRights !== undefined) {
+                if (this.user.isConnected()) {
                     modalSample = $(this.settings.selectors.administrationPanel.modalSample);
                     newModal    = modalSample.clone();
-                    id          = _.uniqueId('chat-admin-');
+                    id          = 'chat-admin-' + roomData.id;
 
                     newModal.attr({
                         "id"                : id,
-                        "data-room-name"    : data.roomName,
-                        "data-room-password": data.roomPassword
+                        "data-room-name"    : roomData.name,
+                        "data-room-password": roomData.password
                     });
 
-                    newModal.find(this.settings.selectors.administrationPanel.roomName).text(data.roomName);
-                    newModal.find(this.settings.selectors.administrationPanel.inputRoomName).val(data.roomName);
-                    newModal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(data.roomPassword);
+                    newModal.find(this.settings.selectors.administrationPanel.roomName).text(roomData.name);
+                    newModal.find(this.settings.selectors.administrationPanel.inputRoomName).val(roomData.name);
+                    newModal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(roomData.password);
                     newRoom.find(this.settings.selectors.roomAction.administration).attr('data-target', '#' + id);
                     this.updateRoomUsersRights(newModal, data.usersRights);
 

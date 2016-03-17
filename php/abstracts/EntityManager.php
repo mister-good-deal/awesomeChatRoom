@@ -38,7 +38,7 @@ abstract class EntityManager
      * Constructor that can take an Entity as first parameter and a Collection as second parameter
      *
      * @param      Entity      $entity            An entity object DEFAULT null
-     * @param      Collection  $entityCollection  A colection oject DEFAULT null
+     * @param      Collection  $entityCollection  A EntityCollection object DEFAULT null
      */
     public function __construct(Entity $entity = null, Collection $entityCollection = null)
     {
@@ -80,7 +80,7 @@ abstract class EntityManager
     /**
      * Get the entity collection object
      *
-     * @return     Collection  The entity colection object
+     * @return     Collection  The entity EntityCollection object
      */
     public function getEntityCollection(): Collection
     {
@@ -139,12 +139,10 @@ abstract class EntityManager
     }
 
     /**
-     * Save the entity colection in the database
+     * Save the entity EntityCollection in the database
      *
-     * @param      Collection  $collection  OPTIONAL If an collection is passed, this collection becomes the
+     * @param      Collection  $collection  OPTIONAL If a collection is passed, this collection becomes the
      *                                      EntityManager Collection DEFAULT null
-     *
-     * @throws     Exception   If the entityCollection is not a subclass of Collection
      *
      * @return     bool        True if the entity collection has been saved else false
      */

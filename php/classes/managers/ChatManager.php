@@ -6,45 +6,74 @@
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
-namespace classes\entitiesManager;
+namespace classes\managers;
 
 use \abstracts\Manager as Manager;
-use \classes\entities\ChatRooms as ChatRooms;
-use \classes\entities\ChatRoomsBan as ChatRoomsBan;
-use \classes\entitiesManager\ChatRoomsEntityManager as ChatRoomsEntityManager;
-use \classes\entitiesManager\ChatRoomsBanEntityManager as ChatRoomsBanEntityManager;
+use \classes\entities\User as User;
+use \classes\entities\ChatRoom as ChatRoom;
+use \classes\entities\ChatRoomBan as ChatRoomBan;
+use \classes\entitiesCollection\ChatRoomBanCollection as ChatRoomBanCollection;
+use \classes\entitiesManager\ChatRoomEntityManager as ChatRoomEntityManager;
+use \classes\entitiesManager\ChatRoomBanEntityManager as ChatRoomBanEntityManager;
 
 /**
- * Perform action relative to the ChatRooms and ChatRoomsBan entities classes
+ * Perform action relative to the ChatRoom and ChatRoomBan entities classes
  */
 class ChatManager extends Manager
 {
     /**
-     * @var        ChatRoomsEntityManager  $chatRoomsEntityManager  A chat rooms entity manager
+     * @var        ChatRoom  $chatRoomEntity    A ChatRoom entity to work with
      */
-    private $chatRoomsEntityManager;
+    private $chatRoomEntity;
     /**
-     * @var        ChatRoomsBanEntityManager  $chatRoomsBanEntityManager    A chat rooms ban entity manager
+     * @var        ChatRoomEntityManager  $chatRoomEntityManager    A chat room entity manager
      */
-    private $chatRoomsBanEntityManager;
+    private $chatRoomEntityManager;
+    /**
+     * @var        ChatRoomBanEntityManager  $chatRoomBanEntityManager  A chat room ban entity manager
+     */
+    private $chatRoomBanEntityManager;
 
     /*=====================================
     =            Magic Methods            =
     =====================================*/
 
     /**
-     * Constructor that can take a User entity as first parameter and a Collection as second parameter
+     * Constructor that can take a ChatRoom entity as first parameter and a ChatRoomBanCollection as second parameter
      *
-     * @param      ChatRooms        $entity      A user entity object DEFAULT null
-     * @param      Collection  $collection  A colection oject DEFAULT null
+     * @param      ChatRoom               $entity      A user entity object
+     * @param      ChatRoomBanCollection  $collection  A ChatRoomBanCollection object DEFAULT null
      */
-    public function __construct(User $entity = null, Collection $collection = null)
+    public function __construct(ChatRoom $entity, ChatRoomBanCollection $collection = null)
     {
         parent::__construct();
 
-        $this->chatRoomsEntityManager    = new ChatRoomsEntityManager($entity, $collection);
-        $this->chatRoomsBanEntityManager = new ChatRoomsBanEntityManager();
+        $this->chatRoomEntity           = $entity;
+        $this->chatRoomEntityManager    = new ChatRoomEntityManager($entity, $collection);
+        $this->chatRoomBanEntityManager = new ChatRoomBanEntityManager($entity, $collection);
     }
 
     /*=====  End of Magic Methods  ======*/
+
+    public function setChatRoomEntity(ChatRoom $chatRoom)
+    {
+        $this->chatRoomEntity = $chatRoom;
+    }
+
+    public function getChatRoomEntity(): ChatRoom
+    {
+        return $this->chatRoomEntity;
+    }
+
+    /**
+     * Check if the ip is banned for a room
+     *
+     * @param      string    $ip     The ip to check
+     *
+     * @return     bool True if ip is banned else false
+     */
+    public function isIpBanned(string $ip): bool
+    {
+        return $this->chatRoomBanEntityManager->isIpBanned($ip);
+    }
 }

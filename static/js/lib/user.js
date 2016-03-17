@@ -117,6 +117,16 @@ define([
         },
 
         /**
+         * Tells if the user is connected
+         *
+         * @method     isConnected
+         * @return     {Boolean}  True if teh user is connected else false
+         */
+        isConnected: function () {
+            return this.connected === true;
+        },
+
+        /**
          * Set the User object with a JSON parameter
          *
          * @param {Object} data JSON data
