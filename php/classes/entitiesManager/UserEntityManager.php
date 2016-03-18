@@ -17,6 +17,12 @@ use \classes\IniManager as Ini;
  * Performed database action relative to the User entity class
  *
  * @property   User  $entity  The user entity
+ *
+ * @method User getEntity() {
+ *      Get the user entity
+ *
+ *      @return User The user entity
+ * }
  */
 class UserEntityManager extends EntityManager
 {
@@ -186,7 +192,7 @@ class UserEntityManager extends EntityManager
             }
         }
 
-        return array('success' => $success, 'errors' => $errors);;
+        return array('success' => $success, 'errors' => $errors);
     }
 
     /**

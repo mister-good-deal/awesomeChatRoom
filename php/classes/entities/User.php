@@ -11,7 +11,8 @@ namespace classes\entities;
 use \abstracts\Entity as Entity;
 use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
-use \classes\entities\UsersRights as UsersRights;
+use \classes\entities\UserRight as UserRight;
+use \classes\entities\UserChatRight as UserChatRight;
 
 /**
  * User entity that extends the Entity abstact class
@@ -36,17 +37,23 @@ class User extends Entity
      * @var        string[]  $mustDefinedFields     Fields that must be defined when instanciate the User object
      */
     public static $mustDefinedFields = array('firstName', 'lastName', 'email', 'password');
-
     /**
      * @var        string[]  $pseudoBlackList   List of unwanted pseudonyms
      */
     public static $pseudoBlackList = array('admin', 'all', 'SERVER');
-
     /**
      * @var        string[]  $forbidenPseudoCharacters  List of forbidden pseudonym characters
      */
     public static $forbiddenPseudoCharacters = array(',', "'");
 
+    /**
+     * @var        UserRight  $right    The user right
+     */
+    private $right = null;
+    /**
+     * @var        UserChatRight  $chatRight    The user chat right
+     */
+    private $chatRight = null;
     /**
      * @var        array  $errors   An array containing the occured errors when fields are set
      */
@@ -77,6 +84,46 @@ class User extends Entity
     =========================================*/
 
     /**
+     * Get the user right
+     *
+     * @return     UserRight  The user right entity
+     */
+    public function getRight(): UserRight
+    {
+        return $this->right;
+    }
+
+    /**
+     * Set the user right
+     *
+     * @param      UserRight  $right  The user right entity
+     */
+    public function setRight(UserRight $right)
+    {
+        $this->right = $right;
+    }
+
+    /**
+     * Get the user chat right
+     *
+     * @return     UserChatRight  The user chat right entity
+     */
+    public function getChatRight(): UserChatRight
+    {
+        return $this->chatRight;
+    }
+
+    /**
+     * Set the user chat right
+     *
+     * @param      UserChatRight  $chatRight  The user chat right entity
+     */
+    public function setChatRight(UserChatRight $chatRight)
+    {
+        $this->chatRight = $chatRight;
+    }
+
+    /**
      * Get the occured errors when fields are set
      *
      * @return     array  An array containing the occured errors when fields are set
@@ -96,6 +143,8 @@ class User extends Entity
      * Bind user inputs to set User class attributes with inputs check
      *
      * @param      array  $inputs  The user inputs
+     *
+     * @todo Move it to entityManager
      */
     public function bindInputs(array $inputs)
     {
@@ -119,6 +168,8 @@ class User extends Entity
      * @param      string     $value       The new column value
      *
      * @return     string  The sanitized value
+     *
+     * @todo Move it to entityManager
      */
     private function validateField(string $columnName, string $value): string
     {

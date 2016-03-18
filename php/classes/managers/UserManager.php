@@ -20,6 +20,10 @@ use \classes\entitiesManager\UserChatRightEntityManager as UserChatRightEntityMa
 class UserManager extends Manager
 {
     /**
+     * @var        User  $userEntity    A user entity
+     */
+    private $userEntity;
+    /**
      * @var        UserEntityManager  $userEntityManager    A user entity manager
      */
     private $userEntityManager;
@@ -47,12 +51,10 @@ class UserManager extends Manager
         parent::__construct();
 
         $this->userEntityManager          = new UserEntityManager($entity, $collection);
-        $this->userRightEntityManager     = new UserRightEntityManager();
-        $this->userChatRightEntityManager = new UserChatRightEntityManager();
-
-        if ($entity !== null) {
-            $this->loadEntitesManager($entity->id);
-        }
+        $this->userEntity                 = $this->userEntityManager->getEntity();
+        $this->userRightEntityManager     = new UserRightEntityManager($this->userEntity->getRight());
+        $this->userChatRightEntityManager = new UserChatRightEntityManager($this->userEntity->getChatRight());
+        $this->loadUserRights();
     }
 
     /*=====  End of Magic Methods  ======*/
@@ -91,16 +93,16 @@ class UserManager extends Manager
      * @param      string[]  $inputs  Inputs array containing array('login' => 'login', 'password' => 'password')
      *
      * @return     array  The occured errors or success in a array
-     * @todo       refacto make it shorter...
      */
     public function connect(array $inputs): array
     {
         $response = $this->userEntityManager->connect($inputs);
 
         if ($response['success']) {
-            $this->loadEntitesManager($entity->id);
-            $response['user']['chatRights'] = $this->userChatRightEntityManager->__toArray();
-            $response['user']['rights'] = $this->userRightEntityManager->__toArray();
+            $this->userEntity = $this->userEntityManager->getEntity();
+            $this->loadUserRights();
+            $response['user']['chatRight'] = $this->userEntity->getChatRight()->__toArray();
+            $response['user']['right']     = $this->userEntity->getRight()->__toArray();
         }
 
         return $response;
@@ -113,10 +115,7 @@ class UserManager extends Manager
      */
     public function hasWebSocketServerRight(): bool
     {
-        return (
-            $this->userEntityManager->checkSecurityToken() &&
-            (bool) $this->userRightEntityManager->getEntity()->webSocket
-        );
+        return $this->userEntityManager->checkSecurityToken() && $this->userEntity->getRight()->webSocket;
     }
 
     /**
@@ -126,10 +125,7 @@ class UserManager extends Manager
      */
     public function hasChatAdminRight(): bool
     {
-        return (
-            $this->userEntityManager->checkSecurityToken() &&
-            (bool) $this->userRightEntityManager->getEntity()->chatAdmin
-        );
+        return $this->userEntityManager->checkSecurityToken() && $this->userEntity->getRight()->chatAdmin;
     }
 
     /**
@@ -149,14 +145,19 @@ class UserManager extends Manager
     =======================================*/
 
     /**
-     * Load the user chat right and user right entities manager
-     *
-     * @param      int   $id     The user ID
+     * Load the user chat right and user right entities manager and put them in the user entity
      */
-    private function loadEntitesManager(int $id)
+    private function loadUserRights()
     {
-        $this->userRightEntityManager->loadEntity($id);
-        $this->userChatRightEntityManager->loadEntity($id);
+        if ($this->userEntity->getRight() === null) {
+            $this->userRightEntityManager->loadEntity($this->userEntity->id);
+            $this->userEntity->setRight($this->userRightEntityManager->getEntity());
+        }
+
+        if ($this->userEntity->getChatRight() === null) {
+            $this->userChatRightEntityManager->loadEntity($this->userEntity->id);
+            $this->userEntity->setChatRight($this->userChatRightEntityManager->getEntity());
+        }
     }
 
     /*=====  End of Private methods  ======*/

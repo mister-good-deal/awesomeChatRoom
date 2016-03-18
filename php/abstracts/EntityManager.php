@@ -43,11 +43,11 @@ abstract class EntityManager
     public function __construct(Entity $entity = null, Collection $entityCollection = null)
     {
         if ($entity !== null) {
-            $this->setEntity($entity);
+            $this->entity = $entity;
         }
 
         if ($entityCollection !== null) {
-            $this->setEntityCollection($entityCollection);
+            $this->entityCollection = $entityCollection;
         }
     }
 

@@ -13,9 +13,15 @@ use \classes\entities\UserChatRight as UserChatRight;
 use \classes\DataBase as DB;
 
 /**
- * Performed database action relative to the UserChatRight entity class
+ * Performed database action relative to the user chat right entity class
  *
  * @property   UserChatRight  $entity  The UserChatRight entity
+ *
+ * @method UserChatRight getEntity() {
+ *      Get the user chat right entity
+ *
+ *      @return UserChatRight The user chat right entity
+ * }
  *
  * @todo       Move changeRoomName(), addRoomName() and removeRoomName() in a chatRoom entityManager class
  */
