@@ -1,6 +1,6 @@
 <?php
 /**
- * Entity manager for the entity UsersChatRights
+ * Entity manager for the entity UserChatRight
  *
  * @package    EntityManager
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -9,30 +9,30 @@
 namespace classes\entitiesManager;
 
 use \abstracts\EntityManager as EntityManager;
-use \classes\entities\UsersChatRights as UsersChatRights;
+use \classes\entities\UserChatRight as UserChatRight;
 use \classes\DataBase as DB;
 
 /**
- * Performed database action relative to the UsersChatRights entity class
+ * Performed database action relative to the UserChatRight entity class
  *
- * @property   UsersChatRights  $entity  The UsersChatRights entity
+ * @property   UserChatRight  $entity  The UserChatRight entity
  *
- * @todo Move changeRoomName(), addRoomName() and removeRoomName() in a chatRoom entityManager class
+ * @todo       Move changeRoomName(), addRoomName() and removeRoomName() in a chatRoom entityManager class
  */
-class UsersChatRightsEntityManager extends EntityManager
+class UserChatRightEntityManager extends EntityManager
 {
     /**
-     * Constructor that can take a UsersChatRights entity as first parameter and a Collection as second parameter
+     * Constructor that can take a UserChatRight entity as first parameter and a Collection as second parameter
      *
-     * @param      UsersChatRights  $entity      A UsersChatRights entity object DEFAULT null
-     * @param      Collection       $collection  A colection oject DEFAULT null
+     * @param      UserChatRight  $entity      A UserChatRight entity object DEFAULT null
+     * @param      Collection     $collection  A colection oject DEFAULT null
      */
-    public function __construct(UsersChatRights $entity = null, Collection $collection = null)
+    public function __construct(UserChatRight $entity = null, Collection $collection = null)
     {
         parent::__construct($entity, $collection);
 
         if ($entity === null) {
-            $this->entity = new UsersChatRights();
+            $this->entity = new UserChatRight();
         }
     }
 

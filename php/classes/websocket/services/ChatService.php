@@ -123,7 +123,7 @@ class ChatService extends ServicesDispatcher implements Service
             'users'        => array(),
             'pseudonyms'   => array(),
             'usersRights'  => array(),
-            'room'         => new ChatRoom()
+            'room'         => new ChatRoom(),
             'historic'     => array('part' => 0, 'conversations' => array())
         );
 
@@ -268,7 +268,7 @@ class ChatService extends ServicesDispatcher implements Service
                 $message = _('The room is full');
             } elseif (!$this->checkPrivateRoomPassword($roomName, $roomPassword)) {
                 $message = _('You cannot access to this room or the password is incorrect');
-            } elseif ($chatManager->isIpBanned($client['Connection']->getRemoteAddress()) {
+            } elseif ($chatManager->isIpBanned($client['Connection']->getRemoteAddress())) {
                 $message = _('You are banned from this room');
             } elseif ($client['User'] !== null) {
                 // Authenticated user
@@ -350,6 +350,7 @@ class ChatService extends ServicesDispatcher implements Service
         } elseif (in_array($roomName, $this->roomsName)) {
             $message = sprintf(_('The chat room name "%s" already exists'), $roomName);
         } elseif ($type !== 'public' && $type !== 'private') {
+            // @todo automatic ?
             $message = _('The room type must be "public" or "private"');
         } elseif ($type === 'private' && ($roomPassword === null || strlen($roomPassword) === 0)) {
             $message = _('The password is required and must not be empty');
@@ -359,6 +360,11 @@ class ChatService extends ServicesDispatcher implements Service
             if ($client['User'] === null) {
                 $message = _('Authentication failed');
             } else {
+                $userManager = new UserManager($client['User']);
+
+
+
+
                 $usersChatRights              = new UsersChatRights();
                 $usersChatRightsEntityManager = new UsersChatRightsEntityManager($usersChatRights);
                 $userEntityManager            = new UserEntityManager($client['User']);

@@ -11,8 +11,8 @@ namespace classes\managers;
 use \abstracts\Manager as Manager;
 use \classes\entities\User as User;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
-use \classes\entitiesManager\UsersRightsEntityManager as UsersRightsEntityManager;
-use \classes\entitiesManager\UsersChatRightsEntityManager as UsersChatRightsEntityManager;
+use \classes\entitiesManager\UserRightEntityManager as UserRightEntityManager;
+use \classes\entitiesManager\UserChatRightEntityManager as UserChatRightEntityManager;
 
 /**
  * Perform action relative to the User, UserRight and UserChatRight entities classes
@@ -20,17 +20,17 @@ use \classes\entitiesManager\UsersChatRightsEntityManager as UsersChatRightsEnti
 class UserManager extends Manager
 {
     /**
-     * @var        UserEntityManager  $usersEntityManager   A user entity manager
+     * @var        UserEntityManager  $userEntityManager    A user entity manager
      */
-    private $usersEntityManager;
+    private $userEntityManager;
     /**
-     * @var        UsersRightsEntityManager  $usersRightsEntityManager  A user rights entity manager
+     * @var        UserRightEntityManager  $userRightEntityManager  A user right entity manager
      */
-    private $usersRightsEntityManager;
+    private $userRightEntityManager;
     /**
-     * @var        UsersChatRightsEntityManager  $usersChatRightsEntityManager  A user chat rights entity manager
+     * @var        UserChatRightEntityManager  $userChatRightEntityManager  A user chat right entity manager
      */
-    private $usersChatRightsEntityManager;
+    private $userChatRightEntityManager;
 
     /*=====================================
     =            Magic Methods            =
@@ -46,9 +46,9 @@ class UserManager extends Manager
     {
         parent::__construct();
 
-        $this->usersEntityManager           = new UserEntityManager($entity, $collection);
-        $this->usersRightsEntityManager     = new UsersRightsEntityManager();
-        $this->usersChatRightsEntityManager = new UsersChatRightsEntityManager();
+        $this->userEntityManager          = new UserEntityManager($entity, $collection);
+        $this->userRightEntityManager     = new UserRightEntityManager();
+        $this->userChatRightEntityManager = new UserChatRightEntityManager();
 
         if ($entity !== null) {
             $this->loadEntitesManager($entity->id);
@@ -70,7 +70,7 @@ class UserManager extends Manager
      */
     public function getUserIdByPseudonym(string $pseudonym): int
     {
-        return $this->usersEntityManager->getUserIdByPseudonym($pseudonym);
+        return $this->userEntityManager->getUserIdByPseudonym($pseudonym);
     }
 
     /**
@@ -82,7 +82,7 @@ class UserManager extends Manager
      */
     public function register(array $inputs): array
     {
-        return $this->usersEntityManager->register($inputs);
+        return $this->userEntityManager->register($inputs);
     }
 
     /**
@@ -95,12 +95,12 @@ class UserManager extends Manager
      */
     public function connect(array $inputs): array
     {
-        $response = $this->usersEntityManager->connect($inputs);
+        $response = $this->userEntityManager->connect($inputs);
 
         if ($response['success']) {
             $this->loadEntitesManager($entity->id);
-            $response['user']['chatRights'] = $this->usersChatRightsEntityManager->__toArray();
-            $response['user']['rights'] = $this->usersRightsEntityManager->__toArray();
+            $response['user']['chatRights'] = $this->userChatRightEntityManager->__toArray();
+            $response['user']['rights'] = $this->userRightEntityManager->__toArray();
         }
 
         return $response;
@@ -114,8 +114,8 @@ class UserManager extends Manager
     public function hasWebSocketServerRight(): bool
     {
         return (
-            $this->usersEntityManager->checkSecurityToken() &&
-            (bool) $this->usersRightsEntityManager->getEntity()->webSocket
+            $this->userEntityManager->checkSecurityToken() &&
+            (bool) $this->userRightEntityManager->getEntity()->webSocket
         );
     }
 
@@ -127,8 +127,8 @@ class UserManager extends Manager
     public function hasChatAdminRight(): bool
     {
         return (
-            $this->usersEntityManager->checkSecurityToken() &&
-            (bool) $this->usersRightsEntityManager->getEntity()->chatAdmin
+            $this->userEntityManager->checkSecurityToken() &&
+            (bool) $this->userRightEntityManager->getEntity()->chatAdmin
         );
     }
 
@@ -139,7 +139,7 @@ class UserManager extends Manager
      */
     public function getPseudonymForChat(): string
     {
-        return $this->usersEntityManager->getUserIdByPseudonym();
+        return $this->userEntityManager->getUserIdByPseudonym();
     }
 
     /*=====  End of Public methods  ======*/
@@ -149,14 +149,14 @@ class UserManager extends Manager
     =======================================*/
 
     /**
-     * Load the user chat rights and user right entities manager
+     * Load the user chat right and user right entities manager
      *
      * @param      int   $id     The user ID
      */
     private function loadEntitesManager(int $id)
     {
-        $this->usersRightsEntityManager->loadEntity($id);
-        $this->usersChatRightsEntityManager->loadEntity($id);
+        $this->userRightEntityManager->loadEntity($id);
+        $this->userChatRightEntityManager->loadEntity($id);
     }
 
     /*=====  End of Private methods  ======*/

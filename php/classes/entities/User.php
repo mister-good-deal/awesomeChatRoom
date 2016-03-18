@@ -118,8 +118,6 @@ class User extends Entity
      * @param      string     $columnName  The column name
      * @param      string     $value       The new column value
      *
-     * @throws     Exception  If the column name does not a exist
-     *
      * @return     string  The sanitized value
      */
     private function validateField(string $columnName, string $value): string
