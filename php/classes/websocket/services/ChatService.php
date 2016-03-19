@@ -267,55 +267,28 @@ class ChatService extends ServicesDispatcher implements Service
             // @var ChatRoom $currentRoom The current chat room
             $currentRoom = $this->rooms[$chatManager->getChatRoomEntity()->id];
 
-            if (count($currentRoom['users']) >= $currentRoom->maxUsers) {
-                $message = _('The room is full');
-            } elseif (!$this->checkPrivateRoomPassword($currentRoom, $data['password'])) {
-                $message = _('Room password is incorrect');
-            } elseif ($chatManager->isIpBanned($client['Connection']->getRemoteAddress())) {
-                $message = _('You are banned from this room');
-            } elseif ($client['User'] !== null) {
-                // Authenticated user
-                $userManager = new UserManager($client['User']);
-                $pseudonym   = $userManager->getPseudonymForChat();
-                $success     = true;
-            } elseif ($pseudonym !== null && $pseudonym !== '') {
-                // Guest user
-                if ($this->isPseudonymUsabled($pseudonym, $currentRoom)) {
-                    $success = true;
-                } else {
-                    $message = sprintf(_('The pseudonym "%s" is already used'), $pseudonym);
+            // @todo put this in addUserToTheRoom()
+            // if (count($currentRoom['users']) >= $currentRoom->maxUsers) {
+            //     $message = _('The room is full');
+            // } elseif (!$this->checkPrivateRoomPassword($currentRoom, $data['password'])) {
+            //     $message = _('Room password is incorrect');
+            // } elseif ($chatManager->isIpBanned($client['Connection']->getRemoteAddress())) {
+            //     $message = _('You are banned from this room');
+            // } else {
+                $closure = $this->addUserToTheRoom($client, $currentRoom, $pseudonym);
+
+                foreach ($closure as $value) {
+                    yield $value;
                 }
-            } else {
-                $message = _('The pseudonym can\'t be empty');
+
+                $response = $closure->getReturn();
             }
 
-            if ($success) {
-                // Add user to the room
-                $userHash                                        = $this->getConnectionHash($client['Connection']);
-                $this->rooms[$roomName]['users'][$userHash]      = $client;
-                $this->rooms[$roomName]['pseudonyms'][$userHash] = $pseudonym;
-
-                // @todo method removed
-                // yield $this->addUserRoom($userHash, $roomName);
-                yield $this->log->log(
-                    Log::INFO,
-                    _('[chatService] New user "%s" added in the room "%s"'),
-                    $pseudonym,
-                    $roomName
-                );
-
-                $message                = sprintf(_('You\'re connected to the chat room "%s" !'), $roomName);
-                $response['room']       = $this->rooms[$roomName]->__toArray();
-                $response['pseudonym']  = $pseudonym;
-                $response['pseudonyms'] = array_values($this->rooms[$roomName]['pseudonyms']);
-                $response['historic']   = $this->filterConversations(
-                    $this->rooms[$roomName]['historic']['conversations'],
-                    $pseudonym
-                );
-
-                if ($client['User'] !== null) {
-                    array_merge($response, $this->getUsersRightFromRoom($roomName));
-                }
+            if ($response['success']) {
+                $message                = sprintf(_('You\'re connected to the chat room "%s" !'), $currentRoom->name);
+                $response['room']       = $currentRoom->__toArray();
+                $response['pseudonyms'] = $this->getRoomPseudonyms($currentRoom->id);
+                // @todo ElasticSearch room historic
             }
         }
 
@@ -1012,7 +985,6 @@ class ChatService extends ServicesDispatcher implements Service
      */
     private function checkPrivateRoomPassword(ChatRoom $chatRoom, string $roomPassword): bool
     {
-        // wtf this error, I think i'm tired XD
         return ($chatRoom->password === "" || $chatRoom->password === $roomPassword);
     }
 
@@ -1048,30 +1020,30 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      array   $clientFrom  The client to send the message from array(Connection, User)
      * @param      array   $clientTo    The client to send the message to array(Connection, User)
      * @param      string  $message     The text message
-     * @param      string  $roomName    The room name
+     * @param      int     $roomId      The room ID
      * @param      string  $type        The message type ('public' || 'private')
-     * @param      string  $date        The server date at the moment the message was processed (Y-m-d H:i:s)
+     * @param      string  $date        The server date at the moment the message was sent (Y-m-d H:i:s) DEFAULT null
      */
     private function sendMessageToUser(
         array $clientFrom,
         array $clientTo,
         string $message,
-        string $roomName,
+        int $roomId,
         string $type,
-        string $date
+        string $date = null
     ) {
         if ($clientFrom['Connection'] === 'SERVER') {
             $pseudonym = 'SERVER';
         } else {
-            $pseudonym = $this->rooms[$roomName]['pseudonyms'][$this->getConnectionHash($clientFrom['Connection'])];
+            $pseudonym = $this->rooms[$roomId]['pseudonyms'][$this->getConnectionHash($clientFrom['Connection'])];
         }
 
         yield $clientTo['Connection']->send(json_encode(array(
             'service'   => $this->chatService,
             'action'    => 'recieveMessage',
             'pseudonym' => $pseudonym,
-            'time'      => $date,
-            'roomName'  => $roomName,
+            'time'      => $date !== null ? $date : (new \DateTime())->format('Y-m-d H:i:s'),
+            'roomId'    => $roomId,
             'type'      => $type,
             'text'      => $message
         )));
@@ -1082,19 +1054,21 @@ class ChatService extends ServicesDispatcher implements Service
      *
      * @param      array   $clientFrom  The client to send the message from array(Connection, User)
      * @param      string  $message     The text message
-     * @param      string  $roomName    The room name
+     * @param      int     $roomId      The room ID
      * @param      string  $type        The message type ('public' || 'private')
-     * @param      string  $date        The server date at the moment the message was processed (Y-m-d H:i:s)
+     * @param      string  $date        The server date at the moment the message was sent (Y-m-d H:i:s) DEFAULT null
      */
     private function sendMessageToRoom(
         array $clientFrom,
         string $message,
-        string $roomName,
+        int $roomId,
         string $type,
-        string $date
+        string $date = null
     ) {
+        $date = ($date !== null ? $date : (new \DateTime())->format('Y-m-d H:i:s'));
+
         foreach ($this->rooms[$roomName]['users'] as $clientTo) {
-            yield $this->sendMessageToUser($clientFrom, $clientTo, $message, $roomName, $type, $date);
+            yield $this->sendMessageToUser($clientFrom, $clientTo, $message, $roomId, $type, $date);
         }
     }
 
@@ -1156,9 +1130,92 @@ class ChatService extends ServicesDispatcher implements Service
         return $rights;
     }
 
-    private function isPseudonymUsabled(string $pseudonym, ChatRoom $chatRoom)
+    /**
+     * Get all the room used pseudonyms
+     *
+     * @param      int    $roomId  The room ID
+     *
+     * @return     array  An array of all used pseudonyms
+     */
+    private function getRoomPseudonyms(int $roomId): array
     {
-        return // foreach users in room check the pseudonym AND handle guest user...
+        $pseudonyms  = array();
+        $userManager = new UserManager();
+
+        foreach ($this->rooms[$roomId]['users'] as $userInfo) {
+            if ($userInfo['User'] !== null) {
+                $userManager->setUser($userInfo['User']);
+                $pseudonyms[] = $userManager->getPseudonymForChat();
+            } else {
+                $pseudonyms[] = $userInfo['pseudonym'];
+            }
+        }
+
+        return $pseudonyms;
+    }
+
+    /**
+     * Tell if a pseudonym is usabled in a room
+     *
+     * @param      string  $pseudonym  The pseudonym to test
+     * @param      int     $roomId     The room ID
+     *
+     * @return     bool    True if the pseudonym is usabled else false
+     */
+    private function isPseudonymUsabled(string $pseudonym, int $roomId): bool
+    {
+        return in_array($pseudonym, $this->getRoomPseudonyms($roomId));
+    }
+
+    /**
+     * Add a user to a room
+     *
+     * @param      array     $client     The client information [Connection, User] array pair
+     * @param      ChatRoom  $room       The chat room
+     * @param      string    $pseudonym  The user pseudonym DEFAULT ''
+     *
+     * @return     array     Result as an array of values (success, pseudonym, message)
+     */
+    private function addUserToTheRoom(array $client, ChatRoom $room, string $pseudonym = '')
+    {
+        $response = array('success' => false);
+
+        if ($client['User'] !== null) {
+            // Authenticated user
+            $userManager           = new UserManager($client['User']);
+            $response['pseudonym'] = $userManager->getPseudonymForChat();
+            $response['success']   = true;
+        } elseif ($pseudonym !== '') {
+            // Guest user
+            if ($this->isPseudonymUsabled($pseudonym, $room->id)) {
+                //@ todo test if the pseudonym is not overriden when a guest user is connected to different rooms
+                $client['pseudonym']   = $pseudonym;
+                $response['pseudonym'] = $pseudonym;
+                $response['success']   = true;
+            } else {
+                $response['message'] = sprintf(_('The pseudonym "%s" is already used'), $pseudonym);
+            }
+        } else {
+            $response['message'] = _('The pseudonym can\'t be empty');
+        }
+
+        if ($response['success']) {
+            // Send a message to all users in chat
+            $message = sprintf(_("%s joins the room"), $response['pseudonym']);
+            yield $this->sendMessageToRoom($this->server, $message, $room->id, 'public');
+            // Add user to the room
+            $this->rooms[$room->id]['users'][$this->getConnectionHash($client['Connection'])] = $client;
+
+            yield $this->log->log(
+                Log::INFO,
+                _('[chatService] New user "%s" added in the room "%s" (%d)'),
+                $response['pseudonym'],
+                $room->name,
+                $room->id
+            );
+        }
+
+        return $response;
     }
 
     /*=====  End of Private methods  ======*/

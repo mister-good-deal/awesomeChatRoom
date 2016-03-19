@@ -51,10 +51,10 @@ class UserManager extends Manager
     {
         parent::__construct();
 
+        $this->userEntity                 = $entity;
         $this->userEntityManager          = new UserEntityManager($entity, $collection);
-        $this->userEntity                 = $this->userEntityManager->getEntity();
-        $this->userRightEntityManager     = new UserRightEntityManager($this->userEntity->getRight());
-        $this->userChatRightEntityManager = new UserChatRightEntityManager(null, $this->userEntity->getChatRight());
+        $this->userRightEntityManager     = new UserRightEntityManager($entity->getRight());
+        $this->userChatRightEntityManager = new UserChatRightEntityManager(null, $entity->getChatRight());
         $this->loadUserRights();
     }
 
@@ -65,13 +65,26 @@ class UserManager extends Manager
     ======================================*/
 
     /**
-     * Get the current user chat right
+     * Get the current user
      *
      * @return     User  The current user
      */
     public function getUser(): User
     {
         return $this->userEntity;
+    }
+
+    /**
+     * Set the current user
+     *
+     * @param      User  $user   A user entity
+     */
+    public function setUser(User $user)
+    {
+        $this->userEntity = $user;
+        $this->userEntityManager->setEntity($user);
+        $this->userRightEntityManager->setEntity($user->getRight());
+        $this->userChatRightEntityManager->setEntityCollection($user->getChatRight());
     }
 
     /**

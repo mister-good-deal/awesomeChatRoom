@@ -44,7 +44,7 @@ class ChatManager extends Manager
      * @param      ChatRoom               $entity      A user entity object
      * @param      ChatRoomBanCollection  $collection  A ChatRoomBanCollection object DEFAULT null
      */
-    public function __construct(ChatRoom &$entity, ChatRoomBanCollection &$collection = null)
+    public function __construct(ChatRoom $entity, ChatRoomBanCollection $collection = null)
     {
         parent::__construct();
 

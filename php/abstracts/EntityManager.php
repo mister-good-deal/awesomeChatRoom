@@ -40,7 +40,7 @@ abstract class EntityManager
      * @param      Entity      $entity            An entity object DEFAULT null
      * @param      Collection  $entityCollection  A EntityCollection object DEFAULT null
      */
-    public function __construct(Entity &$entity = null, Collection &$entityCollection = null)
+    public function __construct(Entity $entity = null, Collection $entityCollection = null)
     {
         if ($entity !== null) {
             $this->entity = $entity;

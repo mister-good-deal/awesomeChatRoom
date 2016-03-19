@@ -26,7 +26,7 @@ class ChatRoomBanEntityManager extends EntityManager
      *
      * @param      ChatRoom  $entity  A ChatRooms entity object
      */
-    public function __construct(ChatRoom &$entity)
+    public function __construct(ChatRoom $entity)
     {
         parent::__construct($entity);
 
