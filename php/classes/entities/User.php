@@ -12,7 +12,7 @@ use \abstracts\Entity as Entity;
 use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
 use \classes\entities\UserRight as UserRight;
-use \classes\entities\UserChatRight as UserChatRight;
+use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
 
 /**
  * User entity that extends the Entity abstact class
@@ -51,7 +51,7 @@ class User extends Entity
      */
     private $right = null;
     /**
-     * @var        UserChatRight  $chatRight    The user chat right
+     * @var        UserChatRightCollection  $chatRight  The user chat right collection
      */
     private $chatRight = null;
     /**
@@ -104,21 +104,21 @@ class User extends Entity
     }
 
     /**
-     * Get the user chat right
+     * Get the user chat right collection
      *
-     * @return     UserChatRight  The user chat right entity
+     * @return     UserChatRightCollection  The user chat right collection
      */
-    public function getChatRight(): UserChatRight
+    public function getChatRight(): UserChatRightCollection
     {
         return $this->chatRight;
     }
 
     /**
-     * Set the user chat right
+     * Set the user chat right collection
      *
-     * @param      UserChatRight  $chatRight  The user chat right entity
+     * @param      UserChatRightCollection  $chatRight  The user chat right collection
      */
-    public function setChatRight(UserChatRight $chatRight)
+    public function setChatRight(UserChatRightCollection $chatRight)
     {
         $this->chatRight = $chatRight;
     }

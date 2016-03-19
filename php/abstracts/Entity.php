@@ -260,6 +260,8 @@ abstract class Entity
      *
      * @throws     Exception  If the id is on several columns and $value is not an array
      * @throws     Exception  If the id key is not found
+     *
+     * @todo wtf is that
      */
     public function setIdValue($value)
     {

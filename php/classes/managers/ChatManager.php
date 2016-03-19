@@ -44,7 +44,7 @@ class ChatManager extends Manager
      * @param      ChatRoom               $entity      A user entity object
      * @param      ChatRoomBanCollection  $collection  A ChatRoomBanCollection object DEFAULT null
      */
-    public function __construct(ChatRoom $entity, ChatRoomBanCollection $collection = null)
+    public function __construct(ChatRoom &$entity, ChatRoomBanCollection &$collection = null)
     {
         parent::__construct();
 
@@ -55,14 +55,36 @@ class ChatManager extends Manager
 
     /*=====  End of Magic Methods  ======*/
 
-    public function setChatRoomEntity(ChatRoom $chatRoom)
-    {
-        $this->chatRoomEntity = $chatRoom;
-    }
-
     public function getChatRoomEntity(): ChatRoom
     {
         return $this->chatRoomEntity;
+    }
+
+    /**
+     * Create a new chat room
+     *
+     * @param      int     $idUser    The user creator id
+     * @param      string  $roomName  The room name
+     * @param      int     $maxUsers  The max room users
+     * @param      string  $password  The room password DEFAULT ''
+     *
+     * @return     array   An array with the success and the errors if it failed
+     */
+    public function createChatRoom(int $idUser, string $roomName, int $maxUsers, string $password = '')
+    {
+        return $this->chatRoomEntityManager->createChatRoom($idUser, $roomName, $maxUsers, $password);
+    }
+
+    /**
+     * Load a chat room
+     *
+     * @param      int   $id     The chat room ID
+     *
+     * @return     bool  True if the chat was successfully loaded else false
+     */
+    public function loadChatRoom(int $id): bool
+    {
+        return $this->chatRoomEntityManager->loadEntity($id);
     }
 
     /**

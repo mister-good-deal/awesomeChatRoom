@@ -10,17 +10,25 @@ namespace classes\entitiesManager;
 
 use \abstracts\EntityManager as EntityManager;
 use \classes\entities\UserChatRight as UserChatRight;
+use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
 use \classes\DataBase as DB;
 
 /**
  * Performed database action relative to the user chat right entity class
  *
- * @property   UserChatRight  $entity  The UserChatRight entity
+ * @property   UserChatRight            $entity             The UserChatRight entity
+ * @property   UserChatRightCollection  $entityCollection   The UserChatRight collection
  *
  * @method UserChatRight getEntity() {
  *      Get the user chat right entity
  *
  *      @return UserChatRight The user chat right entity
+ * }
+ *
+ * @method UserChatRightCollection getEntityCollection() {
+ *      Get the user chat right collection
+ *
+ *      @return UserChatRightCollection The user chat right collection
  * }
  *
  * @todo       Move changeRoomName(), addRoomName() and removeRoomName() in a chatRoom entityManager class
@@ -52,7 +60,23 @@ class UserChatRightEntityManager extends EntityManager
         $this->entity->grant    = true;
         $this->entity->password = true;
         $this->entity->rename   = true;
-        $this->saveEntity();
+    }
+
+    /**
+     * Load all the user rooms chat right
+     *
+     * @param      int   $userId  The user ID
+     */
+    public function loadUserChatRight(int $userId)
+    {
+        $sqlMarks   = 'SELECT * FROM %s WHERE idUser = %d';
+        $sql        = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $userId);
+        $chatRights = DB::query($sql)->fetchAll(\PDO::FETCH_COLUMN);
+
+        foreach ($chatRights as $chatRightInfo) {
+            $chatRight = (new UserChatRight())->setAttributes($chatRightInfo);
+            $this->getEntityCollection()->add($chatRight);
+        }
     }
 
     /**
@@ -71,25 +95,6 @@ class UserChatRightEntityManager extends EntityManager
             $this->entity->getTableName(),
             DB::quote($newRoomName),
             DB::quote($oldRoomName)
-        );
-
-        return (int) DB::exec($sql);
-    }
-
-    /**
-     * Change a room name in the chat rights table
-     *
-     * @param      string  $roomName  The new room name
-     *
-     * @return     int     The number of rows inserted
-     */
-    public function addRoomName(string $roomName): int
-    {
-        $sqlMarks = 'INSERT INTO %s VALUES(SELECT `id`, %s, 0, 0, 0, 0, 0 FROM Users)';
-        $sql      = static::sqlFormater(
-            $sqlMarks,
-            $this->entity->getTableName(),
-            DB::quote($roomName)
         );
 
         return (int) DB::exec($sql);

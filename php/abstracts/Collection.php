@@ -68,6 +68,16 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     ======================================*/
 
     /**
+     * Get the current Collection
+     *
+     * @return     Collection  The current collection
+     */
+    public function getCollection(): Collection
+    {
+        return $this->collection;
+    }
+
+    /**
      * Add an entity at the end of the collection
      *
      * @param      Entity     $entity  The entity object
@@ -115,11 +125,11 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Get an entity by its index
      *
-     * @param      int     $index  The entity index in the Collection
+     * @param      int|string  $index  The entity index in the Collection
      *
-     * @return     Entity  The entity
+     * @return     Entity      The entity
      */
-    public function getEntityByIndex(int $index): Entity
+    public function getEntityByIndex($index): Entity
     {
         if (!isset($this->collection[$index])) {
             throw new Exception('There is no entity at index ' . $index, Exception::$PARAMETER);

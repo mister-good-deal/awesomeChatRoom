@@ -13,6 +13,7 @@ use \classes\entities\User as User;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
 use \classes\entitiesManager\UserRightEntityManager as UserRightEntityManager;
 use \classes\entitiesManager\UserChatRightEntityManager as UserChatRightEntityManager;
+use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
 
 /**
  * Perform action relative to the User, UserRight and UserChatRight entities classes
@@ -53,7 +54,7 @@ class UserManager extends Manager
         $this->userEntityManager          = new UserEntityManager($entity, $collection);
         $this->userEntity                 = $this->userEntityManager->getEntity();
         $this->userRightEntityManager     = new UserRightEntityManager($this->userEntity->getRight());
-        $this->userChatRightEntityManager = new UserChatRightEntityManager($this->userEntity->getChatRight());
+        $this->userChatRightEntityManager = new UserChatRightEntityManager(null, $this->userEntity->getChatRight());
         $this->loadUserRights();
     }
 
@@ -62,6 +63,16 @@ class UserManager extends Manager
     /*======================================
     =            Public methods            =
     ======================================*/
+
+    /**
+     * Get the current user chat right
+     *
+     * @return     User  The current user
+     */
+    public function getUser(): User
+    {
+        return $this->userEntity;
+    }
 
     /**
      * Get a user id by his pseudonym
@@ -101,7 +112,7 @@ class UserManager extends Manager
         if ($response['success']) {
             $this->userEntity = $this->userEntityManager->getEntity();
             $this->loadUserRights();
-            $response['user']['chatRight'] = $this->userEntity->getChatRight()->__toArray();
+            $response['user']['chatRight'] = $this->userEntity->getChatRight()->getCollection();
             $response['user']['right']     = $this->userEntity->getRight()->__toArray();
         }
 
@@ -138,6 +149,31 @@ class UserManager extends Manager
         return $this->userEntityManager->getUserIdByPseudonym();
     }
 
+    /**
+     * Add a user chat right
+     *
+     * @param      UserChatRight  $userChatRight  The user chat right entity
+     * @param      bool           $grantAll       If all the user chat right should be granted DEFAULT false
+     *
+     * @return     bool           True if the add succeed else false
+     */
+    public function addUserChatRight(UserChatRight $userChatRight, bool $grantAll = false): bool
+    {
+        $this->userChatRightEntityManager->setEntity($userChatRight);
+
+        if ($grantAll) {
+            $this->userChatRightEntityManager->grantAll();
+        }
+
+        $success = $this->userChatRightEntityManager->saveEntity();
+
+        if ($success) {
+            $this->userEntity->getChatRight()->add($userChatRight);
+        }
+
+        return $success;
+    }
+
     /*=====  End of Public methods  ======*/
 
     /*=======================================
@@ -155,8 +191,8 @@ class UserManager extends Manager
         }
 
         if ($this->userEntity->getChatRight() === null) {
-            $this->userChatRightEntityManager->loadEntity($this->userEntity->id);
-            $this->userEntity->setChatRight($this->userChatRightEntityManager->getEntity());
+            $this->userChatRightEntityManager->loadUserChatRight($this->userEntity->id);
+            $this->userEntity->setChatRight($this->userChatRightEntityManager->getEntityCollection());
         }
     }
 

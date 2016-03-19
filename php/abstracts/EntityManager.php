@@ -40,7 +40,7 @@ abstract class EntityManager
      * @param      Entity      $entity            An entity object DEFAULT null
      * @param      Collection  $entityCollection  A EntityCollection object DEFAULT null
      */
-    public function __construct(Entity $entity = null, Collection $entityCollection = null)
+    public function __construct(Entity &$entity = null, Collection &$entityCollection = null)
     {
         if ($entity !== null) {
             $this->entity = $entity;
@@ -106,12 +106,14 @@ abstract class EntityManager
     /**
      * Load an entity by its id
      *
-     * @param      int|array          The id value
+     * @param      int|array  $id     The id value
+     *
+     * @return     bool       True if an entity was retrieved from the database else false
      */
-    public function loadEntity($id)
+    public function loadEntity($id): bool
     {
-        $this->entity->setIdValue($id);
-        $this->loadEntityInDatabase();
+        $this->entity->setIdValue($id); // @todo check this shit
+        return $this->loadEntityInDatabase();
     }
 
     /**
@@ -233,9 +235,12 @@ abstract class EntityManager
 
     /**
      * Load an entity by its id in the database
+     *
+     * @return     bool  True if an entity was retrieved from the database elese false
      */
-    private function loadEntityInDatabase()
+    private function loadEntityInDatabase(): bool
     {
+        $success  = false;
         $sqlMarks = " SELECT *\n FROM %s\n WHERE %s";
 
         $sql = static::sqlFormater(
@@ -248,7 +253,10 @@ abstract class EntityManager
 
         if ($attributes !== false) {
             $this->entity->setAttributes($attributes);
+            $success = true;
         }
+
+        return $success;
     }
 
     /**

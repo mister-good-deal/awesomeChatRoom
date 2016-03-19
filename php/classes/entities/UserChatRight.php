@@ -14,7 +14,7 @@ use \abstracts\Entity as Entity;
  * UserChatRight entity that extends the Entity abstact class
  *
  * @property   int     $idUser    The user id
- * @property   string  $roomName  The room name
+ * @property   int     $idRoom    The chat room id
  * @property   bool    $kick      The kick right
  * @property   bool    $ban       The ban right
  * @property   bool    $grant     The grant right
@@ -45,7 +45,8 @@ class UserChatRight extends Entity
     public function __toArray(): array
     {
         return array(
-            'roomName' => $this->roomName,
+            'idUser'   => $this->idUser,
+            'idRoom'   => $this->idRoom,
             'kick'     => (bool) $this->kick,
             'ban'      => (bool) $this->ban,
             'grant'    => (bool) $this->grant,
