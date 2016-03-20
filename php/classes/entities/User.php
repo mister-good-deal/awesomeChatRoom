@@ -30,6 +30,10 @@ use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollecti
  * @property   int     $ip                     The user last ip connection
  * @property   string  $lastConnectionAttempt  The user last time connection attempt
  * @property   string  $lastConnection         The user last time connection
+ *
+ * @todo PHP7 defines object return OR null with method(...): ?Class
+ * @see https://wiki.php.net/rfc/nullable_types
+ * @see https://wiki.php.net/rfc/union_types
  */
 class User extends Entity
 {
@@ -86,9 +90,9 @@ class User extends Entity
     /**
      * Get the user right
      *
-     * @return     UserRight  The user right entity
+     * @return     UserRight|null  The user right entity
      */
-    public function getRight(): UserRight
+    public function getRight()
     {
         return $this->right;
     }
@@ -106,9 +110,9 @@ class User extends Entity
     /**
      * Get the user chat right collection
      *
-     * @return     UserChatRightCollection  The user chat right collection
+     * @return     UserChatRightCollection|null  The user chat right collection
      */
-    public function getChatRight(): UserChatRightCollection
+    public function getChatRight()
     {
         return $this->chatRight;
     }

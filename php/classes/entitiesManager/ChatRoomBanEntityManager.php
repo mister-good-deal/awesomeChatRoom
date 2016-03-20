@@ -24,13 +24,15 @@ class ChatRoomBanEntityManager extends EntityManager
     /**
      * Constructor that can take a ChatRoom entity as first parameter and a ChatRoomBanCollection as second parameter
      *
-     * @param      ChatRoom  $entity  A ChatRooms entity object
+     * @param      ChatRoom  $entity  A ChatRooms entity object DEFAULT null
      */
-    public function __construct(ChatRoom $entity)
+    public function __construct(ChatRoom $entity = null)
     {
         parent::__construct($entity);
 
-        if ($entity->getChatRoomBanCollection() === null) {
+        if ($entity === null) {
+            $this->entity = new ChatRoom();
+        } elseif ($entity->getChatRoomBanCollection() === null) {
             $this->loadBannedUsers();
         }
     }
@@ -44,7 +46,10 @@ class ChatRoomBanEntityManager extends EntityManager
      */
     public function isIpBanned(string $ip): bool
     {
-        return $this->inSubArray($ip, $this->entity->getChatRoomBanCollection(), 'ip');
+        return (
+            $this->entity->getChatRoomBanCollection() !== null &&
+            $this->inSubArray($ip, $this->entity->getChatRoomBanCollection(), 'ip')
+        );
     }
 
     /**

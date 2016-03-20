@@ -20,6 +20,10 @@ use \classes\entitiesCollection\ChatRoomBanCollection as ChatRoomBanCollection;
  * @property   int     $password      The room password
  * @property   string  $creationDate  The room creation date
  * @property   int     $maxUsers      The room max users number
+ *
+ * @todo PHP7 defines object return OR null with method(...): ?Class
+ * @see https://wiki.php.net/rfc/nullable_types
+ * @see https://wiki.php.net/rfc/union_types
  */
 class ChatRoom extends Entity
 {
@@ -51,7 +55,7 @@ class ChatRoom extends Entity
      *
      * @return     ChatRoomBanCollection  The users banned collection
      */
-    public function getChatRoomBanCollection(): ChatRoomBanCollection
+    public function getChatRoomBanCollection()
     {
         return $this->chatRoomBanCollection;
     }

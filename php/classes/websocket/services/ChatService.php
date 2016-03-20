@@ -111,21 +111,14 @@ class ChatService extends ServicesDispatcher implements Service
         $coroutine = new Coroutine($generator($this->stream));
 
         Ini::setIniFileName(Ini::INI_CONF_FILE);
-        $params                   = Ini::getSectionParams('Chat service');
-        $this->serverKey          = Ini::getParam('Socket', 'serverKey');
-        $this->chatService        = $params['serviceName'];
-        $this->savingDir          = $params['savingDir'];
-        $this->maxMessagesPerFile = $params['maxMessagesPerFile'];
-        $this->roomsNamePath      = $this->savingDir . DIRECTORY_SEPARATOR . 'rooms_name';
-        $this->roomsName          = $this->getRoomsName();
+        $this->chatService = Ini::getParam('Chat service', 'serviceName');
 
-        // Create the default room
-        $this->rooms['default'] = array(
-            'users'        => array(),
-            'pseudonyms'   => array(),
-            'usersRights'  => array(),
-            'room'         => new ChatRoom(),
-            'historic'     => array('part' => 0, 'conversations' => array())
+        // Create the default room (temporary)
+        $chatManager = new ChatManager();
+        $chatManager->loadChatRoom(1);
+        $this->rooms[1] = array(
+            'users'       => array(),
+            'room'        => $chatManager->getChatRoomEntity()
         );
 
         // $this->loadHistoric('default', $this->getLastPartNumber('default'));
@@ -143,14 +136,14 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      array  $data    JSON decoded client data
      * @param      array  $client  The client information [Connection, User] array pair
      */
-    public function process(array $data, array $client)
+    public function process(array $data, array &$client)
     {
         switch ($data['action']) {
-            case $this->serverKey . 'disconnect':
-                // Action called by the server
-                yield $this->disconnectUser($data['clientSocket']);
+            // case $this->serverKey . 'disconnect':
+            //     // Action called by the server
+            //     yield $this->disconnectUser($data['clientSocket']);
 
-                break;
+            //     break;
 
             case 'sendMessage':
                 yield $this->sendMessage($client, $data);
@@ -244,7 +237,7 @@ class ChatService extends ServicesDispatcher implements Service
      *
      * @todo       To test
      */
-    private function connectUser(array $client, array $data)
+    private function connectUser(array &$client, array $data)
     {
         $response = array();
 
@@ -253,17 +246,17 @@ class ChatService extends ServicesDispatcher implements Service
 
         $chatManager = new ChatManager();
 
-        if ($chatManager->loadChatRoom($data['roomId']) === false) {
+        if ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
             $message = _('This room does not exist');
         } else {
             if (!isset($this->rooms[$chatManager->getChatRoomEntity()->id])) {
                 $this->rooms[$chatManager->getChatRoomEntity()->id] = array(
-                    'users'    => array($this->getConnectionHash($user['Connection']) => $client),
-                    'chatRoom' => $chatManager->getChatRoomEntity()
+                    'users' => array($this->getConnectionHash($user['Connection']) => $client),
+                    'room'  => $chatManager->getChatRoomEntity()
                 );
             }
 
-            $chatRoom = &$chatManager->getChatRoomEntity();
+            $chatRoom = $chatManager->getChatRoomEntity();
 
             if (count($this->rooms[$chatRoom->id]['users']) >= $chatRoom->maxUsers) {
                 $message = _('The room is full');
@@ -281,7 +274,7 @@ class ChatService extends ServicesDispatcher implements Service
                 $response = $closure->getReturn();
             }
 
-            if ($response['success']) {
+            if (isset($response['success']) && $response['success']) {
                 $message                = sprintf(_('You\'re connected to the chat room "%s" !'), $chatRoom->name);
                 $response['room']       = $chatRoom->__toArray();
                 $response['pseudonyms'] = $this->getRoomPseudonyms($chatRoom->id);
@@ -308,7 +301,7 @@ class ChatService extends ServicesDispatcher implements Service
      *
      * @todo       to test
      */
-    private function createRoom(array $client, array $data)
+    private function createRoom(array &$client, array $data)
     {
         $message = _('An error occured');
 
@@ -333,8 +326,8 @@ class ChatService extends ServicesDispatcher implements Service
 
                 if ($response['success']) {
                     $this->rooms[$chatRoom->id] = array(
-                        'users'    => array($this->getConnectionHash($user['Connection']) => $client),
-                        'chatRoom' => $chatRoom
+                        'users' => array($this->getConnectionHash($user['Connection']) => $client),
+                        'room'  => $chatRoom
                     );
 
                     $message = sprintf(_('The chat room name "%s" is successfully created !'), $chatRoom->name);
@@ -369,7 +362,7 @@ class ChatService extends ServicesDispatcher implements Service
      *
      * @todo       to test
      */
-    private function sendMessage(array $client, array $data)
+    private function sendMessage(array &$client, array $data)
     {
         $success  = false;
         $response = array();
@@ -381,10 +374,10 @@ class ChatService extends ServicesDispatcher implements Service
 
         $chatManager = new ChatManager();
 
-        if ($chatManager->loadChatRoom($data['roomId']) === false) {
+        if ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
             $message = _('This room does not exist');
         } else {
-            $chatRoom = &$chatManager->getChatRoomEntity();
+            $chatRoom = $chatManager->getChatRoomEntity();
 
             if ($text === null || $text === '') {
                 $message = _('The message cannot be empty');
@@ -417,7 +410,7 @@ class ChatService extends ServicesDispatcher implements Service
                     $text,
                     $client['pseudonym'],
                     $recievers,
-                    $roomName
+                    $chatRoom->name
                 );
 
                 // @todo historic
@@ -847,20 +840,10 @@ class ChatService extends ServicesDispatcher implements Service
     {
         $roomsInfo = array();
 
-        foreach ($this->roomsName as $roomName) {
-            if (isset($this->rooms[$roomName])) {
-                $roomInfo       = $this->rooms[$roomName];
-                $usersConnected = count($this->rooms[$roomName]['users']);
-            } else {
-                $roomInfo       = $this->getRoomInfo($roomName);
-                $usersConnected = 0;
-            }
-
+        foreach ($this->rooms as $roomInfo) {
             $roomsInfo[] = array(
-                'name'           => $roomName,
-                'type'           => $roomInfo['type'],
-                'maxUsers'       => $roomInfo['maxUsers'],
-                'usersConnected' => $usersConnected
+                'room'           => $roomInfo['room']->__toArray(),
+                'usersConnected' => count($roomInfo['users'])
             );
         }
 
@@ -987,8 +970,9 @@ class ChatService extends ServicesDispatcher implements Service
      *
      * @return     bool      True if the user has the right to enter the room else false
      */
-    private function checkPrivateRoomPassword(ChatRoom $chatRoom, string $roomPassword): bool
+    private function checkPrivateRoomPassword(ChatRoom $chatRoom, string $roomPassword)
     {
+        yield $this->log->log(Log::DEBUG, 'checkPrivateRoomPassword $chatRoom = %s', $this->formatVariable($chatRoom));
         return ($chatRoom->password === "" || $chatRoom->password === $roomPassword);
     }
 
@@ -1026,7 +1010,7 @@ class ChatService extends ServicesDispatcher implements Service
         if ($clientFrom['Connection'] === 'SERVER') {
             $pseudonym = 'SERVER';
         } else {
-            $pseudonym = $this->rooms[$roomId]['pseudonyms'][$this->getConnectionHash($clientFrom['Connection'])];
+            $pseudonym = $clientFrom['pseudonym'];
         }
 
         yield $clientTo['Connection']->send(json_encode(array(
@@ -1058,7 +1042,7 @@ class ChatService extends ServicesDispatcher implements Service
     ) {
         $date = ($date !== null ? $date : date('Y-m-d H:i:s'));
 
-        foreach ($this->rooms[$roomName]['users'] as $clientTo) {
+        foreach ($this->rooms[$roomId]['users'] as $clientTo) {
             yield $this->sendMessageToUser($clientFrom, $clientTo, $message, $roomId, $type, $date);
         }
     }
@@ -1194,6 +1178,8 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      string    $pseudonym  The user pseudonym DEFAULT ''
      *
      * @return     array     Result as an array of values (success, pseudonym, message)
+     *
+     * @todo $client['pseudonym'] not saved
      */
     private function addUserToTheRoom(array &$client, ChatRoom $room, string $pseudonym = '')
     {

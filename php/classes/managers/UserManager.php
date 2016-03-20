@@ -50,12 +50,14 @@ class UserManager extends Manager
     public function __construct(User $entity = null, Collection $collection = null)
     {
         parent::__construct();
-
-        $this->userEntity                 = $entity;
         $this->userEntityManager          = new UserEntityManager($entity, $collection);
-        $this->userRightEntityManager     = new UserRightEntityManager($entity->getRight());
-        $this->userChatRightEntityManager = new UserChatRightEntityManager(null, $entity->getChatRight());
-        $this->loadUserRights();
+        $this->userEntity                 = $this->userEntityManager->getEntity();
+        $this->userRightEntityManager     = new UserRightEntityManager($this->userEntity->getRight());
+        $this->userChatRightEntityManager = new UserChatRightEntityManager(null, $this->userEntity->getChatRight());
+
+        if ($entity !== null) {
+            $this->loadUserRights();
+        }
     }
 
     /*=====  End of Magic Methods  ======*/

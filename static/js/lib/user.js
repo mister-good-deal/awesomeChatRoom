@@ -188,6 +188,7 @@ define([
             this.setAttributes(data);
             this.connected = true;
             messageManager.add('Register success !');
+            // @todo close the modal
         },
 
         /**

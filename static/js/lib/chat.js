@@ -27,6 +27,7 @@ define([
      *
      * @todo check the id value of the followings
      * this.mouseInRoomChat
+     *
      * this.isRoomOpened
      * this.messagesHistory
      * this.messagesHistoryPointer
@@ -238,10 +239,10 @@ define([
         connectEvent: function () {
             var connectDiv = $(this.settings.selectors.roomConnect.div),
                 pseudonym  = connectDiv.find(this.settings.selectors.roomConnect.pseudonym).val(),
-                roomName   = connectDiv.find('select' + this.settings.selectors.roomConnect.name).val(),
+                roomId     = connectDiv.find('select' + this.settings.selectors.roomConnect.name).val(),
                 password   = connectDiv.find(this.settings.selectors.roomConnect.password).val();
-
-            this.connect(pseudonym, roomName, password);
+            //@todo error message when no room selected...
+            this.connect(pseudonym, roomId, password);
         },
 
         /**
@@ -364,16 +365,16 @@ define([
                 messageInput = sendDiv.find(this.settings.selectors.roomSend.message),
                 message      = messageInput.val(),
                 room         = $(e.currentTarget).closest(this.settings.selectors.global.room),
-                roomName     = room.attr('data-name'),
+                roomId       = room.attr('data-id'),
                 password     = room.attr('data-password');
 
             if (_.trim(message) !== '') {
-                if (!this.isCommand(message, roomName, password)) {
-                    this.sendMessage(recievers, message, roomName, password);
+                if (!this.isCommand(message, roomId, password)) {
+                    this.sendMessage(recievers, message, roomId, password);
                 }
 
-                this.messagesHistory[roomName].push(message);
-                this.messagesHistoryPointer[roomName]++;
+                this.messagesHistory[roomId].push(message);
+                this.messagesHistoryPointer[roomId]++;
                 messageInput.val('');
             }
 
@@ -552,15 +553,15 @@ define([
          * Connect a user to the chat
          *
          * @param {String} pseudonym The user pseudonym
-         * @param {String} roomName  The room name to connect to
+         * @param {Number} roomId    The room ID to connect to
          * @param {String} password  The room password to connect to
          */
-        connect: function (pseudonym, roomName, password) {
+        connect: function (pseudonym, roomId, password) {
             this.websocket.send(JSON.stringify({
                 "service"  : [this.settings.serviceName],
                 "action"   : "connectRoom",
                 "pseudonym": pseudonym || "",
-                "roomName" : roomName,
+                "roomId"   : roomId,
                 "password" : password
             }));
         },
@@ -583,14 +584,14 @@ define([
          *
          * @param {String} recievers The message reciever ('all' || userPseudonym)
          * @param {String} message   The txt message to send
-         * @param {String} roomName  The chat room name
+         * @param {Number} roomId  The chat room name
          * @param {String} password  The chat room password if required
          */
-        sendMessage: function (recievers, message, roomName, password) {
+        sendMessage: function (recievers, message, roomId, password) {
             this.websocket.send(JSON.stringify({
                 "service"  : [this.settings.serviceName],
                 "action"   : "sendMessage",
-                "roomName" : roomName,
+                "roomId"   : roomId,
                 "message"  : message,
                 "recievers": recievers,
                 "password" : password || ''
@@ -981,16 +982,16 @@ define([
 
             _.forEach(data.roomsInfo, function (roomInfo) {
                 option = $('<option>', {
-                    "value"       : roomInfo.name,
-                    "data-subtext": '(' + roomInfo.usersConnected + '/' + roomInfo.maxUsers + ')',
-                    "data-type"   : roomInfo.type,
-                    "text"        : roomInfo.name
+                    "value"       : roomInfo.room.id,
+                    "data-subtext": '(' + roomInfo.usersConnected + '/' + roomInfo.room.maxUsers + ')',
+                    "data-type"   : roomInfo.room.password ? 'private' : 'public',
+                    "text"        : roomInfo.room.name
                 });
 
-                if (roomInfo.type === 'public') {
-                    publicRooms.push(option);
-                } else {
+                if (roomInfo.room.password) {
                     privateRooms.push(option);
+                } else {
+                    publicRooms.push(option);
                 }
             });
 
@@ -1024,7 +1025,7 @@ define([
                 newRoom.attr({
                     "data-id"       : roomData.id,
                     "data-name"     : roomData.name,
-                    "data-type"     : roomData.password === '' ? 'public' : 'private',
+                    "data-type"     : roomData.password ? 'private' : 'public',
                     "data-pseudonym": data.pseudonym,
                     "data-password" : roomData.password,
                     "data-max-users": roomData.maxUsers,

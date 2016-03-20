@@ -140,6 +140,8 @@ In php.ini, check thoses values
 
 - `extension=php_curl.dll`
 
+- `extension=php_mysqli.dll` (for phpMyAdmin)
+
 - `extension=php_gettext.dll`
 
 - `extension=php_mbstring.dll`
