@@ -251,7 +251,7 @@ class ChatService extends ServicesDispatcher implements Service
         } else {
             if (!isset($this->rooms[$chatManager->getChatRoomEntity()->id])) {
                 $this->rooms[$chatManager->getChatRoomEntity()->id] = array(
-                    'users' => array($this->getConnectionHash($user['Connection']) => $client),
+                    'users' => array(),
                     'room'  => $chatManager->getChatRoomEntity()
                 );
             }
@@ -318,7 +318,7 @@ class ChatService extends ServicesDispatcher implements Service
             );
 
             if ($response['success']) {
-                $chatRoom                   = &$chatManager->getChatRoomEntity();
+                $chatRoom                   = $chatManager->getChatRoomEntity();
                 $userChatRight              = new UserChatRight();
                 $userChatRight->idUser      = $client['User']->id;
                 $userChatRight->idRoom      = $chatRoom->id;
@@ -326,9 +326,11 @@ class ChatService extends ServicesDispatcher implements Service
 
                 if ($response['success']) {
                     $this->rooms[$chatRoom->id] = array(
-                        'users' => array($this->getConnectionHash($user['Connection']) => $client),
+                        'users' => array(),
                         'room'  => $chatRoom
                     );
+
+                    yield $this->addUserToTheRoom($client, $chatRoom, $userManager->getPseudonymForChat());
 
                     $message = sprintf(_('The chat room name "%s" is successfully created !'), $chatRoom->name);
 
@@ -408,7 +410,7 @@ class ChatService extends ServicesDispatcher implements Service
                     Log::INFO,
                     _('[chatService] Message "%s" sent by "%s" to "%s" in the room "%s"'),
                     $text,
-                    $client['pseudonym'],
+                    $this->getUserPseudonymByRoom($client, $chatRoom),
                     $recievers,
                     $chatRoom->name
                 );
@@ -977,19 +979,6 @@ class ChatService extends ServicesDispatcher implements Service
     }
 
     /**
-     * Tell if a user is registered or not
-     *
-     * @param      string  $roomName   The room name
-     * @param      string  $pseudonym  The user pseudonym
-     *
-     * @return     bool    True if the user is registered else false
-     */
-    private function isRegistered(string $roomName, string $pseudonym): bool
-    {
-        return array_key_exists($pseudonym, $this->rooms[$roomName]['usersRights']);
-    }
-
-    /**
      * Send a message to a user
      *
      * @param      array   $clientFrom  The client to send the message from array(Connection, User)
@@ -1010,7 +999,7 @@ class ChatService extends ServicesDispatcher implements Service
         if ($clientFrom['Connection'] === 'SERVER') {
             $pseudonym = 'SERVER';
         } else {
-            $pseudonym = $clientFrom['pseudonym'];
+            $pseudonym = $this->getUserPseudonymByRoom($clientFrom, $this->rooms[$roomId]['room']);
         }
 
         yield $clientTo['Connection']->send(json_encode(array(
@@ -1178,26 +1167,23 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      string    $pseudonym  The user pseudonym DEFAULT ''
      *
      * @return     array     Result as an array of values (success, pseudonym, message)
-     *
-     * @todo $client['pseudonym'] not saved
      */
-    private function addUserToTheRoom(array &$client, ChatRoom $room, string $pseudonym = '')
+    private function addUserToTheRoom(array $client, ChatRoom $room, string $pseudonym = '')
     {
         $response = array('success' => false);
+        $userHash = $this->getConnectionHash($client['Connection']);
 
         if ($client['User'] !== null) {
             // Authenticated user
             $userManager           = new UserManager($client['User']);
-            $response['pseudonym'] = $userManager->getPseudonymForChat();
-            $client['pseudonym']   = $response['pseudonym'];
             $response['success']   = true;
+            $response['pseudonym'] = $userManager->getPseudonymForChat();
         } elseif ($pseudonym !== '') {
             // Guest user
             if ($this->isPseudonymUsabled($pseudonym, $room->id)) {
-                //@ todo test if the pseudonym is not overriden when a guest user is connected to different rooms
-                $client['pseudonym']   = $pseudonym;
                 $response['pseudonym'] = $pseudonym;
                 $response['success']   = true;
+
             } else {
                 $response['message'] = sprintf(_('The pseudonym "%s" is already used'), $pseudonym);
             }
@@ -1210,7 +1196,8 @@ class ChatService extends ServicesDispatcher implements Service
             $message = sprintf(_("%s joins the room"), $response['pseudonym']);
             yield $this->sendMessageToRoom($this->server, $message, $room->id, 'public');
             // Add user to the room
-            $this->rooms[$room->id]['users'][$this->getConnectionHash($client['Connection'])] = $client;
+            $this->rooms[$room->id]['users'][$userHash]              = $client;
+            $this->rooms[$room->id]['users'][$userHash]['pseudonym'] = $response['pseudonym'];
 
             yield $this->log->log(
                 Log::INFO,
@@ -1222,6 +1209,19 @@ class ChatService extends ServicesDispatcher implements Service
         }
 
         return $response;
+    }
+
+    /**
+     * Get a user pseudonym for a room with his client connection
+     *
+     * @param      array     $client  The client information [Connection, User] array pair
+     * @param      ChatRoom  $room    The chat room
+     *
+     * @return     string    The user pseudonym for this room
+     */
+    private function getUserPseudonymByRoom(array $client, ChatRoom $room): string
+    {
+        return $this->rooms[$room->id]['users'][$this->getConnectionHash($client['Connection'])]['pseudonym'];
     }
 
     /*=====  End of Private methods  ======*/

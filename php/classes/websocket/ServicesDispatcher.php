@@ -117,7 +117,7 @@ class ServicesDispatcher implements Application
         switch ($data['action']) {
             case 'register':
                 $this->clients[$this->getConnectionHash($client['Connection'])]['User'] = new User($data['user']);
-                yield $this->log->log(Log::DEBUG, 'Data: %s', $this->formatVariable($this->clients));
+                yield $this->log->log(Log::DEBUG, 'serverAction => register: %s', $this->formatVariable($this->clients));
                 break;
 
             default:

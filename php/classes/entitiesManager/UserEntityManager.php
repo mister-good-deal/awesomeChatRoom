@@ -170,11 +170,10 @@ class UserEntityManager extends EntityManager
                     // Connection success
                     if (hash_equals($userParams['password'], crypt($password, $userParams['password']))) {
                         $success                            = true;
-                        $this->entity->password             = $password;
                         $this->entity->lastConnection       = $now->format('Y-m-d H:i:s');
                         $this->entity->connectionAttempt    = 0;
                         $this->entity->ip                   = $_SERVER['REMOTE_ADDR'];
-                        $this->entity->securityToken        = bin2hex(random_bytes($params['securityTokenLength']));
+                        $this->entity->securityToken        = bin2hex(random_bytes($this->params['securityTokenLength']));
                         $this->entity->securityTokenExpires = $now->add(
                             new \DateInterval('PT' . $this->params['securityTokenDuration'] . 'S')
                         )->format('Y-m-d H:i:s');
@@ -189,7 +188,7 @@ class UserEntityManager extends EntityManager
             }
         }
 
-        return array('success' => $success, 'errors' => $errors);
+        return array('success' => $success, 'errors' => $errors, 'user' => $this->entity->__toArray());
     }
 
     /**

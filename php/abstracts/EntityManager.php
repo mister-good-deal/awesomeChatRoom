@@ -18,6 +18,10 @@ use \classes\IniManager as Ini;
  * Abstract EntityManager pattern
  *
  * @abstract
+ *
+ * @todo PHP7 defines object return OR null with method(...): ?Class
+ * @see https://wiki.php.net/rfc/nullable_types
+ * @see https://wiki.php.net/rfc/union_types
  */
 abstract class EntityManager
 {
@@ -60,9 +64,9 @@ abstract class EntityManager
     /**
      * Get the entity object
      *
-     * @return     Entity  The entity object
+     * @return     Entity|null  The entity object
      */
-    public function getEntity(): Entity
+    public function getEntity()
     {
         return $this->entity;
     }
@@ -80,9 +84,9 @@ abstract class EntityManager
     /**
      * Get the entity collection object
      *
-     * @return     Collection  The entity EntityCollection object
+     * @return     Collection|null  The entity EntityCollection object
      */
-    public function getEntityCollection(): Collection
+    public function getEntityCollection()
     {
         return $this->entityCollection;
     }

@@ -24,4 +24,18 @@ use \classes\entities\UserRight as UserRight;
  */
 class UserRightEntityManager extends EntityManager
 {
+    /**
+     * Constructor that can take a UserRight entity as first parameter and a Collection as second parameter
+     *
+     * @param      UserRight   $entity      A UserRight entity object DEFAULT null
+     * @param      Collection  $collection  A colection oject DEFAULT null
+     */
+    public function __construct(UserRight $entity = null, Collection $collection = null)
+    {
+        parent::__construct($entity, $collection);
+
+        if ($entity === null) {
+            $this->entity = new UserRight();
+        }
+    }
 }

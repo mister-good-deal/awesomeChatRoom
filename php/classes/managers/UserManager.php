@@ -161,7 +161,7 @@ class UserManager extends Manager
      */
     public function getPseudonymForChat(): string
     {
-        return $this->userEntityManager->getUserIdByPseudonym();
+        return $this->userEntityManager->getPseudonymForChat();
     }
 
     /**
@@ -206,7 +206,7 @@ class UserManager extends Manager
         }
 
         if ($this->userEntity->getChatRight() === null) {
-            $this->userChatRightEntityManager->loadUserChatRight($this->userEntity->id);
+            $this->userChatRightEntityManager->loadUserChatRight((int) $this->userEntity->id);
             $this->userEntity->setChatRight($this->userChatRightEntityManager->getEntityCollection());
         }
     }

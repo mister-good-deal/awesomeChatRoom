@@ -38,8 +38,8 @@ class UserChatRightEntityManager extends EntityManager
     /**
      * Constructor that can take a UserChatRight entity as first parameter and a Collection as second parameter
      *
-     * @param      UserChatRight  $entity      A UserChatRight entity object DEFAULT null
-     * @param      Collection     $collection  A colection oject DEFAULT null
+     * @param      UserChatRight            $entity      A UserChatRight entity object DEFAULT null
+     * @param      UserChatRightCollection  $collection  A colection oject DEFAULT null
      */
     public function __construct(UserChatRight $entity = null, Collection $collection = null)
     {
@@ -47,6 +47,10 @@ class UserChatRightEntityManager extends EntityManager
 
         if ($entity === null) {
             $this->entity = new UserChatRight();
+        }
+
+        if ($collection === null) {
+            $this->entityCollection = new UserChatRightCollection();
         }
     }
 
@@ -75,7 +79,7 @@ class UserChatRightEntityManager extends EntityManager
 
         foreach ($chatRights as $chatRightInfo) {
             $chatRight = (new UserChatRight())->setAttributes($chatRightInfo);
-            $this->getEntityCollection()->add($chatRight);
+            $this->entityCollection->add($chatRight);
         }
     }
 

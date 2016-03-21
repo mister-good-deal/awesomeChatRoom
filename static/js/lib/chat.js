@@ -832,14 +832,14 @@ define([
          * @param {Object} data The server JSON reponse
          */
         recieveMessageCallback: function (data) {
-            var room                = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
+            var room                = $(this.settings.selectors.global.room + '[data-id="' + data.roomId + '"]'),
                 roomChat            = room.find(this.settings.selectors.global.roomChat),
                 messagesUnread      = room.find(this.settings.selectors.global.roomMessagesUnread),
                 messagesUnreadValue = messagesUnread.text();
 
             roomChat.append(this.formatUserMessage(data));
 
-            if (this.isRoomOpened[data.roomName] && !this.mouseInRoomChat[data.roomName]) {
+            if (this.isRoomOpened[data.roomId] && !this.mouseInRoomChat[data.roomId]) {
                 roomChat.scrollTop(room.height());
                 messagesUnread.text('');
             } else {
