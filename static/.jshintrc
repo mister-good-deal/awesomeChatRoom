@@ -127,6 +127,7 @@
 
     "predef"        : [         // Extra globals.
         "define",
+        "requirejs",
         "Message"
     ],
     "indent"        : 4         // Specify indentation spacing
