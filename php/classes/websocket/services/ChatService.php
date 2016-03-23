@@ -290,7 +290,7 @@ class ChatService extends ServicesDispatcher implements Service
                 'service' => $this->chatService,
                 'action'  => 'connectRoom',
                 'success' => false,
-                'text'    => $message
+                'text'    => $message ?? ''
             ),
             $response
         )));
@@ -1188,19 +1188,39 @@ class ChatService extends ServicesDispatcher implements Service
                 $response['success']   = true;
 
             } else {
-                $response['message'] = sprintf(_('The pseudonym "%s" is already used'), $pseudonym);
+                $response['text'] = sprintf(_('The pseudonym "%s" is already used'), $pseudonym);
             }
         } else {
-            $response['message'] = _('The pseudonym can\'t be empty');
+            $response['text'] = _('The pseudonym can\'t be empty');
         }
 
         if ($response['success']) {
-            // Send a message to all users in chat
-            $message = sprintf(_("%s joins the room"), $response['pseudonym']);
-            yield $this->sendMessageToRoom($this->server, $message, $room->id, 'public');
             // Add user to the room
             $this->rooms[$room->id]['users'][$userHash]              = $client;
             $this->rooms[$room->id]['users'][$userHash]['pseudonym'] = $response['pseudonym'];
+
+            // Send a message to all users in chat and warn them a new user is connected
+            $message = sprintf(_("%s joins the room"), $response['pseudonym']);
+
+            foreach ($this->rooms[$room->id]['users'] as $userInfo) {
+                $userRight = array();
+
+                if ($userInfo['User'] !== null) {
+                    $userRight['right'] = ($client['User'] !== null ? $client['User']->getChatRight() : null);
+                }
+
+                yield $this->sendMessageToUser($this->server, $userInfo, $message, $room->id, 'private');
+                yield $userInfo['Connection']->send(json_encode(array_merge(
+                    $userRight,
+                    array(
+                        'service'    => $this->chatService,
+                        'action'     => 'updateRoomUsers',
+                        'success'    => true,
+                        'roomId'     => $room->id,
+                        'pseudonyms' => $this->getRoomPseudonyms($room->id)
+                    )
+                )));
+            }
 
             yield $this->log->log(
                 Log::INFO,
