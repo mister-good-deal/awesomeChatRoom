@@ -55,6 +55,11 @@ class ChatManager extends Manager
 
     /*=====  End of Magic Methods  ======*/
 
+    /**
+     * Get the current chat room entity
+     *
+     * @return     ChatRoom  The current chat room entity
+     */
     public function getChatRoomEntity(): ChatRoom
     {
         return $this->chatRoomEntity;

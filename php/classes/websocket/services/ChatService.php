@@ -2,7 +2,7 @@
 /**
  * Chat application to manage a chat with a WebSocket server
  *
- * @category WebSocket service
+ * @category WebSocket
  * @author   Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
@@ -133,8 +133,10 @@ class ChatService extends ServicesDispatcher implements Service
     /**
      * Method to recieves data from the WebSocket server
      *
-     * @param      array  $data    JSON decoded client data
-     * @param      array  $client  The client information [Connection, User] array pair
+     * @param      array                                   $data    JSON decoded client data
+     * @param      array                                   $client  The client information [Connection, User] array pair
+     *
+     * @return     \Generator|\Icicle\Awaitable\Awaitable
      */
     public function process(array $data, array &$client)
     {
@@ -222,7 +224,9 @@ class ChatService extends ServicesDispatcher implements Service
     /**
      * Treat the data sent from the server (not from the clients)
      *
-     * @param      array  $data   JSON decoded server data
+     * @param      array                                   $data   JSON decoded server data
+     *
+     * @return     \Generator|\Icicle\Awaitable\Awaitable
      */
     private function treatDataFromServer(array $data)
     {
@@ -235,15 +239,14 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      array  $client  The client information [Connection, User] array pair
      * @param      array  $data    JSON decoded client data
      *
+     * @return     \Generator|\Icicle\Awaitable\Awaitable
      * @todo       To test
      */
     private function connectUser(array &$client, array $data)
     {
-        $response = array();
-
-        @$this->setIfIsSet($password, $data['password'], '');
-        @$this->setIfIsSetAndTrim($pseudonym, $data['pseudonym'], null);
-
+        $response    = array();
+        $password    = $data['password'] ?? '';
+        $pseudonym   = trim($data['pseudonym']) ?? null;
         $chatManager = new ChatManager();
 
         if ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
@@ -299,6 +302,7 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      array  $client  The client information [Connection, User] array pair
      * @param      array  $data    JSON decoded client data
      *
+     * @return     \Generator|\Icicle\Awaitable\Awaitable
      * @todo       to test
      */
     private function createRoom(array &$client, array $data)
@@ -310,7 +314,7 @@ class ChatService extends ServicesDispatcher implements Service
         } else {
             $userManager = new UserManager($client['User']);
             $chatManager = new ChatManager();
-            $response = $chatManager->createChatRoom(
+            $response    = $chatManager->createChatRoom(
                 $client['User']->id,
                 $data['roomName'],
                 $data['maxUsers'],
@@ -318,11 +322,11 @@ class ChatService extends ServicesDispatcher implements Service
             );
 
             if ($response['success']) {
-                $chatRoom                   = $chatManager->getChatRoomEntity();
-                $userChatRight              = new UserChatRight();
-                $userChatRight->idUser      = $client['User']->id;
-                $userChatRight->idRoom      = $chatRoom->id;
-                $response['success']        = $userManager->addUserChatRight($userChatRight, true);
+                $chatRoom              = $chatManager->getChatRoomEntity();
+                $userChatRight         = new UserChatRight();
+                $userChatRight->idUser = $client['User']->id;
+                $userChatRight->idRoom = $chatRoom->id;
+                $response['success']   = $userManager->addUserChatRight($userChatRight, true);
 
                 if ($response['success']) {
                     $this->rooms[$chatRoom->id] = array(
@@ -362,18 +366,17 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      array  $client  The client information [Connection, User] array pair
      * @param      array  $data    JSON decoded client data
      *
+     * @return     \Generator|\Icicle\Awaitable\Awaitable
      * @todo       to test
      */
     private function sendMessage(array &$client, array $data)
     {
-        $success  = false;
-        $response = array();
-        $userHash = $this->getConnectionHash($client['Connection']);
-        @$this->setIfIsSet($password, $data['password'], '');
-        @$this->setIfIsSetAndTrim($recievers, $data['recievers'], null);
-        @$this->setIfIsSetAndTrim($text, $data['message'], null);
-
-
+        $success     = false;
+        $response    = array();
+        $userHash    = $this->getConnectionHash($client['Connection']);
+        $password    = $data['password'] ?? '';
+        $recievers   = $data['recievers'] ?? null;
+        $text        = trim($data['message']) ?? '';
         $chatManager = new ChatManager();
 
         if ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
@@ -381,7 +384,7 @@ class ChatService extends ServicesDispatcher implements Service
         } else {
             $chatRoom = $chatManager->getChatRoomEntity();
 
-            if ($text === null || $text === '') {
+            if ($text === '') {
                 $message = _('The message cannot be empty');
             } elseif (!$this->checkPrivateRoomPassword($chatRoom, $password)) {
                 $message = _('Incorrect password');
