@@ -17,6 +17,12 @@ use \classes\IniManager as Ini;
  * Performed database action relative to the User entity class
  *
  * @property   User  $entity  The user entity
+ *
+ * @method User getEntity() {
+ *      Get the user entity
+ *
+ *      @return User The user entity
+ * }
  */
 class UserEntityManager extends EntityManager
 {
@@ -45,6 +51,7 @@ class UserEntityManager extends EntityManager
             $this->entity = new User();
         }
 
+        Ini::setIniFileName('conf.ini');
         $this->params = Ini::getSectionParams('User');
     }
 
@@ -63,9 +70,8 @@ class UserEntityManager extends EntityManager
      */
     public function getUserIdByPseudonym(string $pseudonym): int
     {
-        $user       = new User();
         $sqlMarks   = 'SELECT id FROM %s WHERE pseudonym = %s';
-        $sql        = static::sqlFormater($sqlMarks, $user->getTableName(), DB::quote($pseudonym));
+        $sql        = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($pseudonym));
 
         return (int) DB::query($sql)->fetchColumn();
     }
@@ -83,19 +89,18 @@ class UserEntityManager extends EntityManager
         $errors  = $this->checkMustDefinedField(array_keys($inputs));
 
         if (count($errors['SERVER']) === 0) {
-            $user     = new User();
-            $query    = 'SELECT MAX(id) FROM ' . $user->getTableName();
-            $user->id = DB::query($query)->fetchColumn() + 1;
+            $query            = 'SELECT MAX(id) FROM ' . $this->entity->getTableName();
+            $this->entity->id = DB::query($query)->fetchColumn() + 1;
 
-            $user->bindInputs($inputs);
-            $errors = $user->getErrors();
+            $this->entity->bindInputs($inputs);
+            $errors = $this->entity->getErrors();
 
             if (count($errors) === 0) {
-                $success = $this->saveEntity($user);
+                $success = $this->saveEntity();
             }
         }
 
-        return array('success' => $success, 'errors' => $errors, 'user' => $user->__toArray());
+        return array('success' => $success, 'errors' => $errors, 'user' => $this->entity->__toArray());
     }
 
     /**
@@ -124,18 +129,17 @@ class UserEntityManager extends EntityManager
         }
 
         if (count($errors) === 0) {
-            $user       = new User();
             $sqlMarks   = 'SELECT * FROM %s WHERE email = %s OR pseudonym = %s';
-            $sql        = static::sqlFormater($sqlMarks, $user->getTableName(), $login, $login);
+            $sql        = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $login, $login);
             $userParams = DB::query($sql)->fetch();
             $now        = new \DateTime();
             $continue   = true;
 
             if ($userParams !== false) {
-                $user->setAttributes($userParams);
+                $this->entity->setAttributes($userParams);
 
-                if ((int) $user->connectionAttempt === -1) {
-                    $lastConnectionAttempt = new \DateTime($user->lastConnectionAttempt);
+                if ((int) $this->entity->connectionAttempt === -1) {
+                    $lastConnectionAttempt = new \DateTime($this->entity->lastConnectionAttempt);
                     $intervalInSec         = $this->dateIntervalToSec($now->diff($lastConnectionAttempt));
                     $minInterval           = (int) $this->params['minTimeAttempt'];
 
@@ -145,33 +149,32 @@ class UserEntityManager extends EntityManager
                             'You have to wait ' . ($minInterval - $intervalInSec) . ' sec before trying to reconnect'
                         );
                     } else {
-                        $user->connectionAttempt = 1;
+                        $this->entity->connectionAttempt = 1;
                     }
                 } else {
-                    $user->connectionAttempt++;
-                    $user->ipAttempt             = $_SERVER['REMOTE_ADDR'];
-                    $user->lastConnectionAttempt = $now->format('Y-m-d H:i:s');
+                    $this->entity->connectionAttempt++;
+                    $this->entity->ipAttempt             = $_SERVER['REMOTE_ADDR'];
+                    $this->entity->lastConnectionAttempt = $now->format('Y-m-d H:i:s');
                 }
 
-                if ($user->ipAttempt === $_SERVER['REMOTE_ADDR']) {
-                    if ($user->connectionAttempt === (int) $this->params['maxFailConnectAttempt']) {
-                        $user->connectionAttempt = -1;
+                if ($this->entity->ipAttempt === $_SERVER['REMOTE_ADDR']) {
+                    if ($this->entity->connectionAttempt === (int) $this->params['maxFailConnectAttempt']) {
+                        $this->entity->connectionAttempt = -1;
                     }
                 } else {
-                    $user->connectionAttempt = 1;
-                    $user->ipAttempt         = $_SERVER['REMOTE_ADDR'];
+                    $this->entity->connectionAttempt = 1;
+                    $this->entity->ipAttempt         = $_SERVER['REMOTE_ADDR'];
                 }
 
                 if ($continue) {
                     // Connection success
                     if (hash_equals($userParams['password'], crypt($password, $userParams['password']))) {
-                        $success                    = true;
-                        $user->password             = $password;
-                        $user->lastConnection       = $now->format('Y-m-d H:i:s');
-                        $user->connectionAttempt    = 0;
-                        $user->ip                   = $_SERVER['REMOTE_ADDR'];
-                        $user->securityToken        = bin2hex(random_bytes($params['securityTokenLength']));
-                        $user->securityTokenExpires = $now->add(
+                        $success                            = true;
+                        $this->entity->lastConnection       = $now->format('Y-m-d H:i:s');
+                        $this->entity->connectionAttempt    = 0;
+                        $this->entity->ip                   = $_SERVER['REMOTE_ADDR'];
+                        $this->entity->securityToken        = bin2hex(random_bytes($this->params['securityTokenLength']));
+                        $this->entity->securityTokenExpires = $now->add(
                             new \DateInterval('PT' . $this->params['securityTokenDuration'] . 'S')
                         )->format('Y-m-d H:i:s');
                     } else {
@@ -179,13 +182,13 @@ class UserEntityManager extends EntityManager
                     }
                 }
 
-                $this->saveEntity($user);
+                $this->saveEntity();
             } else {
                 $errors['login'] = _('This login does not exist');
             }
         }
 
-        return array('success' => $success, 'errors' => $errors);;
+        return array('success' => $success, 'errors' => $errors, 'user' => $this->entity->__toArray());
     }
 
     /**
@@ -212,7 +215,7 @@ class UserEntityManager extends EntityManager
     public function checkSecurityToken(): bool
     {
         $sqlMarks = 'SELECT securityToken, securityTokenExpires FROM %s WHERE id = %d';
-        $sql      = static::sqlFormater($sqlMarks, $user->getTableName(), $this->entity->id);
+        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $this->entity->id);
         $results  = DB::query($sql)->fetch();
 
         return (
@@ -236,9 +239,8 @@ class UserEntityManager extends EntityManager
      */
     private function isPseudonymExist(string $pseudonym): bool
     {
-        $user     = new User();
         $sqlMarks = 'SELECT count(*) FROM %s WHERE pseudonym = %s';
-        $sql      = static::sqlFormater($sqlMarks, $user->getTableName(), DB::quote($pseudonym));
+        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($pseudonym));
 
         return (int) DB::query($sql)->fetchColumn() > 0;
     }

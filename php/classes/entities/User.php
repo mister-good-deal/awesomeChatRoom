@@ -11,7 +11,8 @@ namespace classes\entities;
 use \abstracts\Entity as Entity;
 use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
-use \classes\entities\UsersRights as UsersRights;
+use \classes\entities\UserRight as UserRight;
+use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
 
 /**
  * User entity that extends the Entity abstact class
@@ -29,6 +30,10 @@ use \classes\entities\UsersRights as UsersRights;
  * @property   int     $ip                     The user last ip connection
  * @property   string  $lastConnectionAttempt  The user last time connection attempt
  * @property   string  $lastConnection         The user last time connection
+ *
+ * @todo PHP7 defines object return OR null with method(...): ?Class
+ * @see https://wiki.php.net/rfc/nullable_types
+ * @see https://wiki.php.net/rfc/union_types
  */
 class User extends Entity
 {
@@ -36,17 +41,23 @@ class User extends Entity
      * @var        string[]  $mustDefinedFields     Fields that must be defined when instanciate the User object
      */
     public static $mustDefinedFields = array('firstName', 'lastName', 'email', 'password');
-
     /**
      * @var        string[]  $pseudoBlackList   List of unwanted pseudonyms
      */
     public static $pseudoBlackList = array('admin', 'all', 'SERVER');
-
     /**
      * @var        string[]  $forbidenPseudoCharacters  List of forbidden pseudonym characters
      */
     public static $forbiddenPseudoCharacters = array(',', "'");
 
+    /**
+     * @var        UserRight  $right    The user right
+     */
+    private $right = null;
+    /**
+     * @var        UserChatRightCollection  $chatRight  The user chat right collection
+     */
+    private $chatRight = null;
     /**
      * @var        array  $errors   An array containing the occured errors when fields are set
      */
@@ -77,6 +88,46 @@ class User extends Entity
     =========================================*/
 
     /**
+     * Get the user right
+     *
+     * @return     UserRight|null  The user right entity
+     */
+    public function getRight()
+    {
+        return $this->right;
+    }
+
+    /**
+     * Set the user right
+     *
+     * @param      UserRight  $right  The user right entity
+     */
+    public function setRight(UserRight $right)
+    {
+        $this->right = $right;
+    }
+
+    /**
+     * Get the user chat right collection
+     *
+     * @return     UserChatRightCollection|null  The user chat right collection
+     */
+    public function getChatRight()
+    {
+        return $this->chatRight;
+    }
+
+    /**
+     * Set the user chat right collection
+     *
+     * @param      UserChatRightCollection  $chatRight  The user chat right collection
+     */
+    public function setChatRight(UserChatRightCollection $chatRight)
+    {
+        $this->chatRight = $chatRight;
+    }
+
+    /**
      * Get the occured errors when fields are set
      *
      * @return     array  An array containing the occured errors when fields are set
@@ -96,6 +147,8 @@ class User extends Entity
      * Bind user inputs to set User class attributes with inputs check
      *
      * @param      array  $inputs  The user inputs
+     *
+     * @todo Move it to entityManager
      */
     public function bindInputs(array $inputs)
     {
@@ -118,9 +171,9 @@ class User extends Entity
      * @param      string     $columnName  The column name
      * @param      string     $value       The new column value
      *
-     * @throws     Exception  If the column name does not a exist
-     *
      * @return     string  The sanitized value
+     *
+     * @todo Move it to entityManager
      */
     private function validateField(string $columnName, string $value): string
     {

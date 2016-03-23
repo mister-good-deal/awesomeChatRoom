@@ -18,6 +18,10 @@ use \classes\IniManager as Ini;
  * Abstract EntityManager pattern
  *
  * @abstract
+ *
+ * @todo PHP7 defines object return OR null with method(...): ?Class
+ * @see https://wiki.php.net/rfc/nullable_types
+ * @see https://wiki.php.net/rfc/union_types
  */
 abstract class EntityManager
 {
@@ -38,16 +42,16 @@ abstract class EntityManager
      * Constructor that can take an Entity as first parameter and a Collection as second parameter
      *
      * @param      Entity      $entity            An entity object DEFAULT null
-     * @param      Collection  $entityCollection  A colection oject DEFAULT null
+     * @param      Collection  $entityCollection  A EntityCollection object DEFAULT null
      */
     public function __construct(Entity $entity = null, Collection $entityCollection = null)
     {
         if ($entity !== null) {
-            $this->setEntity($entity);
+            $this->entity = $entity;
         }
 
         if ($entityCollection !== null) {
-            $this->setEntityCollection($entityCollection);
+            $this->entityCollection = $entityCollection;
         }
     }
 
@@ -60,9 +64,9 @@ abstract class EntityManager
     /**
      * Get the entity object
      *
-     * @return     Entity  The entity object
+     * @return     Entity|null  The entity object
      */
-    public function getEntity(): Entity
+    public function getEntity()
     {
         return $this->entity;
     }
@@ -80,9 +84,9 @@ abstract class EntityManager
     /**
      * Get the entity collection object
      *
-     * @return     Collection  The entity colection object
+     * @return     Collection|null  The entity EntityCollection object
      */
-    public function getEntityCollection(): Collection
+    public function getEntityCollection()
     {
         return $this->entityCollection;
     }
@@ -106,12 +110,14 @@ abstract class EntityManager
     /**
      * Load an entity by its id
      *
-     * @param      int|array          The id value
+     * @param      int|array  $id     The id value
+     *
+     * @return     bool       True if an entity was retrieved from the database else false
      */
-    public function loadEntity($id)
+    public function loadEntity($id): bool
     {
-        $this->entity->setIdValue($id);
-        $this->loadEntityInDatabase();
+        $this->entity->setIdValue($id); // @todo check this shit
+        return $this->loadEntityInDatabase();
     }
 
     /**
@@ -139,12 +145,10 @@ abstract class EntityManager
     }
 
     /**
-     * Save the entity colection in the database
+     * Save the entity EntityCollection in the database
      *
-     * @param      Collection  $collection  OPTIONAL If an collection is passed, this collection becomes the
+     * @param      Collection  $collection  OPTIONAL If a collection is passed, this collection becomes the
      *                                      EntityManager Collection DEFAULT null
-     *
-     * @throws     Exception   If the entityCollection is not a subclass of Collection
      *
      * @return     bool        True if the entity collection has been saved else false
      */
@@ -235,9 +239,12 @@ abstract class EntityManager
 
     /**
      * Load an entity by its id in the database
+     *
+     * @return     bool  True if an entity was retrieved from the database elese false
      */
-    private function loadEntityInDatabase()
+    private function loadEntityInDatabase(): bool
     {
+        $success  = false;
         $sqlMarks = " SELECT *\n FROM %s\n WHERE %s";
 
         $sql = static::sqlFormater(
@@ -250,7 +257,10 @@ abstract class EntityManager
 
         if ($attributes !== false) {
             $this->entity->setAttributes($attributes);
+            $success = true;
         }
+
+        return $success;
     }
 
     /**

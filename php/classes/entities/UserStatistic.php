@@ -1,6 +1,6 @@
 <?php
 /**
- * UserStatistics entity
+ * UserStatistic entity
  *
  * @package    Entity
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -11,9 +11,9 @@ namespace classes\entities;
 use \abstracts\Entity as Entity;
 
 /**
- * UserStatistics entity that extends the Entity abstact class
+ * UserStatistic entity that extends the Entity abstact class
  */
-class UserStatistics extends Entity
+class UserStatistic extends Entity
 {
     /*=====================================
     =            Magic methods            =
@@ -24,7 +24,7 @@ class UserStatistics extends Entity
      */
     public function __construct()
     {
-        parent::__construct('UserStatistics');
+        parent::__construct('UserStatistic');
     }
 
     /*-----  End of Magic methods  ------*/

@@ -24,6 +24,14 @@ define([
      * @param       {User}         User      The current User
      * @param       {FormsManager} Forms     A FormsManager to handle form XHR ajax calls or jsCallbacks
      * @param       {Object}       settings  Overriden settings
+     *
+     * @todo check the id value of the followings
+     * this.mouseInRoomChat
+     *
+     * this.isRoomOpened
+     * this.messagesHistory
+     * this.messagesHistoryPointer
+     * this.messagesCurrent
      */
     var ChatManager = function (WebSocket, User, Forms, settings) {
             var self = this;
@@ -231,10 +239,10 @@ define([
         connectEvent: function () {
             var connectDiv = $(this.settings.selectors.roomConnect.div),
                 pseudonym  = connectDiv.find(this.settings.selectors.roomConnect.pseudonym).val(),
-                roomName   = connectDiv.find('select' + this.settings.selectors.roomConnect.name).val(),
+                roomId     = connectDiv.find('select' + this.settings.selectors.roomConnect.name).val(),
                 password   = connectDiv.find(this.settings.selectors.roomConnect.password).val();
-
-            this.connect(pseudonym, roomName, password);
+            //@todo error message when no room selected...
+            this.connect(pseudonym, roomId, password);
         },
 
         /**
@@ -357,16 +365,16 @@ define([
                 messageInput = sendDiv.find(this.settings.selectors.roomSend.message),
                 message      = messageInput.val(),
                 room         = $(e.currentTarget).closest(this.settings.selectors.global.room),
-                roomName     = room.attr('data-name'),
+                roomId       = room.attr('data-id'),
                 password     = room.attr('data-password');
 
             if (_.trim(message) !== '') {
-                if (!this.isCommand(message, roomName, password)) {
-                    this.sendMessage(recievers, message, roomName, password);
+                if (!this.isCommand(message, roomId, password)) {
+                    this.sendMessage(recievers, message, roomId, password);
                 }
 
-                this.messagesHistory[roomName].push(message);
-                this.messagesHistoryPointer[roomName]++;
+                this.messagesHistory[roomId].push(message);
+                this.messagesHistoryPointer[roomId]++;
                 messageInput.val('');
             }
 
@@ -545,15 +553,15 @@ define([
          * Connect a user to the chat
          *
          * @param {String} pseudonym The user pseudonym
-         * @param {String} roomName  The room name to connect to
+         * @param {Number} roomId    The room ID to connect to
          * @param {String} password  The room password to connect to
          */
-        connect: function (pseudonym, roomName, password) {
+        connect: function (pseudonym, roomId, password) {
             this.websocket.send(JSON.stringify({
                 "service"  : [this.settings.serviceName],
                 "action"   : "connectRoom",
                 "pseudonym": pseudonym || "",
-                "roomName" : roomName,
+                "roomId"   : roomId,
                 "password" : password
             }));
         },
@@ -576,14 +584,14 @@ define([
          *
          * @param {String} recievers The message reciever ('all' || userPseudonym)
          * @param {String} message   The txt message to send
-         * @param {String} roomName  The chat room name
+         * @param {Number} roomId  The chat room name
          * @param {String} password  The chat room password if required
          */
-        sendMessage: function (recievers, message, roomName, password) {
+        sendMessage: function (recievers, message, roomId, password) {
             this.websocket.send(JSON.stringify({
                 "service"  : [this.settings.serviceName],
                 "action"   : "sendMessage",
-                "roomName" : roomName,
+                "roomId"   : roomId,
                 "message"  : message,
                 "recievers": recievers,
                 "password" : password || ''
@@ -824,14 +832,14 @@ define([
          * @param {Object} data The server JSON reponse
          */
         recieveMessageCallback: function (data) {
-            var room                = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
+            var room                = $(this.settings.selectors.global.room + '[data-id="' + data.roomId + '"]'),
                 roomChat            = room.find(this.settings.selectors.global.roomChat),
                 messagesUnread      = room.find(this.settings.selectors.global.roomMessagesUnread),
                 messagesUnreadValue = messagesUnread.text();
 
             roomChat.append(this.formatUserMessage(data));
 
-            if (this.isRoomOpened[data.roomName] && !this.mouseInRoomChat[data.roomName]) {
+            if (this.isRoomOpened[data.roomId] && !this.mouseInRoomChat[data.roomId]) {
                 roomChat.scrollTop(room.height());
                 messagesUnread.text('');
             } else {
@@ -974,16 +982,16 @@ define([
 
             _.forEach(data.roomsInfo, function (roomInfo) {
                 option = $('<option>', {
-                    "value"       : roomInfo.name,
-                    "data-subtext": '(' + roomInfo.usersConnected + '/' + roomInfo.maxUsers + ')',
-                    "data-type"   : roomInfo.type,
-                    "text"        : roomInfo.name
+                    "value"       : roomInfo.room.id,
+                    "data-subtext": '(' + roomInfo.usersConnected + '/' + roomInfo.room.maxUsers + ')',
+                    "data-type"   : roomInfo.room.password ? 'private' : 'public',
+                    "text"        : roomInfo.room.name
                 });
 
-                if (roomInfo.type === 'public') {
-                    publicRooms.push(option);
-                } else {
+                if (roomInfo.room.password) {
                     privateRooms.push(option);
+                } else {
+                    publicRooms.push(option);
                 }
             });
 
@@ -1004,7 +1012,8 @@ define([
          * @param {Object} data The server JSON reponse
          */
         insertRoomInDOM: function (data) {
-            var room = $(this.settings.selectors.global.room + '[data-name="' + data.roomName + '"]'),
+            var roomData = data.room,
+                room     = $(this.settings.selectors.global.room + '[data-id="' + roomData.id + '"]'),
                 roomSample, newRoom, newRoomChat, modalSample, newModal, id;
 
             if (room.length === 0) {
@@ -1014,16 +1023,17 @@ define([
                 newRoomChat = newRoom.find(this.settings.selectors.global.roomChat);
 
                 newRoom.attr({
-                    "data-name"     : data.roomName,
-                    "data-type"     : data.type,
+                    "data-id"       : roomData.id,
+                    "data-name"     : roomData.name,
+                    "data-type"     : roomData.password ? 'private' : 'public',
                     "data-pseudonym": data.pseudonym,
-                    "data-password" : data.password,
-                    "data-max-users": data.maxUsers,
+                    "data-password" : roomData.password,
+                    "data-max-users": roomData.maxUsers,
                     "data-users"    : _(data.pseudonyms).toString()
                 });
                 newRoom.removeAttr('id');
                 newRoom.removeClass('hide');
-                newRoom.find(this.settings.selectors.global.roomName).text(data.roomName);
+                newRoom.find(this.settings.selectors.global.roomName).text(roomData.name);
                 newRoom.find(this.settings.selectors.roomAction.showUsers).popover({
                     content: function () {
                         var list = $('<ul>');
@@ -1039,29 +1049,30 @@ define([
                 newRoomChat.attr('data-historic-loaded', 0);
 
                 this.updateUsersDropdown(newRoom, data.pseudonyms);
+                // @todo historic
                 this.loadHistoric(newRoomChat, data.historic);
-                this.mouseInRoomChat[data.roomName] = false;
-                this.isRoomOpened[data.roomName] = true;
-                this.messagesHistory[data.roomName] = [];
-                this.messagesHistoryPointer[data.roomName] = 0;
-                this.messagesCurrent[data.roomName] = '';
+                this.mouseInRoomChat[roomData.id] = false;
+                this.isRoomOpened[roomData.id] = true;
+                this.messagesHistory[roomData.id] = [];
+                this.messagesHistoryPointer[roomData.id] = 0;
+                this.messagesCurrent[roomData.id] = '';
 
                 $(this.settings.selectors.global.chat).append(newRoom);
                 // Modal room chat administration creation if the user is registered
-                if (data.usersRights !== undefined) {
+                if (this.user.isConnected()) {
                     modalSample = $(this.settings.selectors.administrationPanel.modalSample);
                     newModal    = modalSample.clone();
-                    id          = _.uniqueId('chat-admin-');
+                    id          = 'chat-admin-' + roomData.id;
 
                     newModal.attr({
                         "id"                : id,
-                        "data-room-name"    : data.roomName,
-                        "data-room-password": data.roomPassword
+                        "data-room-name"    : roomData.name,
+                        "data-room-password": roomData.password
                     });
 
-                    newModal.find(this.settings.selectors.administrationPanel.roomName).text(data.roomName);
-                    newModal.find(this.settings.selectors.administrationPanel.inputRoomName).val(data.roomName);
-                    newModal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(data.roomPassword);
+                    newModal.find(this.settings.selectors.administrationPanel.roomName).text(roomData.name);
+                    newModal.find(this.settings.selectors.administrationPanel.inputRoomName).val(roomData.name);
+                    newModal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(roomData.password);
                     newRoom.find(this.settings.selectors.roomAction.administration).attr('data-target', '#' + id);
                     this.updateRoomUsersRights(newModal, data.usersRights);
 
