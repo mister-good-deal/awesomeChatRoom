@@ -145,13 +145,22 @@ class UserManager extends Manager
     }
 
     /**
-     * Check if a user has the right to ckick a user
+     * Check if a user has the right to kick a user
      *
-     * @return     bool  True if a user has the right to kick a player from a room else false
+     * @param      int   $roomId  The room ID where the user wants to kick someone
+     *
+     * @return     bool  True if a user has the right to kick a user from a room else false
      */
-    public function hasChatAdminRight(): bool
+    public function hasChatKickRight(int $roomId): bool
     {
-        return $this->userEntityManager->checkSecurityToken() && $this->userEntity->getRight()->chatAdmin;
+        return (
+            $this->userEntityManager->checkSecurityToken() && (
+                $this->userEntity->getRight()->chatAdmin || (
+                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
+                    $this->userEntity->getChatRight()->getEntityById($roomId)->kick
+                )
+            )
+        );
     }
 
     /**

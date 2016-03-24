@@ -38,13 +38,14 @@ define([
          */
         "settings" : {
             "attributes": {
-                "firstName" : "",
-                "lastName"  : "",
-                "pseudonym" : "",
-                "email"     : "",
-                "password"  : ""
-            },
-            "chatRights": {}
+                "firstName": "",
+                "lastName" : "",
+                "pseudonym": "",
+                "email"    : "",
+                "password" : "",
+                "right"    : {},
+                "chatRight": {}
+            }
         },
         /**
          * If the user is connected
@@ -58,7 +59,8 @@ define([
         /**
          * Get first name
          *
-         * @return {String} The user first name
+         * @method     getFirstName
+         * @return     {String}  The user first name
          */
         getFirstName: function () {
             return this.settings.attributes.firstName;
@@ -67,7 +69,8 @@ define([
         /**
          * Get last name
          *
-         * @return {String} The user last name
+         * @method     getLastName
+         * @return     {String}  The user last name
          */
         getLastName: function () {
             return this.settings.attributes.lastName;
@@ -76,7 +79,8 @@ define([
         /**
          * Get pseudonym
          *
-         * @return {String} The user pseudonym
+         * @method     getPseudonym
+         * @return     {String}  The user pseudonym
          */
         getPseudonym: function () {
             var pseudonym = this.settings.attributes.pseudonym;
@@ -91,7 +95,8 @@ define([
         /**
          * Get email
          *
-         * @return {String} The user email
+         * @method     getEmail
+         * @return     {String}  The user email
          */
         getEmail: function () {
             return this.settings.attributes.email;
@@ -107,13 +112,24 @@ define([
         },
 
         /**
-         * Get chat rights
+         * Get user right
          *
-         * @param  {String} roomName The room name
-         * @return {String}          The user chat rights for the room
+         * @method     getRight
+         * @return     {Array}  The user right
          */
-        getChatRights: function (roomName) {
-            return this.settings.chatRights[roomName];
+        getRight: function () {
+            return this.settings.attributes.right;
+        },
+
+        /**
+         * Get the given chat room right
+         *
+         * @method     getChatRoomRight
+         * @param      {Number}  roomId  The room name
+         * @return     {Array}   The user chat rights for the room
+         */
+        getChatRoomRight: function (roomId) {
+            return this.settings.attributes.chatRight[roomId];
         },
 
         /**
@@ -129,22 +145,25 @@ define([
         /**
          * Set the User object with a JSON parameter
          *
-         * @param {Object} data JSON data
+         * @method     setAttributes
+         * @param      {Object}  data    JSON data
          */
         setAttributes: function (data) {
-            this.settings.attributes.firstName  = data.user.firstName || "";
-            this.settings.attributes.lastName   = data.user.lastName || "";
-            this.settings.attributes.pseudonym  = data.user.pseudonym || "";
-            this.settings.attributes.email      = data.user.email || "";
-            this.settings.attributes.password   = data.user.password || "";
-            this.settings.chatRights            = data.user.chatRights || {};
+            this.settings.attributes.firstName = data.user.firstName || "";
+            this.settings.attributes.lastName  = data.user.lastName || "";
+            this.settings.attributes.pseudonym = data.user.pseudonym || "";
+            this.settings.attributes.email     = data.user.email || "";
+            this.settings.attributes.password  = data.user.password || "";
+            this.settings.attributes.chatRight = data.user.chatRight || {};
+            this.settings.attributes.right     = data.user.right || {};
         },
 
         /**
          * Callback when the user connection attempt succeed
          *
-         * @param {Object} form The jQuery DOM form element
-         * @param {Object} data The server JSON reponse
+         * @method     connectSuccess
+         * @param      {Object}  form    The jQuery DOM form element
+         * @param      {Object}  data    The server JSON reponse
          */
         connectSuccess: function (form, data) {
             this.setAttributes(data);
@@ -161,8 +180,9 @@ define([
         /**
          * Callback when the user connection attempt failed
          *
-         * @param {Object} form The jQuery DOM form element
-         * @param {Object} data The server JSON reponse
+         * @method     connectFail
+         * @param      {Object}  form    The jQuery DOM form element
+         * @param      {Object}  data    The server JSON reponse
          */
         connectFail: function (form, data) {
             console.log('Fail !', data);
@@ -171,8 +191,9 @@ define([
         /**
          * Callback when the user connection request failed
          *
-         * @param {Object} form  The jQuery DOM form element
-         * @param {Object} jqXHR The jQuery jqXHR object
+         * @method     connectRequestFail
+         * @param      {Object}  form    The jQuery DOM form element
+         * @param      {Object}  jqXHR   The jQuery jqXHR object
          */
         connectRequestFail: function (form, jqXHR) {
             console.log(jqXHR);
@@ -181,8 +202,9 @@ define([
         /**
          * Callback when the user connection attempt succeed
          *
-         * @param {Object} form The jQuery DOM form element
-         * @param {Object} data The server JSON reponse
+         * @method     registerSuccess
+         * @param      {Object}  form    The jQuery DOM form element
+         * @param      {Object}  data    The server JSON reponse
          */
         registerSuccess: function (form, data) {
             this.setAttributes(data);
@@ -194,8 +216,9 @@ define([
         /**
          * Callback when the user connection attempt failed
          *
-         * @param {Object} form The jQuery DOM form element
-         * @param {Object} data The server JSON reponse
+         * @method     registerFail
+         * @param      {Object}  form    The jQuery DOM form element
+         * @param      {Object}  data    The server JSON reponse
          */
         registerFail: function (form, data) {
             console.log('Fail !', data);
@@ -204,8 +227,9 @@ define([
         /**
          * Callback when the user connection request failed
          *
-         * @param {Object} form  The jQuery DOM form element
-         * @param {Object} jqXHR The jQuery jqXHR object
+         * @method     registerRequestFail
+         * @param      {Object}  form    The jQuery DOM form element
+         * @param      {Object}  jqXHR   The jQuery jqXHR object
          */
         registerRequestFail: function (form, jqXHR) {
             console.log(jqXHR);

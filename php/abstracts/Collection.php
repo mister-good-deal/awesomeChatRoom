@@ -85,12 +85,13 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      * Add an entity at the end of the collection
      *
      * @param      Entity     $entity  The entity object
+     * @param      string     $key     A key to save the entity DEFAULT null (auto generated)
      *
      * @throws     Exception  If the entity id is already in the collection
      */
-    public function add($entity)
+    public function add($entity, $key = null)
     {
-        $id = $this->parseId($entity->getIdValue());
+        $id = $key ?? $this->parseId($entity->getIdValue());
 
         if (array_key_exists($id, $this->indexId)) {
             throw new Exception(
@@ -104,42 +105,44 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     }
 
     /**
-     * Get an entity by its id
+     * Get an entity by its id or null if there is no entity at the given id
      *
      * @param      int[]|string[]  $entityId  The entity id(s) in a array
      *
-     * @throws     Exception       If the entity id is not in the collection
-     *
-     * @return     Entity          The entity
+     * @return     Entity|null     The entity
      */
-    public function getEntityById(array $entityId)
+    public function getEntityById($entityId)
     {
-        $id = $this->parseId($entityId);
+        $entity = null;
+        $id     = $entityId;
 
-        if (!array_key_exists($id, $this->indexId)) {
-            throw new Exception(
-                'This entity id(' . implode(', ', $id) . ') is not in the collection',
-                Exception::$PARAMETER
-            );
+        if (is_array($id)) {
+            $id = $this->parseId($entityId);
         }
 
-        return $this->collection[$this->indexId[$id]];
+        if (array_key_exists($id, $this->indexId)) {
+            $entity = $this->collection[$this->indexId[$id]];
+        }
+
+        return $entity;
     }
 
     /**
-     * Get an entity by its index
+     * Get an entity by its index or null if there is no entity at the given index
      *
      * @param      int|string  $index  The entity index in the Collection
      *
-     * @return     Entity      The entity
+     * @return     Entity|null      The entity
      */
     public function getEntityByIndex($index)
     {
-        if (!isset($this->collection[$index])) {
-            throw new Exception('There is no entity at index ' . $index, Exception::$PARAMETER);
+        $entity = null;
+
+        if (isset($this->collection[$index])) {
+            $entity = $this->collection[$index];
         }
 
-        return $this->collection[$index];
+        return $entity;
     }
 
     /*==========  Iterator interface  ==========*/
@@ -282,7 +285,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      *
      * @return     string          The id(s) key
      */
-    private function parseId(array $id): string
+    private function parseId($id)
     {
         if (count($id) > 1) {
             $id = $this->md5Array($id);

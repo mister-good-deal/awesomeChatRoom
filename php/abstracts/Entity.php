@@ -405,7 +405,9 @@ abstract class Entity
     public function setAttributes(array $attributes)
     {
         foreach ($attributes as $columnName => $value) {
-            $this->{$columnName} = $value;
+            if (isset($this->{$columnName})) {
+                $this->{$columnName} = $value;
+            }
         }
     }
 

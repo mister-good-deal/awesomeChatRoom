@@ -18,8 +18,8 @@ use \classes\entities\UserChatRight as UserChatRight;
  *      Add a chat right entity at the end of the collection
  * }
  *
- * @method UserChatRight getEntityById(string[] $entityId) {
- *      Get a chat right entity by its id
+ * @method UserChatRight getEntityById(int $roomId) {
+ *      Get a chat right entity by the room ID
  *
  *      @return UserChatRight The chat right entity
  * }

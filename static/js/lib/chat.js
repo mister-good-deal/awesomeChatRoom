@@ -1117,7 +1117,7 @@ define([
                     newModal.find(this.settings.selectors.administrationPanel.inputRoomName).val(roomData.name);
                     newModal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(roomData.password);
                     newRoom.find(this.settings.selectors.roomAction.administration).attr('data-target', '#' + id);
-                    this.updateRoomUsersRights(newModal, data.usersRights);
+                    this.updateRoomUsersRights(newModal, data.chatRights);
 
                     modalSample.after(newModal);
                 }
@@ -1230,7 +1230,7 @@ define([
             var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),
                 trSample  = usersList.find(this.settings.selectors.administrationPanel.trSample),
                 roomId    = modal.attr('data-room-id'),
-                room      = $(this.settings.selectors.global.room + '[data-name="' + roomId + '"]'),
+                room      = $(this.settings.selectors.global.room + '[data-id="' + roomId + '"]'),
                 newLines  = [],
                 self = this;
 
@@ -1248,12 +1248,12 @@ define([
          * Get a new user right line in the administration panel
          *
          * @method     getUserRightLine
-         * @param      {Object}  modal       The modal jQuery DOM element
-         * @param      {String}  pseudonym   The new user pseudonym
-         * @param      {Object}  usersRight  The new user rights
+         * @param      {Object}  modal          The modal jQuery DOM element
+         * @param      {String}  pseudonym      The new user pseudonym
+         * @param      {Object}  userChatRight  The new user chat right
          * @return     {Object}  The new user right line jQuery DOM element
          */
-        getUserRightLine: function (modal, pseudonym, usersRight) {
+        getUserRightLine: function (modal, pseudonym, userChatRight) {
             var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),
                 trSample  = usersList.find(this.settings.selectors.administrationPanel.trSample),
                 roomId    = modal.attr('data-room-id'),
@@ -1274,15 +1274,17 @@ define([
 
                     $(this).addClass(refer);
                     // Unregistered user
-                    if (!usersRight) {
+                    if (!userChatRight) {
                         // Disabled rights on unregistered users
                         input.bootstrapSwitch('readonly', true);
                         input.bootstrapSwitch('state', false);
                     } else {
                         // Set the current user rights
-                        input.bootstrapSwitch('state', usersRight[rightName]);
+                        input.bootstrapSwitch(
+                            'state', userChatRight[roomId] ? userChatRight[roomId][rightName] : false
+                        );
 
-                        if (!self.user.getChatRights(roomId).grant) {
+                        if (!self.user.getChatRoomRight(roomId) || !self.user.getChatRoomRight(roomId).grant) {
                             // Disabled rights if the admin have no "grant" right
                             input.bootstrapSwitch('readonly', true);
                         } else {
