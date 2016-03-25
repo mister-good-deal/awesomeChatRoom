@@ -10,6 +10,7 @@ namespace classes\entitiesManager;
 
 use \abstracts\EntityManager as EntityManager;
 use \classes\entities\User as User;
+use \classes\entitiesCollection\UserCollection as UserCollection;
 use \classes\DataBase as DB;
 use \classes\IniManager as Ini;
 
@@ -38,12 +39,12 @@ class UserEntityManager extends EntityManager
     =====================================*/
 
     /**
-     * Constructor that can take a User entity as first parameter and a Collection as second parameter
+     * Constructor that can take a User entity as first parameter and a UserCollection as second parameter
      *
-     * @param      User        $entity            A user entity object DEFAULT null
-     * @param      Collection  $entityCollection  A colection oject DEFAULT null
+     * @param      User            $entity            A user entity object DEFAULT null
+     * @param      UserCollection  $entityCollection  A users collection oject DEFAULT null
      */
-    public function __construct(User $entity = null, Collection $entityCollection = null)
+    public function __construct(User $entity = null, UserCollection $entityCollection = null)
     {
         parent::__construct($entity, $entityCollection);
 

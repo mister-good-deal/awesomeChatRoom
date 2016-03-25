@@ -12,6 +12,13 @@ use \classes\console\Console as Console;
 use \classes\DataBase as DB;
 use \classes\IniManager as Ini;
 use \classes\entitiesManager\GlobalEntityManager as EntityManager;
+use \classes\managers\UserManager as UserManager;
+use \classes\managers\ChatManager as ChatManager;
+use \classes\entities\User as User;
+use \classes\entities\UserRight as UserRight;
+use \classes\entities\ChatRoom as ChatRoom;
+use \classes\entitiesCollection\UserCollection as UserCollection;
+use \classes\entitiesCollection\ChatRoomCollection as ChatRoomCollection;
 use \abstracts\designPatterns\Entity as Entity;
 
 /**
@@ -34,7 +41,9 @@ class Orm extends Console
         'drop -t tableName'                                  => 'Drop the given table name',
         'show -t tableName [-s startIndex -e endIndex]'      => 'Show table data begin at startIndex and stop at endIndex',
         'desc -t tableName'                                  => 'Show table structure',
-        'create all'                                         => 'Create all the tables'
+        'create all'                                         => 'Create all tables',
+        'generate data'                                      => 'Generate default data in all tables',
+        'init'                                               => '`create all` + `generate data`'
     );
 
     /**
@@ -89,6 +98,15 @@ class Orm extends Console
 
             case 'create all':
                 $this->createAllTables();
+                break;
+
+            case 'generate data':
+                $this->insertUserData();
+                $this->insertChatData();
+                break;
+
+            case 'init':
+                $this->init();
                 break;
 
             default:
@@ -215,6 +233,16 @@ class Orm extends Console
     }
 
     /**
+     * Init tha database with tables and data
+     */
+    private function init()
+    {
+        $this->createAllTables();
+        $this->insertUserData();
+        $this->insertChatData();
+    }
+
+    /**
      * Create all the entities table
      */
     private function createAllTables()
@@ -227,7 +255,8 @@ class Orm extends Console
              */
             $entityClassPath = Ini::getParam('Entities', 'entitiesClassPath') . DIRECTORY_SEPARATOR . $entityName;
             $entity          = new $entityClassPath;
-            $tableName       = strtolower($entity->getTableName()); // todo bug SQL table name with uppercase
+            // @todo bug SQL table name with uppercase
+            $tableName       = strtolower($entity->getTableName());
 
             if (!in_array($tableName, DB::getAllTables())) {
                 static::out('Create table "' . $tableName . '"' . PHP_EOL);
@@ -239,6 +268,95 @@ class Orm extends Console
         }
 
         static::out(static::ACTION_DONE . PHP_EOL);
+    }
+
+    /**
+     * Insert users in database
+     */
+    private function insertUserData()
+    {
+        $users       = new UserCollection();
+        $userManager = new UserManager(null, $users);
+
+        static::out('Create user data' . PHP_EOL);
+
+        // Create an admin with password = 123
+        $admin = new User(array(
+            'id'        => 1,
+            'email'     => 'admin@websocket.com',
+            'firstName' => 'Admin',
+            'lastName'  => 'God',
+            'pseudonym' => 'admin',
+            'password'  => '$6$rounds=5000$xd8u1gm9aw8d2npq$VlV1nxc0CNsVhgtnKXPcvT.1Mzt.8ZjNQZYWeK7NOFNBy4M.3EEg9Kt4'
+                           . 'WHFEogUA7xtH89UKDfp4UXHVYlIY00'
+        ));
+
+        $admin->setRight(new UserRight(array('idUser' => 1, 'webSocket' => 1, 'chatAdmin' => 1)));
+
+        $users->add($admin);
+
+        // Create some normal users with password = 123
+        for ($i = 1; $i < 11; $i++) {
+            $user = new User(array(
+                'id'        => ($i + 1),
+                'email'     => 'user_' . $i . '@websocket.com',
+                'firstName' => 'User ' . $i,
+                'lastName'  => 'Normal',
+                'pseudonym' => 'User ' . $i,
+                'password'  => '$6$rounds=5000$xd8u1gm9aw8d2npq$VlV1nxc0CNsVhgtnKXPcvT.1Mzt.8ZjNQZYWeK7NOFNBy4M.3EEg9Kt'
+                               . '4WHFEogUA7xtH89UKDfp4UXHVYlIY00'
+            ));
+
+            $users->add($user);
+        }
+
+        if ($userManager->saveUserCollection($users)) {
+            static::out(sprintf('Users collection %s saved' . PHP_EOL, $users));
+        } else {
+            static::out('An error occured on user collection save' . PHP_EOL);
+        }
+    }
+
+    /**
+     * Insert chat data in database
+     */
+    private function insertChatData()
+    {
+        $rooms       = new ChatRoomCollection();
+        $chatManager = new ChatManager();
+
+        static::out('Create chat data' . PHP_EOL);
+
+        // Create a default chat room
+        $default = new ChatRoom(array(
+            'id'           => 1,
+            'name'         => 'Default',
+            'creator'      => 1,
+            'creationDate' => date('Y-m-d H:i:s'),
+            'maxUsers'     => 50
+        ));
+
+        $rooms->add($default);
+
+        // Create some rooms some public and some with password 123
+        for ($i = 1; $i < 11; $i++) {
+            $room = new ChatRoom(array(
+                'id'           => ($i + 1),
+                'name'         => 'Room ' . $i,
+                'creator'      => 1,
+                'password'     => (mt_rand(0, 1) ? null : '123'),
+                'creationDate' => date('Y-m-d H:i:s'),
+                'maxUsers'     => 20
+            ));
+
+            $rooms->add($room);
+        }
+
+        if ($chatManager->saveChatRoomCollection($rooms)) {
+            static::out(sprintf('The followings chat rooms are inserted %s' . PHP_EOL, $rooms));
+        } else {
+            static::out('An error occured on chat rooms collection save' . PHP_EOL);
+        }
     }
 
     /**

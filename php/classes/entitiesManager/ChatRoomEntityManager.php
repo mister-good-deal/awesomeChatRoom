@@ -74,7 +74,7 @@ class ChatRoomEntityManager extends EntityManager
             $this->entity->name         = $roomName;
             $this->entity->maxUsers     = $maxUsers;
             $this->entity->password     = $password;
-            $this->entity->creationDate = (new \DateTime())->format('Y-m-d H:i:s');
+            $this->entity->creationDate = date('Y-m-d H:i:s');
             $success = $this->saveEntity();
         }
 
