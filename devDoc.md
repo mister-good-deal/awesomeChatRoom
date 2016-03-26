@@ -166,7 +166,7 @@ Create tables with the ORM, run those commands
 
 `php [absolute path to the project root directory]/php/launchORM.php`
 
-`create all`
+`init`
 
 `exit`
 
@@ -238,16 +238,10 @@ Finally run the websocket server with this command
 
 Then go to your web browser with javascript console enabled and hit the index.php of the project
 
-Create a new user and give him admin rights on the userRights table (put "1" in both right columns)
-
-To enable the chat service, connect with an admin user then run in the web javascript console
+You can connect with the users you have created with the ORM init commande
 
 `window.WebsocketManager.addService('chatService');`
 
 ####IDE
 
 For IDE I recommend [Sublime Text 3](https://download.sublimetext.com/Sublime%20Text%20Build%203083%20x64.zip) with a stack of [sublime packages](https://packagecontrol.io/) or [PhpStorm](https://download.jetbrains.com/webide/PhpStorm-10.0.3.exe) which is heavier than Sublime Text 3 but a quite nice IDE.
-
-####Todo
-
-- Créer un user chat rights par défaut à la création d'un user sinon bug dans => `chat.js:1226:30`

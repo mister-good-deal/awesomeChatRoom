@@ -25,10 +25,16 @@ class UserRight extends Entity
 
     /**
      * Constructor that calls the parent Entity constructor
+     *
+     * @param      array  $data   Array($columnName => $value) pairs to set the object DEFAULT null
      */
-    public function __construct()
+    public function __construct(array $data = null)
     {
         parent::__construct('UserRight');
+
+        if ($data !== null) {
+            $this->setAttributes($data);
+        }
     }
 
     /*-----  End of Magic methods  ------*/

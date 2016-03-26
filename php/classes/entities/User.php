@@ -70,7 +70,7 @@ class User extends Entity
     /**
      * Constructor that calls the parent Entity constructor and affect values if values are passed
      *
-     * @param      array  $data   DEFAULT null array($columnName => $value) pairs to set the object
+     * @param      array  $data   Array($columnName => $value) pairs to set the object DEFAULT null
      */
     public function __construct(array $data = null)
     {

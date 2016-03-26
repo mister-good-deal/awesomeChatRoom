@@ -96,7 +96,7 @@ abstract class EntityManager
      *
      * @param      Collection  $entityCollection  The new entity collection object
      */
-    public function setEntityCollection(Collection $entityCollection)
+    public function setEntityCollection($entityCollection)
     {
         $this->entityCollection = $entityCollection;
     }
@@ -110,13 +110,13 @@ abstract class EntityManager
     /**
      * Load an entity by its id
      *
-     * @param      int|array  $id     The id value
+     * @param      mixed  $id     The id value
      *
-     * @return     bool       True if an entity was retrieved from the database else false
+     * @return     bool   True if an entity was retrieved from the database else false
      */
     public function loadEntity($id): bool
     {
-        $this->entity->setIdValue($id); // @todo check this shit
+        $this->entity->setIdValue($id);
         return $this->loadEntityInDatabase();
     }
 
@@ -127,7 +127,7 @@ abstract class EntityManager
      *
      * @return     bool    True if the entity has been saved or updated else false
      */
-    public function saveEntity(Entity $entity = null): bool
+    public function saveEntity($entity = null): bool
     {
         if ($entity !== null) {
             $this->setEntity($entity);

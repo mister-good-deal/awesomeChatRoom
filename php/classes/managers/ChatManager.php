@@ -13,6 +13,7 @@ use \classes\entities\User as User;
 use \classes\entities\ChatRoom as ChatRoom;
 use \classes\entities\ChatRoomBan as ChatRoomBan;
 use \classes\entitiesCollection\ChatRoomBanCollection as ChatRoomBanCollection;
+use \classes\entitiesCollection\ChatRoomCollection as ChatRoomCollection;
 use \classes\entitiesManager\ChatRoomEntityManager as ChatRoomEntityManager;
 use \classes\entitiesManager\ChatRoomBanEntityManager as ChatRoomBanEntityManager;
 
@@ -116,5 +117,27 @@ class ChatManager extends Manager
     public function isIpBanned(string $ip): bool
     {
         return $this->chatRoomBanEntityManager->isIpBanned($ip);
+    }
+
+    /**
+     * Save a chat room collection
+     *
+     * @param      ChatRoomCollection  $collection  The chat room collection to save
+     *
+     * @return     bool                True if the chat room collection has been saved else false
+     */
+    public function saveChatRoomCollection(ChatRoomCollection $collection): bool
+    {
+        $success = $this->chatRoomEntityManager->saveCollection($collection);
+
+        foreach ($this->chatRoomEntityManager->getEntityCollection() as $room) {
+            if ($success && $room->getChatRoomBanCollection() !== null) {
+                foreach ($room->getChatRoomBanCollection() as $chatRoomBan) {
+                    $success = $this->chatRoomBanEntityManager()->saveEntity($chatRoomBan);
+                }
+            }
+        }
+
+        return $success;
     }
 }
