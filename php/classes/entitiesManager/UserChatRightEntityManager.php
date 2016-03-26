@@ -41,7 +41,7 @@ class UserChatRightEntityManager extends EntityManager
      * @param      UserChatRight            $entity      A UserChatRight entity object DEFAULT null
      * @param      UserChatRightCollection  $collection  A colection oject DEFAULT null
      */
-    public function __construct(UserChatRight $entity = null, Collection $collection = null)
+    public function __construct(UserChatRight $entity = null, UserChatRightCollection $collection = null)
     {
         parent::__construct($entity, $collection);
 
@@ -79,7 +79,7 @@ class UserChatRightEntityManager extends EntityManager
 
         foreach ($chatRights as $chatRightInfo) {
             $chatRight = (new UserChatRight())->setAttributes($chatRightInfo);
-            $this->entityCollection->add($chatRight);
+            $this->entityCollection->add($chatRight, $chatRight->idRoom);
         }
     }
 

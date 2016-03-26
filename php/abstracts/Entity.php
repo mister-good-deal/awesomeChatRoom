@@ -57,11 +57,11 @@ abstract class Entity
      */
     private $constraints;
     /**
-     * @var        The   entity     name
+     * @var        string  $entityName  The entity name
      */
     private $entityName;
     /**
-     * @var        string[]  $idKey     Id key name(s)
+     * @var        string|string[]  $idKey  Id key name(s)
      */
     private $idKey;
 
@@ -153,8 +153,10 @@ abstract class Entity
             $string .=
                 '  ' . $this->smartAlign($columnName, $keys)
                 . '  ' . $this->smartAlign(
-                    $this->columnsAttributes[$columnName]['type'] . '(' .
-                    $this->columnsAttributes[$columnName]['size'] . ')',
+                    $this->columnsAttributes[$columnName]['type'] .
+                    (isset($this->columnsAttributes[$columnName]['size']) ?
+                        '('. $this->columnsAttributes[$columnName]['size'] . ')' : ''
+                    ),
                     array(
                         array_column($this->columnsAttributes, 'type'),
                         array_column($this->columnsAttributes, 'size')
@@ -196,24 +198,30 @@ abstract class Entity
     /**
      * Get the key(s) id of an entity
      *
-     * @return     string[]  The entity key id
+     * @return     string|string[]  The entity key id
      */
-    public function getIdKey(): array
+    public function getIdKey()
     {
-        return $this->idKey;
+        return (count($this->idKey) === 1 ? $this->idKey[0] : $this->idKey);
     }
 
     /**
      * Get the id value of the entity
      *
-     * @return     int[]  The id value(s)
+     * @return     mixed  The id value(s)
      */
-    public function getIdValue(): array
+    public function getIdValue()
     {
-        $idValue = array();
+        $idKey = $this->getIdKey();
 
-        foreach ($this->idKey as $columnName) {
-            $idValue[] = $this->__get($columnName);
+        if (is_array($idKey)) {
+            $idValue = array();
+
+            foreach ($idKey as $columnName) {
+                $idValue[] = $this->__get($columnName);
+            }
+        } else {
+            $idValue = $this->__get($idKey);
         }
 
         return $idValue;
@@ -260,8 +268,6 @@ abstract class Entity
      *
      * @throws     Exception  If the id is on several columns and $value is not an array
      * @throws     Exception  If the id key is not found
-     *
-     * @todo wtf is that
      */
     public function setIdValue($value)
     {
@@ -405,7 +411,9 @@ abstract class Entity
     public function setAttributes(array $attributes)
     {
         foreach ($attributes as $columnName => $value) {
-            $this->{$columnName} = $value;
+            if (isset($this->{$columnName})) {
+                $this->{$columnName} = $value;
+            }
         }
     }
 
@@ -464,13 +472,12 @@ abstract class Entity
 
                 $columnsAttributes[$columnName] = $columnAttributes;
             } else {
-                $this->tableName  = $columnAttributes['name'];
-                $this->engine     = $columnAttributes['engine'];
-
-                @static::setIfIsSet($this->charset, $columnAttributes['charSet']);
-                @static::setIfIsSet($this->collation, $columnAttributes['collate']);
-                @static::setIfIsSet($this->comment, $columnAttributes['comment']);
-                @static::setIfIsSet($constraints['unique'], $columnAttributes['unique']);
+                $this->tableName       = $columnAttributes['name'];
+                $this->engine          = $columnAttributes['engine'];
+                $this->charset         = $columnAttributes['charSet'] ?? '';
+                $this->collation       = $columnAttributes['collate'] ?? '';
+                $this->comment         = $columnAttributes['comment'] ?? '';
+                $constraints['unique'] = $columnAttributes['unique'] ?? '';
 
                 if (isset($columnAttributes['primary'])) {
                     $constraints['primary']            = array();
@@ -488,9 +495,9 @@ abstract class Entity
                         $constraints['foreignKey'][$name]['columns']    = $columnAttributes['foreignKey'][$name];
                         $constraints['foreignKey'][$name]['tableRef']   = $columnAttributes['tableRef'][$name];
                         $constraints['foreignKey'][$name]['columnsRef'] = $columnAttributes['columnRef'][$name];
-                        $constraints['foreignKey'][$name]['match']      = @$columnAttributes['match'][$name];
-                        $constraints['foreignKey'][$name]['onDelete']   = @$columnAttributes['onDelete'][$name];
-                        $constraints['foreignKey'][$name]['onUpdate']   = @$columnAttributes['onUpdate'][$name];
+                        $constraints['foreignKey'][$name]['match']      = $columnAttributes['match'][$name] ?? null;
+                        $constraints['foreignKey'][$name]['onDelete']   = $columnAttributes['onDelete'][$name] ?? null;
+                        $constraints['foreignKey'][$name]['onUpdate']   = $columnAttributes['onUpdate'][$name] ?? null;
                     }
                 }
             }

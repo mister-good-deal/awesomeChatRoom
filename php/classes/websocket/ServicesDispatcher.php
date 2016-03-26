@@ -36,10 +36,6 @@ class ServicesDispatcher implements Application
      */
     private $clients = array();
     /**
-     * @var        $steams  MemoryStream[]
-     */
-    protected $steams = array();
-    /**
      * @var        $log  \Icicle\Log\Log
      */
     protected $log = null;
@@ -52,8 +48,7 @@ class ServicesDispatcher implements Application
     public function __construct(Log $log = null)
     {
         $this->log                     = $log ?: log();
-        $this->steams['chatService']   = new MemoryStream();
-        $this->services['chatService'] = new ChatService($this->steams['chatService'], $this->log);
+        $this->services['chatService'] = new ChatService($this->log);
     }
 
     /**
@@ -78,9 +73,6 @@ class ServicesDispatcher implements Application
      * This method is called when a WebSocket connection is established to the WebSocket server. This method should not
      * resolve until the connection should be closed.
      *
-     * This method create a client array of a Connection and a User object and communicate with the client until the
-     * connection is closed
-     *
      * @coroutine
      *
      * @param      \Icicle\WebSocket\Connection                 $connection
@@ -98,15 +90,29 @@ class ServicesDispatcher implements Application
             $connection->getRemotePort()
         );
 
-        $this->clients[$this->getConnectionHash($connection)] = array('Connection' => $connection, 'User' => null);
-        $iterator                                             = $connection->read()->getIterator();
+        yield $this->connectionSessionHandle($connection, $response, $request);
+    }
 
-        while (yield $iterator->isValid()) {
-            yield $this->serviceSelector(
-                json_decode($iterator->getCurrent()->getData(), true),
-                $this->clients[$this->getConnectionHash($connection)]
-            );
-        }
+    /**
+     * This method is called when a WebSocket connection is closed from the WebSocket server.
+     *
+     * This method close the connection properly and alert services that a client is disconnected
+     *
+     * @coroutine
+     *
+     * @param      \Icicle\WebSocket\Connection                 $connection
+     * @param      \Icicle\Http\Message\Response                $response
+     * @param      \Icicle\Http\Message\Request                 $request
+     *
+     * @return     \Generator|\Icicle\Awaitable\Awaitable|null
+     */
+    public function onDisconnection(Connection $connection, Response $response, Request $request)
+    {
+        $connectionHash = $this->getConnectionHash($connection);
+
+        yield $this->services['chatService']->disconnectUser($this->clients[$connectionHash]);
+
+        unset($this->clients[$connectionHash]);
 
         yield $this->log->log(
             Log::INFO,
@@ -126,6 +132,33 @@ class ServicesDispatcher implements Application
     protected function getConnectionHash(Connection $connection): string
     {
         return md5($connection->getRemoteAddress() + $connection->getRemotePort());
+    }
+
+    /**
+     * Create a client array of a Connection and a User object and handle the client session with until the connection
+     * is closed
+     *
+     * @coroutine
+     *
+     * @param      \Icicle\WebSocket\Connection                 $connection
+     * @param      \Icicle\Http\Message\Response                $response
+     * @param      \Icicle\Http\Message\Request                 $request
+     *
+     * @return     \Generator|\Icicle\Awaitable\Awaitable|null
+     */
+    private function connectionSessionHandle(Connection $connection, Response $response, Request $request)
+    {
+        $this->clients[$this->getConnectionHash($connection)] = array('Connection' => $connection, 'User' => null);
+        $iterator                                             = $connection->read()->getIterator();
+
+        while (yield $iterator->isValid()) {
+            yield $this->serviceSelector(
+                json_decode($iterator->getCurrent()->getData(), true),
+                $this->clients[$this->getConnectionHash($connection)]
+            );
+        }
+
+        yield $this->onDisconnection($connection, $response, $request);
     }
 
     /**

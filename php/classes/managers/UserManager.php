@@ -13,6 +13,7 @@ use \classes\entities\User as User;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
 use \classes\entitiesManager\UserRightEntityManager as UserRightEntityManager;
 use \classes\entitiesManager\UserChatRightEntityManager as UserChatRightEntityManager;
+use \classes\entitiesCollection\UserCollection as UserCollection;
 use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
 
 /**
@@ -44,10 +45,10 @@ class UserManager extends Manager
     /**
      * Constructor that can take a User entity as first parameter and a Collection as second parameter
      *
-     * @param      User        $entity      A user entity object DEFAULT null
-     * @param      Collection  $collection  A colection oject DEFAULT null
+     * @param      User|null            $entity      A user entity object DEFAULT null
+     * @param      UserCollection|null  $collection  A users collection oject DEFAULT null
      */
-    public function __construct(User $entity = null, Collection $collection = null)
+    public function __construct($entity = null, $collection = null)
     {
         parent::__construct();
         $this->userEntityManager          = new UserEntityManager($entity, $collection);
@@ -145,13 +146,22 @@ class UserManager extends Manager
     }
 
     /**
-     * Check if a user has the right to ckick a user
+     * Check if a user has the right to kick a user
      *
-     * @return     bool  True if a user has the right to kick a player from a room else false
+     * @param      int   $roomId  The room ID where the user wants to kick someone
+     *
+     * @return     bool  True if a user has the right to kick a user from a room else false
      */
-    public function hasChatAdminRight(): bool
+    public function hasChatKickRight(int $roomId): bool
     {
-        return $this->userEntityManager->checkSecurityToken() && $this->userEntity->getRight()->chatAdmin;
+        return (
+            $this->userEntityManager->checkSecurityToken() && (
+                $this->userEntity->getRight()->chatAdmin || (
+                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
+                    $this->userEntity->getChatRight()->getEntityById($roomId)->kick
+                )
+            )
+        );
     }
 
     /**
@@ -184,6 +194,34 @@ class UserManager extends Manager
 
         if ($success) {
             $this->userEntity->getChatRight()->add($userChatRight);
+        }
+
+        return $success;
+    }
+
+    /**
+     * Save the current user collection
+     *
+     * @param      UserCollection  $collection  A user collection to save
+     *
+     * @return     bool            True if the user collection has been saved else false
+     *
+     * @todo Can't update a User entity
+     */
+    public function saveUserCollection($collection): bool
+    {
+        $success = $this->userEntityManager->saveCollection($collection);
+
+        foreach ($this->userEntityManager->getEntityCollection() as $user) {
+            if ($success && $user->getRight() !== null) {
+                $success = $this->userRightEntityManager->saveEntity($user->getRight());
+            }
+
+            if ($success && $user->getChatRight() !== null) {
+                foreach ($user->getChatRight() as $chatRight) {
+                    $success = $this->userChatRightEntityManager->saveEntity($chatRight);
+                }
+            }
         }
 
         return $success;

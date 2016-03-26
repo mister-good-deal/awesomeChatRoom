@@ -56,10 +56,10 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     public function __toString(): string
     {
         $string = PHP_EOL . 'Collection of (' . $this->count() . ') ' . $this->getEntityByIndex(0)->getEntityName()
-            . ' entity' . PHP_EOL . implode(array_fill(0, 116, '-'));
+            . ' entity' . PHP_EOL . implode(array_fill(0, 116, '-')) . PHP_EOL;
 
         foreach ($this->collection as $entity) {
-            $string .= $entity . implode(array_fill(0, 116, '-'));
+            $string .= $entity . implode(array_fill(0, 116, '-')) . PHP_EOL;
         }
 
         return $string;
@@ -85,16 +85,17 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      * Add an entity at the end of the collection
      *
      * @param      Entity     $entity  The entity object
+     * @param      string     $key     A key to save the entity DEFAULT null (auto generated)
      *
      * @throws     Exception  If the entity id is already in the collection
      */
-    public function add($entity)
+    public function add($entity, $key = null)
     {
-        $id = $this->parseId($entity->getIdValue());
+        $id = $key ?? $this->parseId($entity->getIdValue());
 
         if (array_key_exists($id, $this->indexId)) {
             throw new Exception(
-                'This entity id(' . implode(', ', $id) .') is already in the collection',
+                'This entity id(' . $this->formatVariable($id) .') is already in the collection ' . $this,
                 Exception::$WARNING
             );
         } else {
@@ -104,42 +105,39 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     }
 
     /**
-     * Get an entity by its id
+     * Get an entity by its id or null if there is no entity at the given id
      *
-     * @param      int[]|string[]  $entityId  The entity id(s) in a array
+     * @param      mixed        $entityId  The entity id(s) in a array
      *
-     * @throws     Exception       If the entity id is not in the collection
-     *
-     * @return     Entity          The entity
+     * @return     Entity|null  The entity
      */
-    public function getEntityById(array $entityId)
+    public function getEntityById($entityId)
     {
-        $id = $this->parseId($entityId);
+        $entity = null;
 
-        if (!array_key_exists($id, $this->indexId)) {
-            throw new Exception(
-                'This entity id(' . implode(', ', $id) . ') is not in the collection',
-                Exception::$PARAMETER
-            );
+        if (array_key_exists($this->parseId($entityId), $this->indexId)) {
+            $entity = $this->collection[$this->indexId[$id]];
         }
 
-        return $this->collection[$this->indexId[$id]];
+        return $entity;
     }
 
     /**
-     * Get an entity by its index
+     * Get an entity by its index or null if there is no entity at the given index
      *
      * @param      int|string  $index  The entity index in the Collection
      *
-     * @return     Entity      The entity
+     * @return     Entity|null      The entity
      */
     public function getEntityByIndex($index)
     {
-        if (!isset($this->collection[$index])) {
-            throw new Exception('There is no entity at index ' . $index, Exception::$PARAMETER);
+        $entity = null;
+
+        if (isset($this->collection[$index])) {
+            $entity = $this->collection[$index];
         }
 
-        return $this->collection[$index];
+        return $entity;
     }
 
     /*==========  Iterator interface  ==========*/
@@ -276,18 +274,16 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     ======================================*/
 
     /**
-     * Parse the id(s) sent in array to get his key
+     * Parse the id(s) sent to transform it in a string if the id is on multiple columns
      *
-     * @param      int[]|string[]  $id     The id(s) in an array
+     * @param      mixed   $id     The id(s) in an array
      *
-     * @return     string          The id(s) key
+     * @return     string  The id(s) key
      */
-    private function parseId(array $id): string
+    private function parseId($id): string
     {
-        if (count($id) > 1) {
+        if (is_array($id)) {
             $id = $this->md5Array($id);
-        } else {
-            $id = $id[0];
         }
 
         return $id;
