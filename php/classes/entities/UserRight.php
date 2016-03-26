@@ -1,6 +1,6 @@
 <?php
 /**
- * UsersRights entity
+ * UserRight entity
  *
  * @package    Entity
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -11,13 +11,13 @@ namespace classes\entities;
 use \abstracts\Entity as Entity;
 
 /**
- * UsersRights entity that extends the Entity abstact class
+ * UserRight entity that extends the Entity abstact class
  *
  * @property   int   $idUser     The user id
  * @property   bool  $webSocket  The user webSocket right
  * @property   bool  $chatAdmin  The user chatAdmin right
  */
-class UsersRights extends Entity
+class UserRight extends Entity
 {
     /*=====================================
     =            Magic methods            =
@@ -25,10 +25,16 @@ class UsersRights extends Entity
 
     /**
      * Constructor that calls the parent Entity constructor
+     *
+     * @param      array  $data   Array($columnName => $value) pairs to set the object DEFAULT null
      */
-    public function __construct()
+    public function __construct(array $data = null)
     {
-        parent::__construct('UsersRights');
+        parent::__construct('UserRight');
+
+        if ($data !== null) {
+            $this->setAttributes($data);
+        }
     }
 
     /*-----  End of Magic methods  ------*/

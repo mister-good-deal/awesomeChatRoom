@@ -18,7 +18,6 @@ use \classes\PDOStatementCustom as PDOStatementCustom;
  * Singleton pattern style to handle DB connection using PDO
  *
  * PDO methods that can be called directly with the __callStatic magic method
- * @todo complete the phpDoc with @method params
  *
  * @method bool beginTransaction() {
  *      Initiates a transaction

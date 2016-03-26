@@ -31,6 +31,7 @@ trait EchoTrait
      */
     public static function out(string $output)
     {
+        Ini::setIniFileName(Ini::INI_CONF_FILE);
         $environment = Ini::getParam('Environment', 'environment');
 
         if (!isset($_SERVER['REQUEST_URI'])) {

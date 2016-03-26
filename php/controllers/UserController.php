@@ -9,7 +9,7 @@
 namespace controllers;
 
 use \abstracts\AbstractController as Controller;
-use \classes\manager\UserManager as UserManager;
+use \classes\managers\UserManager as UserManager;
 use \classes\ExceptionManager as Exception;
 
 /**

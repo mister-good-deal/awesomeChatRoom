@@ -20,6 +20,8 @@
         runSequence      = require('run-sequence'),
         CleanPlugin      = require('less-plugin-clean-css'),
         AutoprefixPlugin = require('less-plugin-autoprefix'),
+        jsSrc            = ['js/lib/*.js', 'js/app.js', 'js/main.js'],
+        phpSrc           = ['../php/**/*.php', '!../php/vendor/**/*.*'],
         clean            = new CleanPlugin({
             advanced: true
         }),
@@ -131,21 +133,23 @@
     });
 
     gulp.task('js_jscs', function () {
-        return gulp.src('js/lib/*.js')
+        return gulp.src(jsSrc)
             .pipe(jscs({fix: true}))
             .pipe(jscs.reporter())
-            .pipe(gulp.dest('js/lib'));
+            .pipe(gulp.dest(function (file) {
+                return file.base;
+            }));
     });
 
     gulp.task('js_jshint', function () {
-        return gulp.src(['js/lib/*.js', 'js/main.js'])
+        return gulp.src(jsSrc)
             .pipe(jshint())
             .pipe(jshint.reporter(stylish))
             .pipe(jshintReporter);
     });
 
     gulp.task('php_phpcs', function () {
-        return gulp.src(['../php/**/*.php', '!../php/vendor/**/*.*'])
+        return gulp.src(phpSrc)
             .pipe(phpcs({
                 bin            : process.cwd().replace('static', 'php') + '\\vendor\\bin\\phpcs.bat',
                 standard       : 'PSR2',
@@ -155,13 +159,15 @@
     });
 
     gulp.task('php_phpcbf', function () {
-        return gulp.src(['../php/**/*.php', '!../php/vendor/**/*.*'])
+        return gulp.src(phpSrc)
             .pipe(phpcbf({
                 bin            : process.cwd().replace('static', 'php') + '\\vendor\\bin\\phpcbf.bat',
                 standard       : 'PSR2',
                 warningSeverity: 0
             }))
-            .pipe(gulp.dest('../php'));
+            .pipe(gulp.dest(function (file) {
+                return file.base;
+            }));
     });
 
     gulp.task('js_lint', function (done) {

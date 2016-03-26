@@ -1,6 +1,6 @@
 <?php
 /**
- * ChatRoomsBan entity
+ * ChatRoomBan entity
  *
  * @package    Entity
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -11,7 +11,7 @@ namespace classes\entities;
 use \abstracts\Entity as Entity;
 
 /**
- * ChatRoomsBan entity that extends the Entity abstact class
+ * ChatRoomBan entity that extends the Entity abstact class
  *
  * @property   int     $idChatRoom  The chat room id
  * @property   string  $ip          The user banned ip
@@ -20,7 +20,7 @@ use \abstracts\Entity as Entity;
  * @property   string  $reason      The reason why the user got banned
  * @property   string  $date        The date when the user got banned
  */
-class ChatRoomsBan extends Entity
+class ChatRoomBan extends Entity
 {
     /*=====================================
     =            Magic methods            =
@@ -31,7 +31,7 @@ class ChatRoomsBan extends Entity
      */
     public function __construct()
     {
-        parent::__construct('ChatRoomsBan');
+        parent::__construct('ChatRoomBan');
     }
 
     /*-----  End of Magic methods  ------*/

@@ -20,5 +20,5 @@ interface ServiceInterface
      * @param      array  $data    JSON decoded client data
      * @param      array  $client  The client information [Connection, User] array pair
      */
-    public function process(array $data, array $client);
+    public function process(array $data, array &$client);
 }

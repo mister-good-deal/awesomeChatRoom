@@ -6,25 +6,138 @@
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
-namespace classes\entitiesManager;
+namespace classes\managers;
 
 use \abstracts\Manager as Manager;
-use \classes\entities\ChatRooms as ChatRooms;
-use \classes\entities\ChatRoomsBan as ChatRoomsBan;
-use \classes\entitiesManager\ChatRoomsEntityManager as ChatRoomsEntityManager;
-use \classes\entitiesManager\ChatRoomsBanEntityManager as ChatRoomsBanEntityManager;
+use \classes\entities\User as User;
+use \classes\entities\ChatRoom as ChatRoom;
+use \classes\entities\ChatRoomBan as ChatRoomBan;
+use \classes\entitiesCollection\ChatRoomBanCollection as ChatRoomBanCollection;
+use \classes\entitiesCollection\ChatRoomCollection as ChatRoomCollection;
+use \classes\entitiesManager\ChatRoomEntityManager as ChatRoomEntityManager;
+use \classes\entitiesManager\ChatRoomBanEntityManager as ChatRoomBanEntityManager;
 
 /**
- * Perform action relative to the ChatRooms and ChatRoomsBan entities classes
+ * Perform action relative to the ChatRoom and ChatRoomBan entities classes
  */
 class ChatManager extends Manager
 {
     /**
-     * @var        ChatRoomsEntityManager  $chatRoomsEntityManager  A chat rooms entity manager
+     * @var        ChatRoom  $chatRoomEntity    A ChatRoom entity to work with
      */
-    private $chatRoomsEntityManager;
+    private $chatRoomEntity;
     /**
-     * @var        ChatRoomsBanEntityManager  $chatRoomsBanEntityManager    A chat rooms ban entity manager
+     * @var        ChatRoomEntityManager  $chatRoomEntityManager    A chat room entity manager
      */
-    private $chatRoomsBanEntityManager;
+    private $chatRoomEntityManager;
+    /**
+     * @var        ChatRoomBanEntityManager  $chatRoomBanEntityManager  A chat room ban entity manager
+     */
+    private $chatRoomBanEntityManager;
+
+    /*=====================================
+    =            Magic Methods            =
+    =====================================*/
+
+    /**
+     * Constructor that can take a ChatRoom entity as first parameter and a ChatRoomBanCollection as second parameter
+     *
+     * @param      ChatRoom               $entity      A user entity object DEFAULT null
+     * @param      ChatRoomBanCollection  $collection  A ChatRoomBanCollection object DEFAULT null
+     */
+    public function __construct(ChatRoom $entity = null, ChatRoomBanCollection $collection = null)
+    {
+        parent::__construct();
+
+        $this->chatRoomEntity           = $entity;
+        $this->chatRoomEntityManager    = new ChatRoomEntityManager($entity, $collection);
+        $this->chatRoomBanEntityManager = new ChatRoomBanEntityManager($entity, $collection);
+    }
+
+    /*=====  End of Magic Methods  ======*/
+
+    /**
+     * Get the current chat room entity
+     *
+     * @return     ChatRoom  The current chat room entity
+     */
+    public function getChatRoomEntity(): ChatRoom
+    {
+        return $this->chatRoomEntity;
+    }
+
+    /**
+     * Create a new chat room
+     *
+     * @param      int     $idUser    The user creator id
+     * @param      string  $roomName  The room name
+     * @param      int     $maxUsers  The max room users
+     * @param      string  $password  The room password DEFAULT ''
+     *
+     * @return     array   An array with the success and the errors if it failed
+     */
+    public function createChatRoom(int $idUser, string $roomName, int $maxUsers, string $password = '')
+    {
+        $infos = $this->chatRoomEntityManager->createChatRoom($idUser, $roomName, $maxUsers, $password);
+
+        if ($infos['success']) {
+            $this->chatRoomEntity = $this->chatRoomEntityManager->getEntity();
+            $this->chatRoomBanEntityManager->setEntity($this->chatRoomEntity);
+        }
+
+        return $infos;
+    }
+
+    /**
+     * Load a chat room
+     *
+     * @param      int   $id     The chat room ID
+     *
+     * @return     bool  True if the chat was successfully loaded else false
+     */
+    public function loadChatRoom(int $id): bool
+    {
+        $success = $this->chatRoomEntityManager->loadEntity($id);
+
+        if ($success) {
+            $this->chatRoomEntity = $this->chatRoomEntityManager->getEntity();
+            $this->chatRoomBanEntityManager->setEntity($this->chatRoomEntity);
+        }
+
+        return $success;
+    }
+
+    /**
+     * Check if the ip is banned for a room
+     *
+     * @param      string    $ip     The ip to check
+     *
+     * @return     bool True if ip is banned else false
+     */
+    public function isIpBanned(string $ip): bool
+    {
+        return $this->chatRoomBanEntityManager->isIpBanned($ip);
+    }
+
+    /**
+     * Save a chat room collection
+     *
+     * @param      ChatRoomCollection  $collection  The chat room collection to save
+     *
+     * @return     bool                True if the chat room collection has been saved else false
+     */
+    public function saveChatRoomCollection(ChatRoomCollection $collection): bool
+    {
+        $success = $this->chatRoomEntityManager->saveCollection($collection);
+
+        foreach ($this->chatRoomEntityManager->getEntityCollection() as $room) {
+            if ($success && $room->getChatRoomBanCollection() !== null) {
+                foreach ($room->getChatRoomBanCollection() as $chatRoomBan) {
+                    $success = $this->chatRoomBanEntityManager()->saveEntity($chatRoomBan);
+                }
+            }
+        }
+
+        return $success;
+    }
 }
