@@ -11,3 +11,4 @@
 /php/vendor
 /php/conf.ini
 log.txt
+*.dmp
