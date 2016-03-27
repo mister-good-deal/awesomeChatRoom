@@ -11,6 +11,7 @@ namespace classes\console;
 use \classes\console\Console as Console;
 use \classes\fileManager\FileManagerInterface as FileManager;
 use \classes\fileManager\FtpFileManager as FtpFileManager;
+use \classes\fileManager\SftpFileManager as SftpFileManager;
 use \classes\IniManager as Ini;
 
 /**
@@ -32,7 +33,8 @@ class Deployment extends Console
      * @var        string[]  $PROTOCOLS     List of available protocol
      */
     private static $PROTOCOLS = array(
-        'FTP'
+        'FTP',
+        'SFTP'
     );
     /**
      * @var        array  $PROJECT_MAIN_STRUCTURE   The project directories tree
@@ -73,7 +75,13 @@ class Deployment extends Console
      */
     private static $IGNORED_FILES = array(
         'conf.ini',
-        'conf-example.ini'
+        'conf-example.ini',
+        'log.txt',
+        '.gitignore',
+        'composer.lock',
+        'devDoc.md',
+        'README.md',
+        'LICENSE'
     );
 
     /**
@@ -94,7 +102,7 @@ class Deployment extends Console
         parent::$COMMANDS = array_merge(parent::$COMMANDS, static::$SELF_COMMANDS);
 
         $this->deploymentConfiguration = Ini::getSectionParams('Deployment');
-        $this->absoluteProjectRootPath = dirname(__FILE__, 4);
+        $this->absoluteProjectRootPath = dirname(__FILE__, 5);
 
         static::$PROJECT_MAIN_STRUCTURE[
             $this->deploymentConfiguration['remoteProjectRootDirectoryName']
@@ -102,9 +110,9 @@ class Deployment extends Console
 
         unset(static::$PROJECT_MAIN_STRUCTURE['.']);
 
-        $this->launchConsole();
+        static::out(PHP_EOL . 'Absolute project root path is "' . $this->absoluteProjectRootPath . '"' . PHP_EOL);
 
-        static::out('Absolute project root path is "' . $this->absoluteProjectRootPath . '"' . PHP_EOL);
+        $this->launchConsole();
     }
 
     /**
@@ -238,6 +246,10 @@ class Deployment extends Console
     private function deployWebSite()
     {
         $this->deploy(static::$PROJECT_MAIN_STRUCTURE);
+        exec(
+            'ssh root@vps cd ' . $this->deploymentConfiguration['remoteProjectRootDirectory'] . '/' .
+            $this->deploymentConfiguration['remoteProjectRootDirectoryName'] . '/php; composer install --no-dev'
+        );
     }
 
     /**
@@ -247,37 +259,50 @@ class Deployment extends Console
      */
     private function deploy(array $directoriesTree)
     {
+        $skip = false;
         $this->printDeploymentInformation();
 
         switch ($this->deploymentConfiguration['protocol']) {
             case 'FTP':
                 $fileManager = new FtpFileManager($this->deploymentConfiguration);
                 break;
+
+            case 'SFTP':
+                $fileManager = new SftpFileManager($this->deploymentConfiguration);
+                break;
+
+            default:
+                static::out(
+                    'The protocol "' . $this->deploymentConfiguration['protocol'] . '" is not implemented' . PHP_EOL
+                );
+
+                $skip = true;
         }
 
+        if (!$skip) {
+            // Connect, login and cd on the project directory container
+            $fileManager->connect();
+            $fileManager->login();
+            $fileManager->changeDir($this->deploymentConfiguration['remoteProjectRootDirectory']);
 
-        // Connect, login and cd on the project directory container
-        $fileManager->connect();
-        $fileManager->login();
-        $fileManager->changeDir($this->deploymentConfiguration['remoteProjectRootDirectory']);
+            // Create the project directory root if it does not exist
+            $fileManager->makeDirIfNotExists($this->deploymentConfiguration['remoteProjectRootDirectoryName']);
 
-        // Create the project directory root if it does not exist
-        $fileManager->makeDirIfNotExists($this->deploymentConfiguration['remoteProjectRootDirectoryName']);
+            // Create main directories structure if it does not exist
+            $this->createMainProjectStructureRecursive(
+                $fileManager,
+                $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
+                $directoriesTree
+            );
 
-        // Create main directories structure if it does not exist
-        $this->createMainProjectStructureRecursive(
-            $fileManager,
-            $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
-            $directoriesTree
-        );
-
-        // Upload files if the last modification date on local is greater than remote
-        $this->uploadFilesRecursive(
-            $fileManager,
-            $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
-            $directoriesTree,
-            $this->absoluteProjectRootPath
-        );
+            // Upload files if the last modification date on local is greater than remote
+            $this->uploadFilesRecursive(
+                $fileManager,
+                $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
+                $directoriesTree,
+                $this->absoluteProjectRootPath
+            );
+        }
     }
 
     /**
@@ -288,7 +313,7 @@ class Deployment extends Console
      * @param      array        $arrayDepth        The tree of the current depth structure
      */
     private function createMainProjectStructureRecursive(
-        FileManager $fileManager,
+        $fileManager,
         string $workingDirectory,
         array $arrayDepth
     ) {
@@ -298,7 +323,7 @@ class Deployment extends Console
             $fileManager->makeDirIfNotExists($directoryName);
 
             if (is_array($subdir)) {
-                $this->createMainProjectStructureRecursive($fileManager, $directoryName, $arrayDepth[$directoryName]);
+                $this->createMainProjectStructureRecursive($fileManager, $directoryName, $arrayDepth[$workingDirectory]);
             }
         }
 
@@ -314,7 +339,7 @@ class Deployment extends Console
      * @param      string       $localWorkingDirectory  The curent local working directory
      */
     private function uploadFilesRecursive(
-        FileManager $fileManager,
+        $fileManager,
         string $workingDirectory,
         array $arrayDepth,
         string $localWorkingDirectory
@@ -342,7 +367,7 @@ class Deployment extends Console
                 $this->uploadFilesRecursive(
                     $fileManager,
                     $directoryName,
-                    $arrayDepth[$directoryName],
+                    $arrayDepth[$workingDirectory],
                     $localWorkingDirectory
                 );
             }

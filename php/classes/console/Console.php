@@ -63,10 +63,6 @@ GODDBYE;
      * @var        int   $maxLength     The console max characters length in a row
      */
     protected $maxLength;
-    /**
-     * @var        ConsoleColors  $colors   A ConsoleColors instance
-     */
-    protected $colors;
 
     /*=====================================
     =            Magic methods            =
@@ -79,7 +75,6 @@ GODDBYE;
     {
         static::$echoEncoding = Ini::getParam('Console', 'encoding');
         $this->maxLength      = Ini::getParam('Console', 'maxLength');
-        $this->colors         = new ConsoleColors();
     }
 
     /*-----  End of Magic methods  ------*/
@@ -95,7 +90,7 @@ GODDBYE;
     {
         static::out(
             PHP_EOL
-            . $this->colors->getColoredString(static::WELCOME, ConsoleColors::LIGHT_RED_F, ConsoleColors::GREEN)
+            . ConsoleColors::getColoredString(static::WELCOME, ConsoleColors::LIGHT_RED_F, ConsoleColors::GREEN)
             . PHP_EOL
             . PHP_EOL
         );
@@ -116,7 +111,7 @@ GODDBYE;
      */
     protected function userInput(): string
     {
-        static::out($this->colors->getColoredString('> ', ConsoleColors::LIGHT_GREEN_F, ConsoleColors::BLACK));
+        static::out(ConsoleColors::getColoredString('> ', ConsoleColors::LIGHT_GREEN_F, ConsoleColors::BLACK));
 
         do {
             $handle  = fopen('php://stdin', 'r');
@@ -142,7 +137,7 @@ GODDBYE;
                 case 'exit':
                     $exit = true;
                     static::out(
-                        $this->colors->getColoredString(
+                        ConsoleColors::getColoredString(
                             static::GODDBYE,
                             ConsoleColors::LIGHT_RED_F,
                             ConsoleColors::GREEN

@@ -66,6 +66,10 @@ class ConsoleColors
         self::LIGHT_GRAY => '47'
     );
 
+    public function __construct()
+    {
+    }
+
     /*======================================
     =            Public methods            =
     ======================================*/
@@ -79,7 +83,7 @@ class ConsoleColors
      *
      * @return     string  The colored string
      */
-    public function getColoredString(
+    public static function getColoredString(
         string $string,
         string $foregroundColor = null,
         string $backgroundColor = null
@@ -129,6 +133,26 @@ class ConsoleColors
     public static function unsetColor(string $string): string
     {
         return preg_replace('/\033\[[0-9;]*m/', '', $string);
+    }
+
+    /**
+     * Return an "OK" colored string
+     *
+     * @return     string  An "OK" colored string
+     */
+    public static function OK():string
+    {
+        return '[' . static::getColoredString('OK', self::GREEN) . "]\t";
+    }
+
+    /**
+     * Return a "FAIL" colored string
+     *
+     * @return     string  A "FAIL" colored string
+     */
+    public static function FAIL():string
+    {
+        return '[' . static::getColoredString('FAIL', self::RED) . "]\t";
     }
 
     /*-----  End of Public methods  ------*/

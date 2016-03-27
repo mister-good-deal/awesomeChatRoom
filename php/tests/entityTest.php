@@ -13,7 +13,7 @@ namespace tests;
 use \classes\DataBase as DB;
 use \classes\AssertionErrorManager as AssertionErrorManager;
 use \classes\logger\LogLevel as LogLevel;
-use \classes\console\ConsoleColors as Color;
+use \classes\console\ConsoleColors as ConsoleColors;
 
 require_once '../autoloader.php';
 
@@ -29,26 +29,22 @@ class Traits
     use \traits\EchoTrait;
 }
 
-$color = new Color();
-$ok    = '[' . $color->getColoredString('OK', Color::GREEN) . "]\t";
-$fail  = '[' . $color->getColoredString('FAIL', Color::RED) . "]\t";
-
 $tests = array(
     'Getters / setters' => array(
-        'dsn' => function ($ok) {
+        'dsn' => function () {
             DB::setDsn(DSN);
             assert(DB::getDsn() === DSN, new \AssertionError('Get / set dsn is broken', LogLevel::EMERGENCY));
-            Traits::out($ok . 'Get / set dsn' . PHP_EOL);
+            Traits::out(ConsoleColors::OK() . 'Get / set dsn' . PHP_EOL);
         },
-        'username' => function ($ok) {
+        'username' => function () {
             DB::setUsername(USERNAME);
             assert(DB::getUsername() !== USERNAME, new \AssertionError('Get / set username is broken', LogLevel::EMERGENCY));
-            Traits::out($ok . 'Get / set username' . PHP_EOL);
+            Traits::out(ConsoleColors::OK() . 'Get / set username' . PHP_EOL);
         },
-        'password' => function ($ok) {
+        'password' => function () {
             DB::setPassword(PASSWORD);
             assert(DB::getPassword() === PASSWORD, new \AssertionError('Get / set password is broken', LogLevel::EMERGENCY));
-            Traits::out($ok . 'Get / set password' . PHP_EOL);
+            Traits::out(ConsoleColors::OK() . 'Get / set password' . PHP_EOL);
         }
     )
 );
@@ -56,9 +52,9 @@ $tests = array(
 foreach ($tests as $section => $sectionTests) {
     foreach ($sectionTests as $section => $test) {
         try {
-            $test($ok);
+            $test(ConsoleColors::OK());
         } catch (\Throwable $t) {
-            Traits::out($fail);
+            Traits::out($ConsoleColors::FAIL());
             new AssertionErrorManager($t->getMessage(), $t->getCode(), $t->getPrevious());
         }
     }

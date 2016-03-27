@@ -36,11 +36,6 @@ class ConsoleLogger extends AbstractLogger
         LogLevel::DEBUG     => 'debug'
     );
 
-    /**
-     * @var        ConsoleColors  $colors   ConsoleColors instance to color console output
-     */
-    private $colors;
-
     /*=====================================
     =            Magic methods            =
     =====================================*/
@@ -51,7 +46,6 @@ class ConsoleLogger extends AbstractLogger
     public function __construct()
     {
         static::$echoEncoding = Ini::getParam('Console', 'encoding');
-        $this->colors         = new ConsoleColors();
     }
 
     /*-----  End of Magic methods  ------*/
@@ -69,7 +63,7 @@ class ConsoleLogger extends AbstractLogger
     public function emergency(string $message, array $context = array())
     {
         static::out(
-            $this->colors->getColoredString(
+            ConsoleColors::getColoredString(
                 $message,
                 ConsoleColors::WHITE_F,
                 ConsoleColors::RED
@@ -90,7 +84,7 @@ class ConsoleLogger extends AbstractLogger
     public function alert(string $message, array $context = array())
     {
         static::out(
-            $this->colors->getColoredString(
+            ConsoleColors::getColoredString(
                 $message,
                 ConsoleColors::LIGHT_GRAY,
                 ConsoleColors::RED
@@ -111,7 +105,7 @@ class ConsoleLogger extends AbstractLogger
     public function critical(string $message, array $context = array())
     {
         static::out(
-            $this->colors->getColoredString(
+            ConsoleColors::getColoredString(
                 $message,
                 ConsoleColors::RED,
                 ConsoleColors::LIGHT_GRAY
@@ -130,7 +124,7 @@ class ConsoleLogger extends AbstractLogger
     public function error(string $message, array $context = array())
     {
         static::out(
-            $this->colors->getColoredString(
+            ConsoleColors::getColoredString(
                 $message,
                 ConsoleColors::LIGHT_RED_F,
                 ConsoleColors::LIGHT_GRAY
@@ -151,7 +145,7 @@ class ConsoleLogger extends AbstractLogger
     public function warning(string $message, array $context = array())
     {
         static::out(
-            $this->colors->getColoredString(
+            ConsoleColors::getColoredString(
                 $message,
                 ConsoleColors::YELLOW,
                 ConsoleColors::BLACK
@@ -172,7 +166,7 @@ class ConsoleLogger extends AbstractLogger
     public function notice(string $message, array $context = array())
     {
         static::out(
-            $this->colors->getColoredString(
+            ConsoleColors::getColoredString(
                 $message,
                 ConsoleColors::LIGHT_GRAY,
                 ConsoleColors::BLACK
@@ -191,7 +185,7 @@ class ConsoleLogger extends AbstractLogger
     public function info(string $message, array $context = array())
     {
         static::out(
-            $this->colors->getColoredString(
+            ConsoleColors::getColoredString(
                 $message,
                 ConsoleColors::LIGHT_GREEN_F,
                 ConsoleColors::BLACK
@@ -210,7 +204,7 @@ class ConsoleLogger extends AbstractLogger
     public function debug(string $message, array $context = array())
     {
         static::out(
-            $this->colors->getColoredString(
+            ConsoleColors::getColoredString(
                 $message,
                 ConsoleColors::CYAN,
                 ConsoleColors::BLACK
@@ -255,7 +249,7 @@ class ConsoleLogger extends AbstractLogger
 
         foreach ($contexts as $num => $context) {
             if (is_array($context)) {
-                $string .= PHP_EOL . $this->colors->getColoredString(
+                $string .= PHP_EOL . ConsoleColors::getColoredString(
                     'Context: ' . ($num + 1),
                     ConsoleColors::YELLOW,
                     ConsoleColors::BLACK
@@ -322,9 +316,9 @@ class ConsoleLogger extends AbstractLogger
             }
 
             $formatedString = "\t"
-                . $this->colors->getColoredString($description, $fgColor1, $bgColor1)
+                . ConsoleColors::getColoredString($description, $fgColor1, $bgColor1)
                 . "\t"
-                . $this->colors->getColoredString($contextString, $fgColor2, $bgColor2)
+                . ConsoleColors::getColoredString($contextString, $fgColor2, $bgColor2)
                 . PHP_EOL;
         }
 
