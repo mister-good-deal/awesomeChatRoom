@@ -20,6 +20,7 @@
         runSequence      = require('run-sequence'),
         CleanPlugin      = require('less-plugin-clean-css'),
         AutoprefixPlugin = require('less-plugin-autoprefix'),
+        docRepoName      = 'websocket-doc',
         jsSrc            = ['js/lib/*.js', 'js/app.js', 'js/main.js'],
         phpSrc           = ['../php/**/*.php', '!../php/vendor/**/*.*'],
         clean            = new CleanPlugin({
@@ -194,11 +195,13 @@
     gulp.task('phpdoc', shell.task('cd ../php&"./vendor/bin/phpdoc"'));
 
     gulp.task('push_phpdoc', shell.task(
-        'cd ../../web-doc&call git add phpDoc&call git commit phpDoc -m "update phpDoc"&call git push origin gh-pages'
+        'cd ../../' + docRepoName + '&call git add phpDoc&call git commit phpDoc -m "update phpDoc"' +
+        '&call git push origin gh-pages'
     ));
 
     gulp.task('push_jsdoc', shell.task(
-        'cd ../../web-doc&call git add jsDoc&call git commit jsDoc -m "update jsDoc"&call git push origin gh-pages'
+        'cd ../../' + docRepoName + '&call git add jsDoc&call git commit jsDoc -m "update jsDoc"' +
+        '&call git push origin gh-pages'
     ));
 
     gulp.task('doc', function (done) {
@@ -206,7 +209,7 @@
     });
 
     gulp.task('push_doc', shell.task(
-        'cd ../../web-doc&call git add .&call git commit -a -m "update docs"&call git push origin gh-pages'
+        'cd ../../' + docRepoName + '&call git add .&call git commit -a -m "update docs"&call git push origin gh-pages'
     ));
 
     /*=====  End of Documentation generation  ======*/

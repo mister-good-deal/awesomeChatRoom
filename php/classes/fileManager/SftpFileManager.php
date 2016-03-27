@@ -1,6 +1,6 @@
 <?php
 /**
- * FTP protocol file manager implementation
+ * SFTP protocol file manager implementation
  *
  * @package    Utility
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -9,14 +9,13 @@
 namespace classes\fileManager;
 
 use \interfaces\FileManagerInterface as FileManagerInterface;
-use \classes\console\ConsoleColors as ConsoleColors;
 use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
 
 /**
- * FtpFileManager class to manipulate files with FTP protocol
+ * SftpFileManager class to manipulate files with SFTP protocol
  */
-class FtpFileManager implements FileManagerInterface
+class SftpFileManager implements FileManagerInterface
 {
     use \traits\EchoTrait;
 
@@ -28,6 +27,10 @@ class FtpFileManager implements FileManagerInterface
      * @var        ressource  $ressource    The connection ressource
      */
     private $ressource;
+    /**
+     * @var        resource  $sftp  An SSH connection link identifier
+     */
+    private $sftp;
     /**
      * @var        bool  $output    True if the output should be printed else false
      */
@@ -44,8 +47,6 @@ class FtpFileManager implements FileManagerInterface
         $this->params    = ($parameters !== null ? $parameters : Ini::getSectionParams('Deployment'));
         $this->verbose   =  Ini::getParam('Deployment', 'verbose');
         $this->ressource = null;
-
-
     }
 
     /**
@@ -53,7 +54,7 @@ class FtpFileManager implements FileManagerInterface
      */
     public function __destruct()
     {
-        if (is_resource($this->ressource)) {
+        if (is_resource($this->ressource) || is_resource($this->sftp)) {
             $this->close();
         }
     }
@@ -65,17 +66,19 @@ class FtpFileManager implements FileManagerInterface
      */
     public function connect()
     {
-        $this->ressource = @ftp_connect($this->params['url'], (int) $this->params['port']);
+        $this->ressource = ssh2_connect($this->params['url'], (int) $this->params['port']);
 
         if ($this->ressource === false) {
             throw new Exception(
-                'Cannot connect to FTP "' . $this->params['url'] . ':' . $this->params['port'] . '"',
+                'Cannot connect to SFTP "' . $this->params['url'] . ':' . $this->params['port'] . '"',
                 Exception::$ERROR
             );
         }
 
+        // ssh2_fingerprint($this->ressource, SSH2_FINGERPRINT_MD5 | SSH2_FINGERPRINT_HEX);
+
         if ($this->verbose) {
-            static::out('Successfuly connected to ' . $this->params['url'] . ':' . $this->params['port'] . PHP_EOL);
+            static::out('Successfuly connected to ' . $this->params['url'] . ':' . $this->params['port']) . PHP_EOL;
         }
     }
 
@@ -86,12 +89,18 @@ class FtpFileManager implements FileManagerInterface
      */
     public function login()
     {
-        if (@ftp_login($this->ressource, $this->params['login'], $this->params['password']) === false) {
+        if (ssh2_auth_password($this->ressource, $this->params['login'], $this->params['password']) === false) {
             throw new Exception('Login or password incorrect', Exception::$ERROR);
         }
 
         if ($this->verbose) {
             static::out('Successfuly login with the username ' . $this->params['login'] . PHP_EOL);
+        }
+
+        $this->sftp = ssh2_sftp($this->ressource);
+
+        if ($this->sftp === false) {
+            throw new Exception('Unable to create SFTP connection');
         }
     }
 
@@ -104,15 +113,12 @@ class FtpFileManager implements FileManagerInterface
      */
     public function changeDir(string $path)
     {
-        if (@ftp_chdir($this->ressource, $path) === false) {
-            throw new Exception(
-                'PATH incorrect, impossible to access to "' . ftp_pwd($this->ressource) . '/' . $path . '"',
-                Exception::$WARNING
-            );
+        if (ssh2_exec($this->ressource, 'cd ' . $path) === false) {
+            throw new Exception('PATH incorrect, impossible to access to "' . $path . '"', Exception::$WARNING);
         }
 
         if ($this->verbose) {
-            static::out('Current directory is now "' . ftp_pwd($this->ressource) . '"' . PHP_EOL);
+            static::out('Current directory is now "' . $path . '"' . PHP_EOL);
         }
     }
 
@@ -125,18 +131,12 @@ class FtpFileManager implements FileManagerInterface
      */
     public function makeDir(string $dirName)
     {
-        if (@ftp_mkdir($this->ressource, $dirName) === false) {
-            throw new Exception(
-                'Fail to create directory <' . $dirName . '> in "' . ftp_pwd($this->ressource) . '"',
-                Exception::$WARNING
-            );
+        if (ssh2_exec($this->ressource, 'mkdir ' . $dirName) === false) {
+            throw new Exception('Fail to create directory <' . $dirName . '>', Exception::$WARNING);
         }
 
         if ($this->verbose) {
-            static::out(
-                ConsoleColors::OK() . 'New directory <' . $dirName . '> successfuly created in "'
-                . ftp_pwd($this->ressource) . '"' . PHP_EOL
-            );
+            static::out('New directory <' . $dirName . '> successfuly created' . PHP_EOL);
         }
     }
 
@@ -161,15 +161,7 @@ class FtpFileManager implements FileManagerInterface
      */
     public function listFiles(): array
     {
-        ftp_pasv($this->ressource, true);
-
-        $list = @ftp_nlist($this->ressource, ".");
-
-        if ($list === false) {
-            throw new Exception('Fail list files from "' . ftp_pwd($this->ressource) . '"', Exception::$WARNING);
-        }
-
-        return $list;
+        return scandir('ssh2.sftp://' . $this->sftp . $remoteDir);
     }
 
     /**
@@ -191,19 +183,12 @@ class FtpFileManager implements FileManagerInterface
             $this->changeDir($pathFile);
         }
 
-        if (is_resource($localFilePath)) {
-            if (!@ftp_fput($this->ressource, $fileName, $localFilePath, FTP_ASCII)) {
-                throw new Exception('Fail to upload "' . $fileName . '" to "' . $pathFile . '"', Exception::$WARNING);
-            }
-        } else {
-            if (!@ftp_put($this->ressource, $fileName, $localFilePath, FTP_BINARY)) {
-                throw new Exception('Fail to upload "' . $fileName . '" to "' . $pathFile . '"', Exception::$WARNING);
-            }
+        if (!ssh2_scp_send($this->sftp, $localFilePath, $fileName)) {
+            throw new Exception('Fail to upload "' . $fileName . '" to "' . $pathFile . '"', Exception::$WARNING);
         }
 
         if ($this->verbose) {
-            static::out(ConsoleColors::OK() . 'File "' . $localFilePath . '" successfuly uploaded to "'
-                . $remoteFilePath . '"' . PHP_EOL);
+            static::out('File "' . $localFilePath . '" successfuly uploaded to "' . $remoteFilePath . '"' . PHP_EOL);
         }
     }
 
@@ -217,12 +202,12 @@ class FtpFileManager implements FileManagerInterface
      */
     public function chmod(int $value, string $path)
     {
-        if (@ftp_chmod($this->ressource, $value, $path) === false) {
+        if (ssh2_sftp_chmod($this->sftp, $path, $value) === false) {
             throw new Exception('Fail to change rights on directory / file "'. $path . '"', Exception::$WARNING);
         }
 
         if ($this->verbose) {
-            static::out(ConsoleColors::OK() . 'File "' . $path . '" has now the permission ' . $value . PHP_EOL);
+            static::out('File "' . $path . '" has now the permission ' . $value . PHP_EOL);
         }
     }
 
@@ -235,7 +220,7 @@ class FtpFileManager implements FileManagerInterface
      */
     public function lastModified(string $path): int
     {
-        return ftp_mdtm($this->ressource, $path);
+        return ssh2_sftp_stat($this->sftp, $path)['mtime'];
     }
 
     /**
@@ -245,14 +230,15 @@ class FtpFileManager implements FileManagerInterface
      */
     public function close(): bool
     {
-        $success         = @ftp_close($this->ressource);
+        $success         = ssh2_exec('exit');
+        $this->sftp      = null;
         $this->ressource = null;
 
         if ($this->verbose) {
             if ($success) {
-                static::out(ConsoleColors::OK() . 'Connection closed successfuly' . PHP_EOL);
+                static::out('Connection closed successfuly' . PHP_EOL);
             } else {
-                static::out(ConsoleColors::FAIL() . 'Fail to close the connection' . PHP_EOL);
+                static::out('Fail to close the connection' . PHP_EOL);
             }
         }
 

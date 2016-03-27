@@ -66,11 +66,11 @@ class ExceptionManager extends \Exception
     /**
      * Constructor that called the parent \Exception constructor
      *
-     * @param      string           $message   Error message
-     * @param      int              $code      Error level
-     * @param      \Exception|null  $previous  Previous \Exception
+     * @param      string                  $message   Error message
+     * @param      int                     $code      Error level
+     * @param      \Exception|\Error|null  $previous  Previous \Exception or \Error
      */
-    public function __construct(string $message, int $code = 0, \Exception $previous = null)
+    public function __construct(string $message, int $code = 0, $previous = null)
     {
         parent::__construct($message, $code, $previous);
         Ini::setIniFileName('conf.ini');

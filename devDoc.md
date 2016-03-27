@@ -86,11 +86,11 @@ All PHP methods parameters type and methods return type must be specified as the
 
 First create the main repository of the project by running the command
 
-`git clone https://github.com/ZiperRom1/web.git web`
+`git clone https://github.com/ZiperRom1/web.git websocket`
 
 Then the technical documentation repository of the projet by running the command
 
-`git clone -b gh-pages --single-branch https://github.com/ZiperRom1/web.git web-doc`
+`git clone -b gh-pages --single-branch https://github.com/ZiperRom1/web.git websocket-doc`
 
 - Install PHP [last realese Thred Safe](http://windows.php.net/downloads/releases/php-7.0.2-Win32-VC14-x64.zip) (dezip and add the repository to the PATH windows variable)
 - Install APACHE [last realese](http://www.apachelounge.com/download/VC14/binaries/httpd-2.4.18-win64-VC14.zip) as a service (run `[path to apache repository]/httpd.exe -k install`)
@@ -139,6 +139,8 @@ In php.ini, check thoses values
 - `extension_dir = "ext"`
 
 - `extension=php_curl.dll`
+
+- `extension=php_ftp.dll`
 
 - `extension=php_mysqli.dll` (for phpMyAdmin)
 
