@@ -17,10 +17,11 @@
         map              = require('map-stream'),
         watch            = require('gulp-watch'),
         del              = require('del'),
-        runSequence      = require('run-sequence'),
+        gulpSequence     = require('gulp-sequence'),
         CleanPlugin      = require('less-plugin-clean-css'),
         AutoprefixPlugin = require('less-plugin-autoprefix'),
         gitInfo          = require('git-rev'),
+        jsdocConfig      = require('./jsdocConfig.json'),
         jsSrc            = ['js/lib/*.js', 'js/app.js', 'js/main.js'],
         phpSrc           = ['../php/**/*.php', '!../php/vendor/**/*.*'],
         clean            = new CleanPlugin({
@@ -60,7 +61,7 @@
     });
 
     gulp.task('flush', function (done) {
-        runSequence(['flush_bower', 'flush_npm', 'flush_js', 'flush_less', 'flush_dist'], done);
+        gulpSequence(['flush_bower', 'flush_npm', 'flush_js', 'flush_less', 'flush_dist'], done);
     });
 
     /*=====  End of Flush vendor sources  ======*/
@@ -95,7 +96,7 @@
     });
 
     gulp.task('install', function (done) {
-        runSequence('bower_install', ['bower_move_js', 'bower_move_less', 'bower_move_fonts'], 'bower_clean', done);
+        gulpSequence('bower_install', ['bower_move_js', 'bower_move_less', 'bower_move_fonts'], 'bower_clean', done);
     });
 
     /*=====  End of Import vendor sources  ======*/
@@ -118,7 +119,7 @@
     });
 
     gulp.task('build', function (done) {
-        runSequence(['build_js', 'build_less'], done);
+        gulpSequence(['build_js', 'build_less'], done);
     });
 
     /*=====  End of Build js / less and optimize  ======*/
@@ -176,11 +177,11 @@
     });
 
     gulp.task('js_lint', function (done) {
-        runSequence('js_jscs', 'js_jshint', done);
+        gulpSequence('js_jscs', 'js_jshint', done);
     });
 
     gulp.task('php_lint', function (done) {
-        runSequence('php_phpcbf', 'php_phpcs', done);
+        gulpSequence('php_phpcbf', 'php_phpcs', done);
     });
 
     /*=====  End of Linters  ======*/
@@ -189,29 +190,36 @@
     =            Documentation generation            =
     ================================================*/
 
-    gulp.task('jsdoc', function (cb) {
-        var config = require('./jsdocConfig.json');
+    gulp.task('git_js_doc_step_1', shell.task(
+        'cd .. ' +
+        '&call git stash save "current_branch"'
+    ));
 
-        gulp.task('subTask1', shell.task(
-            'git stash' +
-            '&call git checkout gh-pages' +
-            '&call git pull gh-pages'
-        ));
+    gulp.task('jsdoc_generation', function (cb) {
+        gulp.src(['../README.md', './js/**/*.js'], {read: false}).pipe(jsdoc(jsdocConfig, cb));
+    });
 
-        gulp.src(['../README.md', './js/**/*.js'], {read: false}).pipe(jsdoc(config, cb));
+    gulp.task('git_js_doc_step_2', shell.task(
+        'cd .. ' +
+        '&call git stash save "jsDoc" ' +
+        '&call git checkout gh-pages ' +
+        '&call git pull origin gh-pages ' +
+        '&call git stash apply stash^{/jsDoc} ' +
+        '&call git add jsDoc ' +
+        '&call git commit jsDoc -m "update jsDoc" ' +
+        '&call git checkout ' + currentBranch + ' ' +
+        '&call git stash apply stash^{/current_branch} ' +
+        '&cd static'
+    ));
 
-        gulp.task('subTask2', shell.task(
-            '&call git add .' +
-            '&call git commit jsDoc -m "update phpDoc"' +
-            '&call git checkout ' + currentBranch +
-            '&call git stash pop'
-        ));
+    gulp.task('jsdoc', function (done) {
+        gulpSequence('git_js_doc_step_1', 'jsdoc_generation', 'git_js_doc_step_2', done);
     });
 
     gulp.task('phpdoc', shell.task(
         'git stash' +
         '&call git checkout gh-pages' +
-        '&call git pull gh-pages' +
+        '&call git pull origin gh-pages' +
         'cd ../php' +
         '&"./vendor/bin/phpdoc"' +
         '&call git add .' +
@@ -223,14 +231,14 @@
     gulp.task('push_doc', shell.task(
         'git stash' +
         '&call git checkout gh-pages' +
-        '&call git pull gh-pages' +
+        '&call git pull origin gh-pages' +
         '&call git push origin gh-pages' +
         '&call git checkout ' + currentBranch +
         '&call git stash pop'
     ));
 
     gulp.task('doc', function (done) {
-        runSequence('jsdoc', 'phpdoc', done);
+        gulpSequence('jsdoc', 'phpdoc', done);
     });
 
     /*=====  End of Documentation generation  ======*/
@@ -240,15 +248,15 @@
     =================================================*/
 
     gulp.task('deploy_static', function (done) {
-        runSequence('install', 'js_lint', 'build', 'jsdoc', 'push_jsdoc', done);
+        gulpSequence('install', 'js_lint', 'build', 'jsdoc', 'push_jsdoc', done);
     });
 
     gulp.task('deploy_php', function (done) {
-        runSequence('php_lint', 'phpdoc', 'push_phpdoc', done);
+        gulpSequence('php_lint', 'phpdoc', 'push_phpdoc', done);
     });
 
     gulp.task('deploy', function (done) {
-        runSequence('deploy_static', 'deploy_php', done);
+        gulpSequence('deploy_static', 'deploy_php', done);
     });
 
     /*=====  End of Deployment preprocessing  ======*/
