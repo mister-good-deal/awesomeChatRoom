@@ -33,16 +33,16 @@
         gitDoc           = function (repo, currentBranch, callback) {
             exec(
                 'cd .. ' +
-                '&call git stash save "' + repo + '" ' +
+                '&call git stash save "' + repo + '" --quiet ' +
                 '&call git checkout gh-pages ' +
                 '&call git pull origin gh-pages ' +
-                '&call git stash apply ' +
+                '&call git stash apply --quiet' +
                 '&call git add ' + repo + ' ' +
                 '&call git commit ' + repo + ' -m "update ' + repo + '" ' +
-                '&call git stash drop ' +
+                '&call git stash drop --quiet' +
                 '&call git checkout ' + currentBranch + ' ' +
-                '&call git stash apply ' +
-                '&call git stash drop',
+                '&call git stash apply --quiet ' +
+                '&call git stash drop --quiet',
                 function (err, output) {
                     console.log(output);
                     callback(err);
@@ -216,7 +216,7 @@
     gulp.task('git_stash', function (done) {
         exec(
             'cd .. ' +
-            '&call git stash save "WIP"',
+            '&call git stash save "WIP" --quiet',
             function (err, output) {
                 console.log(output);
                 done(err);
@@ -230,7 +230,7 @@
 
     gulp.task('phpdoc_generation', function (done) {
         exec(
-            '&cd ../php' +
+            'cd ../php ' +
             '&"./vendor/bin/phpdoc"',
             function (err, output) {
                 console.log(output);
@@ -262,12 +262,12 @@
     gulp.task('push_doc', function (done) {
         gitInfo.branch(function (currentBranch) {
             exec(
-                'git stash save "WIP on ' + currentBranch + '" ' +
+                'git stash save "WIP on ' + currentBranch + '" --quiet ' +
                 '&call git checkout gh-pages ' +
                 '&call git pull origin gh-pages ' +
                 '&call git push origin gh-pages ' +
                 '&call git checkout ' + currentBranch + ' ' +
-                '&call git stash pop',
+                '&call git stash pop --quiet',
                 function (err, output) {
                     console.log(output);
                     done(err);
