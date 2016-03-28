@@ -34,9 +34,18 @@
             exec(
                 'cd .. ' +
                 '&call git add ' + repo + ' ' +
-                '&call git stash save "' + repo + '" --quiet ' +
+                '&call git stash save "' + repo + '" ' +
                 '&call git checkout gh-pages ' +
-                '&call git pull origin gh-pages ' +
+                '&call git pull origin gh-pages ',
+                function (err, output) {
+                    console.log(output);
+                }
+            );
+
+            del('../' + repo);
+
+            exec(
+                'cd .. ' +
                 '&call git stash apply --quiet' +
                 '&call git add ' + repo + ' ' +
                 '&call git commit ' + repo + ' -m "update ' + repo + '" ' +
@@ -46,9 +55,10 @@
                 '&call git stash drop --quiet',
                 function (err, output) {
                     console.log(output);
-                    callback(err);
                 }
             );
+
+            callback();
         },
         jshintReporter;
 
@@ -217,7 +227,7 @@
     gulp.task('git_stash', function (done) {
         exec(
             'cd .. ' +
-            '&call git stash save "WIP" --quiet',
+            '&call git stash save "WIP" ',
             function (err, output) {
                 console.log(output);
                 done(err);
@@ -263,7 +273,7 @@
     gulp.task('push_doc', function (done) {
         gitInfo.branch(function (currentBranch) {
             exec(
-                'git stash save "WIP on ' + currentBranch + '" --quiet ' +
+                'git stash save "WIP on ' + currentBranch + '" ' +
                 '&call git checkout gh-pages ' +
                 '&call git pull origin gh-pages ' +
                 '&call git push origin gh-pages ' +
