@@ -20,7 +20,7 @@
         runSequence      = require('run-sequence'),
         CleanPlugin      = require('less-plugin-clean-css'),
         AutoprefixPlugin = require('less-plugin-autoprefix'),
-        docRepoName      = 'websocket-doc',
+        gitInfo          = require('git-rev'),
         jsSrc            = ['js/lib/*.js', 'js/app.js', 'js/main.js'],
         phpSrc           = ['../php/**/*.php', '!../php/vendor/**/*.*'],
         clean            = new CleanPlugin({
@@ -29,7 +29,11 @@
         autoprefix = new AutoprefixPlugin({
             browsers: ["last 2 versions"]
         }),
-        jshintReporter;
+        jshintReporter, currentBranch;
+    // Get The current git branch
+    gitInfo.branch(function (branch) {
+        currentBranch = branch;
+    });
 
     /*============================================
     =            Flush vendor sources            =
@@ -188,29 +192,46 @@
     gulp.task('jsdoc', function (cb) {
         var config = require('./jsdocConfig.json');
 
-        gulp.src(['../README.md', './js/**/*.js'], {read: false})
-            .pipe(jsdoc(config, cb));
+        gulp.task('subTask1', shell.task(
+            'git stash' +
+            '&call git checkout gh-pages' +
+            '&call git pull gh-pages'
+        ));
+
+        gulp.src(['../README.md', './js/**/*.js'], {read: false}).pipe(jsdoc(config, cb));
+
+        gulp.task('subTask2', shell.task(
+            '&call git add .' +
+            '&call git commit jsDoc -m "update phpDoc"' +
+            '&call git checkout ' + currentBranch +
+            '&call git stash pop'
+        ));
     });
 
-    gulp.task('phpdoc', shell.task('cd ../php&"./vendor/bin/phpdoc"'));
-
-    gulp.task('push_phpdoc', shell.task(
-        'cd ../../' + docRepoName + '&call git add phpDoc&call git commit phpDoc -m "update phpDoc"' +
-        '&call git push origin gh-pages'
+    gulp.task('phpdoc', shell.task(
+        'git stash' +
+        '&call git checkout gh-pages' +
+        '&call git pull gh-pages' +
+        'cd ../php' +
+        '&"./vendor/bin/phpdoc"' +
+        '&call git add .' +
+        '&call git commit phpDoc -m "update phpDoc"' +
+        '&call git checkout ' + currentBranch +
+        '&call git stash pop'
     ));
 
-    gulp.task('push_jsdoc', shell.task(
-        'cd ../../' + docRepoName + '&call git add jsDoc&call git commit jsDoc -m "update jsDoc"' +
-        '&call git push origin gh-pages'
+    gulp.task('push_doc', shell.task(
+        'git stash' +
+        '&call git checkout gh-pages' +
+        '&call git pull gh-pages' +
+        '&call git push origin gh-pages' +
+        '&call git checkout ' + currentBranch +
+        '&call git stash pop'
     ));
 
     gulp.task('doc', function (done) {
         runSequence('jsdoc', 'phpdoc', done);
     });
-
-    gulp.task('push_doc', shell.task(
-        'cd ../../' + docRepoName + '&call git add .&call git commit -a -m "update docs"&call git push origin gh-pages'
-    ));
 
     /*=====  End of Documentation generation  ======*/
 

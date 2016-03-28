@@ -26,6 +26,6 @@
         "highlightTutorialCode": false
       },
     "opts": {
-        "destination": "../../web-doc/jsDoc/"
+        "destination": "../jsDoc/"
     }
 }

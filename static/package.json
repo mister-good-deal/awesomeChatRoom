@@ -19,7 +19,9 @@
     "url": "https://github.com/ZiperRom1/web/issues"
   },
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "git-rev": "^0.2.1"
+  },
   "devDependencies": {
     "del": "latest",
     "gulp": "latest",
