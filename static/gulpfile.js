@@ -7,7 +7,6 @@
         bower            = require('gulp-bower'),
         mainBowerFiles   = require('main-bower-files'),
         rename           = require('gulp-rename'),
-        shell            = require('gulp-shell'),
         jshint           = require('gulp-jshint'),
         jscs             = require('gulp-jscs'),
         phpcs            = require('gulp-phpcs'),
@@ -17,6 +16,7 @@
         map              = require('map-stream'),
         watch            = require('gulp-watch'),
         del              = require('del'),
+        exec             = require('child_process').exec,
         gulpSequence     = require('gulp-sequence'),
         CleanPlugin      = require('less-plugin-clean-css'),
         AutoprefixPlugin = require('less-plugin-autoprefix'),
@@ -30,11 +30,26 @@
         autoprefix = new AutoprefixPlugin({
             browsers: ["last 2 versions"]
         }),
-        jshintReporter, currentBranch;
-    // Get The current git branch
-    gitInfo.branch(function (branch) {
-        currentBranch = branch;
-    });
+        gitDoc           = function (repo, currentBranch, callback) {
+            exec(
+                'cd .. ' +
+                '&call git stash save "' + repo + '" ' +
+                '&call git checkout gh-pages ' +
+                '&call git pull origin gh-pages ' +
+                '&call git stash apply ' +
+                '&call git add ' + repo + ' ' +
+                '&call git commit ' + repo + ' -m "update ' + repo + '" ' +
+                '&call git stash drop ' +
+                '&call git checkout ' + currentBranch + ' ' +
+                '&call git stash apply ' +
+                '&call git stash drop',
+                function (err, output) {
+                    console.log(output);
+                    callback(err);
+                }
+            );
+        },
+        jshintReporter;
 
     /*============================================
     =            Flush vendor sources            =
@@ -105,7 +120,15 @@
     =            Build js / less and optimize            =
     ====================================================*/
 
-    gulp.task('build_js', shell.task('cd ./js&node ../node_modules/requirejs/bin/r.js -o app.build.js'));
+    gulp.task('build_js', function (done) {
+        exec(
+            'cd ./js&node ../node_modules/requirejs/bin/r.js -o app.build.js',
+            function (err, output) {
+                console.log(output);
+                done(err);
+            }
+        );
+    });
 
     gulp.task('build_less', function () {
         return gulp.src('less/build.less')
@@ -190,52 +213,68 @@
     =            Documentation generation            =
     ================================================*/
 
-    gulp.task('git_js_doc_step_1', shell.task(
-        'cd .. ' +
-        '&call git stash save "current_branch"'
-    ));
+    gulp.task('git_stash', function (done) {
+        exec(
+            'cd .. ' +
+            '&call git stash save "WIP"',
+            function (err, output) {
+                console.log(output);
+                done(err);
+            }
+        );
+    });
 
     gulp.task('jsdoc_generation', function (cb) {
         gulp.src(['../README.md', './js/**/*.js'], {read: false}).pipe(jsdoc(jsdocConfig, cb));
     });
 
-    gulp.task('git_js_doc_step_2', shell.task(
-        'cd .. ' +
-        '&call git stash save "jsDoc" ' +
-        '&call git checkout gh-pages ' +
-        '&call git pull origin gh-pages ' +
-        '&call git stash apply stash^{/jsDoc} ' +
-        '&call git add jsDoc ' +
-        '&call git commit jsDoc -m "update jsDoc" ' +
-        '&call git checkout ' + currentBranch + ' ' +
-        '&call git stash apply stash^{/current_branch} ' +
-        '&cd static'
-    ));
-
-    gulp.task('jsdoc', function (done) {
-        gulpSequence('git_js_doc_step_1', 'jsdoc_generation', 'git_js_doc_step_2', done);
+    gulp.task('phpdoc_generation', function (done) {
+        exec(
+            '&cd ../php' +
+            '&"./vendor/bin/phpdoc"',
+            function (err, output) {
+                console.log(output);
+                done(err);
+            }
+        );
     });
 
-    gulp.task('phpdoc', shell.task(
-        'git stash' +
-        '&call git checkout gh-pages' +
-        '&call git pull origin gh-pages' +
-        'cd ../php' +
-        '&"./vendor/bin/phpdoc"' +
-        '&call git add .' +
-        '&call git commit phpDoc -m "update phpDoc"' +
-        '&call git checkout ' + currentBranch +
-        '&call git stash pop'
-    ));
+    gulp.task('git_js_doc', function (done) {
+        gitInfo.branch(function (currentBranch) {
+            gitDoc('jsDoc', currentBranch, done);
+        });
+    });
 
-    gulp.task('push_doc', shell.task(
-        'git stash' +
-        '&call git checkout gh-pages' +
-        '&call git pull origin gh-pages' +
-        '&call git push origin gh-pages' +
-        '&call git checkout ' + currentBranch +
-        '&call git stash pop'
-    ));
+    gulp.task('git_php_doc', function (done) {
+        gitInfo.branch(function (currentBranch) {
+            gitDoc('phpDoc', currentBranch, done);
+        });
+    });
+
+    gulp.task('jsdoc', function (done) {
+        gulpSequence('git_stash', 'jsdoc_generation', 'git_js_doc', done);
+    });
+
+    gulp.task('phpdoc', function (done) {
+        gulpSequence('git_stash', 'phpdoc_generation', 'git_php_doc', done);
+    });
+
+    gulp.task('push_doc', function (done) {
+        gitInfo.branch(function (currentBranch) {
+            exec(
+                'git stash save "WIP on ' + currentBranch + '" ' +
+                '&call git checkout gh-pages ' +
+                '&call git pull origin gh-pages ' +
+                '&call git push origin gh-pages ' +
+                '&call git checkout ' + currentBranch + ' ' +
+                '&call git stash pop',
+                function (err, output) {
+                    console.log(output);
+                    done(err);
+                }
+            );
+        });
+    });
 
     gulp.task('doc', function (done) {
         gulpSequence('jsdoc', 'phpdoc', done);
