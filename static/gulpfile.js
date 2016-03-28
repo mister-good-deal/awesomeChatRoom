@@ -34,31 +34,15 @@
             exec(
                 'cd .. ' +
                 '&call git add ' + repo + ' ' +
-                '&call git stash save "' + repo + '" ' +
-                '&call git checkout gh-pages ' +
-                '&call git pull origin gh-pages ',
-                function (err, output) {
-                    console.log(output);
-                }
-            );
-
-            del('../' + repo);
-
-            exec(
-                'cd .. ' +
-                '&call git stash apply --quiet' +
-                '&call git add ' + repo + ' ' +
                 '&call git commit ' + repo + ' -m "update ' + repo + '" ' +
-                '&call git stash drop --quiet' +
                 '&call git checkout ' + currentBranch + ' ' +
                 '&call git stash apply --quiet ' +
                 '&call git stash drop --quiet',
                 function (err, output) {
                     console.log(output);
+                    callback(err);
                 }
             );
-
-            callback();
         },
         jshintReporter;
 
@@ -262,12 +246,44 @@
         });
     });
 
-    gulp.task('jsdoc', function (done) {
-        gulpSequence('git_stash', 'jsdoc_generation', 'git_js_doc', done);
+    gulp.task('git_chk_gh_pages', function (done) {
+        exec(
+            'cd .. ' +
+            '&call git checkout gh-pages ' +
+            '&call git pull origin gh-pages',
+            function (err, output) {
+                console.log(output);
+                done(err);
+            }
+        );
     });
 
-    gulp.task('phpdoc', function (done) {
-        gulpSequence('git_stash', 'phpdoc_generation', 'git_php_doc', done);
+    gulp.task('git_chk', function (done) {
+        exec(
+            'cd .. ' +
+            '&call git checkout feature/rl-deployment',
+            function (err, output) {
+                console.log(output);
+                done(err);
+            }
+        );
+    });
+
+    gulp.task('cleanTmp', function (done) {
+        del('../../tmp');
+        done();
+    });
+
+    gulp.task('moveDoc', function () {
+        return gulp.src('../../tmp/**').pipe(gulp.dest('../'));
+    });
+
+    gulp.task('jsDoc', function (done) {
+        gulpSequence('git_stash', 'jsdoc_generation', 'git_chk_gh_pages', 'moveDoc', 'git_js_doc', 'cleanTmp', done);
+    });
+
+    gulp.task('phpDoc', function (done) {
+        gulpSequence('git_stash', 'phpdoc_generation', 'git_chk_gh_pages', 'moveDoc', 'git_php_doc', 'cleanTmp', done);
     });
 
     gulp.task('push_doc', function (done) {
