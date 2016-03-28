@@ -33,6 +33,7 @@
         gitDoc           = function (repo, currentBranch, callback) {
             exec(
                 'cd .. ' +
+                '&call git add ' + repo + ' ' +
                 '&call git stash save "' + repo + '" --quiet ' +
                 '&call git checkout gh-pages ' +
                 '&call git pull origin gh-pages ' +
@@ -287,11 +288,11 @@
     =================================================*/
 
     gulp.task('deploy_static', function (done) {
-        gulpSequence('install', 'js_lint', 'build', 'jsdoc', 'push_jsdoc', done);
+        gulpSequence('install', 'js_lint', 'build', 'jsdoc', 'push_doc', done);
     });
 
     gulp.task('deploy_php', function (done) {
-        gulpSequence('php_lint', 'phpdoc', 'push_phpdoc', done);
+        gulpSequence('php_lint', 'phpdoc', 'push_doc', done);
     });
 
     gulp.task('deploy', function (done) {
