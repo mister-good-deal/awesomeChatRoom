@@ -31,10 +31,12 @@
             browsers: ["last 2 versions"]
         }),
         gitDoc           = function (repo, currentBranch, callback) {
+            gulpSequence('git_checkout_gh_pages', 'moveDoc');
+
             exec(
                 'cd .. ' +
                 '&call git add ' + repo + ' ' +
-                '&call git commit ' + repo + ' -m "update ' + repo + '" ' +
+                '&call git commit ' + repo + ' -A -m "update ' + repo + '" ' +
                 '&call git checkout ' + currentBranch + ' ' +
                 '&call git stash apply --quiet ' +
                 '&call git stash drop --quiet',
@@ -246,7 +248,7 @@
         });
     });
 
-    gulp.task('git_chk_gh_pages', function (done) {
+    gulp.task('git_checkout_gh_pages', function (done) {
         exec(
             'cd .. ' +
             '&call git checkout gh-pages ' +
@@ -270,7 +272,8 @@
     });
 
     gulp.task('cleanTmp', function (done) {
-        del('../../tmp');
+        // @todo not working (relative path fails I think)
+        del('../../tmp/**');
         done();
     });
 
@@ -279,11 +282,12 @@
     });
 
     gulp.task('jsDoc', function (done) {
-        gulpSequence('git_stash', 'jsdoc_generation', 'git_chk_gh_pages', 'moveDoc', 'git_js_doc', 'cleanTmp', done);
+        gulpSequence('git_stash', 'jsdoc_generation', 'git_js_doc', 'cleanTmp', done);
     });
 
+    // @todo not working ...
     gulp.task('phpDoc', function (done) {
-        gulpSequence('git_stash', 'phpdoc_generation', 'git_chk_gh_pages', 'moveDoc', 'git_php_doc', 'cleanTmp', done);
+        gulpSequence('git_stash', 'phpdoc_generation', 'git_php_doc', 'cleanTmp', done);
     });
 
     gulp.task('push_doc', function (done) {
@@ -304,7 +308,7 @@
     });
 
     gulp.task('doc', function (done) {
-        gulpSequence('jsdoc', 'phpdoc', done);
+        gulpSequence('jsDoc', 'phpDoc', done);
     });
 
     /*=====  End of Documentation generation  ======*/
