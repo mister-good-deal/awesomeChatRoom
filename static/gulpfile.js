@@ -214,6 +214,24 @@
 
     /*=====  End of Documentation generation  ======*/
 
+    /*=================================================
+    =            Deployment preprocessing            =
+    =================================================*/
+
+    gulp.task('deploy_static', function (done) {
+        runSequence('install', 'js_lint', 'build', 'jsdoc', 'push_jsdoc', done);
+    });
+
+    gulp.task('deploy_php', function (done) {
+        runSequence('php_lint', 'phpdoc', 'push_phpdoc', done);
+    });
+
+    gulp.task('deploy', function (done) {
+        runSequence('deploy_static', 'deploy_php', done);
+    });
+
+    /*=====  End of Deployment preprocessing  ======*/
+
     /*========================================
     =            Watch less files            =
     ========================================*/

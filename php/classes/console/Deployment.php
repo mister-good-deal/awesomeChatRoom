@@ -26,7 +26,7 @@ class Deployment extends Console
      */
     private static $SELF_COMMANDS = array(
         'protocol [-p protocol] [--list|set]'               => 'Get all the available deployment protocols or get/set the protocol',
-        'deploy [--website|websocket]'                      => 'Deploy the website or the websocket server or both (DEFAULT)',
+        'deploy [--static|php]'                             => 'Deploy the static or the php server or both (DEFAULT)',
         'configuration [-p param -v value] [--print|save]'  => 'Display or set deployment parameter (--save to save it in conf.ini'
     );
     /**
@@ -182,13 +182,13 @@ class Deployment extends Console
     {
         $args = $this->getArgs($command);
 
-        if (isset($args['website'])) {
-            $this->deployWebSite();
-        } elseif (isset($args['websocket'])) {
-            $this->deployWebsocketServer();
+        if (isset($args['static'])) {
+            $this->deployStatic();
+        } elseif (isset($args['php'])) {
+            $this->deployPhp();
         } else {
-            $this->deployWebSite();
-            $this->deployWebsocketServer();
+            $this->deployStatic();
+            $this->deployPhp();
         }
     }
 
@@ -230,26 +230,31 @@ class Deployment extends Console
     }
 
     /**
-     * Deploy the websocket server on the remote server
+     * Deploy the php server on the remote server
      */
-    private function deployWebsocketServer()
+    private function deployPhp()
     {
+        $this->gulpPreprocessingPhp();
+
         $directoriesTree = static::$PROJECT_MAIN_STRUCTURE;
         unset($directoriesTree[$this->deploymentConfiguration['remoteProjectRootDirectoryName']]['static']);
 
         $this->deploy($directoriesTree);
+        $this->composerInstall();
     }
 
     /**
-     * Deploy the entire website on the remote server
+     * Deploy the static repo (js and css) on the remote server
      */
-    private function deployWebSite()
+    private function deployStatic()
     {
-        $this->deploy(static::$PROJECT_MAIN_STRUCTURE);
-        exec(
-            'ssh root@vps cd ' . $this->deploymentConfiguration['remoteProjectRootDirectory'] . '/' .
-            $this->deploymentConfiguration['remoteProjectRootDirectoryName'] . '/php; composer install --no-dev'
-        );
+        $this->gulpPreprocessingStatic();
+
+        $directoriesTree = static::$PROJECT_MAIN_STRUCTURE;
+        unset($directoriesTree[$this->deploymentConfiguration['remoteProjectRootDirectoryName']]['php']);
+
+        $this->deploy($directoriesTree);
+
     }
 
     /**
@@ -400,5 +405,32 @@ class Deployment extends Console
                 'Protocol "' . $value . '" is not supported, type protocol --list to see supported protocols' . PHP_EOL
             );
         }
+    }
+
+    /**
+     * Install composer depedencies on the remote server with --no-dev
+     */
+    private function composerInstall()
+    {
+        exec(
+            'ssh root@vps cd ' . $this->deploymentConfiguration['remoteProjectRootDirectory'] . '/' .
+            $this->deploymentConfiguration['remoteProjectRootDirectoryName'] . '/php; composer install --no-dev'
+        );
+    }
+
+    /**
+     * Preprocessing js/less files before deployment and generate doc
+     */
+    private function gulpPreprocessingStatic()
+    {
+        exec('cd ../static & gulp deploy_static');
+    }
+
+    /**
+     * Preprocessing php files before deployment and generate doc
+     */
+    private function gulpPreprocessingPhp()
+    {
+        exec('cd ../static & gulp deploy_php');
     }
 }
