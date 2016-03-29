@@ -90,7 +90,7 @@ First create the main repository of the project by running the command
 
 Then the technical documentation repository of the projet by running the command
 
-`git clone -b gh-pages --single-branch https://github.com/ZiperRom1/web.git websocket-doc`
+`git clone https://github.com/ZiperRom1/ziperrom1.github.io.git websocket-doc`
 
 - Install PHP [last realese Thred Safe](http://windows.php.net/downloads/releases/php-7.0.2-Win32-VC14-x64.zip) (dezip and add the repository to the PATH windows variable)
 - Install APACHE [last realese](http://www.apachelounge.com/download/VC14/binaries/httpd-2.4.18-win64-VC14.zip) as a service (run `[path to apache repository]/httpd.exe -k install`)

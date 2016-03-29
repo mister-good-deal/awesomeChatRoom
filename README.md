@@ -2,7 +2,7 @@
 
 ## Technical documentation
 
-[documentation](http://ziperrom1.github.io/web/)
+[documentation](http://ziperrom1.github.io/websocket-doc/)
 
 ## Features
 
