@@ -22,7 +22,6 @@
   "dependencies": {},
   "devDependencies": {
     "del": "latest",
-    "git-rev": "^0.2.1",
     "gulp": "latest",
     "gulp-bower": "latest",
     "gulp-jscs": "latest",

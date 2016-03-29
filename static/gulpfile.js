@@ -20,8 +20,8 @@
         gulpSequence     = require('gulp-sequence'),
         CleanPlugin      = require('less-plugin-clean-css'),
         AutoprefixPlugin = require('less-plugin-autoprefix'),
-        gitInfo          = require('git-rev'),
         jsdocConfig      = require('./jsdocConfig.json'),
+        docPath          = '../../ziperrom1.github.io/websocket-doc',
         jsSrc            = ['js/lib/*.js', 'js/app.js', 'js/main.js'],
         phpSrc           = ['../php/**/*.php', '!../php/vendor/**/*.*'],
         clean            = new CleanPlugin({
@@ -30,23 +30,26 @@
         autoprefix = new AutoprefixPlugin({
             browsers: ["last 2 versions"]
         }),
-        gitDoc           = function (repo, currentBranch, callback) {
-            gulpSequence('git_checkout_gh_pages', 'moveDoc');
-
-            exec(
-                'cd .. ' +
-                '&call git add ' + repo + ' ' +
-                '&call git commit ' + repo + ' -A -m "update ' + repo + '" ' +
-                '&call git checkout ' + currentBranch + ' ' +
-                '&call git stash apply --quiet ' +
-                '&call git stash drop --quiet',
-                function (err, output) {
-                    console.log(output);
-                    callback(err);
-                }
-            );
-        },
         jshintReporter;
+
+    /**
+     * Add and commit git documentation changes on phpDoc or jsDoc
+     *
+     * @method     gitDoc
+     * @param      {String}    directory  The directory name ("phpDoc" or "jsDoc")
+     * @param      {Function}  callback   A callback function to monitor the end of the command
+     */
+    function gitDoc(directory, callback) {
+        exec(
+            'cd ' + docPath + ' ' +
+            '&call git add ' + directory + ' ' +
+            '&call git commit ' + directory + ' -m "update ' + directory + '"',
+            function (err, output) {
+                console.log(output);
+                callback(err);
+            }
+        );
+    }
 
     /*============================================
     =            Flush vendor sources            =
@@ -210,17 +213,6 @@
     =            Documentation generation            =
     ================================================*/
 
-    gulp.task('git_stash', function (done) {
-        exec(
-            'cd .. ' +
-            '&call git stash save "WIP" ',
-            function (err, output) {
-                console.log(output);
-                done(err);
-            }
-        );
-    });
-
     gulp.task('jsdoc_generation', function (cb) {
         gulp.src(['../README.md', './js/**/*.js'], {read: false}).pipe(jsdoc(jsdocConfig, cb));
     });
@@ -237,74 +229,31 @@
     });
 
     gulp.task('git_js_doc', function (done) {
-        gitInfo.branch(function (currentBranch) {
-            gitDoc('jsDoc', currentBranch, done);
-        });
+        gitDoc('jsDoc', done);
     });
 
     gulp.task('git_php_doc', function (done) {
-        gitInfo.branch(function (currentBranch) {
-            gitDoc('phpDoc', currentBranch, done);
-        });
-    });
-
-    gulp.task('git_checkout_gh_pages', function (done) {
-        exec(
-            'cd .. ' +
-            '&call git checkout gh-pages ' +
-            '&call git pull origin gh-pages',
-            function (err, output) {
-                console.log(output);
-                done(err);
-            }
-        );
-    });
-
-    gulp.task('git_chk', function (done) {
-        exec(
-            'cd .. ' +
-            '&call git checkout feature/rl-deployment',
-            function (err, output) {
-                console.log(output);
-                done(err);
-            }
-        );
-    });
-
-    gulp.task('cleanTmp', function (done) {
-        // @todo not working (relative path fails I think)
-        del('../../tmp/**');
-        done();
-    });
-
-    gulp.task('moveDoc', function () {
-        return gulp.src('../../tmp/**').pipe(gulp.dest('../'));
+        gitDoc('phpDoc', done);
     });
 
     gulp.task('jsDoc', function (done) {
-        gulpSequence('git_stash', 'jsdoc_generation', 'git_js_doc', 'cleanTmp', done);
+        gulpSequence('jsdoc_generation', 'git_js_doc', done);
     });
 
-    // @todo not working ...
     gulp.task('phpDoc', function (done) {
-        gulpSequence('git_stash', 'phpdoc_generation', 'git_php_doc', 'cleanTmp', done);
+        gulpSequence('phpdoc_generation', 'git_php_doc', done);
     });
 
     gulp.task('push_doc', function (done) {
-        gitInfo.branch(function (currentBranch) {
-            exec(
-                'git stash save "WIP on ' + currentBranch + '" ' +
-                '&call git checkout gh-pages ' +
-                '&call git pull origin gh-pages ' +
-                '&call git push origin gh-pages ' +
-                '&call git checkout ' + currentBranch + ' ' +
-                '&call git stash pop --quiet',
-                function (err, output) {
-                    console.log(output);
-                    done(err);
-                }
-            );
-        });
+        exec(
+            'cd ' + docPath + ' ' +
+            '&call git pull origin master ' +
+            '&call git push origin master',
+            function (err, output) {
+                console.log(output);
+                done(err);
+            }
+        );
     });
 
     gulp.task('doc', function (done) {
