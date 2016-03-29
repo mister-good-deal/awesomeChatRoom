@@ -16,7 +16,6 @@ require_once 'autoloader.php';
 try {
     $console = new Deployment();
 } catch (\Throwable $t) {
-    echo $t . PHP_EOL;
     $throwable = new Exception($t->getMessage(), $t->getCode(), $t->getPrevious());
     exit(-1);
 }

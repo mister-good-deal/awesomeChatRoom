@@ -1052,7 +1052,6 @@ class ChatService extends ServicesDispatcher implements Service
             if ($this->isPseudonymUsabled($pseudonym, $room->id)) {
                 $response['pseudonym'] = $pseudonym;
                 $response['success']   = true;
-
             } else {
                 $response['text'] = sprintf(_('The pseudonym "%s" is already used'), $pseudonym);
             }
