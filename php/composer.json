@@ -1,12 +1,11 @@
 {
-    "minimum-stability": "dev",
     "require": {
         "elasticsearch/elasticsearch": "~2.0",
         "icicleio/websocket": "*",
         "icicleio/stream": "*"
     },
     "require-dev": {
-        "phpdocumentor/phpdocumentor": "2.8.5",
+        "phpdocumentor/phpdocumentor": "*",
         "squizlabs/php_codesniffer": "*"
     }
 }
