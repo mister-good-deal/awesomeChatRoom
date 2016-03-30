@@ -182,13 +182,17 @@ class Deployment extends Console
     {
         $args = $this->getArgs($command);
 
-        if (isset($args['static'])) {
-            $this->deployStatic();
-        } elseif (isset($args['php'])) {
-            $this->deployPhp();
-        } else {
-            $this->deployStatic();
-            $this->deployPhp();
+        try {
+            if (isset($args['static'])) {
+                $this->deployStatic();
+            } elseif (isset($args['php'])) {
+                $this->deployPhp();
+            } else {
+                $this->deployStatic();
+                $this->deployPhp();
+            }
+        } catch (\Exception $e) {
+            static::fail($e->getMessage());
         }
     }
 
@@ -239,8 +243,12 @@ class Deployment extends Console
         $directoriesTree = static::$PROJECT_MAIN_STRUCTURE;
         unset($directoriesTree[$this->deploymentConfiguration['remoteProjectRootDirectoryName']]['static']);
 
+        static::out(PHP_EOL . 'Uploading PHP files ...' . PHP_EOL);
+
         $this->deploy($directoriesTree);
         $this->composerInstall();
+
+        static::ok(PHP_EOL . 'PHP deployment completed' . PHP_EOL);
     }
 
     /**
@@ -253,8 +261,11 @@ class Deployment extends Console
         $directoriesTree = static::$PROJECT_MAIN_STRUCTURE;
         unset($directoriesTree[$this->deploymentConfiguration['remoteProjectRootDirectoryName']]['php']);
 
+        static::out(PHP_EOL . 'Uploading static files ...' . PHP_EOL);
+
         $this->deploy($directoriesTree);
 
+        static::ok(PHP_EOL . 'Static deployment completed' . PHP_EOL);
     }
 
     /**
@@ -265,7 +276,6 @@ class Deployment extends Console
     private function deploy(array $directoriesTree)
     {
         $skip = false;
-        $this->printDeploymentInformation();
 
         switch ($this->deploymentConfiguration['protocol']) {
             case 'FTP':
@@ -361,7 +371,9 @@ class Deployment extends Console
                     $fileInfo->getMTime() > $fileManager->lastModified($fileInfo->getFilename())
                 ) {
                     if (in_array($fileInfo->getFilename(), static::$IGNORED_FILES)) {
-                        static::out($fileInfo->getPathname() . ' is ignored' . PHP_EOL);
+                        if ((int) $this->deploymentConfiguration['verbose'] > 1) {
+                            static::out($fileInfo->getPathname() . ' is ignored' . PHP_EOL);
+                        }
                     } else {
                         $fileManager->upload($fileInfo->getFilename(), $fileInfo->getPathname());
                     }
@@ -399,9 +411,9 @@ class Deployment extends Console
     {
         if (in_array($value, static::$PROTOCOLS)) {
             $this->deploymentConfiguration['protocol'] = $value;
-            static::out('Protocol is now "' . $value . '"' . PHP_EOL);
+            static::ok('Protocol is now "' . $value . '"' . PHP_EOL);
         } else {
-            static::out(
+            static::fail(
                 'Protocol "' . $value . '" is not supported, type protocol --list to see supported protocols' . PHP_EOL
             );
         }
@@ -412,7 +424,8 @@ class Deployment extends Console
      */
     private function composerInstall()
     {
-        exec(
+        static::out(PHP_EOL . 'Installing composer dependencies on remote ...' . PHP_EOL . PHP_EOL);
+        static::execWithPrintInLive(
             'ssh root@vps cd ' . $this->deploymentConfiguration['remoteProjectRootDirectory'] . '/' .
             $this->deploymentConfiguration['remoteProjectRootDirectoryName'] . '/php; composer install --no-dev'
         );
@@ -423,7 +436,8 @@ class Deployment extends Console
      */
     private function gulpPreprocessingStatic()
     {
-        exec('cd ../static & gulp deploy_static');
+        static::out(PHP_EOL . 'Prepare the static deployment, running gulp tasks ...' . PHP_EOL . PHP_EOL);
+        static::execWithPrintInLive('cd ../static & gulp deploy_static');
     }
 
     /**
@@ -431,6 +445,7 @@ class Deployment extends Console
      */
     private function gulpPreprocessingPhp()
     {
-        exec('cd ../static & gulp deploy_php');
+        static::out(PHP_EOL . 'Prepare the PHP deployment, running gulp tasks ...' . PHP_EOL . PHP_EOL);
+        static::execWithPrintInLive('cd ../static & gulp deploy_php');
     }
 }

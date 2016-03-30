@@ -220,7 +220,7 @@
     gulp.task('phpdoc_generation', function (done) {
         exec(
             'cd ../php ' +
-            '&"./vendor/bin/phpdoc"',
+            '&"./vendor/bin/phpdoc" --quiet',
             function (err, output) {
                 console.log(output);
                 done(err);
@@ -267,11 +267,11 @@
     =================================================*/
 
     gulp.task('deploy_static', function (done) {
-        gulpSequence('install', 'js_lint', 'build', 'jsdoc', 'push_doc', done);
+        gulpSequence('install', 'js_lint', 'build', 'jsDoc', 'push_doc', done);
     });
 
     gulp.task('deploy_php', function (done) {
-        gulpSequence('php_lint', 'phpdoc', 'push_doc', done);
+        gulpSequence('php_lint', 'phpDoc', 'push_doc', done);
     });
 
     gulp.task('deploy', function (done) {
