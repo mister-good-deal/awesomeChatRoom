@@ -452,7 +452,7 @@ class Deployment extends Console
         static::out(PHP_EOL . 'Installing composer dependencies on remote ...' . PHP_EOL . PHP_EOL);
         static::execWithPrintInLive(
             'ssh root@vps cd ' . $this->deploymentConfiguration['remoteProjectRootDirectory'] . '/' .
-            $this->deploymentConfiguration['remoteProjectRootDirectoryName'] . '/php; composer install --no-dev'
+            $this->deploymentConfiguration['remoteProjectRootDirectoryName'] . '/php; composer install -o --no-dev'
         );
     }
 
