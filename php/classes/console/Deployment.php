@@ -26,7 +26,7 @@ class Deployment extends Console
      */
     private static $SELF_COMMANDS = array(
         'protocol [-p protocol] [--list|set]'               => 'Get all the available deployment protocols or get/set the protocol',
-        'deploy [--static|php]'                             => 'Deploy the static or the php server or both (DEFAULT)',
+        'deploy [--static|php] [--skip-gulp]'               => 'Deploy the static or the php server or both (DEFAULT)',
         'configuration [-p param -v value] [--print|save]'  => 'Display or set deployment parameter (--save to save it in conf.ini'
     );
     /**
@@ -47,7 +47,6 @@ class Deployment extends Console
             ),
             'php' => array(
                 'abstracts'   => null,
-                'chatDumps'   => null,
                 'classes'     => array(
                     'console'            => null,
                     'entities'           => null,
@@ -55,6 +54,7 @@ class Deployment extends Console
                     'entitiesManager'    => null,
                     'fileManager'        => null,
                     'logger'             => null,
+                    'managers'           => null,
                     'websocket'          => array(
                         'services' => null
                     )
@@ -74,13 +74,26 @@ class Deployment extends Console
      * @var        string[]  $IGNORED_FILES     A list of files to not upload on the server
      */
     private static $IGNORED_FILES = array(
+        'launchDeployment.php',
         'conf.ini',
         'conf-example.ini',
+        'phpdoc.dist.xml',
         'log.txt',
+        'app.js.map',
+        'gulpfile.js',
+        'package.json',
+        'bower.json',
+        'jsdocConfig.json',
+        '.bowerrc',
+        '.jscsrc',
+        '.jshintrc',
+        '.git',
         '.gitignore',
+        '.gitattributes',
         'composer.lock',
         'devDoc.md',
         'README.md',
+        'sonar-project.properties',
         'LICENSE'
     );
 
@@ -180,16 +193,17 @@ class Deployment extends Console
      */
     private function deployProcess(string $command)
     {
-        $args = $this->getArgs($command);
+        $args     = $this->getArgs($command);
+        $skipGulp = isset($args['skip-gulp']);
 
         try {
             if (isset($args['static'])) {
-                $this->deployStatic();
+                $this->deployStatic($skipGulp);
             } elseif (isset($args['php'])) {
-                $this->deployPhp();
+                $this->deployPhp($skipGulp);
             } else {
-                $this->deployStatic();
-                $this->deployPhp();
+                $this->deployStatic($skipGulp);
+                $this->deployPhp($skipGulp);
             }
         } catch (\Exception $e) {
             static::fail($e->getMessage());
@@ -235,10 +249,14 @@ class Deployment extends Console
 
     /**
      * Deploy the php server on the remote server
+     *
+     * @param      boolean  $skipGulp  True to skip gulp process else false DEFAULT false
      */
-    private function deployPhp()
+    private function deployPhp($skipGulp = false)
     {
-        $this->gulpPreprocessingPhp();
+        if (!$skipGulp) {
+            $this->gulpPreprocessingPhp();
+        }
 
         $directoriesTree = static::$PROJECT_MAIN_STRUCTURE;
         unset($directoriesTree[$this->deploymentConfiguration['remoteProjectRootDirectoryName']]['static']);
@@ -248,15 +266,19 @@ class Deployment extends Console
         $this->deploy($directoriesTree);
         $this->composerInstall();
 
-        static::ok(PHP_EOL . 'PHP deployment completed' . PHP_EOL);
+        static::ok('PHP deployment completed' . PHP_EOL);
     }
 
     /**
      * Deploy the static repo (js and css) on the remote server
+     *
+     * @param      boolean  $skipGulp  True to skip gulp process else false DEFAULT false
      */
-    private function deployStatic()
+    private function deployStatic($skipGulp = false)
     {
-        $this->gulpPreprocessingStatic();
+        if (!$skipGulp) {
+            $this->gulpPreprocessingStatic();
+        }
 
         $directoriesTree = static::$PROJECT_MAIN_STRUCTURE;
         unset($directoriesTree[$this->deploymentConfiguration['remoteProjectRootDirectoryName']]['php']);
@@ -265,7 +287,7 @@ class Deployment extends Console
 
         $this->deploy($directoriesTree);
 
-        static::ok(PHP_EOL . 'Static deployment completed' . PHP_EOL);
+        static::ok('Static deployment completed' . PHP_EOL);
     }
 
     /**
@@ -363,24 +385,27 @@ class Deployment extends Console
         $localWorkingDirectory .= DIRECTORY_SEPARATOR . $workingDirectory;
 
         foreach ($arrayDepth[$workingDirectory] as $directoryName => $subdir) {
-            $currentDirectory = new \DirectoryIterator($localWorkingDirectory);
+            $fileManager->changeDir($directoryName);
+            $currentDirectory = new \DirectoryIterator($localWorkingDirectory . DIRECTORY_SEPARATOR . $directoryName);
 
             foreach ($currentDirectory as $fileInfo) {
-                if (!$fileInfo->isDot() &&
-                    $fileInfo->isFile() &&
-                    $fileInfo->getMTime() > $fileManager->lastModified($fileInfo->getFilename())
-                ) {
-                    if (in_array($fileInfo->getFilename(), static::$IGNORED_FILES)) {
-                        if ((int) $this->deploymentConfiguration['verbose'] > 1) {
+                if (!$fileInfo->isDot()) {
+                    if (!$fileInfo->isDot() &&
+                        $fileInfo->isFile() &&
+                        $fileInfo->getMTime() > $fileManager->lastModified($fileInfo->getFilename())
+                    ) {
+                        if (!in_array($fileInfo->getFilename(), static::$IGNORED_FILES)) {
+                            $fileManager->upload($fileInfo->getFilename(), $fileInfo->getPathname());
+                        } elseif ((int) $this->deploymentConfiguration['verbose'] > 1) {
                             static::out($fileInfo->getPathname() . ' is ignored' . PHP_EOL);
                         }
-                    } else {
-                        $fileManager->upload($fileInfo->getFilename(), $fileInfo->getPathname());
                     }
                 }
             }
 
-            if ($subdir !== null) {
+            $fileManager->changeDir('..');
+
+            if (is_array($subdir)) {
                 $this->uploadFilesRecursive(
                     $fileManager,
                     $directoryName,
