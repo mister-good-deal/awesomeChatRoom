@@ -180,16 +180,16 @@ class FtpFileManager implements FileManagerInterface
 
         if (is_resource($localFilePath)) {
             if (!@ftp_fput($this->ressource, $fileName, $localFilePath, FTP_ASCII)) {
-                throw new \Exception('Fail to upload "' . $fileName . '" to "' . $pathFile . '"');
+                throw new \Exception('Fail to upload "' . $fileName);
             }
         } else {
             if (!@ftp_put($this->ressource, $fileName, $localFilePath, FTP_BINARY)) {
-                throw new \Exception('Fail to upload "' . $fileName . '" to "' . $pathFile . '"');
+                throw new \Exception('Fail to upload "' . $fileName);
             }
         }
 
         if ($this->verbose > 0) {
-            static::ok('File "' . $localFilePath . '" successfuly uploaded to "' . $remoteFilePath . '"' . PHP_EOL);
+            static::ok('File "' . $localFilePath . '" successfuly uploaded'. PHP_EOL);
         }
     }
 

@@ -227,7 +227,7 @@ GODDBYE;
         }
 
         // --argument
-        preg_match_all('/\-\-(?P<argKey>[a-zA-Z]+)(?P<argValue>.*)/', $command, $matches2);
+        preg_match_all('/\-\-(?P<argKey>[a-zA-Z\-]+)(?P<argValue>[^ \-\-]*)/', $command, $matches2);
 
         $args1 = $this->filterPregMatchAllWithFlags($matches1, 'argKey', 'argValue');
         $args2 = $this->filterPregMatchAllWithFlags($matches2, 'argKey', 'argValue');
