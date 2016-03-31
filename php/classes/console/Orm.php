@@ -253,10 +253,10 @@ class Orm extends Console
             /**
              * @var        Entity  $entity  An entity
              */
-            $entityClassPath = Ini::getParam('Entities', 'entitiesClassPath') . DIRECTORY_SEPARATOR . $entityName;
-            $entity          = new $entityClassPath;
+            $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $entityName;
+            $entity               = new $entityClassNamespace;
             // @todo bug SQL table name with uppercase
-            $tableName       = strtolower($entity->getTableName());
+            $tableName           = strtolower($entity->getTableName());
 
             if (!in_array($tableName, DB::getAllTables())) {
                 static::out('Create table "' . $tableName . '"' . PHP_EOL);

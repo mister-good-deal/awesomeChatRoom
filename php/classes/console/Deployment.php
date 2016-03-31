@@ -20,6 +20,7 @@ use \classes\IniManager as Ini;
 class Deployment extends Console
 {
     use \traits\EchoTrait;
+    use \traits\DateTrait;
 
     /**
      * @var        string[]  $SELF_COMMANDS     List of all commands with their description
@@ -105,6 +106,11 @@ class Deployment extends Console
      * @var        string  $absoluteProjectRootPath     The absolute project root path
      */
     private $absoluteProjectRootPath;
+    /**
+     * @var        int   $timeOffset    Local timezone difference with UTC (to well compared the last modification file
+     *                   date)
+     */
+    private $timeOffset;
 
     /**
      * Call the parent constructor, merge the commands list and launch the console
@@ -116,6 +122,7 @@ class Deployment extends Console
 
         $this->deploymentConfiguration = Ini::getSectionParams('Deployment');
         $this->absoluteProjectRootPath = dirname(__FILE__, 5);
+        $this->timeOffset              = static::getTimezoneOffset('Greenwich');
 
         static::$PROJECT_MAIN_STRUCTURE[
             $this->deploymentConfiguration['remoteProjectRootDirectoryName']
@@ -390,9 +397,8 @@ class Deployment extends Console
 
             foreach ($currentDirectory as $fileInfo) {
                 if (!$fileInfo->isDot()) {
-                    if (!$fileInfo->isDot() &&
-                        $fileInfo->isFile() &&
-                        $fileInfo->getMTime() > $fileManager->lastModified($fileInfo->getFilename())
+                    if ($fileInfo->isFile() &&
+                        $fileInfo->getMTime() > $fileManager->lastModified($fileInfo->getFilename()) - $this->timeOffset
                     ) {
                         if (!in_array($fileInfo->getFilename(), static::$IGNORED_FILES)) {
                             $fileManager->upload($fileInfo->getFilename(), $fileInfo->getPathname());
