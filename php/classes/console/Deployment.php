@@ -43,31 +43,31 @@ class Deployment extends Console
     private static $PROJECT_MAIN_STRUCTURE = array(
         '.' => array(
             'static' => array(
-                'dist' => null,
-                'html' => null
+                'dist' => true,
+                'html' => true
             ),
             'php' => array(
-                'abstracts'   => null,
+                'abstracts'   => true,
                 'classes'     => array(
-                    'console'            => null,
-                    'entities'           => null,
-                    'entitiesCollection' => null,
-                    'entitiesManager'    => null,
-                    'fileManager'        => null,
-                    'logger'             => null,
-                    'managers'           => null,
+                    'console'            => true,
+                    'entities'           => true,
+                    'entitiesCollection' => true,
+                    'entitiesManager'    => true,
+                    'fileManager'        => true,
+                    'logger'             => true,
+                    'managers'           => true,
                     'websocket'          => array(
-                        'services' => null
+                        'services' => true
                     )
                 ),
-                'controllers' => null,
+                'controllers' => true,
                 'database'    => array(
-                    'entities' => null
+                    'entities' => true
                 ),
                 'interfaces'  => array(
-                    'http' => null
+                    'http' => true
                 ),
-                'traits'      => null
+                'traits'      => true
             )
         )
     );
@@ -390,39 +390,32 @@ class Deployment extends Console
     ) {
         $fileManager->changeDir($workingDirectory);
         $localWorkingDirectory .= DIRECTORY_SEPARATOR . $workingDirectory;
+        $currentDirectory = new \DirectoryIterator($localWorkingDirectory);
 
-        foreach ($arrayDepth[$workingDirectory] as $directoryName => $subdir) {
-            $fileManager->changeDir($directoryName);
-            $currentDirectory = new \DirectoryIterator($localWorkingDirectory . DIRECTORY_SEPARATOR . $directoryName);
-
-            foreach ($currentDirectory as $fileInfo) {
-                if (!$fileInfo->isDot()) {
-                    if ($fileInfo->isFile() &&
-                        $fileInfo->getMTime() > $fileManager->lastModified($fileInfo->getFilename()) - $this->timeOffset
-                    ) {
-                        if (!in_array($fileInfo->getFilename(), static::$IGNORED_FILES)) {
-                            $fileManager->upload($fileInfo->getFilename(), $fileInfo->getPathname());
-                        } elseif ((int) $this->deploymentConfiguration['verbose'] > 1) {
-                            static::out($fileInfo->getPathname() . ' is ignored' . PHP_EOL);
-                        }
+        foreach ($currentDirectory as $fileInfo) {
+            if (!$fileInfo->isDot()) {
+                if ($fileInfo->isFile() &&
+                    $fileInfo->getMTime() > $fileManager->lastModified($fileInfo->getFilename()) - $this->timeOffset
+                ) {
+                    if (!in_array($fileInfo->getFilename(), static::$IGNORED_FILES)) {
+                        $fileManager->upload($fileInfo->getFilename(), $fileInfo->getPathname());
+                    } elseif ((int) $this->deploymentConfiguration['verbose'] > 1) {
+                        static::out($fileInfo->getPathname() . ' is ignored' . PHP_EOL);
                     }
                 }
-            }
 
-            $fileManager->changeDir('..');
-
-            if (is_array($subdir)) {
-                $this->uploadFilesRecursive(
-                    $fileManager,
-                    $directoryName,
-                    $arrayDepth[$workingDirectory],
-                    $localWorkingDirectory
-                );
+                if ($fileInfo->isDir() && isset($arrayDepth[$workingDirectory][$fileInfo->getFilename()])) {
+                    $this->uploadFilesRecursive(
+                        $fileManager,
+                        $fileInfo->getFilename(),
+                        $arrayDepth[$workingDirectory],
+                        $localWorkingDirectory
+                    );
+                }
             }
         }
 
         $fileManager->changeDir('..');
-        $localWorkingDirectory = dirname($localWorkingDirectory);
     }
 
     /**
