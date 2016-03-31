@@ -8,5 +8,7 @@
         "phpdocumentor/phpdocumentor": "*",
         "squizlabs/php_codesniffer": "*"
     },
-    "COMPOSER_DISABLE_XDEBUG_WARN": 1
+    "config": {
+        "COMPOSER_DISABLE_XDEBUG_WARN": 1
+    }
 }

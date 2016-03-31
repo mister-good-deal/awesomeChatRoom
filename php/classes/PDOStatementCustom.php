@@ -53,7 +53,8 @@ class PDOStatementCustom extends \PDOStatement
      *
      * {@inheritdoc}
      *
-     * @param      array  $inputParameters  The inputs parameters sent to replace the "?" markers tags in the SQL request
+     * @param      array  $inputParameters  The inputs parameters sent to replace the "?" markers tags in the SQL
+     *                                      request
      *
      * @return     bool   True if the request succeeded else false
      */
@@ -69,7 +70,8 @@ class PDOStatementCustom extends \PDOStatement
     /**
      * Returns an array containing all of the remaining rows in the result set
      *
-     * @return     array  An associative array using the first column as the key, and the remainder as associative values
+     * @return     array  An associative array using the first column as the key, and the remainder as associative
+     *                    values
      */
     public function fetchIndexedByFirstColumn(): array
     {
