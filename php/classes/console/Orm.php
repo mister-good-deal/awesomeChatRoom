@@ -130,8 +130,8 @@ class Orm extends Console
             /**
              * @var        Entity  $entity  An entity
              */
-            $entityClassPath = Ini::getParam('Entities', 'entitiesClassPath') . DIRECTORY_SEPARATOR . $args['n'];
-            $entity         = new $entityClassPath;
+            $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $args['n'];
+            $entity         = new $entityClassNamespace;
             $command       .= ' -t ' . strtolower($entity->getTableName()); // todo bug SQL table name with uppercase
 
             if (isset($args['clean'])) {

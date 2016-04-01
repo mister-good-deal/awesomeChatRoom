@@ -41,7 +41,7 @@ function route($route)
 
     include_once $route;
 
-    $controllerPath    = 'controllers' . DIRECTORY_SEPARATOR . $controller;
+    $controllerPath    = 'controllers\\' . $controller;
     $controllerIntance = new $controllerPath();
     $controllerIntance->$method();
 }
