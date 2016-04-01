@@ -20,6 +20,14 @@ define([
      */
     var WebsocketManager = function (User, settings) {
             this.settings = $.extend(true, {}, this.settings, settings);
+            //Domain name to be changed
+            if(location.host.split(":").length > 1){
+                this.settings.serverUrl = "ws://"+location.hostname+":5000";                
+            }
+            else{
+                this.settings.serverUrl = "wss://"+location.hostname+"/ws";
+            }
+
             this.user     = User;
             this.init();
         };
