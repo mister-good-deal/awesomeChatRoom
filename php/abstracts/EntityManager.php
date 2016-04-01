@@ -503,7 +503,7 @@ abstract class EntityManager
             $sql .= ' PRIMARY KEY (' . $constraints['primary']['columns'] . ')';
         }
 
-        if (isset($constraints['unique'])) {
+        if (isset($constraints['unique']) && $constraints['unique'] !== '') {
             $sql .= ',' . PHP_EOL . "\tUNIQUE `" . $this->entity->getTableName() . '_unique_constraint`';
             $sql .= ' (' . $constraints['unique'] . ')';
         }

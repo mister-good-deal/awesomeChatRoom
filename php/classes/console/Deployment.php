@@ -11,6 +11,7 @@ namespace classes\console;
 use \classes\console\Console as Console;
 use \classes\fileManager\FileManagerInterface as FileManager;
 use \classes\fileManager\FtpFileManager as FtpFileManager;
+use \classes\fileManager\SftpFileManager as SftpFileManager;
 use \classes\IniManager as Ini;
 
 /**
@@ -19,20 +20,22 @@ use \classes\IniManager as Ini;
 class Deployment extends Console
 {
     use \traits\EchoTrait;
+    use \traits\DateTrait;
 
     /**
      * @var        string[]  $SELF_COMMANDS     List of all commands with their description
      */
     private static $SELF_COMMANDS = array(
         'protocol [-p protocol] [--list|set]'               => 'Get all the available deployment protocols or get/set the protocol',
-        'deploy [--website|websocket]'                      => 'Deploy the website or the websocket server or both (DEFAULT)',
+        'deploy [--static|php] [--skip-gulp]'               => 'Deploy the static or the php server or both (DEFAULT)',
         'configuration [-p param -v value] [--print|save]'  => 'Display or set deployment parameter (--save to save it in conf.ini'
     );
     /**
      * @var        string[]  $PROTOCOLS     List of available protocol
      */
     private static $PROTOCOLS = array(
-        'FTP'
+        'FTP',
+        'SFTP'
     );
     /**
      * @var        array  $PROJECT_MAIN_STRUCTURE   The project directories tree
@@ -40,31 +43,31 @@ class Deployment extends Console
     private static $PROJECT_MAIN_STRUCTURE = array(
         '.' => array(
             'static' => array(
-                'dist' => null,
-                'html' => null
+                'dist' => true,
+                'html' => true
             ),
             'php' => array(
-                'abstracts'   => null,
-                'chatDumps'   => null,
+                'abstracts'   => true,
                 'classes'     => array(
-                    'console'            => null,
-                    'entities'           => null,
-                    'entitiesCollection' => null,
-                    'entitiesManager'    => null,
-                    'fileManager'        => null,
-                    'logger'             => null,
+                    'console'            => true,
+                    'entities'           => true,
+                    'entitiesCollection' => true,
+                    'entitiesManager'    => true,
+                    'fileManager'        => true,
+                    'logger'             => true,
+                    'managers'           => true,
                     'websocket'          => array(
-                        'services' => null
+                        'services' => true
                     )
                 ),
-                'controllers' => null,
+                'controllers' => true,
                 'database'    => array(
-                    'entities' => null
+                    'entities' => true
                 ),
                 'interfaces'  => array(
-                    'http' => null
+                    'http' => true
                 ),
-                'traits'      => null
+                'traits'      => true
             )
         )
     );
@@ -72,8 +75,27 @@ class Deployment extends Console
      * @var        string[]  $IGNORED_FILES     A list of files to not upload on the server
      */
     private static $IGNORED_FILES = array(
+        'launchDeployment.php',
         'conf.ini',
-        'conf-example.ini'
+        'conf-example.ini',
+        'phpdoc.dist.xml',
+        'log.txt',
+        'app.js.map',
+        'gulpfile.js',
+        'package.json',
+        'bower.json',
+        'jsdocConfig.json',
+        '.bowerrc',
+        '.jscsrc',
+        '.jshintrc',
+        '.git',
+        '.gitignore',
+        '.gitattributes',
+        'composer.lock',
+        'devDoc.md',
+        'README.md',
+        'sonar-project.properties',
+        'LICENSE'
     );
 
     /**
@@ -84,6 +106,11 @@ class Deployment extends Console
      * @var        string  $absoluteProjectRootPath     The absolute project root path
      */
     private $absoluteProjectRootPath;
+    /**
+     * @var        int   $timeOffset    Local timezone difference with UTC (to well compared the last modification file
+     *                   date)
+     */
+    private $timeOffset;
 
     /**
      * Call the parent constructor, merge the commands list and launch the console
@@ -94,7 +121,8 @@ class Deployment extends Console
         parent::$COMMANDS = array_merge(parent::$COMMANDS, static::$SELF_COMMANDS);
 
         $this->deploymentConfiguration = Ini::getSectionParams('Deployment');
-        $this->absoluteProjectRootPath = dirname(__FILE__, 4);
+        $this->absoluteProjectRootPath = dirname(__FILE__, 5);
+        $this->timeOffset              = static::getTimezoneOffset('Greenwich');
 
         static::$PROJECT_MAIN_STRUCTURE[
             $this->deploymentConfiguration['remoteProjectRootDirectoryName']
@@ -102,9 +130,9 @@ class Deployment extends Console
 
         unset(static::$PROJECT_MAIN_STRUCTURE['.']);
 
-        $this->launchConsole();
+        static::out(PHP_EOL . 'Absolute project root path is "' . $this->absoluteProjectRootPath . '"' . PHP_EOL);
 
-        static::out('Absolute project root path is "' . $this->absoluteProjectRootPath . '"' . PHP_EOL);
+        $this->launchConsole();
     }
 
     /**
@@ -172,15 +200,20 @@ class Deployment extends Console
      */
     private function deployProcess(string $command)
     {
-        $args = $this->getArgs($command);
+        $args     = $this->getArgs($command);
+        $skipGulp = isset($args['skip-gulp']);
 
-        if (isset($args['website'])) {
-            $this->deployWebSite();
-        } elseif (isset($args['websocket'])) {
-            $this->deployWebsocketServer();
-        } else {
-            $this->deployWebSite();
-            $this->deployWebsocketServer();
+        try {
+            if (isset($args['static'])) {
+                $this->deployStatic($skipGulp);
+            } elseif (isset($args['php'])) {
+                $this->deployPhp($skipGulp);
+            } else {
+                $this->deployStatic($skipGulp);
+                $this->deployPhp($skipGulp);
+            }
+        } catch (\Exception $e) {
+            static::fail($e->getMessage());
         }
     }
 
@@ -222,22 +255,46 @@ class Deployment extends Console
     }
 
     /**
-     * Deploy the websocket server on the remote server
+     * Deploy the php server on the remote server
+     *
+     * @param      boolean  $skipGulp  True to skip gulp process else false DEFAULT false
      */
-    private function deployWebsocketServer()
+    private function deployPhp($skipGulp = false)
     {
+        if (!$skipGulp) {
+            $this->gulpPreprocessingPhp();
+        }
+
         $directoriesTree = static::$PROJECT_MAIN_STRUCTURE;
         unset($directoriesTree[$this->deploymentConfiguration['remoteProjectRootDirectoryName']]['static']);
 
+        static::out(PHP_EOL . 'Uploading PHP files ...' . PHP_EOL);
+
         $this->deploy($directoriesTree);
+        $this->composerInstall();
+
+        static::ok('PHP deployment completed' . PHP_EOL);
     }
 
     /**
-     * Deploy the entire website on the remote server
+     * Deploy the static repo (js and css) on the remote server
+     *
+     * @param      boolean  $skipGulp  True to skip gulp process else false DEFAULT false
      */
-    private function deployWebSite()
+    private function deployStatic($skipGulp = false)
     {
-        $this->deploy(static::$PROJECT_MAIN_STRUCTURE);
+        if (!$skipGulp) {
+            $this->gulpPreprocessingStatic();
+        }
+
+        $directoriesTree = static::$PROJECT_MAIN_STRUCTURE;
+        unset($directoriesTree[$this->deploymentConfiguration['remoteProjectRootDirectoryName']]['php']);
+
+        static::out(PHP_EOL . 'Uploading static files ...' . PHP_EOL);
+
+        $this->deploy($directoriesTree);
+
+        static::ok('Static deployment completed' . PHP_EOL);
     }
 
     /**
@@ -247,37 +304,49 @@ class Deployment extends Console
      */
     private function deploy(array $directoriesTree)
     {
-        $this->printDeploymentInformation();
+        $skip = false;
 
         switch ($this->deploymentConfiguration['protocol']) {
             case 'FTP':
                 $fileManager = new FtpFileManager($this->deploymentConfiguration);
                 break;
+
+            case 'SFTP':
+                $fileManager = new SftpFileManager($this->deploymentConfiguration);
+                break;
+
+            default:
+                static::out(
+                    'The protocol "' . $this->deploymentConfiguration['protocol'] . '" is not implemented' . PHP_EOL
+                );
+
+                $skip = true;
         }
 
+        if (!$skip) {
+            // Connect, login and cd on the project directory container
+            $fileManager->connect();
+            $fileManager->login();
+            $fileManager->changeDir($this->deploymentConfiguration['remoteProjectRootDirectory']);
 
-        // Connect, login and cd on the project directory container
-        $fileManager->connect();
-        $fileManager->login();
-        $fileManager->changeDir($this->deploymentConfiguration['remoteProjectRootDirectory']);
+            // Create the project directory root if it does not exist
+            $fileManager->makeDirIfNotExists($this->deploymentConfiguration['remoteProjectRootDirectoryName']);
 
-        // Create the project directory root if it does not exist
-        $fileManager->makeDirIfNotExists($this->deploymentConfiguration['remoteProjectRootDirectoryName']);
+            // Create main directories structure if it does not exist
+            $this->createMainProjectStructureRecursive(
+                $fileManager,
+                $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
+                $directoriesTree
+            );
 
-        // Create main directories structure if it does not exist
-        $this->createMainProjectStructureRecursive(
-            $fileManager,
-            $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
-            $directoriesTree
-        );
-
-        // Upload files if the last modification date on local is greater than remote
-        $this->uploadFilesRecursive(
-            $fileManager,
-            $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
-            $directoriesTree,
-            $this->absoluteProjectRootPath
-        );
+            // Upload files if the last modification date on local is greater than remote
+            $this->uploadFilesRecursive(
+                $fileManager,
+                $this->deploymentConfiguration['remoteProjectRootDirectoryName'],
+                $directoriesTree,
+                $this->absoluteProjectRootPath
+            );
+        }
     }
 
     /**
@@ -288,7 +357,7 @@ class Deployment extends Console
      * @param      array        $arrayDepth        The tree of the current depth structure
      */
     private function createMainProjectStructureRecursive(
-        FileManager $fileManager,
+        $fileManager,
         string $workingDirectory,
         array $arrayDepth
     ) {
@@ -298,7 +367,7 @@ class Deployment extends Console
             $fileManager->makeDirIfNotExists($directoryName);
 
             if (is_array($subdir)) {
-                $this->createMainProjectStructureRecursive($fileManager, $directoryName, $arrayDepth[$directoryName]);
+                $this->createMainProjectStructureRecursive($fileManager, $directoryName, $arrayDepth[$workingDirectory]);
             }
         }
 
@@ -314,42 +383,39 @@ class Deployment extends Console
      * @param      string       $localWorkingDirectory  The curent local working directory
      */
     private function uploadFilesRecursive(
-        FileManager $fileManager,
+        $fileManager,
         string $workingDirectory,
         array $arrayDepth,
         string $localWorkingDirectory
     ) {
         $fileManager->changeDir($workingDirectory);
         $localWorkingDirectory .= DIRECTORY_SEPARATOR . $workingDirectory;
+        $currentDirectory = new \DirectoryIterator($localWorkingDirectory);
 
-        foreach ($arrayDepth[$workingDirectory] as $directoryName => $subdir) {
-            $currentDirectory = new \DirectoryIterator($localWorkingDirectory);
-
-            foreach ($currentDirectory as $fileInfo) {
-                if (!$fileInfo->isDot() &&
-                    $fileInfo->isFile() &&
-                    $fileInfo->getMTime() > $fileManager->lastModified($fileInfo->getFilename())
+        foreach ($currentDirectory as $fileInfo) {
+            if (!$fileInfo->isDot()) {
+                if ($fileInfo->isFile() &&
+                    $fileInfo->getMTime() > $fileManager->lastModified($fileInfo->getFilename()) - $this->timeOffset
                 ) {
-                    if (in_array($fileInfo->getFilename(), static::$IGNORED_FILES)) {
-                        static::out($fileInfo->getPathname() . ' is ignored' . PHP_EOL);
-                    } else {
+                    if (!in_array($fileInfo->getFilename(), static::$IGNORED_FILES)) {
                         $fileManager->upload($fileInfo->getFilename(), $fileInfo->getPathname());
+                    } elseif ((int) $this->deploymentConfiguration['verbose'] > 1) {
+                        static::out($fileInfo->getPathname() . ' is ignored' . PHP_EOL);
                     }
                 }
-            }
 
-            if ($subdir !== null) {
-                $this->uploadFilesRecursive(
-                    $fileManager,
-                    $directoryName,
-                    $arrayDepth[$directoryName],
-                    $localWorkingDirectory
-                );
+                if ($fileInfo->isDir() && isset($arrayDepth[$workingDirectory][$fileInfo->getFilename()])) {
+                    $this->uploadFilesRecursive(
+                        $fileManager,
+                        $fileInfo->getFilename(),
+                        $arrayDepth[$workingDirectory],
+                        $localWorkingDirectory
+                    );
+                }
             }
         }
 
         $fileManager->changeDir('..');
-        $localWorkingDirectory = dirname($localWorkingDirectory);
     }
 
     /**
@@ -369,11 +435,41 @@ class Deployment extends Console
     {
         if (in_array($value, static::$PROTOCOLS)) {
             $this->deploymentConfiguration['protocol'] = $value;
-            static::out('Protocol is now "' . $value . '"' . PHP_EOL);
+            static::ok('Protocol is now "' . $value . '"' . PHP_EOL);
         } else {
-            static::out(
+            static::fail(
                 'Protocol "' . $value . '" is not supported, type protocol --list to see supported protocols' . PHP_EOL
             );
         }
+    }
+
+    /**
+     * Install composer depedencies on the remote server with --no-dev
+     */
+    private function composerInstall()
+    {
+        static::out(PHP_EOL . 'Installing composer dependencies on remote ...' . PHP_EOL . PHP_EOL);
+        static::execWithPrintInLive(
+            'ssh root@vps cd ' . $this->deploymentConfiguration['remoteProjectRootDirectory'] . '/' .
+            $this->deploymentConfiguration['remoteProjectRootDirectoryName'] . '/php; composer install -o --no-dev'
+        );
+    }
+
+    /**
+     * Preprocessing js/less files before deployment and generate doc
+     */
+    private function gulpPreprocessingStatic()
+    {
+        static::out(PHP_EOL . 'Prepare the static deployment, running gulp tasks ...' . PHP_EOL . PHP_EOL);
+        static::execWithPrintInLive('cd ../static & gulp deploy_static');
+    }
+
+    /**
+     * Preprocessing php files before deployment and generate doc
+     */
+    private function gulpPreprocessingPhp()
+    {
+        static::out(PHP_EOL . 'Prepare the PHP deployment, running gulp tasks ...' . PHP_EOL . PHP_EOL);
+        static::execWithPrintInLive('cd ../static & gulp deploy_php');
     }
 }

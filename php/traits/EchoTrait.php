@@ -26,10 +26,11 @@ trait EchoTrait
      * Echo shortcut but with a encoding conversion before output
      *
      * @param      string  $output  The string to output in the console
+     * @param      string  $prefix  A prefix to add to teh output DEFAULT ''
      *
      * @static
      */
-    public static function out(string $output)
+    public static function out(string $output, string $prefix = '')
     {
         Ini::setIniFileName(Ini::INI_CONF_FILE);
         $environment = Ini::getParam('Environment', 'environment');
@@ -40,7 +41,7 @@ trait EchoTrait
 
         switch ($environment) {
             case 'console':
-                echo mb_convert_encoding($output, static::$echoEncoding);
+                echo mb_convert_encoding($prefix . $output, static::$echoEncoding);
 
                 break;
 
@@ -52,9 +53,59 @@ trait EchoTrait
                 break;
 
             default:
-                echo $output;
+                echo $prefix . $output;
 
                 break;
+        }
+    }
+
+    /**
+     * Shortcut to output with OK prefix
+     *
+     * @param      string  $output  The string to output in the console
+     */
+    public static function ok(string $output)
+    {
+        static::out($output, ConsoleColors::OK());
+    }
+
+    /**
+     * Shortcut to output with FAIL prefix
+     *
+     * @param      string  $output  The string to output in the console
+     */
+    public static function fail(string $output)
+    {
+        static::out($output, ConsoleColors::FAIL());
+    }
+
+    /**
+     * Execute a command and display the result in the console
+     *
+     * @param      string  $cmd    The command to run
+     */
+    public static function execWithPrint(string $cmd)
+    {
+        $result = array();
+
+        exec($cmd, $result);
+
+        foreach ($result as $line) {
+            static::out($line . PHP_EOL);
+        }
+    }
+
+    /**
+     * Execute a command and display the result in the console in live
+     *
+     * @param      string  $cmd    The command to run
+     */
+    public static function execWithPrintInLive(string $cmd)
+    {
+        $proc = popen($cmd, 'r');
+
+        while (!feof($proc)) {
+            static::out(fread($proc, 4096));
         }
     }
 

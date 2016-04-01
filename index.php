@@ -4,15 +4,14 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Test websocket</title>
-        <link rel="stylesheet" href="/static/dist/style.css">
-        <!-- <link rel="stylesheet" href="/static/dist/css/bootstrap-theme.css"> -->
-        <!-- <script src="/static/dist/app.js" type="text/javascript" charset="utf-8" async defer></script> -->
-        <script data-main="/static/js/app"
+        <link rel="stylesheet" href="static/dist/style.css">
+        <script src="static/dist/app.js" type="text/javascript" charset="utf-8" async defer></script>
+        <!-- <script data-main="/static/js/app"
                 src="/static/js/lib/vendor/require.js"
                 type="text/javascript"
                 charset="utf-8"
                 async defer>
-        </script>
+        </script> -->
     </head>
     <body>
         <h1>Test websocket</h1>

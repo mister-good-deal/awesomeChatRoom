@@ -112,7 +112,7 @@ class DataBase
     /**
      * @var        bool  $printSql  If the SQL requests should be printed in a console DEFAULT null
      */
-    private static $printSQL = '';
+    private static $printSQL = null;
     /**
      * @var        string  $dsn       The Data Source Name, or DSN, contains the information required to connect to the
      *                                database
