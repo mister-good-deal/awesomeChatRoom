@@ -43,8 +43,7 @@ class Orm extends Console
         'desc -t tableName'                                  => 'Show table structure',
         'create all'                                         => 'Create all tables',
         'generate data'                                      => 'Generate default data in all tables',
-        'init'                                               => '`create all` + `generate data`',
-        'esmapping -i indexName'                             => 'Create an elasticsearch mapping'
+        'init'                                               => '`create all` + `generate data`'
     );
 
     /**
@@ -108,14 +107,6 @@ class Orm extends Console
 
             case 'init':
                 $this->init();
-                break;
-
-            case 'esmapping':
-                $this->createElasticsearchMapping($command);
-                break;
-
-            case 'esindex':
-                $this->indexDocument($command);
                 break;
 
             default:
@@ -478,74 +469,4 @@ class Orm extends Console
 
         return $prettyString . $separationLine;
     }
-
-    /*=====================================
-    =            Elasticsearch            =
-    =====================================*/
-
-    /**
-     * Create an ES mapping
-     *
-     * @param      string  $command  The command passed with its arguments
-     */
-    private function createElasticsearchMapping($command)
-    {
-        $args   = $this->getArgs($command);
-        $client = \Elasticsearch\ClientBuilder::create()->build();
-
-        static::out('Create an ES mapping with index name ' . $args['i'] . PHP_EOL . PHP_EOL);
-
-        $params = array(
-            'index' => $args['i'],
-            'body'  => array(
-                'settings' => array(
-                    'number_of_shards'   => 2,
-                    'number_of_replicas' => 0
-                )
-            )
-        );
-
-        $result = $client->indices()->create($params);
-
-        if ($result['acknowledged'] === true) {
-            static::ok(static::formatVariable($result) . PHP_EOL);
-        } else {
-            static::fail(static::formatVariable($result) . PHP_EOL);
-        }
-    }
-
-    /**
-     * Just to test basic indexing
-     *
-     * @param      <type>  $command  (description)
-     */
-    private function indexDocument($command)
-    {
-        $args   = $this->getArgs($command);
-        $client = \Elasticsearch\ClientBuilder::create()->build();
-
-        static::out(sprintf(
-            'Index an ES document with index name %s and type %s',
-            $args['i'],
-            $args['t']
-        ) . PHP_EOL . PHP_EOL);
-
-        $params = [
-            'index' => $args['i'],
-            'type' => $args['t'],
-            'id' => rand(1, 1000000),
-            'body' => ['testField' => 'abc']
-        ];
-
-        $result = $client->index($params);
-
-        if ($result['created'] === true) {
-            static::ok(static::formatVariable($result) . PHP_EOL);
-        } else {
-            static::fail(static::formatVariable($result) . PHP_EOL);
-        }
-        //it worked
-    }
-
-    /*=====  End of Elasticsearch  ======*/
 }
