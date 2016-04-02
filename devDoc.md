@@ -162,6 +162,30 @@ In project /php folder create a `conf.ini` based on `con-example.ini`
 
 Install dev dependencies with Composer (on /php PATH run `composer install`)
 
+####Setup Elasticsearch
+
+Install a local Elasticsearch server by [downloading](https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/zip/elasticsearch/2.3.0/elasticsearch-2.3.0.zip) the Elasticsearch package and dezip it. Then follow official [instructions](https://www.elastic.co/downloads/elasticsearch).
+
+You need java(JVM) installed on your system as the [documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup.html#jvm-version) says.
+
+Edit your `[absolute path to Elasticsearch directory]/config/elasticsearch.yml` file with the followings lines
+
+`cluster.name: chat`
+
+`node.name: ${HOSTNAME}`
+
+Then just start a server by running `./[absolute path to Elasticsearch directory]/bin/elasticsearch` and you're done.
+
+Mapping and indexes will be created with the ORM by running the followings commands.
+
+`php [absolute path to the project root directory]/php/launchORM.php`
+
+`es --create-index`
+
+`exit`
+
+If you want to play with Elasticsearch, it is recommended to install plugins like [Kibana](https://www.elastic.co/products/kibana), [Marvel](https://www.elastic.co/products/marvel) and [Sense](https://www.elastic.co/guide/en/sense/current/installing.html)
+
 ####Setup MySQL
 
 Create an empty database (ex: `CREATE SCHEMA ``websocket`` DEFAULT CHARACTER SET utf8 ;`) and setup its name in /php/conf.ini => `[Database]` => `dsn` dbname value
