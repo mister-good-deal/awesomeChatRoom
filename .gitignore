@@ -12,3 +12,4 @@
 /php/conf.ini
 log.txt
 *.dmp
+.gitconfig

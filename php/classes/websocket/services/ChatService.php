@@ -61,7 +61,7 @@ class ChatService extends ServicesDispatcher implements Service
     /**
      * @var        string[]  $usersRooms    All rooms where users are connected to indexed by their socketHash
      */
-    private $usersRooms = array();
+    private $usersRooms = [];
     /**
      * @var array $rooms Rooms live sessions
      *
@@ -83,7 +83,7 @@ class ChatService extends ServicesDispatcher implements Service
      *     )
      * )
      */
-    private $rooms = array();
+    private $rooms = [];
 
     /*=====================================
     =            Magic methods            =
@@ -97,7 +97,7 @@ class ChatService extends ServicesDispatcher implements Service
     public function __construct(Log $log)
     {
         $this->log    = $log;
-        $this->server = array('Connection' => 'SERVER');
+        $this->server = ['Connection' => 'SERVER'];
 
         Ini::setIniFileName(Ini::INI_CONF_FILE);
         $this->chatService = Ini::getParam('Chat service', 'serviceName');
@@ -105,10 +105,10 @@ class ChatService extends ServicesDispatcher implements Service
         // Create the default room (temporary)
         $chatManager = new ChatManager();
         $chatManager->loadChatRoom(1);
-        $this->rooms[1] = array(
-            'users'       => array(),
+        $this->rooms[1] = [
+            'users'       => [],
             'room'        => $chatManager->getChatRoomEntity()
-        );
+        ];
 
         // $this->loadHistoric('default', $this->getLastPartNumber('default'));
     }
@@ -181,15 +181,11 @@ class ChatService extends ServicesDispatcher implements Service
                 break;
 
             default:
-                yield $client['Connection']->send(
-                    json_encode(
-                        array(
-                        'service' => $this->chatService,
-                        'success' => false,
-                        'text'    => _('Unknown action')
-                        )
-                    )
-                );
+                yield $client['Connection']->send(json_encode([
+                    'service' => $this->chatService,
+                    'success' => false,
+                    'text'    => _('Unknown action')
+                ]));
         }
     }
 
@@ -226,7 +222,7 @@ class ChatService extends ServicesDispatcher implements Service
      */
     private function connectUser(array &$client, array $data)
     {
-        $response    = array();
+        $response    = [];
         $password    = $data['password'] ?? '';
         $pseudonym   = trim($data['pseudonym']) ?? null;
         $chatManager = new ChatManager();
@@ -235,10 +231,10 @@ class ChatService extends ServicesDispatcher implements Service
             $message = _('This room does not exist');
         } else {
             if (!isset($this->rooms[$chatManager->getChatRoomEntity()->id])) {
-                $this->rooms[$chatManager->getChatRoomEntity()->id] = array(
-                    'users' => array(),
+                $this->rooms[$chatManager->getChatRoomEntity()->id] = [
+                    'users' => [],
                     'room'  => $chatManager->getChatRoomEntity()
-                );
+                ];
             }
 
             $chatRoom = $chatManager->getChatRoomEntity();
@@ -268,12 +264,12 @@ class ChatService extends ServicesDispatcher implements Service
         }
 
         yield $client['Connection']->send(json_encode(array_merge(
-            array(
+            [
                 'service' => $this->chatService,
                 'action'  => 'connectRoom',
                 'success' => false,
                 'text'    => $message ?? ''
-            ),
+            ],
             $response
         )));
     }
@@ -311,10 +307,10 @@ class ChatService extends ServicesDispatcher implements Service
                 $response['success']   = $userManager->addUserChatRight($userChatRight, true);
 
                 if ($response['success']) {
-                    $this->rooms[$chatRoom->id] = array(
-                        'users' => array(),
+                    $this->rooms[$chatRoom->id] = [
+                        'users' => [],
                         'room'  => $chatRoom
-                    );
+                    ];
 
                     yield $this->addUserToTheRoom($client, $chatRoom, $userManager->getPseudonymForChat());
 
@@ -331,13 +327,13 @@ class ChatService extends ServicesDispatcher implements Service
         }
 
         yield $client['Connection']->send(json_encode(array_merge(
-            array(
+            [
                 'service' => $this->chatService,
                 'action'  => 'connectRoom',
                 'room'    => $chatManager->getChatRoomEntity()->__toArray(),
                 'success' => false,
                 'text'    => $message
-            ),
+            ],
             $response
         )));
     }
@@ -354,7 +350,7 @@ class ChatService extends ServicesDispatcher implements Service
     private function sendMessage(array &$client, array $data)
     {
         $success     = false;
-        $response    = array();
+        $response    = [];
         $userHash    = $this->getConnectionHash($client['Connection']);
         $password    = $data['password'] ?? '';
         $recievers   = $data['recievers'] ?? null;
@@ -408,12 +404,12 @@ class ChatService extends ServicesDispatcher implements Service
 
         yield $client['Connection']->send(json_encode(array_merge(
             $response,
-            array(
+            [
                 'service' => $this->chatService,
                 'action'  => 'sendMessage',
                 'success' => $success,
                 'text'    => $message
-            )
+            ]
         )));
     }
 
@@ -505,31 +501,31 @@ class ChatService extends ServicesDispatcher implements Service
                     $message        = sprintf(_('You kicked "%s" from the room "%s"'), $pseudonym, $room->name) . $reason;
                     $adminPseudonym = $this->getUserPseudonymByRoom($client, $room);
 
-                    $this->rooms[$room->id]['users'][$userHash]['Connection']->send(json_encode(array(
+                    $this->rooms[$room->id]['users'][$userHash]['Connection']->send(json_encode([
                         'service' => $this->chatService,
                         'action'  => 'getKicked',
                         'text'    => sprintf(_('You got kicked from the room by "%s"'), $adminPseudonym) . $reason,
                         'roomId'  => $room->id
-                    )));
+                    ]));
 
                     yield $this->disconnectUserFromRoomAction($userHash, $room->id, 'kicked');
 
                     $text = sprintf(_('The user "%s" got kicked by "%s"'), $pseudonym, $adminPseudonym) . $reason;
 
-                    yield $this->sendMessageToRoom($this->server, $text, $roomName, 'public', date('Y-m-d H:i:s'));
+                    yield $this->sendMessageToRoom($this->server, $text, $roomName, 'public');
                 } else {
                     $message = _('You do not have the right to kick a user on this room');
                 }
             }
         }
 
-        yield $client['Connection']->send(json_encode(array(
+        yield $client['Connection']->send(json_encode([
             'service' => $this->chatService,
             'action'  => 'kickUser',
             'success' => $success,
             'text'    => $message,
             'roomId'  => $room ?? $room->id ?? null
-        )));
+        ]));
     }
 
     /**
@@ -551,7 +547,7 @@ class ChatService extends ServicesDispatcher implements Service
             $message = _('Authentication failed');
         } else {
             $usersChatRightsEntityManager = new UsersChatRightsEntityManager();
-            $usersChatRightsEntityManager->loadEntity(array('idUser' => $client['User']->id, 'roomName' => $roomName));
+            $usersChatRightsEntityManager->loadEntity(['idUser' => $client['User']->id, 'roomName' => $roomName]);
 
             if ($client['User']->getUserRights()->chatAdmin || $usersChatRightsEntityManager->getEntity()->ban === 1) {
                 $userHash  = $this->getUserHashByPseudonym($roomName, $pseudonym);
@@ -568,26 +564,26 @@ class ChatService extends ServicesDispatcher implements Service
                     $message        = sprintf(_('You banned "%s" from the room "%s"'), $pseudonym, $roomName) . $reason;
                     $adminPseudonym = $this->rooms[$roomName]['pseudonyms'][$adminHash];
                     $userInfo       = $this->rooms[$roomName]['users'][$userHash];
-                    $banInfo        = array(
+                    $banInfo        = [
                         'ip'        => $userInfo['Connection']->getRemoteAddress(),
                         'pseudonym' => $pseudonym,
                         'admin'     => $adminPseudonym,
                         'reason'    => $reasonInput,
-                        'date'      => date('Y-m-d H:i:s')
-                    );
+                        'date'      => time()
+                    ];
 
-                    yield $userInfo['Connection']->send(json_encode(array(
+                    yield $userInfo['Connection']->send(json_encode([
                         'service'  => $this->chatService,
                         'action'   => 'getBanned',
                         'text'     => sprintf(_('You got banned from the room by "%s"'), $adminPseudonym) . $reason,
                         'roomName' => $roomName
-                    )));
+                    ]));
 
                     $this->rooms[$roomName]['usersBanned'][] = $banInfo;
                     $text = sprintf(_('The user "%s" got banned by "%s"'), $pseudonym, $adminPseudonym) . $reason;
                     yield $this->disconnectUser($userInfo);
                     yield $this->updateRoomUsersBanned($roomName);
-                    yield $this->sendMessageToRoom($this->server, $text, $roomName, 'public', date('Y-m-d H:i:s'));
+                    yield $this->sendMessageToRoom($this->server, $text, $roomName, 'public');
                 } else {
                     $message = sprintf(_('The user "%s" cannot be found in the room "%s"'), $pseudonym, $roomName);
                 }
@@ -596,13 +592,13 @@ class ChatService extends ServicesDispatcher implements Service
             }
         }
 
-        yield $user['Connection']->send(json_encode(array(
+        yield $user['Connection']->send(json_encode([
             'service'  => $this->chatService,
             'action'   => 'banUser',
             'success'  => $success,
             'text'     => $message,
             'roomName' => $roomName
-        )));
+        ]));
     }
 
     /**
@@ -629,14 +625,14 @@ class ChatService extends ServicesDispatcher implements Service
             $message = _('Authentication failed');
         } else {
             $usersChatRightsEntityManager = new UsersChatRightsEntityManager();
-            $usersChatRightsEntityManager->loadEntity(array('idUser' => $client['User']->id, 'roomName' => $roomName));
+            $usersChatRightsEntityManager->loadEntity(['idUser' => $client['User']->id, 'roomName' => $roomName]);
 
             if ($client['User']->getUserRights()->chatAdmin || $usersChatRightsEntityManager->getEntity()->grant === 1) {
                 $usersChatRightsEntityManager->loadEntity(
-                    array(
+                    [
                         'idUser'   => $userEntityManager->getUserIdByPseudonym($pseudonym),
                         'roomName' => $roomName
-                    )
+                    ]
                 );
 
                 $usersChatRightsEntityManager->getEntity()->{$rightName} = (int) $rightValue;
@@ -651,7 +647,7 @@ class ChatService extends ServicesDispatcher implements Service
 
                 // Update all others admin users panel
                 yield $this->updateRoomUsersRights($roomName);
-                yield $this->sendMessageToRoom($this->server, $text, $roomName, 'public', date('Y-m-d H:i:s'));
+                yield $this->sendMessageToRoom($this->server, $text, $roomName, 'public');
 
                 $success = true;
                 $message = _('User right successfully updated');
@@ -660,13 +656,13 @@ class ChatService extends ServicesDispatcher implements Service
             }
         }
 
-        yield $client['Connection']->send(json_encode(array(
+        yield $client['Connection']->send(json_encode([
             'service'  => $this->chatService,
             'action'   => 'updateRoomUserRight',
             'success'  => $success,
             'text'     => $message,
             'roomName' => $roomName
-        )));
+        ]));
     }
 
     /**
@@ -675,7 +671,7 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      array  $client  The client information [Connection, User] array pair
      * @param      array  $data    JSON decoded client data
      *
-     * @todo       to test
+     * @todo       to refacto
      */
     private function setRoomInfo(array $client, array $data)
     {
@@ -699,7 +695,7 @@ class ChatService extends ServicesDispatcher implements Service
             $message[] = _('Authentication failed');
         } else {
             $usersChatRightsEntityManager = new UsersChatRightsEntityManager();
-            $usersChatRightsEntityManager->loadEntity(array('idUser' => $user->id, 'roomName' => $oldRoomName));
+            $usersChatRightsEntityManager->loadEntity(['idUser' => $user->id, 'roomName' => $oldRoomName]);
 
             if ($oldRoomPassword !== $newRoomPassword) {
                 if ($user->getUserRights()->chatAdmin || $usersChatRightsEntityManager->getEntity()->password === 1) {
@@ -796,7 +792,10 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      string  $message     The text message
      * @param      int     $roomId      The room ID
      * @param      string  $type        The message type ('public' || 'private')
-     * @param      string  $date        The server date at the moment the message was sent (Y-m-d H:i:s) DEFAULT null
+     * @param      int     $date        The server timestamp at the moment the message was sent DEFAULT null
+     * @param      bool    $indexed     If the messages is already indexed in ES DEFAULT false
+     *
+     * @return     array
      */
     private function sendMessageToUser(
         array $clientFrom,
@@ -804,7 +803,8 @@ class ChatService extends ServicesDispatcher implements Service
         string $message,
         int $roomId,
         string $type,
-        string $date = null
+        int $date = null,
+        bool $indexed = false
     ) {
         if ($clientFrom['Connection'] === 'SERVER') {
             $pseudonym = 'SERVER';
@@ -812,7 +812,7 @@ class ChatService extends ServicesDispatcher implements Service
             $pseudonym = $this->getUserPseudonymByRoom($clientFrom, $this->rooms[$roomId]['room']);
         }
 
-        yield $clientTo['Connection']->send(json_encode(array(
+        yield $clientTo['Connection']->send(json_encode([
             'service'   => $this->chatService,
             'action'    => 'recieveMessage',
             'pseudonym' => $pseudonym,
@@ -820,7 +820,12 @@ class ChatService extends ServicesDispatcher implements Service
             'roomId'    => $roomId,
             'type'      => $type,
             'text'      => $message
-        )));
+        ]));
+
+        if (!$indexed) {
+            // Insert elasticSearch record
+            yield $this->indexMessage($clientFrom, $message, $roomId, $type, $date);
+        }
     }
 
     /**
@@ -830,19 +835,64 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      string  $message     The text message
      * @param      int     $roomId      The room ID
      * @param      string  $type        The message type ('public' || 'private')
-     * @param      string  $date        The server date at the moment the message was sent (Y-m-d H:i:s) DEFAULT null
+     * @param      int     $date        The server timestamp at the moment the message was sent DEFAULT null
+     *
+     * @todo $date => timestamp not string
      */
     private function sendMessageToRoom(
         array $clientFrom,
         string $message,
         int $roomId,
         string $type,
-        string $date = null
+        int $date = null
     ) {
-        $date = ($date !== null ? $date : date('Y-m-d H:i:s'));
+        $date = ($date !== null ? $date : time());
 
         foreach ($this->rooms[$roomId]['users'] as $clientTo) {
-            yield $this->sendMessageToUser($clientFrom, $clientTo, $message, $roomId, $type, $date);
+            yield $this->sendMessageToUser($clientFrom, $clientTo, $message, $roomId, $type, $date, true);
+        }
+
+        // Insert elasticSearch record
+        yield $this->indexMessage($clientFrom, $message, $roomId, $type, $date);
+    }
+
+    /**
+     * Index a document in ES (a chat message)
+     *
+     * @param      array   $clientFrom  The client to send the message from array(Connection, User)
+     * @param      string  $message     The text message
+     * @param      int     $roomId      The room ID
+     * @param      string  $type        The message type ('public' || 'private')
+     * @param      int     $date        The server timestamp at the moment the message was sent
+     */
+    private function indexMessage(array $clientFrom, string $message, int $roomId, string $type, int $date)
+    {
+        if ($clientFrom['Connection'] !== 'SERVER') {
+            $client = \Elasticsearch\ClientBuilder::create()->build();
+            $params = [
+                'index' => Ini::getParam('ElasticSearch', 'index'),
+                'type'  => 'message',
+                'body'  => [
+                    'pseudonym' => $this->getUserPseudonymByRoom($clientFrom, $this->rooms[$roomId]['room']),
+                    'message'   => $message,
+                    'type'      => $type,
+                    'date'      => $date,
+                    'room'      => $roomId,
+                    'userInfo'  => [
+                        'id' => $clientFrom['User'] !== null ? (int) $clientFrom['User']->id : -1,
+                        'ip' => $clientFrom['Connection']->getRemoteAddress()
+                    ]
+                ]
+            ];
+
+            try {
+                $result = $client->index($params);
+            } catch (\Exception $e) {
+                yield $this->log->log(
+                    Log::ERROR,
+                    sprintf('[chatService] Document not indexed in ES %s %s', static::formatVariable($params), $e)
+                );
+            }
         }
     }
 
@@ -856,10 +906,10 @@ class ChatService extends ServicesDispatcher implements Service
      */
     private function getUsersRightFromRoom(string $roomName): array
     {
-        $rights = array(
-            'userRight'     => array(),
-            'userChatRight' => array()
-        );
+        $rights = [
+            'userRight'     => [],
+            'userChatRight' => []
+        ];
 
         foreach ($this->rooms[$roomName]['users'] as $userInfo) {
             if ($userInfo['User'] !== null) {
@@ -878,20 +928,20 @@ class ChatService extends ServicesDispatcher implements Service
      */
     private function getRoomsInfo(array $client)
     {
-        $roomsInfo = array();
+        $roomsInfo = [];
 
         foreach ($this->rooms as $roomInfo) {
-            $roomsInfo[] = array(
+            $roomsInfo[] = [
                 'room'           => $roomInfo['room']->__toArray(),
                 'usersConnected' => count($roomInfo['users'])
-            );
+            ];
         }
 
-        yield $client['Connection']->send(json_encode(array(
+        yield $client['Connection']->send(json_encode([
             'service'   => $this->chatService,
             'action'    => 'getRoomsInfo',
             'roomsInfo' => $roomsInfo
-        )));
+        ]));
     }
 
     /**
@@ -903,7 +953,7 @@ class ChatService extends ServicesDispatcher implements Service
      */
     private function getRoomPseudonyms(int $roomId): array
     {
-        $pseudonyms  = array();
+        $pseudonyms = [];
 
         foreach ($this->rooms[$roomId]['users'] as $userInfo) {
             $pseudonyms[] = $userInfo['pseudonym'];
@@ -954,12 +1004,12 @@ class ChatService extends ServicesDispatcher implements Service
      */
     private function updateRoomUsers(array $client, int $roomId)
     {
-        yield $client['Connection']->send(json_encode(array(
+        yield $client['Connection']->send(json_encode([
             'service'    => $this->chatService,
             'action'     => 'updateRoomUsers',
             'roomId'     => $roomId,
             'pseudonyms' => $this->getRoomPseudonyms($roomId)
-        )));
+        ]));
     }
 
     /**
@@ -971,12 +1021,12 @@ class ChatService extends ServicesDispatcher implements Service
     {
         foreach ($this->rooms[$roomName]['users'] as $user) {
             if ($user['User'] !== false) {
-                yield $user['Connection']->send(json_encode(array(
+                yield $user['Connection']->send(json_encode([
                     'service'     => $this->chatService,
                     'action'      => 'updateRoomUsersRights',
                     'roomName'    => $roomName,
                     'usersRights' => $this->rooms[$roomName]['usersRights']
-                )));
+                ]));
             }
         }
     }
@@ -990,12 +1040,12 @@ class ChatService extends ServicesDispatcher implements Service
     {
         foreach ($this->rooms[$roomName]['users'] as $user) {
             if ($user['User'] !== false) {
-                yield $user['Connection']->send(json_encode(array(
+                yield $user['Connection']->send(json_encode([
                     'service'     => $this->chatService,
                     'action'      => 'updateRoomUsersBanned',
                     'roomName'    => $roomName,
                     'usersBanned' => $this->rooms[$roomName]['usersBanned']
-                )));
+                ]));
             }
         }
     }
@@ -1039,7 +1089,7 @@ class ChatService extends ServicesDispatcher implements Service
      */
     private function addUserToTheRoom(array $client, ChatRoom $room, string $pseudonym = '')
     {
-        $response = array('success' => false);
+        $response = ['success' => false];
         $userHash = $this->getConnectionHash($client['Connection']);
 
         if ($client['User'] !== null) {
@@ -1066,21 +1116,21 @@ class ChatService extends ServicesDispatcher implements Service
 
             // Send a message to all users in chat and warn them a new user is connected
             $message = sprintf(_("%s joins the room"), $response['pseudonym']);
-            $rights  = array();
+            $rights  = [];
 
             foreach ($this->rooms[$room->id]['users'] as $userInfo) {
                 if ($userInfo['User'] !== null) {
-                    $rights[$userInfo['pseudonym']] = array('chatRight' => $userInfo['User']->getChatRight());
+                    $rights[$userInfo['pseudonym']] = ['chatRight' => $userInfo['User']->getChatRight()];
                 }
 
                 yield $this->sendMessageToUser($this->server, $userInfo, $message, $room->id, 'private');
-                yield $userInfo['Connection']->send(json_encode(array(
+                yield $userInfo['Connection']->send(json_encode([
                     'service'    => $this->chatService,
                     'action'     => 'updateRoomUsers',
                     'success'    => true,
                     'roomId'     => $room->id,
                     'pseudonyms' => $this->getRoomPseudonyms($room->id)
-                )));
+                ]));
             }
 
             if ($client['User'] !== null) {
@@ -1125,13 +1175,13 @@ class ChatService extends ServicesDispatcher implements Service
             $success = true;
         }
 
-        yield $client['Connection']->send(json_encode(array(
+        yield $client['Connection']->send(json_encode([
             'service' => $this->chatService,
             'action'  => 'disconnectFromRoom',
             'success' => $success,
             'text'    => $message,
             'roomId'  => $roomId
-        )));
+        ]));
     }
 
     /**
@@ -1168,7 +1218,7 @@ class ChatService extends ServicesDispatcher implements Service
                         ),
                         $this->rooms[$roomId]['room']->id,
                         'public',
-                        date('Y-m-d H:i:s')
+                        time()
                     );
                 }
             }
@@ -1198,7 +1248,7 @@ class ChatService extends ServicesDispatcher implements Service
      */
     private function filterConversations(array $conversations, string $pseudonym): array
     {
-        $filteredConversations = array();
+        $filteredConversations = [];
 
         if (count($conversations) > 0) {
             foreach ($conversations as $conversation) {

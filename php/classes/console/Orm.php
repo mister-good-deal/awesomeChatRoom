@@ -43,7 +43,8 @@ class Orm extends Console
         'desc -t tableName'                                  => 'Show table structure',
         'create all'                                         => 'Create all tables',
         'generate data'                                      => 'Generate default data in all tables',
-        'init'                                               => '`create all` + `generate data`'
+        'init'                                               => '`create all` + `generate data`',
+        'es --create-index'                                  => 'Create an elasticsearch index'
     );
 
     /**
@@ -109,6 +110,10 @@ class Orm extends Console
                 $this->init();
                 break;
 
+            case 'es':
+                $this->elasticsearchProcess($command);
+                break;
+
             default:
                 $executed = false;
                 break;
@@ -146,8 +151,17 @@ class Orm extends Console
                 $entityManager = new EntityManager();
                 $entityManager->setEntity($entity);
                 $entityManager->createEntityTable();
-                static::out(static::ACTION_DONE . PHP_EOL);
+                static::ok(static::ACTION_DONE . PHP_EOL);
             }
+        }
+    }
+
+    private function elasticsearchProcess(string $command)
+    {
+        $args = $this->getArgs($command);
+
+        if (isset($args['create-index'])) {
+            $this->createElasticsearchIndex();
         }
     }
 
@@ -163,9 +177,9 @@ class Orm extends Console
         if ($this->checkTableName($args)) {
             if ($this->confirmAction('TRUNCATE the table "' . $args['t'] .'" ? (Y/N)') === 'Y') {
                 if (DB::cleanTable($args['t'])) {
-                    static::out(static::ACTION_DONE . PHP_EOL);
+                    static::ok(static::ACTION_DONE . PHP_EOL);
                 } else {
-                    static::out(static::ACTION_FAIL . PHP_EOL . $this->tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
+                    static::fail(static::ACTION_FAIL . PHP_EOL . $this->tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
                 }
             } else {
                 static::out(static::ACTION_CANCEL . PHP_EOL);
@@ -185,9 +199,9 @@ class Orm extends Console
         if ($this->checkTableName($args)) {
             if ($this->confirmAction('DROP the table "' . $args['t'] .'" ? (Y/N)') === 'Y') {
                 if (DB::dropTable($args['t'])) {
-                    static::out(static::ACTION_DONE . PHP_EOL);
+                    static::ok(static::ACTION_DONE . PHP_EOL);
                 } else {
-                    static::out(static::ACTION_FAIL . PHP_EOL . $this->tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
+                    static::fail(static::ACTION_FAIL . PHP_EOL . $this->tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
                 }
             } else {
                 static::out(static::ACTION_CANCEL . PHP_EOL);
@@ -267,7 +281,7 @@ class Orm extends Console
             }
         }
 
-        static::out(static::ACTION_DONE . PHP_EOL);
+        static::ok(static::ACTION_DONE . PHP_EOL);
     }
 
     /**
@@ -311,9 +325,9 @@ class Orm extends Console
         }
 
         if ($userManager->saveUserCollection($users)) {
-            static::out(sprintf('Users collection %s saved' . PHP_EOL, $users));
+            static::ok(sprintf('The followings users are inserted %s' . PHP_EOL, $users));
         } else {
-            static::out('An error occured on user collection save' . PHP_EOL);
+            static::fail('An error occured on user collection save' . PHP_EOL);
         }
     }
 
@@ -353,9 +367,9 @@ class Orm extends Console
         }
 
         if ($chatManager->saveChatRoomCollection($rooms)) {
-            static::out(sprintf('The followings chat rooms are inserted %s' . PHP_EOL, $rooms));
+            static::ok(sprintf('The followings chat rooms are inserted %s' . PHP_EOL, $rooms));
         } else {
-            static::out('An error occured on chat rooms collection save' . PHP_EOL);
+            static::fail('An error occured on chat rooms collection save' . PHP_EOL);
         }
     }
 
@@ -371,10 +385,10 @@ class Orm extends Console
         $check = true;
 
         if (!isset($args['t'])) {
-            static::out('You need to specify a table name with -t parameter' . PHP_EOL);
+            static::fail('You need to specify a table name with -t parameter' . PHP_EOL);
             $check = false;
         } elseif (!in_array($args['t'], DB::getAllTables())) {
-            static::out('The table "' . $args['t'] . '" does not exist' . PHP_EOL);
+            static::fail('The table "' . $args['t'] . '" does not exist' . PHP_EOL);
             $check = false;
         }
 
@@ -393,10 +407,10 @@ class Orm extends Console
         $check = true;
 
         if (!isset($args['n'])) {
-            static::out('You need to specify an entity name with -n parameter' . PHP_EOL);
+            static::fail('You need to specify an entity name with -n parameter' . PHP_EOL);
             $check = false;
         } elseif (!in_array($args['n'], DB::getAllEntites())) {
-            static::out('The entity "' . $args['n'] . '" does not exist' . PHP_EOL);
+            static::fail('The entity "' . $args['n'] . '" does not exist' . PHP_EOL);
             $check = false;
         }
 
@@ -469,4 +483,114 @@ class Orm extends Console
 
         return $prettyString . $separationLine;
     }
+
+    /*=====================================
+    =            Elasticsearch            =
+    =====================================*/
+
+    /**
+     * Create an ES chat index with a version then create the mapping for this version and create an alias "chat" binded
+     * on the version created
+     */
+    private function createElasticsearchIndex()
+    {
+        $config = Ini::getSectionParams('ElasticSearch');
+        $index  = $config['index'] . '_v' . $config['version'];
+        $client = \Elasticsearch\ClientBuilder::create()->build();
+
+        // Create index
+        try {
+            $client->indices()->create([
+                'index' => $index,
+                'body'  => [
+                    'settings' => [
+                        'number_of_shards'   => $config['numberOfShards'],
+                        'number_of_replicas' => $config['numberOfReplicas']
+                    ]
+                ]
+            ]);
+
+            static::ok('ES index created' . PHP_EOL);
+
+        } catch (\Exception $e) {
+            if ($e->getMessage() === 'index_already_exists_exception: already exists') {
+                static::ok('ES index ' . $index . ' already created' . PHP_EOL);
+            } else {
+                static::fail('ES index ' . $index . ' not created' . PHP_EOL . $e->getMessage() . PHP_EOL);
+            }
+        }
+
+        // Create mapping
+        $this->createChatMessageMapping($config['index'], (int) $config['version']);
+
+        // Bind the chat alias
+        try {
+            $client->indices()->putAlias(['index' => $index, 'name' => $config['index']]);
+            static::ok('ES alias ' . $index . ' binded to ' . $config['index'] . PHP_EOL);
+
+        } catch (\Exception $e) {
+            static::fail(
+                'ES alias ' . $index . ' not binded to ' . $config['index'] . PHP_EOL . $e->getMessage() . PHP_EOL
+            );
+        }
+    }
+
+    /**
+     * Create the chat mapping for the type message
+     *
+     * @param      string  $index    The index name
+     * @param      int     $version  The version number of the mapping
+     */
+    private function createChatMessageMapping(string $index, int $version)
+    {
+        $client = \Elasticsearch\ClientBuilder::create()->build();
+
+        try {
+            $client->indices()->putMapping([
+                'index' => $index . '_v' . $version,
+                'type'  => 'message',
+                'body'  => [
+                    'properties' => [
+                        'pseudonym' => [
+                            'type'  => 'string',
+                            'index' => 'not_analyzed'
+                        ],
+                        'message' => [
+                            'type' => 'string'
+                        ],
+                        'type' => [
+                            'type'  => 'string',
+                            'index' => 'not_analyzed'
+                        ],
+                        'date' => [
+                            'type'  => 'date',
+                            'index' => 'not_analyzed'
+                        ],
+                        'room' => [
+                            'type'  => 'long',
+                        ],
+                        'userInfo' => [
+                            'properties' => [
+                                'id' => [
+                                    'type'  => 'long',
+                                ],
+                                'ip' => [
+                                    'type'  => 'ip',
+                                ]
+                            ]
+                        ],
+                    ]
+                ]
+            ]);
+
+            static::ok('ES ' . $index . '_v' . $version . ' mapping created' . PHP_EOL);
+
+        } catch (\Exception $e) {
+            static::fail(
+                'ES ' . $index . '_v' . $version . ' mapping not created' . PHP_EOL . $e->getMessage() . PHP_EOL
+            );
+        }
+    }
+
+    /*=====  End of Elasticsearch  ======*/
 }

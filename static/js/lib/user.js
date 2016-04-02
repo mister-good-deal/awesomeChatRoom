@@ -34,18 +34,28 @@ define([
 
     UserManager.prototype = {
         /**
-         * Default settings will get overriden if they are set when the UserManager will be instanciated
+         * Default settings
          */
-        "settings" : {
-            "attributes": {
-                "firstName": "",
-                "lastName" : "",
-                "pseudonym": "",
-                "email"    : "",
-                "password" : "",
-                "right"    : {},
-                "chatRight": {}
-            }
+        "settings" : {},
+        /**
+         * User attributes
+         */
+        "attributes": {
+            "id"                   : "",
+            "firstName"            : "",
+            "lastName"             : "",
+            "pseudonym"            : "",
+            "email"                : "",
+            "password"             : "",
+            "securityToken"        : "",
+            "securityTokenExpires" : "",
+            "connectionAttempt"    : "",
+            "ipAttempt"            : "",
+            "ip"                   : "",
+            "lastConnection"       : "",
+            "lastConnectionAttempt": "",
+            "right"                : {},
+            "chatRight"            : {}
         },
         /**
          * If the user is connected
@@ -63,7 +73,7 @@ define([
          * @return     {String}  The user first name
          */
         getFirstName: function () {
-            return this.settings.attributes.firstName;
+            return this.attributes.firstName;
         },
 
         /**
@@ -73,7 +83,7 @@ define([
          * @return     {String}  The user last name
          */
         getLastName: function () {
-            return this.settings.attributes.lastName;
+            return this.attributes.lastName;
         },
 
         /**
@@ -83,10 +93,10 @@ define([
          * @return     {String}  The user pseudonym
          */
         getPseudonym: function () {
-            var pseudonym = this.settings.attributes.pseudonym;
+            var pseudonym = this.attributes.pseudonym;
 
             if (pseudonym === '') {
-                pseudonym = this.settings.attributes.firstName + ' ' + this.settings.attributes.lastName;
+                pseudonym = this.attributes.firstName + ' ' + this.attributes.lastName;
             }
 
             return pseudonym;
@@ -99,7 +109,7 @@ define([
          * @return     {String}  The user email
          */
         getEmail: function () {
-            return this.settings.attributes.email;
+            return this.attributes.email;
         },
 
         /**
@@ -108,17 +118,17 @@ define([
          * @return {String} The user password
          */
         getPassword: function () {
-            return this.settings.attributes.password;
+            return this.attributes.password;
         },
 
         /**
          * Get user right
          *
          * @method     getRight
-         * @return     {Array}  The user right
+         * @return     {Object}  The user right
          */
         getRight: function () {
-            return this.settings.attributes.right;
+            return this.attributes.right;
         },
 
         /**
@@ -126,10 +136,10 @@ define([
          *
          * @method     getChatRoomRight
          * @param      {Number}  roomId  The room name
-         * @return     {Array}   The user chat rights for the room
+         * @return     {Object}  The user chat rights for the room
          */
         getChatRoomRight: function (roomId) {
-            return this.settings.attributes.chatRight[roomId];
+            return this.attributes.chatRight[roomId];
         },
 
         /**
@@ -149,13 +159,7 @@ define([
          * @param      {Object}  data    JSON data
          */
         setAttributes: function (data) {
-            this.settings.attributes.firstName = data.user.firstName || "";
-            this.settings.attributes.lastName  = data.user.lastName || "";
-            this.settings.attributes.pseudonym = data.user.pseudonym || "";
-            this.settings.attributes.email     = data.user.email || "";
-            this.settings.attributes.password  = data.user.password || "";
-            this.settings.attributes.chatRight = data.user.chatRight || {};
-            this.settings.attributes.right     = data.user.right || {};
+            this.attributes = $.extend(true, {}, this.attributes, data.user);
         },
 
         /**
