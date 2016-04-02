@@ -797,6 +797,9 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      int     $roomId      The room ID
      * @param      string  $type        The message type ('public' || 'private')
      * @param      string  $date        The server date at the moment the message was sent (Y-m-d H:i:s) DEFAULT null
+     * @param      bool    $indexed     If the messages is already indexed in ES DEFAULT false
+     *
+     * @return     array
      */
     private function sendMessageToUser(
         array $clientFrom,
@@ -804,8 +807,11 @@ class ChatService extends ServicesDispatcher implements Service
         string $message,
         int $roomId,
         string $type,
-        string $date = null
+        string $date = null,
+        bool $indexed = false
     ) {
+        $date = ($date !== null ? $date : date('Y-m-d H:i:s'));
+
         if ($clientFrom['Connection'] === 'SERVER') {
             $pseudonym = 'SERVER';
         } else {
@@ -816,11 +822,16 @@ class ChatService extends ServicesDispatcher implements Service
             'service'   => $this->chatService,
             'action'    => 'recieveMessage',
             'pseudonym' => $pseudonym,
-            'time'      => $date !== null ? $date : date('Y-m-d H:i:s'),
+            'time'      => $date,
             'roomId'    => $roomId,
             'type'      => $type,
             'text'      => $message
         )));
+
+        if (!$indexed) {
+            // Insert elasticSearch record
+            yield $this->indexMessage($clientFrom, $message, $roomId, $type, $date);
+        }
     }
 
     /**
@@ -831,6 +842,8 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      int     $roomId      The room ID
      * @param      string  $type        The message type ('public' || 'private')
      * @param      string  $date        The server date at the moment the message was sent (Y-m-d H:i:s) DEFAULT null
+     *
+     * @todo $date => timestamp not string
      */
     private function sendMessageToRoom(
         array $clientFrom,
@@ -842,7 +855,65 @@ class ChatService extends ServicesDispatcher implements Service
         $date = ($date !== null ? $date : date('Y-m-d H:i:s'));
 
         foreach ($this->rooms[$roomId]['users'] as $clientTo) {
-            yield $this->sendMessageToUser($clientFrom, $clientTo, $message, $roomId, $type, $date);
+            yield $this->sendMessageToUser($clientFrom, $clientTo, $message, $roomId, $type, $date, true);
+        }
+
+        // Insert elasticSearch record
+        yield $this->indexMessage($clientFrom, $message, $roomId, $type, $date);
+    }
+
+    /**
+     * Index a document in ES (a chat message)
+     *
+     * @param      array   $clientFrom  The client to send the message from array(Connection, User)
+     * @param      string  $message     The text message
+     * @param      int     $roomId      The room ID
+     * @param      string  $type        The message type ('public' || 'private')
+     * @param      string  $date        The server date at the moment the message was sent (Y-m-d H:i:s)
+     */
+    private function indexMessage(array $clientFrom, string $message, int $roomId, string $type, string $date)
+    {
+        if ($clientFrom['Connection'] !== 'SERVER') {
+            $client = \Elasticsearch\ClientBuilder::create()->build();
+
+            $params = [
+                // @todo parameters from INI conf
+                'index' => 'chat',
+                'type'  => 'message',
+                'body'  => [
+                    'from'    => $this->getUserPseudonymByRoom($clientFrom, $this->rooms[$roomId]['room']),
+                    'fromInfo' => [
+                        'user' => $clientFrom['User'] !== null ? $clientFrom['User']->__toArray() : null,
+                        'ip'   => $clientFrom['Connection']->getRemoteAddress()
+                    ],
+                    'message' => $message,
+                    'type'    => $type,
+                    'date'    => $date, // todo timestamp
+                    'room'    => $this->rooms[$roomId]['room']->__toArray()
+                ]
+            ];
+
+            $result = $client->index($params);
+
+            if ($result['created'] !== true) {
+                yield $this->log->log(
+                    Log::ERROR,
+                    sprintf(
+                        '[chatService] Document not indexed in ES %s %s',
+                        static::formatVariable($params),
+                        static::formatVariable($result)
+                    )
+                );
+            } else {
+                yield $this->log->log(
+                    Log::DEBUG,
+                    sprintf(
+                        '[chatService] Document indexed in ES %s %s',
+                        static::formatVariable($params),
+                        static::formatVariable($result)
+                    )
+                );
+            }
         }
     }
 
