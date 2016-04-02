@@ -52,7 +52,7 @@ class ServerRequestHandler implements RequestHandler
         return $this->application;
     }
 
-    public function onError($code, Socket $socket)
+    public function onError(int $code, Socket $socket)
     {
         return new BasicResponse($code);
     }

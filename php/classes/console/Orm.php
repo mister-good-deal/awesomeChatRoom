@@ -110,10 +110,6 @@ class Orm extends Console
                 $this->init();
                 break;
 
-            case 'esmapping':
-                $this->createElasticsearchMapping($command);
-                break;
-
             case 'es':
                 $this->elasticsearchProcess($command);
                 break;

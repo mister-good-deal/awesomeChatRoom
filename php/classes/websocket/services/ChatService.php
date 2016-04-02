@@ -806,8 +806,6 @@ class ChatService extends ServicesDispatcher implements Service
         int $date = null,
         bool $indexed = false
     ) {
-        $date = ($date !== null ? $date : time());
-
         if ($clientFrom['Connection'] === 'SERVER') {
             $pseudonym = 'SERVER';
         } else {
@@ -818,7 +816,7 @@ class ChatService extends ServicesDispatcher implements Service
             'service'   => $this->chatService,
             'action'    => 'recieveMessage',
             'pseudonym' => $pseudonym,
-            'time'      => $date,
+            'time'      => $date !== null ? $date : date('Y-m-d H:i:s'),
             'roomId'    => $roomId,
             'type'      => $type,
             'text'      => $message
