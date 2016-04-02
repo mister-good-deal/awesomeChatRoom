@@ -17,7 +17,7 @@ require(
             websocket.send(JSON.stringify({
                 "action" : "register",
                 "service": ["server"],
-                "user"   : this.settings.attributes
+                "user"   : this.attributes
             }));
         };
         // Make it global to develop
