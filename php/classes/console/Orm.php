@@ -33,19 +33,58 @@ class Orm extends Console
     /**
      * @var        string[]  $SELF_COMMANDS     List of all commands with their description
      */
-    private static $SELF_COMMANDS = array(
-        'tables'                                             => 'Get all the tables name',
-        'entities'                                           => 'Get all the entites name',
-        'entity -n entityName --clean|drop|show|desc|create' => 'Perform action on entity table',
-        'clean -t tableName'                                 => 'Delete all the row of the given table name',
-        'drop -t tableName'                                  => 'Drop the given table name',
-        'show -t tableName [-s startIndex -e endIndex]'      => 'Show table data begin at startIndex and stop at endIndex',
-        'desc -t tableName'                                  => 'Show table structure',
-        'create all'                                         => 'Create all tables',
-        'generate data'                                      => 'Generate default data in all tables',
-        'init'                                               => '`create all` + `generate data`',
-        'es --create-index'                                  => 'Create an elasticsearch index'
-    );
+    private static $SELF_COMMANDS = [
+        'tables'                                                => 'Get all the tables name',
+        'entities'                                              => 'Get all the entites name',
+        'entity -n entityName --clean|drop|show|desc|create'    => 'Perform action on entity table',
+        'clean -t tableName'                                    => 'Delete all the row of the given table name',
+        'drop -t tableName'                                     => 'Drop the given table name',
+        'show -t tableName [-s startIndex -e endIndex]'         => 'Show table data between startIndex and endIndex',
+        'desc -t tableName'                                     => 'Show table structure',
+        'create all'                                            => 'Create all tables',
+        'generate data'                                         => 'Generate default data in all tables',
+        'es -i index -v sersion -s shards -r -replicas --index' => 'Create elasticsearch index',
+        'es -i index -v version -t type -m mapping --mapping'   => 'Create elasticsearch mapping',
+        'es -i index -a alias --aliases [--no-read --no-write]' => 'Create elasticsearch aliases',
+        'es --init'                                             => 'Init ES with indexn mapping and aliases',
+        'init --es --sql --all'                                 => 'Initialize mysql, ES or both with --all option'
+    ];
+
+    /**
+     * @var        array  $ES_CHAT_MAPPING  The elasticsearch chat mapping
+     */
+    private static $ES_CHAT_MAPPING = [
+        'properties' => [
+            'pseudonym' => [
+                'type'  => 'string',
+                'index' => 'not_analyzed'
+            ],
+            'message' => [
+                'type' => 'string'
+            ],
+            'type' => [
+                'type'  => 'string',
+                'index' => 'not_analyzed'
+            ],
+            'date' => [
+                'type'   => 'date',
+                'format' => 'epoch_second'
+            ],
+            'room' => [
+                'type'  => 'long',
+            ],
+            'userInfo' => [
+                'properties' => [
+                    'id' => [
+                        'type'  => 'long',
+                    ],
+                    'ip' => [
+                        'type'  => 'ip',
+                    ]
+                ]
+            ],
+        ]
+    ];
 
     /**
      * Call the parent constructor, merge the commands list and launch the console
@@ -106,12 +145,12 @@ class Orm extends Console
                 $this->insertChatData();
                 break;
 
-            case 'init':
-                $this->init();
-                break;
-
             case 'es':
                 $this->elasticsearchProcess($command);
+                break;
+
+            case 'init':
+                $this->init($command);
                 break;
 
             default:
@@ -120,6 +159,26 @@ class Orm extends Console
         }
 
         parent::processCommand($command, $executed);
+    }
+
+    /**
+     * Init the database with tables and data and/or init Elasticsearch
+     *
+     * @param      string  $command  The command passed with its arguments
+     */
+    private function init(string $command)
+    {
+        $args = $this->getArgs($command);
+
+        if (isset($args['sql']) || isset($args['all'])) {
+            $this->createAllTables();
+            $this->insertUserData();
+            $this->insertChatData();
+        }
+
+        if (isset($args['es']) || isset($args['all'])) {
+            $this->initElasticsearch();
+        }
     }
 
     /**
@@ -156,14 +215,36 @@ class Orm extends Console
         }
     }
 
+    /**
+     * Process the command called on ES
+     *
+     * @param      string  $command  The command passed with its arguments
+     */
     private function elasticsearchProcess(string $command)
     {
-        $args = $this->getArgs($command);
+        $args     = $this->getArgs($command);
+        $index    = $args['i'] ?? '';
+        $alias    = $args['a'] ?? '';
+        $type     = $args['t'] ?? '';
+        $mapping  = $args['m'] ?? '';
+        $version  = (int) $args['v'] ?? 1;
+        $shards   = (int) $args['s'] ?? 2;
+        $replicas = (int) $args['r'] ?? 0;
 
-        if (isset($args['create-index'])) {
-            $this->createElasticsearchIndex();
+        if (isset($args['init'])) {
+            $this->initElasticsearch();
+        } elseif (isset($args['index'])) {
+            $this->createElasticsearchIndex($index, $version, $shards, $replicas);
+        } elseif (isset($args['mapping'])) {
+            $this->createElasticsearchMapping($index, $version, $type, $mapping);
+        } elseif (isset($args['aliases'])) {
+            $this->bindAliasesToIndex($index, $alias, !isset($args['no-read']), !isset($args['no-write']));
         }
     }
+
+    /*===========================
+    =            SQL            =
+    ===========================*/
 
     /**
      * Delete all the data in a table
@@ -244,16 +325,6 @@ class Orm extends Console
         if ($this->checkTableName($args)) {
             static::out($this->prettySqlResult($args['t'], DB::descTable($args['t'])) . PHP_EOL);
         }
-    }
-
-    /**
-     * Init tha database with tables and data
-     */
-    private function init()
-    {
-        $this->createAllTables();
-        $this->insertUserData();
-        $this->insertChatData();
     }
 
     /**
@@ -424,6 +495,8 @@ class Orm extends Console
      * @param      array   $data       Array containing the SQL result
      *
      * @return     string  The pretty output
+     *
+     * @todo move to PrettyOutputTrait
      */
     private function prettySqlResult(string $tableName, array $data): string
     {
@@ -484,33 +557,58 @@ class Orm extends Console
         return $prettyString . $separationLine;
     }
 
+    /*=====  End of SQL  ======*/
+
     /*=====================================
     =            Elasticsearch            =
     =====================================*/
 
     /**
-     * Create an ES chat index with a version then create the mapping for this version and create an alias "chat" binded
-     * on the version created
+     * Initialize Elasticsearch by creating index, mapping and aliases from the conf.ini file
      */
-    private function createElasticsearchIndex()
+    private function initElasticsearch()
     {
-        $config = Ini::getSectionParams('ElasticSearch');
-        $index  = $config['index'] . '_v' . $config['version'];
-        $client = \Elasticsearch\ClientBuilder::create()->build();
+        $conf = Ini::getSectionParams('ElasticSearch');
 
         // Create index
+        $this->createElasticsearchIndex(
+            $conf['index'],
+            (int) $conf['version'],
+            (int) $conf['numberOfShards'],
+            (int) $conf['numberOfReplicas']
+        );
+
+        // Create mapping
+        $this->createElasticsearchMapping($conf['index'], (int) $conf['version'], 'message', static::$ES_CHAT_MAPPING);
+
+        // Bind aliases
+        $this->bindAliasesToIndex($conf['index'] . '_v'. $conf['version'], $conf['index']);
+    }
+    /**
+     * Create an Elasticsearch index
+     *
+     * @param      string  $index             The index name (without prefix or suffix)
+     * @param      int     $version           The index version
+     * @param      int     $numberOfShards    The number of shards
+     * @param      int     $numberOfReplicas  The numbre of replicas
+     */
+    private function createElasticsearchIndex(string $index, int $version, int $numberOfShards, int $numberOfReplicas)
+    {
+        $client = \Elasticsearch\ClientBuilder::create()->build();
+        $index  = $index . '_v' . $version;
+
         try {
             $client->indices()->create([
                 'index' => $index,
                 'body'  => [
                     'settings' => [
-                        'number_of_shards'   => $config['numberOfShards'],
-                        'number_of_replicas' => $config['numberOfReplicas']
+                        'number_of_shards'   => $numberOfShards,
+                        'number_of_replicas' => $numberOfReplicas
                     ]
                 ]
             ]);
 
-            static::ok('ES index created' . PHP_EOL);
+            static::ok('ES index ' . $index . ' created' . PHP_EOL);
 
         } catch (\Exception $e) {
             if ($e->getMessage() === 'index_already_exists_exception: already exists') {
@@ -519,77 +617,84 @@ class Orm extends Console
                 static::fail('ES index ' . $index . ' not created' . PHP_EOL . $e->getMessage() . PHP_EOL);
             }
         }
-
-        // Create mapping
-        $this->createChatMessageMapping($config['index'], (int) $config['version']);
-
-        // Bind the chat alias
-        try {
-            $client->indices()->putAlias(['index' => $index, 'name' => $config['index']]);
-            static::ok('ES alias ' . $index . ' binded to ' . $config['index'] . PHP_EOL);
-
-        } catch (\Exception $e) {
-            static::fail(
-                'ES alias ' . $index . ' not binded to ' . $config['index'] . PHP_EOL . $e->getMessage() . PHP_EOL
-            );
-        }
     }
 
     /**
-     * Create the chat mapping for the type message
+     * Create a mapping for an index
      *
-     * @param      string  $index    The index name
+     * @param      string  $index    The index name (without prefix or suffix)
      * @param      int     $version  The version number of the mapping
+     * @param      string  $type     The mapping type
+     * @param      array   $mapping  The mapping structure
      */
-    private function createChatMessageMapping(string $index, int $version)
+    private function createElasticsearchMapping(string $index, int $version, string $type, array $mapping)
     {
         $client = \Elasticsearch\ClientBuilder::create()->build();
 
         try {
             $client->indices()->putMapping([
                 'index' => $index . '_v' . $version,
-                'type'  => 'message',
-                'body'  => [
-                    'properties' => [
-                        'pseudonym' => [
-                            'type'  => 'string',
-                            'index' => 'not_analyzed'
-                        ],
-                        'message' => [
-                            'type' => 'string'
-                        ],
-                        'type' => [
-                            'type'  => 'string',
-                            'index' => 'not_analyzed'
-                        ],
-                        'date' => [
-                            'type'  => 'date',
-                            'index' => 'not_analyzed'
-                        ],
-                        'room' => [
-                            'type'  => 'long',
-                        ],
-                        'userInfo' => [
-                            'properties' => [
-                                'id' => [
-                                    'type'  => 'long',
-                                ],
-                                'ip' => [
-                                    'type'  => 'ip',
-                                ]
-                            ]
-                        ],
-                    ]
-                ]
+                'type'  => $type,
+                'body'  => $mapping
             ]);
 
-            static::ok('ES ' . $index . '_v' . $version . ' mapping created' . PHP_EOL);
+            static::ok('ES ' . $index . '_v' . $version . ' for type ' . $type . ' mapping created' . PHP_EOL);
 
         } catch (\Exception $e) {
             static::fail(
                 'ES ' . $index . '_v' . $version . ' mapping not created' . PHP_EOL . $e->getMessage() . PHP_EOL
             );
         }
+    }
+
+    /**
+     * Bind aliases read and/or write to an index
+     *
+     * @param      string  $index  The index to bind the aliases to
+     * @param      string  $alias  The alisases name (automatic _read and _write suffix will be added)
+     * @param      bool    $read   True to bind the read alias else false DEFAULT true
+     * @param      bool    $write  True to bind the write alias else false DEFAULT true
+     */
+    private function bindAliasesToIndex(string $index, string $alias, bool $read = true, bool $write = true)
+    {
+        $client = \Elasticsearch\ClientBuilder::create()->build();
+
+        try {
+            if ($read) {
+                $client->indices()->putAlias(['index' => $index, 'name' => $alias . '_read']);
+                static::ok('ES alias ' . $alias . '_read binded to ' . $index . PHP_EOL);
+            }
+
+            if ($write) {
+                $client->indices()->putAlias(['index' => $index, 'name' => $alias . '_write']);
+                static::ok('ES alias ' . $alias . '_write binded to ' . $index . PHP_EOL);
+            }
+
+        } catch (\Exception $e) {
+            static::fail(
+                'ES alias ' . $index . ' not binded to ' . $index . PHP_EOL . $e->getMessage() . PHP_EOL
+            );
+        }
+    }
+
+    /**
+     * Reindex the old index into the new one
+     *
+     * @param      string  $index       The index name (without prefix or suffix)
+     * @param      int     $oldVersion  The old version
+     * @param      int     $newVersion  The new version
+     * @param      string  $type        The new mapping type
+     * @param      array   $newMapping  The new mapping structure
+     *
+     * @todo
+     */
+    private function reindex(string $index, int $oldVersion, int $newVersion, string $type, array $newMapping)
+    {
+        // - create the new index
+        // - bind write alias on the new index
+        // - copy data from old to new index with SCROLL and BULK
+        // - bind read alias on the new index
+        // - delete old index
     }
 
     /*=====  End of Elasticsearch  ======*/

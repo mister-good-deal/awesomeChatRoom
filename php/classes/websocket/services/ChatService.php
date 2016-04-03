@@ -812,11 +812,13 @@ class ChatService extends ServicesDispatcher implements Service
             $pseudonym = $this->getUserPseudonymByRoom($clientFrom, $this->rooms[$roomId]['room']);
         }
 
+        $date = ($date !== null ? $date : time());
+
         yield $clientTo['Connection']->send(json_encode([
             'service'   => $this->chatService,
             'action'    => 'recieveMessage',
             'pseudonym' => $pseudonym,
-            'time'      => $date !== null ? $date : date('Y-m-d H:i:s'),
+            'time'      => $date,
             'roomId'    => $roomId,
             'type'      => $type,
             'text'      => $message
@@ -870,7 +872,7 @@ class ChatService extends ServicesDispatcher implements Service
         if ($clientFrom['Connection'] !== 'SERVER') {
             $client = \Elasticsearch\ClientBuilder::create()->build();
             $params = [
-                'index' => Ini::getParam('ElasticSearch', 'index'),
+                'index' => Ini::getParam('ElasticSearch', 'index') . '_write',
                 'type'  => 'message',
                 'body'  => [
                     'pseudonym' => $this->getUserPseudonymByRoom($clientFrom, $this->rooms[$roomId]['room']),
@@ -1170,9 +1172,9 @@ class ChatService extends ServicesDispatcher implements Service
         } elseif (!array_key_exists($userHash, $this->rooms[$roomId]['users'])) {
             $message = sprintf(_('You are not connected to the room %s'), $this->rooms[$roomId]['room']->name);
         } else {
-            yield $this->disconnectUserFromRoomAction($userHash, $roomId, 'leftRoom');
             $message = sprintf(_('You are disconnected from the room %s'), $this->rooms[$roomId]['room']->name);
             $success = true;
+            yield $this->disconnectUserFromRoomAction($userHash, $roomId, 'leftRoom');
         }
 
         yield $client['Connection']->send(json_encode([
