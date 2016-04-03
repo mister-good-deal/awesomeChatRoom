@@ -25,6 +25,7 @@ define([
      * @param       {FormsManager} Forms     A FormsManager to handle form XHR ajax calls or jsCallbacks
      * @param       {Object}       settings  Overriden settings
      *
+     * @todo ._assign instead of $.extend ?
      * @todo check the id value of the followings
      * this.mouseInRoomChat
      *
@@ -95,6 +96,10 @@ define([
          * Pointer in the array messagesHistory by room
          */
         "messagesHistoryPointer": {},
+        /**
+         * The last loaded message timestamp recieved by room
+         */
+        "lastMessageLoadedTime": {},
         /**
          * Monitor mouse position when it is in or out a room chat div
          */
@@ -398,12 +403,12 @@ define([
          * @param      {event}  e       The fired event
          */
         getHistoricEvent: function (e) {
-            var room           = $(e.currentTarget).closest(this.settings.selectors.global.room),
-                roomId         = room.attr('data-id'),
-                password       = room.attr('data-password'),
-                historicLoaded = room.find(this.settings.selectors.global.roomChat).attr('data-historic-loaded');
+            var room            = $(e.currentTarget).closest(this.settings.selectors.global.room),
+                roomId          = room.attr('data-id'),
+                password        = room.attr('data-password'),
+                lastMessageDate = room.find(this.settings.selectors.global.roomChat).attr('data-last-message-date');
 
-            this.getHistoric(roomId, password, historicLoaded);
+            this.getHistoric(roomId, password, lastMessageDate);
         },
 
         /**
@@ -647,17 +652,17 @@ define([
          * Get room chat historic
          *
          * @method     getHistoric
-         * @param      {Number}  roomId          The room ID
-         * @param      {String}  password        The room password
-         * @param      {Number}  historicLoaded  The number of historic already loaded
+         * @param      {Number}  roomId           The room ID
+         * @param      {String}  password         The room password
+         * @param      {String}  lastMessageDate  The last message loaded timestamp
          */
-        getHistoric: function (roomId, password, historicLoaded) {
+        getHistoric: function (roomId, password, lastMessageDate) {
             this.websocket.send(JSON.stringify({
-                "service"       : [this.settings.serviceName],
-                "action"        : "getHistoric",
-                "roomId"        : roomId,
-                "roomPassword"  : password,
-                "historicLoaded": historicLoaded
+                "service"        : [this.settings.serviceName],
+                "action"         : "getHistoric",
+                "roomId"         : roomId,
+                "roomPassword"   : password,
+                "lastMessageDate": lastMessageDate
             }));
         },
 
@@ -1088,10 +1093,7 @@ define([
                     }
                 });
 
-                newRoomChat.attr('data-historic-loaded', 0);
-
                 this.updateUsersDropdown(newRoom, data.pseudonyms);
-                // @todo historic
                 this.loadHistoric(newRoomChat, data.historic);
                 this.mouseInRoomChat[roomData.id] = false;
                 this.isRoomOpened[roomData.id] = true;
@@ -1131,14 +1133,17 @@ define([
          *
          * @method     loadHistoric
          * @param      {Object}  roomChatDOM  The room chat jQuery DOM element to insert the conversations historic in
-         * @param      {Object}  historic     The conversations historic
+         * @param      {Array}   historic     The conversations historic
          */
         loadHistoric: function (roomChatDOM, historic) {
-            var historicLoaded = roomChatDOM.attr('data-historic-loaded');
+            var historicLength = historic.length;
 
-            if (historic !== undefined) {
+            if (historicLength > 0) {
+                roomChatDOM.attr('data-last-message-date', historic[historicLength - 1].date);
                 roomChatDOM.prepend(this.formatUserMessage({"messages": historic}));
-                roomChatDOM.attr('data-historic-loaded', ++historicLoaded);
+            } else {
+                // @todo button to load or automatic ? Alert user when there are no more message
+                roomChatDOM.find(this.settings.selectors.roomAction.loadHistoric).remove();
             }
         },
 
@@ -1157,14 +1162,14 @@ define([
                 data.messages = [data];
             }
 
-            _.forEach(data.messages, function (message) {
+            _.forEachRight(data.messages, function (message) {
                 divs.push(
                     $('<div>', {
                         "class": self.settings.selectors.chat.message.substr(1) + ' ' + message.type
                     }).append(
                         $('<span>', {
                             "class": self.settings.selectors.chat.date.substr(1),
-                            "text" : '[' + message.date + ']'
+                            "text" : '[' + new Date(_.toInteger(message.date)).toLocaleString() + ']'
                         }),
                         $('<span>', {
                             "class": self.settings.selectors.chat.pseudonym.substr(1),
