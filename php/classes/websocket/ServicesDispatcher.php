@@ -171,7 +171,7 @@ class ServicesDispatcher implements Application
      */
     private function serviceSelector(array $data, array $client)
     {
-        yield $this->log->log(Log::DEBUG, 'Data: %s', $this->formatVariable($data));
+        // yield $this->log->log(Log::DEBUG, 'Data: %s', $this->formatVariable($data));
 
         foreach ($data['service'] as $service) {
             switch ($service) {
@@ -199,7 +199,6 @@ class ServicesDispatcher implements Application
         switch ($data['action']) {
             case 'register':
                 $this->clients[$this->getConnectionHash($client['Connection'])]['User'] = new User($data['user']);
-                yield $this->log->log(Log::DEBUG, 'serverAction => register: %s', $this->formatVariable($this->clients));
                 break;
         }
     }

@@ -54,6 +54,9 @@ class Orm extends Console
      * @var        array  $ES_CHAT_MAPPING  The elasticsearch chat mapping
      */
     private static $ES_CHAT_MAPPING = [
+        '_all' => [
+            'enabled' => false
+        ],
         'properties' => [
             'pseudonym' => [
                 'type'  => 'string',
@@ -73,7 +76,7 @@ class Orm extends Console
             'room' => [
                 'type'  => 'long',
             ],
-            'userInfo' => [
+            'userFrom' => [
                 'properties' => [
                     'id' => [
                         'type'  => 'long',
@@ -83,6 +86,16 @@ class Orm extends Console
                     ]
                 ]
             ],
+            'userTo' => [
+                'properties' => [
+                    'id' => [
+                        'type'  => 'long',
+                    ],
+                    'ip' => [
+                        'type'  => 'ip',
+                    ]
+                ]
+            ]
         ]
     ];
 

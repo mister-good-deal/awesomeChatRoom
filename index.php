@@ -56,6 +56,7 @@
             <!-- rooms -->
             <div id="room-sample"
                 class="room hide"
+                data-id=""
                 data-name=""
                 data-type=""
                 data-pseudonym=""
@@ -85,7 +86,7 @@
                 <!-- room contents -->
                 <div class="room-contents">
                     <!-- messages display -->
-                    <div class="chat" data-historic-loaded="0">
+                    <div class="chat" data-last-message-date="">
                         <button class="load-historic" type="button"><?=_('Load more')?></button>
                     </div>
                     <!-- send message -->
