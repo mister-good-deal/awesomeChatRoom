@@ -1134,14 +1134,10 @@ define([
          * @param      {Object}  historic     The conversations historic
          */
         loadHistoric: function (roomChatDOM, historic) {
-            var historicLoaded = roomChatDOM.attr('data-historic-loaded'),
-                i;
+            var historicLoaded = roomChatDOM.attr('data-historic-loaded');
 
             if (historic !== undefined) {
-                for (i = historic.length - 1; i >= 0; i--) {
-                    roomChatDOM.prepend(this.formatUserMessage(historic[i]));
-                }
-
+                roomChatDOM.prepend(this.formatUserMessage({"messages": historic}));
                 roomChatDOM.attr('data-historic-loaded', ++historicLoaded);
             }
         },
@@ -1157,26 +1153,26 @@ define([
             var divs = [],
                 self = this;
 
-            if (!_.isArray(data.text)) {
-                data.text = [data.text];
+            if (!_.isArray(data.messages)) {
+                data.messages = [data];
             }
 
-            _.forEach(data.text, function (text) {
+            _.forEach(data.messages, function (message) {
                 divs.push(
                     $('<div>', {
-                        "class": self.settings.selectors.chat.message.substr(1) + ' ' + data.type
+                        "class": self.settings.selectors.chat.message.substr(1) + ' ' + message.type
                     }).append(
                         $('<span>', {
                             "class": self.settings.selectors.chat.date.substr(1),
-                            "text" : '[' + data.time + ']'
+                            "text" : '[' + message.date + ']'
                         }),
                         $('<span>', {
                             "class": self.settings.selectors.chat.pseudonym.substr(1),
-                            "text" : data.pseudonym
+                            "text" : message.pseudonym
                         }),
                         $('<span>', {
                             "class": self.settings.selectors.chat.text.substr(1),
-                            "text" : text
+                            "text" : message.message
                         })
                     )
                 );

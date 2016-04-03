@@ -29,4 +29,17 @@ trait DateTrait
 
         return $originDateTimeZone->getOffset($originDateTime) - $remoteDateTimeZone->getOffset($remoteDateTime);
     }
+
+    /**
+     * Get microtime as an int but casted in a string
+     *
+     * @return     string  The current micotime as string
+     */
+    public static function microtimeAsInt(): string
+    {
+        $microtime = microtime();
+        $comps     = explode(' ', $microtime);
+
+        return sprintf('%d%03d', $comps[1], $comps[0] * 1000);
+    }
 }

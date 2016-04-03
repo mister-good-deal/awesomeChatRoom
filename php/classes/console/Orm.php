@@ -68,7 +68,7 @@ class Orm extends Console
             ],
             'date' => [
                 'type'   => 'date',
-                'format' => 'epoch_second'
+                'format' => 'epoch_millis'
             ],
             'room' => [
                 'type'  => 'long',
