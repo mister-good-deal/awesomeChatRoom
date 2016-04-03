@@ -176,11 +176,11 @@ Edit your `[absolute path to Elasticsearch directory]/config/elasticsearch.yml` 
 
 Then just start a server by running `./[absolute path to Elasticsearch directory]/bin/elasticsearch` and you're done.
 
-Mapping and indexes will be created with the ORM by running the followings commands.
+Mapping and indexes will be created with the ORM by running the followings commands
 
 `php [absolute path to the project root directory]/php/launchORM.php`
 
-`es --create-index`
+`init --es`
 
 `exit`
 
@@ -190,11 +190,11 @@ If you want to play with Elasticsearch, it is recommended to install plugins lik
 
 Create an empty database (ex: `CREATE SCHEMA ``websocket`` DEFAULT CHARACTER SET utf8 ;`) and setup its name in /php/conf.ini => `[Database]` => `dsn` dbname value
 
-Create tables with the ORM, run those commands
+Create tables and some data with the ORM, run those commands
 
 `php [absolute path to the project root directory]/php/launchORM.php`
 
-`init`
+`init --sql`
 
 `exit`
 
