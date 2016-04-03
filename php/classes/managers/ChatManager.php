@@ -67,6 +67,16 @@ class ChatManager extends Manager
     }
 
     /**
+     * Get all the rooms in the database
+     *
+     * @return     ChatRoomCollection  All the rooms in the database
+     */
+    public function getAllRooms(): ChatRoomCollection
+    {
+        return $this->chatRoomEntityManager->getAllRooms();
+    }
+
+    /**
      * Create a new chat room
      *
      * @param      int     $idUser    The user creator id

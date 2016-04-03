@@ -26,13 +26,6 @@ define([
      * @param       {Object}       settings  Overriden settings
      *
      * @todo ._assign instead of $.extend ?
-     * @todo check the id value of the followings
-     * this.mouseInRoomChat
-     *
-     * this.isRoomOpened
-     * this.messagesHistory
-     * this.messagesHistoryPointer
-     * this.messagesCurrent
      */
     var ChatManager = function (WebSocket, User, Forms, settings) {
             var self = this;
@@ -72,13 +65,6 @@ define([
          */
         "promises": {
             "setReason": $.Deferred()
-        },
-        /**
-         * List of all commands name and regex
-         */
-        "commands": {
-            "kick": module.config().commands.kick,
-            "pm"  : module.config().commands.pm
         },
         /**
          * The WebsocketManager instance
@@ -661,7 +647,7 @@ define([
                 "service"        : [this.settings.serviceName],
                 "action"         : "getHistoric",
                 "roomId"         : roomId,
-                "roomPassword"   : password,
+                "password"       : password,
                 "lastMessageDate": lastMessageDate
             }));
         },
@@ -921,7 +907,10 @@ define([
             var room     = $(this.settings.selectors.global.room + '[data-id="' + data.roomId + '"]'),
                 roomChat = room.find(this.settings.selectors.global.roomChat);
 
-            this.loadHistoric(roomChat, data.historic);
+            if (data.success) {
+                this.loadHistoric(roomChat, data.historic);
+            }
+
             messageManager.add(data.text);
         },
 
@@ -1344,7 +1333,7 @@ define([
                 self      = this,
                 regexResult;
 
-            _.forEach(this.commands, function (regex, name) {
+            _.forEach(this.settings.commands, function (regex, name) {
                 regexResult = regex.exec(message);
 
                 if (regexResult !== null) {

@@ -10,6 +10,7 @@ namespace classes\entitiesManager;
 
 use \abstracts\EntityManager as EntityManager;
 use \classes\entities\ChatRoom as ChatRoom;
+use \classes\entitiesCollection\ChatRoomCollection as ChatRoomCollection;
 use \classes\DataBase as DB;
 
 /**
@@ -33,6 +34,24 @@ class ChatRoomEntityManager extends EntityManager
         } elseif ($entity->getChatRoomBanCollection() !== null) {
             $this->entity->setChatRoomBanCollection($entity->getChatRoomBanCollection());
         }
+    }
+
+    /**
+     * Get all the rooms in the database
+     *
+     * @return     ChatRoomCollection  All the rooms in the database
+     */
+    public function getAllRooms(): ChatRoomCollection
+    {
+        $rooms      = new ChatRoomCollection();
+        $sqlMarks   = 'SELECT * FROM %s';
+        $sql        = static::sqlFormater($sqlMarks, $this->entity->getTableName());
+
+        foreach (DB::query($sql)->fetchAll() as $roomAttributes) {
+            $rooms->add(new ChatRoom($roomAttributes));
+        }
+
+        return $rooms;
     }
 
     /**

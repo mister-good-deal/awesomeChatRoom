@@ -8,14 +8,12 @@
 
 namespace classes\websocket;
 
-use Icicle\Http\Message\Request;
-use Icicle\Http\Message\Response;
-use Icicle\Log\Log;
-use Icicle\Socket\Socket;
+use Icicle\Http\Message\Request as Request;
+use Icicle\Http\Message\Response as Response;
+use Icicle\Log\Log as Log;
+use Icicle\Socket\Socket as Socket;
 use Icicle\WebSocket\Application as Application;
-use Icicle\WebSocket\Connection;
-use Icicle\Stream\DuplexStream;
-use Icicle\Stream\MemoryStream;
+use Icicle\WebSocket\Connection as Connection;
 use classes\entities\User as User;
 use classes\websocket\services\ChatService as ChatService;
 use function Icicle\Log\log;
