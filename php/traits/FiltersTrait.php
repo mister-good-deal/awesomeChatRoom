@@ -62,11 +62,47 @@ trait FiltersTrait
     }
 
     /**
+     * Filter a result array from the PHP Elasticsearch client search call
+     *
+     * @param      array  $data   The PHP Elasticsearch client search result
+     *
+     * @return     array  The filtered array with only fields
+     */
+    public function filterEsHitsByArray(array $data): array
+    {
+        $filteredArray = [];
+
+        foreach ($data['hits']['hits'] as $hit) {
+            foreach ($hit as $hitName => $fields) {
+                if ($hitName === 'fields') {
+                    $result = [];
+
+                    foreach ($fields as $filedName => $field) {
+                        if ($filedName !== 'text') {
+                            if (count($field) === 1) {
+                                $result[$filedName] = $field[0];
+                            } else {
+                                $result[$filedName] = $field;
+                            }
+                        }
+                    }
+
+                    $filteredArray[] = $result;
+                }
+            }
+        }
+
+        return $filteredArray;
+    }
+
+    /**
      * Sanitize a user input by stripping unwanted blank characters
      *
      * @param      string  $input  The user input
      *
      * @return     string  The sanitized user input
+     *
+     * @todo useless => to delete
      */
     public function sanitizeInput(string $input): string
     {
@@ -97,6 +133,8 @@ trait FiltersTrait
      * @param      \DateInterval  $dateInterval  The DateInterval object
      *
      * @return     int            The converted number of seconds
+     *
+     * @todo move to DateTrait
      */
     public function dateIntervalToSec(\DateInterval $dateInterval): int
     {

@@ -33,23 +33,25 @@ class ChatService extends ServicesDispatcher implements Service
 {
     use \traits\ShortcutsTrait;
     use \traits\PrettyOutputTrait;
+    use \traits\FiltersTrait;
+    use \traits\DateTrait;
 
     /**
      * @var        string  $chatService     The chat service name
      */
     private $chatService;
     /**
+     * @var        string  $esIndex     The Elasticsearch index name
+     */
+    private $esIndex;
+    /**
      * @var        array  $server   The server info
      */
     private $server;
     /**
-     * @var        string  $savingDir   The absolute path from the lib path where conversations will be stored
+     * @var        integer  $historicStep   The maximum number of message to retrieve per historic request
      */
-    private $savingDir;
-    /**
-     * @var        integer  $maxMessagesPerFile     The maximum number of messages per file saved
-     */
-    private $maxMessagesPerFile;
+    private $historicStep;
     /**
      * @var        string[]  $roomsName     Array containing all the rooms name that exists
      */
@@ -100,7 +102,10 @@ class ChatService extends ServicesDispatcher implements Service
         $this->server = ['Connection' => 'SERVER'];
 
         Ini::setIniFileName(Ini::INI_CONF_FILE);
-        $this->chatService = Ini::getParam('Chat service', 'serviceName');
+        $conf               = Ini::getSectionParams('Chat service');
+        $this->chatService  = $conf['serviceName'];
+        $this->historicStep = $conf['historicStep'];
+        $this->esIndex      = Ini::getParam('ElasticSearch', 'index');
 
         // Create the default room (temporary)
         $chatManager = new ChatManager();
@@ -259,7 +264,7 @@ class ChatService extends ServicesDispatcher implements Service
                 $message                = sprintf(_('You\'re connected to the chat room "%s" !'), $chatRoom->name);
                 $response['room']       = $chatRoom->__toArray();
                 $response['pseudonyms'] = $this->getRoomPseudonyms($chatRoom->id);
-                // @todo ElasticSearch room historic
+                $response['historic']   = $this->getRoomHistoric($chatRoom->id, static::microtimeAsInt());
             }
         }
 
@@ -396,7 +401,6 @@ class ChatService extends ServicesDispatcher implements Service
                     $chatRoom->name
                 );
 
-                // @todo historic
                 $message = _('Message successfully sent !');
                 $success = true;
             }
@@ -569,7 +573,7 @@ class ChatService extends ServicesDispatcher implements Service
                         'pseudonym' => $pseudonym,
                         'admin'     => $adminPseudonym,
                         'reason'    => $reasonInput,
-                        'date'      => time()
+                        'date'      => static::microtimeAsInt()
                     ];
 
                     yield $userInfo['Connection']->send(json_encode([
@@ -792,10 +796,8 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      string  $message     The text message
      * @param      int     $roomId      The room ID
      * @param      string  $type        The message type ('public' || 'private')
-     * @param      int     $date        The server timestamp at the moment the message was sent DEFAULT null
+     * @param      float   $date        The server timestamp at the moment the message was sent DEFAULT null
      * @param      bool    $indexed     If the messages is already indexed in ES DEFAULT false
-     *
-     * @return     array
      */
     private function sendMessageToUser(
         array $clientFrom,
@@ -803,7 +805,7 @@ class ChatService extends ServicesDispatcher implements Service
         string $message,
         int $roomId,
         string $type,
-        int $date = null,
+        float $date = null,
         bool $indexed = false
     ) {
         if ($clientFrom['Connection'] === 'SERVER') {
@@ -812,16 +814,16 @@ class ChatService extends ServicesDispatcher implements Service
             $pseudonym = $this->getUserPseudonymByRoom($clientFrom, $this->rooms[$roomId]['room']);
         }
 
-        $date = ($date !== null ? $date : time());
+        $date = ($date !== null ? $date : static::microtimeAsInt());
 
         yield $clientTo['Connection']->send(json_encode([
             'service'   => $this->chatService,
             'action'    => 'recieveMessage',
             'pseudonym' => $pseudonym,
-            'time'      => $date,
+            'date'      => $date,
             'roomId'    => $roomId,
             'type'      => $type,
-            'text'      => $message
+            'message'   => $message
         ]));
 
         if (!$indexed) {
@@ -837,18 +839,18 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      string  $message     The text message
      * @param      int     $roomId      The room ID
      * @param      string  $type        The message type ('public' || 'private')
-     * @param      int     $date        The server timestamp at the moment the message was sent DEFAULT null
+     * @param      string  $date        The server micro timestamp at the moment the message was sent DEFAULT null
      *
-     * @todo $date => timestamp not string
+     * @todo       $date => timestamp not string
      */
     private function sendMessageToRoom(
         array $clientFrom,
         string $message,
         int $roomId,
         string $type,
-        int $date = null
+        string $date = null
     ) {
-        $date = ($date !== null ? $date : time());
+        $date = ($date !== null ? $date : static::microtimeAsInt());
 
         foreach ($this->rooms[$roomId]['users'] as $clientTo) {
             yield $this->sendMessageToUser($clientFrom, $clientTo, $message, $roomId, $type, $date, true);
@@ -865,14 +867,14 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      string  $message     The text message
      * @param      int     $roomId      The room ID
      * @param      string  $type        The message type ('public' || 'private')
-     * @param      int     $date        The server timestamp at the moment the message was sent
+     * @param      string  $date        The server micro timestamp at the moment the message was sent
      */
-    private function indexMessage(array $clientFrom, string $message, int $roomId, string $type, int $date)
+    private function indexMessage(array $clientFrom, string $message, int $roomId, string $type, string $date)
     {
         if ($clientFrom['Connection'] !== 'SERVER') {
             $client = \Elasticsearch\ClientBuilder::create()->build();
             $params = [
-                'index' => Ini::getParam('ElasticSearch', 'index') . '_write',
+                'index' => $this->esIndex . '_write',
                 'type'  => 'message',
                 'body'  => [
                     'pseudonym' => $this->getUserPseudonymByRoom($clientFrom, $this->rooms[$roomId]['room']),
@@ -896,6 +898,51 @@ class ChatService extends ServicesDispatcher implements Service
                 );
             }
         }
+    }
+
+    /**
+     * Get a room historic for a specific room ID and with message date lower than the given value
+     *
+     * @param      int     $roomId  The room ID to search messages in
+     * @param      string  $from    The maximum message published date in UNIX timestamp in micro second (string)
+     *
+     * @return     array   The list of messages found
+     */
+    private function getRoomHistoric(int $roomId, string $from)
+    {
+        $client = \Elasticsearch\ClientBuilder::create()->build();
+
+        return $this->filterEsHitsByArray($client->search([
+            'index'  => $this->esIndex . '_read',
+            'type'   => 'message',
+            'sort'   => 'date:asc',
+            'fields' => 'pseudonym,message,type,date',
+            'size'   => $this->historicStep,
+            'body'   => [
+                'query' => [
+                    'filtered' => [
+                        'filter' => [
+                            'bool' => [
+                                'must' => [
+                                    [
+                                        'range' => [
+                                            'date' => [
+                                                'lt' => $from
+                                            ]
+                                        ]
+                                    ],
+                                    [
+                                        'term' => [
+                                            'room' => $roomId
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]));
     }
 
     /**
@@ -1220,7 +1267,7 @@ class ChatService extends ServicesDispatcher implements Service
                         ),
                         $this->rooms[$roomId]['room']->id,
                         'public',
-                        time()
+                        static::microtimeAsInt()
                     );
                 }
             }
