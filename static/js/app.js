@@ -25,19 +25,27 @@ requirejs.config({
         }
     },
     "config": {
-        "websocket": {
+        "navigation": {
+            "urlPrefix": "#!",
+            "selectors": {
+                "page"       : ".page",
+                "pageLink"   : ".page-link",
+                "currentPage": ".current-page"
+            }
+        },
+        "websocket" : {
             "serverUrl"   : "ws://127.0.0.1:5000",
             "serviceName" : "websocketService",
             "waitInterval": 1000
         },
-        "user"     : {
+        "user"      : {
             "selectors": {
                 "modals": {
                     "connect": "#connectUserModal"
                 }
             }
         },
-        "chat"     : {
+        "chat"      : {
             "serviceName"  : "chatService",
             "maxUsers"     : 15,
             "animationTime": 500,
@@ -121,7 +129,7 @@ requirejs.config({
                 "pm"  : /^\/pm '([^']*)' (.*)/
             }
         },
-        "message"  : {
+        "message"   : {
             "alert"       : {
                 "divId"          : "#alert-container",
                 "dismissClass"   : ".dismiss",
