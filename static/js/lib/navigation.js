@@ -79,9 +79,11 @@ define([
             var hash    = location.hash,
                 pageUrl = _.trimStart(hash.split('?')[0], this.settings.urlPrefix);
 
-            this.loadPageParameters(hash);
-            // @todo load title and name from URL parameters or find it in page DOM ?
-            this.loadPage(pageUrl);
+            if (_.startsWith(hash, this.settings.urlPrefix)) {
+                this.loadPageParameters(hash);
+                // @todo load title and name from URL parameters or find it in page DOM ?
+                this.loadPage(pageUrl);
+            }
         },
 
         /**
@@ -91,10 +93,10 @@ define([
          * @param      {Event}  e       The event fired
          */
         openLink: function (e) {
-            var link        = $(e.currentTarget),
-                pageName    = link.attr('data-name'),
-                pageUrl     = link.attr('data-url'),
-                pageTitle   = link.attr('data-title');
+            var link      = $(e.currentTarget),
+                pageName  = link.attr('data-name'),
+                pageUrl   = link.attr('data-url'),
+                pageTitle = link.attr('data-title');
 
             this.loadPage(pageUrl, pageTitle, pageName);
             // Prevent any default action
