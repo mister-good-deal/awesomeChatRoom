@@ -38,10 +38,6 @@ define([
          */
         "settings" : {},
         /**
-         * Current page name
-         */
-        "pageName": "",
-        /**
          * Current page URL (hash URL)
          */
         "pageUrl": "",
@@ -81,7 +77,6 @@ define([
 
             if (_.startsWith(hash, this.settings.urlPrefix)) {
                 this.loadPageParameters(hash);
-                // @todo load title and name from URL parameters or find it in page DOM ?
                 this.loadPage(pageUrl);
             }
         },
@@ -93,13 +88,7 @@ define([
          * @param      {Event}  e       The event fired
          */
         openLink: function (e) {
-            var link      = $(e.currentTarget),
-                pageName  = link.attr('data-name'),
-                pageUrl   = link.attr('data-url'),
-                pageTitle = link.attr('data-title');
-
-            this.loadPage(pageUrl, pageTitle, pageName);
-            // Prevent any default action
+            this.loadPage($(e.currentTarget).attr('data-url'));
             e.preventDefault();
         },
 
@@ -108,16 +97,6 @@ define([
         /*===============================
         =            Getters            =
         ===============================*/
-
-        /**
-         * Get the current Page name
-         *
-         * @method     getPageName
-         * @return     {String}  The current page name
-         */
-        getPageName: function () {
-            return this.pageName;
-        },
 
         /**
          * Get the current page URL (hash URL)
@@ -159,13 +138,12 @@ define([
          * Display a page by hide / show DOM elements and set pages attributes
          *
          * @method     loadPage
-         * @param      {String}  pageUrl    The page URL to load
-         * @param      {String}  pageTitle  The page title to load
-         * @param      {String}  pageName   The page name to load
+         * @param      {String}  pageUrl  The page URL to load
          */
-        loadPage: function (pageUrl, pageTitle, pageName) {
+        loadPage: function (pageUrl) {
             var currentPage = $(this.settings.selectors.currentPage),
-                newPage     = $(this.settings.selectors.page + '[data-name="' + pageName + '"]');
+                newPage     = $(this.settings.selectors.page + '[data-url="' + pageUrl + '"]'),
+                pageTitle   = newPage.attr('data-title');
             // Check if the page exists
             if (!newPage || newPage.length < 1) {
                 // @todo display error with message ?
@@ -183,7 +161,6 @@ define([
                     location.hash = this.settings.urlPrefix + pageUrl;
                 }
                 // Set self attributes
-                this.pageName  = pageName;
                 this.pageUrl   = pageUrl;
                 this.pageTitle = pageTitle;
             }
@@ -196,16 +173,16 @@ define([
          * @param      {String}  hash    The URL hash
          */
         loadPageParameters: function (hash) {
-            var parametersRaw    = hash.split('?'),
-                parameters       = {},
-                parametersLength = parametersRaw.length,
-                i, split;
+            var parametersRaw = _.split(hash, '?'),
+                parameters    = {},
+                i, split, parametersLength;
 
-            if (parametersLength > 1) {
-                parametersRaw = parametersRaw[1].split('&');
+            if (parametersRaw[1].length > 1) {
+                parametersRaw    = _.split(parametersRaw[1], '&');
+                parametersLength = parametersRaw.length;
 
                 for (i = 0; i < parametersLength; i++) {
-                    split = parametersRaw[i].split('=');
+                    split                = _.split(parametersRaw[i], '=');
                     parameters[split[0]] = split[1];
                 }
 
