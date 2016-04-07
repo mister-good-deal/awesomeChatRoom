@@ -111,6 +111,8 @@ define([
 
         /**
          * Initialize all the events
+         *
+         * @method     initEvents
          */
         initEvents: function () {
             // Connect to a room
