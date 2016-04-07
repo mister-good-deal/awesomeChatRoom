@@ -73,7 +73,7 @@ define([
          */
         loadPageFromHash: function () {
             var hash    = location.hash,
-                pageUrl = _.trimStart(hash.split('?')[0], this.settings.urlPrefix);
+                pageUrl = _.trimStart(_.head(_.split(hash, '?')), this.settings.urlPrefix);
 
             if (_.startsWith(hash, this.settings.urlPrefix)) {
                 this.loadPageParameters(hash);
@@ -175,16 +175,15 @@ define([
         loadPageParameters: function (hash) {
             var parametersRaw = _.split(hash, '?'),
                 parameters    = {},
-                i, split, parametersLength;
+                split;
 
-            if (parametersRaw[1].length > 1) {
-                parametersRaw    = _.split(parametersRaw[1], '&');
-                parametersLength = parametersRaw.length;
+            if (_.size(parametersRaw[1]) > 0) {
+                parametersRaw = _.split(parametersRaw[1], '&');
 
-                for (i = 0; i < parametersLength; i++) {
-                    split                = _.split(parametersRaw[i], '=');
+                _.forEach(parametersRaw, function (parameter) {
+                    split                = _.split(parameter, '=');
                     parameters[split[0]] = split[1];
-                }
+                });
 
                 this.parameters = parameters;
             }
