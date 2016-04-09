@@ -56,8 +56,9 @@ class UserManager extends Manager
         $this->userRightEntityManager     = new UserRightEntityManager($this->userEntity->getRight());
         $this->userChatRightEntityManager = new UserChatRightEntityManager(null, $this->userEntity->getChatRight());
 
-        // @todo see user rights default loading (Kibana check and not reaload rights every times)
-        $this->loadUserRights();
+        if ($entity !== null) {
+            $this->loadUserRights();
+        }
     }
 
     /*=====  End of Magic Methods  ======*/
@@ -142,7 +143,11 @@ class UserManager extends Manager
      */
     public function hasWebSocketServerRight(): bool
     {
-        return $this->userEntityManager->checkSecurityToken() && $this->userEntity->getRight()->webSocket;
+        return (
+            $this->userEntityManager->checkSecurityToken() &&
+            $this->userEntity->getRight() !== null &&
+            $this->userEntity->getRight()->webSocket
+        );
     }
 
     /**
@@ -152,7 +157,11 @@ class UserManager extends Manager
      */
     public function hasKibanaRight(): bool
     {
-        return $this->userEntityManager->checkSecurityToken() && $this->userEntity->getRight()->kibana;
+        return (
+            $this->userEntityManager->checkSecurityToken() &&
+            $this->userEntity->getRight() !== null &&
+            $this->userEntity->getRight()->kibana
+        );
     }
 
     /**
@@ -165,7 +174,8 @@ class UserManager extends Manager
     public function hasChatKickRight(int $roomId): bool
     {
         return (
-            $this->userEntityManager->checkSecurityToken() && (
+            $this->userEntityManager->checkSecurityToken() &&
+            $this->userEntity->getRight() !== null && (
                 $this->userEntity->getRight()->chatAdmin || (
                     $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
                     $this->userEntity->getChatRight()->getEntityById($roomId)->kick
@@ -248,11 +258,15 @@ class UserManager extends Manager
      */
     private function loadUserRights()
     {
-        $this->userRightEntityManager->loadEntity($this->userEntity->id);
-        $this->userEntity->setRight($this->userRightEntityManager->getEntity());
+        if ($this->userEntity->getRight() === null) {
+            $this->userRightEntityManager->loadEntity($this->userEntity->id);
+            $this->userEntity->setRight($this->userRightEntityManager->getEntity());
+        }
 
-        $this->userChatRightEntityManager->loadUserChatRight((int) $this->userEntity->id);
-        $this->userEntity->setChatRight($this->userChatRightEntityManager->getEntityCollection());
+        if ($this->userEntity->getChatRight() === null) {
+            $this->userChatRightEntityManager->loadUserChatRight((int) $this->userEntity->id);
+            $this->userEntity->setChatRight($this->userChatRightEntityManager->getEntityCollection());
+        }
     }
 
     /*=====  End of Private methods  ======*/
