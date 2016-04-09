@@ -28,17 +28,20 @@ define([
         this.settings       = $.extend(true, {}, this.settings, module.config(), settings);
         this.page           = $(this.settings.selectors.page);
         this.iframe         = $(this.settings.selectors.iframe);
-        this.iframeContext  = this.iframe.get(0).contentWindow;
-        this.resizeObserver = new MutationObserver(function (mutations) {
-            mutations.forEach(function () {
-                resizeThrottle();
-            });
-        });
 
-        if (_.isFunction(this.iframeContext.$)) {
-            this.initEvents();
-            this.updateIframeWidth();
-            this.resize();
+        if (this.iframe.length > 0) {
+            this.iframeContext  = this.iframe.get(0).contentWindow;
+            this.resizeObserver = new MutationObserver(function (mutations) {
+                mutations.forEach(function () {
+                    resizeThrottle();
+                });
+            });
+
+            if (_.isFunction(this.iframeContext.$)) {
+                this.initEvents();
+                this.updateIframeWidth();
+                this.resize();
+            }
         }
     };
 

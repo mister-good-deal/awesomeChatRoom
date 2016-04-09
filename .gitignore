@@ -13,3 +13,5 @@
 log.txt
 *.dmp
 .gitconfig
+
+*.lock
