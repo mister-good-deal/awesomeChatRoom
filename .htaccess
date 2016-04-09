@@ -3,13 +3,13 @@ Options +FollowSymlinks
 RewriteEngine On
 
 # Exclude url that will not be interpreted by the router
-RewriteCond  %{REQUEST_URI} !^(\/websocket)?\/$
-RewriteCond  %{REQUEST_URI} !^(\/websocket)?\/index\.php$
-RewriteCond  %{REQUEST_URI} !^(\/websocket)?\/static\/?$
-RewriteCond  %{REQUEST_URI} !^(\/websocket)?\/static\/js\/.*$
-RewriteCond  %{REQUEST_URI} !^(\/websocket)?\/static\/html\/.*$
-RewriteCond  %{REQUEST_URI} !^(\/websocket)?\/static\/dist\/.*$
-RewriteCond  %{REQUEST_URI} !^(\/websocket)?\/static\/fonts\/.*$
+RewriteCond  %{REQUEST_URI} !^(\/awesomechatroom)?\/$
+RewriteCond  %{REQUEST_URI} !^(\/awesomechatroom)?\/index\.php$
+RewriteCond  %{REQUEST_URI} !^(\/awesomechatroom)?\/static\/?$
+RewriteCond  %{REQUEST_URI} !^(\/awesomechatroom)?\/static\/js\/.*$
+RewriteCond  %{REQUEST_URI} !^(\/awesomechatroom)?\/static\/html\/.*$
+RewriteCond  %{REQUEST_URI} !^(\/awesomechatroom)?\/static\/dist\/.*$
+RewriteCond  %{REQUEST_URI} !^(\/awesomechatroom)?\/static\/fonts\/.*$
 
 # Redirect all the left urls to the router
 RewriteRule ^(.*)$ php/router.php?action=$1 [B,NE,QSA,L]

@@ -1,6 +1,6 @@
 {
-  "name": "websocket",
-  "title": "Websocket chat",
+  "name": "awesomeChatRoom",
+  "title": "awesomeChatRoom",
   "description": "websocket chat web app",
   "version": "1.0.0",
   "author": {
@@ -8,15 +8,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ZiperRom1/web.git"
+    "url": "https://github.com/ZiperRom1/awesomeChatRoom.git"
   },
   "keywords": [
+    "awesomeChatRoom",
     "websocket",
     "services",
     "chat"
   ],
   "bugs": {
-    "url": "https://github.com/ZiperRom1/web/issues"
+    "url": "https://github.com/ZiperRom1/awesomeChatRoom/issues"
   },
   "license": "MIT",
   "dependencies": {},

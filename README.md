@@ -1,8 +1,10 @@
-# websocket / webrtc chat video and audio service
+# awesomeChatRoom
+
+### websocket / webrtc chat video and audio service
 
 ## Technical documentation
 
-[documentation](http://ziperrom1.github.io/websocket-doc/)
+[documentation](http://ziperrom1.github.io/awesomechatroom-doc/)
 
 ## Features
 
