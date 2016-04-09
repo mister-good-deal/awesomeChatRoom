@@ -190,7 +190,7 @@ If you want to play with Elasticsearch, it is recommended to install plugins lik
 
 ####Setup MySQL
 
-Create an empty database (ex: `CREATE SCHEMA ``websocket`` DEFAULT CHARACTER SET utf8 ;`) and setup its name in /php/conf.ini => `[Database]` => `dsn` dbname value
+Create an empty database (ex: `CREATE SCHEMA ``awesomechatroom`` DEFAULT CHARACTER SET utf8 ;`) and setup its name in /php/conf.ini => `[Database]` => `dsn` dbname value
 
 Create tables and some data with the ORM, run those commands
 
