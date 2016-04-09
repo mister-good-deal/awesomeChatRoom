@@ -130,6 +130,7 @@ class UserManager extends Manager
             $this->loadUserRights();
             $response['user']['chatRight'] = $this->userEntity->getChatRight()->getCollection();
             $response['user']['right']     = $this->userEntity->getRight()->__toArray();
+            $_SESSION['user']              = serialize($this->userEntity);
         }
 
         return $response;
@@ -142,7 +143,25 @@ class UserManager extends Manager
      */
     public function hasWebSocketServerRight(): bool
     {
-        return $this->userEntityManager->checkSecurityToken() && $this->userEntity->getRight()->webSocket;
+        return (
+            $this->userEntityManager->checkSecurityToken() &&
+            $this->userEntity->getRight() !== null &&
+            $this->userEntity->getRight()->webSocket
+        );
+    }
+
+    /**
+     * Check if a user have the admin access to the WebSocker server
+     *
+     * @return     bool  True if the User has the right else false
+     */
+    public function hasKibanaRight(): bool
+    {
+        return (
+            $this->userEntityManager->checkSecurityToken() &&
+            $this->userEntity->getRight() !== null &&
+            $this->userEntity->getRight()->kibana
+        );
     }
 
     /**
@@ -155,7 +174,8 @@ class UserManager extends Manager
     public function hasChatKickRight(int $roomId): bool
     {
         return (
-            $this->userEntityManager->checkSecurityToken() && (
+            $this->userEntityManager->checkSecurityToken() &&
+            $this->userEntity->getRight() !== null && (
                 $this->userEntity->getRight()->chatAdmin || (
                     $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
                     $this->userEntity->getChatRight()->getEntityById($roomId)->kick

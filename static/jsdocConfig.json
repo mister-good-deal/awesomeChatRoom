@@ -15,7 +15,7 @@
         "footer"               : "",
         "copyright"            : "DocStrap Copyright © 2012-2014 The contributors to the JSDoc3 and DocStrap projects.",
         "protocol"             : "html://",
-        "systemName"           : "WebSocket services / AMD modules",
+        "systemName"           : "awesomeChatRoom",
         "navType"              : "inline",
         "theme"                : "journal",
         "linenums"             : true,
@@ -26,6 +26,6 @@
         "highlightTutorialCode": false
       },
     "opts": {
-        "destination": "../../ziperrom1.github.io/websocket-doc/jsDoc/"
+        "destination": "../../ziperrom1.github.io/awesomechatroom-doc/jsDoc/"
     }
 }

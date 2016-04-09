@@ -106,7 +106,9 @@
                                         data-value="all"
                                         aria-haspopup="true"
                                         aria-expanded="false"
-                                ><?=_('Send to')?> (<span class="value"><?=_('All')?></span>) <span class="caret"></span>
+                                >
+                                    <?=_('Send to')?> (<span class="value"><?=_('All')?></span>)
+                                    &&nbsp;<span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu users-list">
                                     <li data-value="all">

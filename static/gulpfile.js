@@ -21,7 +21,7 @@
         CleanPlugin      = require('less-plugin-clean-css'),
         AutoprefixPlugin = require('less-plugin-autoprefix'),
         jsdocConfig      = require('./jsdocConfig.json'),
-        docPath          = '../../ziperrom1.github.io/websocket-doc',
+        docPath          = '../../ziperrom1.github.io/awesomechatroom-doc',
         jsSrc            = ['js/lib/*.js', 'js/app.js', 'js/main.js'],
         phpSrc           = ['../php/**/*.php', '!../php/vendor/**/*.*'],
         clean            = new CleanPlugin({

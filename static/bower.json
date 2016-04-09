@@ -1,23 +1,24 @@
 {
-    "name": "websocket",
-    "description": "websocket chat web app",
+    "name": "awesomeChatRoom",
+    "description": "awesomeChatRoom chat web app",
     "authors": [
         "Romain Laneuville"
     ],
     "license": "MIT",
     "keywords": [
+        "awesomeChatRoom",
         "websocket",
         "services",
         "chat"
     ],
-    "homepage": "https://github.com/ZiperRom1/web",
+    "homepage": "https://github.com/ZiperRom1/awesomeChatRoom",
     "moduleType": [
         "amd"
     ],
     "dependencies": {
-        "jquery": "2.2.0",
-        "lodash": "4.0.0",
-        "bootstrap": "3.3.6",
+        "jquery": "^2.2.0",
+        "lodash": "^4.9.0",
+        "bootstrap": "^3.3.6",
         "bootstrap-select": "latest",
         "bootstrap-switch": "latest",
         "requirejs": "latest",
