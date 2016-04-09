@@ -14,35 +14,6 @@ namespace traits;
 trait ShortcutsTrait
 {
     /**
-     * Set a value to a variable if the value is set or set a default value instead if a default value is defined
-     *
-     * @param      mixed  $variable  The variable to set the value
-     * @param      mixed  $value     The value to set
-     * @param      mixed  $default   OPTIONAL default value to set if the value is not set
-     */
-    public static function setIfIsSet(&$variable, $value)
-    {
-        if (isset($value)) {
-            $variable = $value;
-        } elseif (func_num_args() > 2) {
-            $variable = func_get_arg(2);
-        }
-    }
-
-    /**
-     * Set a trimed value to a variable if the value is set or set a default value instead if a default value is defined
-     *
-     * @param      mixed  $variable  The variable to set the value
-     * @param      mixed  $value     The value to set
-     * @param      mixed  $default  OPTIONAL default value to set if the value is not set
-     */
-    public function setIfIsSetAndTrim(&$variable, $value)
-    {
-        $this->setIfIsSet($variable, $value);
-        $variable = trim($variable);
-    }
-
-    /**
      * Perform an in_array research for each specified sub-array
      *
      * @param      mixed   $needle    The value to research

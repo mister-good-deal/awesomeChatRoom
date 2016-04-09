@@ -18,9 +18,11 @@
     <file>autoloader.php</file>
     <directory>abstracts</directory>
     <directory>classes</directory>
+    <directory>controllers</directory>
     <directory>examples</directory>
     <directory>interfaces</directory>
     <directory>tests</directory>
     <directory>traits</directory>
+    <ignore>vendor/*</ignore>
   </files>
 </phpdoc>
