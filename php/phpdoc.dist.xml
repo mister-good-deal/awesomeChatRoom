@@ -12,7 +12,7 @@
     </extensions>
   </parser>
   <transformer>
-    <target>../../ziperrom1.github.io/websocket-doc/phpDoc</target>
+    <target>../../ziperrom1.github.io/awesomechatroom-doc/phpDoc</target>
   </transformer>
   <files>
     <file>autoloader.php</file>

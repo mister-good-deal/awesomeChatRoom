@@ -86,11 +86,11 @@ All PHP methods parameters type and methods return type must be specified as the
 
 First create the main repository of the project by running the command
 
-`git clone https://github.com/ZiperRom1/web.git websocket`
+`git clone https://github.com/ZiperRom1/awesomeChatRoom.git awesomechatroom`
 
 Then the technical documentation repository of the projet by running the command
 
-`git clone https://github.com/ZiperRom1/ziperrom1.github.io.git websocket-doc`
+`git clone https://github.com/ZiperRom1/ziperrom1.github.io.git awesomechatroom-doc`
 
 - Install PHP [last realese Thred Safe](http://windows.php.net/downloads/releases/php-7.0.2-Win32-VC14-x64.zip) (dezip and add the repository to the PATH windows variable)
 - Install APACHE [last realese](http://www.apachelounge.com/download/VC14/binaries/httpd-2.4.18-win64-VC14.zip) as a service (run `[path to apache repository]/httpd.exe -k install`)
@@ -246,17 +246,27 @@ Here are all the gulp commands you can run
 
 - `gulp php_lint` Parse php source files with phpcbf and phpcs linters and show errors
 
-- `gulp jsdoc` Generate the jsdoc
+- `gulp jsdoc_generation` Generate the jsdoc
 
-- `gulp phpdoc` Generate the phpdoc
+- `gulp phpdoc_generation` Generate the phpdoc
 
-- `gulp push_jsdoc` Add commit and push the jsdoc on git gh-pages branch
+- `gulp git_js_doc` Add commit and push the jsdoc on git gh-pages branch
 
-- `gulp push_phpdoc` Add commit and push the phpdoc on git gh-pages branch
+- `gulp git_php_doc` Add commit and push the phpdoc on git gh-pages branc
 
-- `gulp doc` Generate the jsdoc and the phpdoc
+- `gulp jsDoc` Combination of jsdoc_generation and git_js_doc
+
+- `gulp phpDoc` Combination of phpdoc_generation and git_php_doc
 
 - `gulp push_doc` Add commit and push the phpdoc and the jsdoc on git gh-pages branch
+
+- `gulp doc` Generate the jsdoc and the phpdoc and push it on git gh-pages branch
+
+- `gulp deploy_static` Process tasks before deploying the static folder on the production server
+
+- `gulp deploy_php` Process tasks before deploying the php folder on the production server
+
+- `gulp deploy` Combination of deploy_static and deploy_php
 
 - `gulp watch`  Wait from any change in /static/less directory and run `gulp build_less` on change
 

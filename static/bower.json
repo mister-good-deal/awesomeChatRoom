@@ -1,16 +1,17 @@
 {
-    "name": "websocket",
-    "description": "websocket chat web app",
+    "name": "awesomeChatRoom",
+    "description": "awesomeChatRoom chat web app",
     "authors": [
         "Romain Laneuville"
     ],
     "license": "MIT",
     "keywords": [
+        "awesomeChatRoom",
         "websocket",
         "services",
         "chat"
     ],
-    "homepage": "https://github.com/ZiperRom1/web",
+    "homepage": "https://github.com/ZiperRom1/awesomeChatRoom",
     "moduleType": [
         "amd"
     ],
