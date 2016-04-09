@@ -56,9 +56,8 @@ class UserManager extends Manager
         $this->userRightEntityManager     = new UserRightEntityManager($this->userEntity->getRight());
         $this->userChatRightEntityManager = new UserChatRightEntityManager(null, $this->userEntity->getChatRight());
 
-        if ($entity !== null) {
-            $this->loadUserRights();
-        }
+        // @todo see user rights default loading (Kibana check and not reaload rights every times)
+        $this->loadUserRights();
     }
 
     /*=====  End of Magic Methods  ======*/
@@ -130,6 +129,7 @@ class UserManager extends Manager
             $this->loadUserRights();
             $response['user']['chatRight'] = $this->userEntity->getChatRight()->getCollection();
             $response['user']['right']     = $this->userEntity->getRight()->__toArray();
+            $_SESSION['user']              = serialize($this->userEntity);
         }
 
         return $response;
@@ -143,6 +143,16 @@ class UserManager extends Manager
     public function hasWebSocketServerRight(): bool
     {
         return $this->userEntityManager->checkSecurityToken() && $this->userEntity->getRight()->webSocket;
+    }
+
+    /**
+     * Check if a user have the admin access to the WebSocker server
+     *
+     * @return     bool  True if the User has the right else false
+     */
+    public function hasKibanaRight(): bool
+    {
+        return $this->userEntityManager->checkSecurityToken() && $this->userEntity->getRight()->kibana;
     }
 
     /**
@@ -238,15 +248,11 @@ class UserManager extends Manager
      */
     private function loadUserRights()
     {
-        if ($this->userEntity->getRight() === null) {
-            $this->userRightEntityManager->loadEntity($this->userEntity->id);
-            $this->userEntity->setRight($this->userRightEntityManager->getEntity());
-        }
+        $this->userRightEntityManager->loadEntity($this->userEntity->id);
+        $this->userEntity->setRight($this->userRightEntityManager->getEntity());
 
-        if ($this->userEntity->getChatRight() === null) {
-            $this->userChatRightEntityManager->loadUserChatRight((int) $this->userEntity->id);
-            $this->userEntity->setChatRight($this->userChatRightEntityManager->getEntityCollection());
-        }
+        $this->userChatRightEntityManager->loadUserChatRight((int) $this->userEntity->id);
+        $this->userEntity->setChatRight($this->userChatRightEntityManager->getEntityCollection());
     }
 
     /*=====  End of Private methods  ======*/

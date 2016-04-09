@@ -16,6 +16,7 @@ use \abstracts\Entity as Entity;
  * @property   int   $idUser     The user id
  * @property   bool  $webSocket  The user webSocket right
  * @property   bool  $chatAdmin  The user chatAdmin right
+ * @property   bool  $kibana     The user Kibana right
  */
 class UserRight extends Entity
 {

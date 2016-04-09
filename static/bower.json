@@ -15,9 +15,9 @@
         "amd"
     ],
     "dependencies": {
-        "jquery": "2.2.0",
-        "lodash": "4.0.0",
-        "bootstrap": "3.3.6",
+        "jquery": "^2.2.0",
+        "lodash": "^4.9.0",
+        "bootstrap": "^3.3.6",
         "bootstrap-select": "latest",
         "bootstrap-switch": "latest",
         "requirejs": "latest",

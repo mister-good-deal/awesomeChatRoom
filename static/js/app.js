@@ -11,7 +11,8 @@ requirejs.config({
         "forms"           : "lib/forms",
         "message"         : "lib/message",
         "user"            : "lib/user",
-        "websocket"       : "lib/websocket"
+        "websocket"       : "lib/websocket",
+        "iframe"          : "lib/iframe"
     },
     "shim"  : {
         "bootstrap"        : {
@@ -31,6 +32,15 @@ requirejs.config({
                 "page"       : ".page",
                 "pageLink"   : ".page-link",
                 "currentPage": ".current-page"
+            }
+        },
+        "iframe"    : {
+            "refreshInterval": 1000,
+            "selectors"      : {
+                "page"                 : ".current-page",
+                "iframe"               : "#kibana-iframe",
+                "iframeWidthContainer" : "body",
+                "iframeHeightContainer": ".content"
             }
         },
         "websocket" : {

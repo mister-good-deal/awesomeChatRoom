@@ -1,13 +1,12 @@
 require(
-    ['forms', 'websocket', 'user', 'chat', 'message', 'bootstrap'],
-    function (FormsManager, WebsocketManager, User, ChatManager, Message) {
+    ['forms', 'websocket', 'user', 'chat', 'message', 'iframe', 'bootstrap'],
+    function (FormsManager, WebsocketManager, User, ChatManager, Message, Iframe) {
         'use strict';
 
         var forms          = new FormsManager(),
             messageManager = new Message(),
             user           = new User(forms),
-            websocket      = new WebsocketManager(user),
-            chat           = new ChatManager(websocket, user, forms);
+            websocket      = new WebsocketManager(user);
         // Bind WebSocket server callbacks
         websocket.addCallback(
             messageManager.settings.serviceName, messageManager.parseWebsocketData, messageManager
@@ -20,8 +19,9 @@ require(
                 "user"   : this.attributes
             }));
         };
-        // Make it global to develop
-        window.WebsocketManager = websocket;
-        window.ChatManager      = chat;
+
+        new ChatManager(websocket, user, forms);
+
+        new Iframe();
     }
 );

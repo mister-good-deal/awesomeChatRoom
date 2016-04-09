@@ -379,7 +379,7 @@ class Orm extends Console
         static::out('Create user data' . PHP_EOL);
 
         // Create an admin with password = 123
-        $admin = new User(array(
+        $admin = new User([
             'id'        => 1,
             'email'     => 'admin@websocket.com',
             'firstName' => 'Admin',
@@ -387,15 +387,15 @@ class Orm extends Console
             'pseudonym' => 'admin',
             'password'  => '$6$rounds=5000$xd8u1gm9aw8d2npq$VlV1nxc0CNsVhgtnKXPcvT.1Mzt.8ZjNQZYWeK7NOFNBy4M.3EEg9Kt4'
                            . 'WHFEogUA7xtH89UKDfp4UXHVYlIY00'
-        ));
+        ]);
 
-        $admin->setRight(new UserRight(array('idUser' => 1, 'webSocket' => 1, 'chatAdmin' => 1)));
+        $admin->setRight(new UserRight(['idUser' => 1, 'webSocket' => 1, 'chatAdmin' => 1, 'kibana' => 1]));
 
         $users->add($admin);
 
         // Create some normal users with password = 123
         for ($i = 1; $i < 11; $i++) {
-            $user = new User(array(
+            $user = new User([
                 'id'        => ($i + 1),
                 'email'     => 'user_' . $i . '@websocket.com',
                 'firstName' => 'User ' . $i,
@@ -403,7 +403,7 @@ class Orm extends Console
                 'pseudonym' => 'User ' . $i,
                 'password'  => '$6$rounds=5000$xd8u1gm9aw8d2npq$VlV1nxc0CNsVhgtnKXPcvT.1Mzt.8ZjNQZYWeK7NOFNBy4M.3EEg9Kt'
                                . '4WHFEogUA7xtH89UKDfp4UXHVYlIY00'
-            ));
+            ]);
 
             $users->add($user);
         }
@@ -426,26 +426,26 @@ class Orm extends Console
         static::out('Create chat data' . PHP_EOL);
 
         // Create a default chat room
-        $default = new ChatRoom(array(
+        $default = new ChatRoom([
             'id'           => 1,
             'name'         => 'Default',
             'creator'      => 1,
             'creationDate' => date('Y-m-d H:i:s'),
             'maxUsers'     => 50
-        ));
+        ]);
 
         $rooms->add($default);
 
         // Create some rooms some public and some with password 123
         for ($i = 1; $i < 11; $i++) {
-            $room = new ChatRoom(array(
+            $room = new ChatRoom([
                 'id'           => ($i + 1),
                 'name'         => 'Room ' . $i,
                 'creator'      => 1,
                 'password'     => (mt_rand(0, 1) ? null : '123'),
                 'creationDate' => date('Y-m-d H:i:s'),
                 'maxUsers'     => 20
-            ));
+            ]);
 
             $rooms->add($room);
         }
@@ -516,7 +516,7 @@ class Orm extends Console
         $columns       = $this->filterFecthAllByColumn($data);
         $colmunsNumber = count($columns);
         $rowsNumber    = ($colmunsNumber > 0) ? count($columns[key($columns)]) : 0;
-        $columnsName   = array();
+        $columnsName   = [];
         $maxLength     = 0;
 
         foreach ($columns as $columnName => $column) {
