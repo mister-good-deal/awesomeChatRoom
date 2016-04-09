@@ -110,7 +110,10 @@ class Orm extends Console
     }
 
     /**
-     * @inheritDoc
+     * Process the command entered by the user and output the result in the console
+     *
+     * @param      string  $command   The command passed by the user
+     * @param      bool    $executed  True if the command is already executed, else false DEFAULT false
      */
     protected function processCommand(string $command, bool $executed = false)
     {

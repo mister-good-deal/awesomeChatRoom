@@ -12,7 +12,10 @@ use \classes\logger\ConsoleLogger as ConsoleLogger;
 use \classes\logger\FileLogger as FileLogger;
 
 /**
- * LoggerManager
+ * Factory to manage the different kind of logger to implement and shortcut methods call
+ *
+ * @package    Factory
+ * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 class LoggerManager
 {
