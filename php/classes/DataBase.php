@@ -311,9 +311,18 @@ class DataBase
      */
     public static function getAllEntites(): array
     {
-        Ini::setIniFileName(Ini::INI_CONF_FILE);
+        $entities         = [];
+        $currentDirectory = new \DirectoryIterator(
+            dirname(__DIR__) . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'entities'
+        );
 
-        return Ini::getParam('Entities', 'entitesList');
+        foreach ($currentDirectory as $fileInfo) {
+            if (!$fileInfo->isDot() && $fileInfo->isFile()) {
+                $entities[] = $fileInfo->getBasename('.ini');
+            }
+        }
+
+        return $entities;
     }
 
     /**

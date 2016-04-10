@@ -23,6 +23,8 @@ use \abstracts\designPatterns\Entity as Entity;
 
 /**
  * ORM in a console mode with simple command syntax to manage the database
+ *
+ * @todo normalize "initData" in entities class
  */
 class Orm extends Console
 {
@@ -34,15 +36,13 @@ class Orm extends Console
      * @var        string[]  $SELF_COMMANDS     List of all commands with their description
      */
     private static $SELF_COMMANDS = [
-        'tables'                                                => 'Get all the tables name',
-        'entities'                                              => 'Get all the entites name',
+        'tables'                                                => 'Get all the current tables name',
+        'entities --table|--info|--create|--data'               => 'Perform action on entities table',
         'entity -n entityName --clean|drop|show|desc|create'    => 'Perform action on entity table',
         'clean -t tableName'                                    => 'Delete all the row of the given table name',
         'drop -t tableName'                                     => 'Drop the given table name',
         'show -t tableName [-s startIndex -e endIndex]'         => 'Show table data between startIndex and endIndex',
         'desc -t tableName'                                     => 'Show table structure',
-        'create all'                                            => 'Create all tables',
-        'generate data'                                         => 'Generate default data in all tables',
         'es -i index -v sersion -s shards -r -replicas --index' => 'Create elasticsearch index',
         'es -i index -v version -t type -m mapping --mapping'   => 'Create elasticsearch mapping',
         'es -i index -a alias --aliases [--no-read --no-write]' => 'Create elasticsearch aliases',
@@ -129,7 +129,7 @@ class Orm extends Console
                 break;
 
             case 'entities':
-                static::out('Tables name: ' . PHP_EOL . $this->tablePrettyPrint(DB::getAllEntites()) . PHP_EOL);
+                $this->entitiesProcess($command);
                 break;
 
             case 'entity':
@@ -150,15 +150,6 @@ class Orm extends Console
 
             case 'desc':
                 $this->descTable($command);
-                break;
-
-            case 'create all':
-                $this->createAllTables();
-                break;
-
-            case 'generate data':
-                $this->insertUserData();
-                $this->insertChatData();
                 break;
 
             case 'es':
@@ -207,9 +198,6 @@ class Orm extends Console
         $args = $this->getArgs($command);
 
         if ($this->checkEntityName($args)) {
-            /**
-             * @var        Entity  $entity  An entity
-             */
             $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $args['n'];
             $entity         = new $entityClassNamespace;
             $command       .= ' -t ' . strtolower($entity->getTableName()); // todo bug SQL table name with uppercase
@@ -228,6 +216,38 @@ class Orm extends Console
                 $entityManager->createEntityTable();
                 static::ok(static::ACTION_DONE . PHP_EOL);
             }
+        }
+    }
+
+    /**
+     * Process the command called on the entities
+     *
+     * @param      string  $command  The command passed with its arguments
+     */
+    private function entitiesProcess(string $command)
+    {
+        $args = $this->getArgs($command);
+
+        if (isset($args['table'])) {
+            $tables = [['ENTITY', 'TABLE']];
+
+            foreach (DB::getAllEntites() as $entityName) {
+                $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $entityName;
+                $tables[] = [$entityName, (new $entityClassNamespace)->getTableName()];
+                Ini::setIniFileName(Ini::INI_CONF_FILE);
+            }
+
+            static::out($this->prettyTwoDimensionalArray($tables) . PHP_EOL);
+        } elseif (isset($args['info'])) {
+            foreach (DB::getAllEntites() as $entityName) {
+                $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $entityName;
+                static::out((new $entityClassNamespace)->__toInfo() . PHP_EOL);
+            }
+        } elseif (isset($args['create'])) {
+            $this->createAllTables();
+        } elseif (isset($args['data'])) {
+            $this->insertUserData();
+            $this->insertChatData();
         }
     }
 
