@@ -170,6 +170,36 @@ abstract class Entity
     }
 
     /**
+     * Pretty output the entity info
+     *
+     * @return     string  The pretty output entity
+     */
+    public function __toInfo(): string
+    {
+        $string        = '['  . $this->entityName . ']' . PHP_EOL;
+        $columnsName   = array_keys($this->columnsValue);
+
+        foreach ($columnsName as $columnName) {
+            $string .=
+                '  ' . $this->smartAlign($columnName, $columnsName)
+                . '  ' . $this->smartAlign(
+                    $this->columnsAttributes[$columnName]['type'] .
+                    (isset($this->columnsAttributes[$columnName]['size']) ?
+                        '('. $this->columnsAttributes[$columnName]['size'] . ')' : ''
+                    ),
+                    array(
+                        array_column($this->columnsAttributes, 'type'),
+                        array_column($this->columnsAttributes, 'size')
+                    ),
+                    2
+                )
+                . 'DEFAULT  ' . ($this->columnsAttributes[$columnName]['default'] ?? '""') . PHP_EOL;
+        }
+
+        return $string;
+    }
+
+    /**
      * Return the entity in an array format
      *
      * @return     array  Array with columns name on keys and columns value on values

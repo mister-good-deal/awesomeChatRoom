@@ -73,16 +73,49 @@ trait PrettyOutputTrait
         $keys           = array_keys($array);
 
         foreach ($array as $key => $value) {
-            $alignKey = $valuesIndent . $this->smartAlign($key, $keys) . ' => ';
-
-            if (is_array($value)) {
-                $arrayFormatted[] = $alignKey . $this->prettyArray($value, $depth + 1);
-            } else {
-                $arrayFormatted[] = $alignKey . $this->formatVariable($value);
-            }
+            $alignKey         = $valuesIndent . $this->smartAlign($key, $keys) . ' => ';
+            $arrayFormatted[] = $alignKey . $this->formatVariable($value, $depth + 1);
         }
 
-        return 'array(' . PHP_EOL . implode(',' . PHP_EOL, $arrayFormatted) . PHP_EOL . $arrayIndent . ')';
+        return '[' . PHP_EOL . implode(',' . PHP_EOL, $arrayFormatted) . PHP_EOL . $arrayIndent . ']';
+    }
+
+    /**
+     * Format a two dimensional array in a pretty indented output string
+     *
+     * @param      array   $arrays  The 2D array to format
+     *
+     * @return     string  The array as a pretty string
+     */
+    public function prettyTwoDimensionalArray(array $arrays): string
+    {
+        $maxLength        = $this->getMaxSize($arrays);
+        $separationLine   = '+' . str_pad('', 2 * ($maxLength + 2) + 1, '-', STR_PAD_BOTH) . '+';
+        $headers          = array_shift($arrays);
+        $arrayFormatted   = [$separationLine];
+
+        $header = '| ';
+
+        foreach ($headers as $value) {
+            $header .= str_pad($value, $maxLength, ' ', STR_PAD_BOTH) . ' | ';
+        }
+
+        $arrayFormatted[] = $header;
+        $arrayFormatted[] = $separationLine;
+
+        foreach ($arrays as $array) {
+            $line = '| ';
+
+            foreach ($array as $value) {
+                $line .= str_pad($value, $maxLength, ' ') . ' | ';
+            }
+
+            $arrayFormatted[] = $line;
+        }
+
+        $arrayFormatted[] = $separationLine;
+
+        return implode(PHP_EOL, $arrayFormatted);
     }
 
     /**
@@ -174,27 +207,31 @@ trait PrettyOutputTrait
     =======================================*/
 
     /**
-     * Process the max value size of a category
+     * Process the max value size of an array
      *
-     * If the category is processed and the array didn't change, the category is not reprocessed
+     * If the array is processed and the array didn't change, the array is not reprocessed
      *
-     * @param      string[]  $strings    The array to calculate max size of
-     * @param      integer   $minSize    OPTIONAL The minium size DEFAULT 0
-     * @param      string    $arrayHash  OPTIONAL The already calculated array hash DEFAULT null
+     * @param      array    $array      The array to calculate max size of
+     * @param      integer  $minSize    OPTIONAL The minium size DEFAULT 0
+     * @param      string   $arrayHash  OPTIONAL The already calculated array hash DEFAULT null
      */
-    private function setMaxSize(array $strings = array(), int $minSize = 0, string $arrayHash = null)
+    private function setMaxSize(array $array, int $minSize = 0, string $arrayHash = null)
     {
         if ($arrayHash === null) {
-            $arrayHash = $this->md5Array($strings);
+            $arrayHash = $this->md5Array($array);
         }
 
         $max = 0;
 
-        foreach ($strings as $string) {
-            $stringSize = strlen((string) $string);
+        foreach ($array as $value) {
+            if (is_array($value)) {
+                $size = $this->getMaxSize($value);
+            } else {
+                $size = strlen((string) $value);
+            }
 
-            if ($stringSize > $max) {
-                $max = $stringSize;
+            if ($size > $max) {
+                $max = $size;
             }
         }
 
