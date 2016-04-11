@@ -3,125 +3,205 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Test websocket</title>
         <link rel="stylesheet" href="static/dist/style.css">
-        <script src="static/dist/app.js" type="text/javascript" charset="utf-8" async defer></script>
-        <!-- <script data-main="/static/js/app"
+        <!--<script src="static/dist/app.js" type="text/javascript" charset="utf-8" async defer></script>-->
+        <script data-main="/static/js/app"
                 src="/static/js/lib/vendor/require.js"
                 type="text/javascript"
                 charset="utf-8"
                 async defer>
-        </script> -->
+        </script>
     </head>
     <body>
-        <h1>Test websocket</h1>
 
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerUserModal">
-            <?=_('Register')?>
-        </button>
+        <!--===============================
+        =            Left menu            =
+        ================================-->
 
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#connectUserModal">
-            <?=_('Connect')?>
-        </button>
-
-        <!-- connect room -->
-        <div class="connect-room">
-            <input class="pseudonym" type="text" name="chatPseudo" placeholder="<?=_('Pseudonym')?>">
-            <select class="room-name selectpicker"
-                    name="roomName"
-                    data-title="<?=_('Select a room')?>"
-                    data-show-subtext="true"
-                    data-live-search="true"
-            >
-                <optgroup class="public" label="<?=_('Public rooms')?>"></optgroup>
-                <optgroup class="private" label="<?=_('Private rooms')?>"></optgroup>
-            </select>
-            <input class="room-password" type="password" name="roomPassword"  placeholder="<?=_('Room password')?>">
-            <button class="connect btn btn-primary" type="button"><?=_('Connect')?></button>
+        <div class="navmenu navmenu-default navmenu-fixed-left">
+            <a class="navmenu-brand" href="#">AwesomeChatRoom</a>
+            <ul class="nav navmenu-nav">
+                <li><a href="#">Slide in</a></li>
+                <li><a href="#">Push</a></li>
+                <li class="active"><a href="#">Reveal</a></li>
+                <li><a href="#">Off canvas navbar</a></li>
+            </ul>
+            <ul class="nav navmenu-nav">
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li><a href="#">Link</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                    <ul class="dropdown-menu navmenu-nav">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown-header">Nav header</li>
+                        <li><a href="#">Separated link</a></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
 
-        <!-- create room -->
-        <div class="create-room">
-            <input class="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
-            <select class="room-type" name="roomType">
-                <option value="public" selected><?=_('Public')?></option>
-                <option value="private"><?=_('Private')?></option>
-            </select>
-            <input class="room-password" type="password" name="roomPassword" value="" placeholder="<?=_('Password')?>">
-            <input class="room-max-users" type="number" name="roomMaxUsers" value="" placeholder="<?=_('Max users')?>">
-            <button class="create" type="button"><?=_('Create a room')?></button>
-        </div>
+        <!--====  End of Left menu  ====-->
 
-        <div id="chat">
-            <!-- rooms -->
-            <div id="room-sample"
-                class="room hide"
-                data-id=""
-                data-name=""
-                data-type=""
-                data-pseudonym=""
-                data-users=""
-                data-max-users=""
-                data-password=""
-            >
-                <!-- room title -->
-                <h3 class="header">
-                    <span class="users glyphicon glyphicon-user pull-left"
-                          type="button"
-                          data-title="<?= _('Connected users')?>"
-                          data-toggle="popover"
-                          data-placement="right"
-                          data-html="true"
-                    ></span>
-                    <span class="admin glyphicon glyphicon-cog pull-left"
-                          data-toggle="modal"
-                          data-target="#chat-admin-id"
-                    ></span>
-                    <span class="room-name"><?= _('default')?></span>
-                    <span class="badge messages-unread"></span>
-                    <span class="close-room pull-right glyphicon glyphicon-remove"></span>
-                    <span class="fullscreen pull-right glyphicon glyphicon-fullscreen"></span>
-                    <span class="minimize pull-right glyphicon glyphicon-minus"></span>
-                </h3>
-                <!-- room contents -->
-                <div class="room-contents">
-                    <!-- messages display -->
-                    <div class="chat" data-last-message-date="">
-                        <button class="load-historic" type="button"><?=_('Load more')?></button>
-                    </div>
-                    <!-- send message -->
-                    <form class="send-action no-ajax">
-                        <div class="form-group">
-                            <textarea class="message form-control"
-                                      rows="3"
-                                      name="message"
-                                      placeholder="<?=_('Message')?>"
-                            ></textarea>
-                        </div>
-                        <div class="form-group">
-                            <div class="input-group-btn dropup">
-                                <button type="button"
-                                        class="btn btn-default dropdown-toggle recievers"
-                                        data-toggle="dropdown"
-                                        data-value="all"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
-                                >
-                                    <?=_('Send to')?> (<span class="value"><?=_('All')?></span>)
-                                    &&nbsp;<span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu users-list">
-                                    <li data-value="all">
-                                        <a href="#" title="<?=_('All')?>"><?=_('All')?></a>
-                                    </li>
-                                </ul>
-                                <button class="send btn btn-default" type="submit"><?=_('Send message')?></button>
+        <!--============================
+        =            Canvas            =
+        =============================-->
+
+        <div class="canvas">
+
+            <!--==============================
+            =            Top menu            =
+            ===============================-->
+
+            <div class="navbar navbar-default navbar-fixed-top">
+                <button type="button"
+                        class="navbar-toggle"
+                        data-toggle="offcanvas"
+                        data-recalc="false"
+                        data-target=".navmenu"
+                        data-canvas=".canvas"
+                >
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+
+            <!--====  End of Top menu  ====-->
+
+            <!--===============================
+            =            Main page            =
+            ================================-->
+
+            <div class="container">
+
+                <div class="page-header">
+                    <h1>AwesomeChatRoom</h1>
+                </div>
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#registerUserModal">
+                    <?=_('Register')?>
+                </button>
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#connectUserModal">
+                    <?=_('Connect')?>
+                </button>
+
+                <!-- connect room -->
+                <div class="connect-room">
+                    <input class="pseudonym" type="text" name="chatPseudo" placeholder="<?=_('Pseudonym')?>">
+                    <select class="room-name selectpicker"
+                            name="roomName"
+                            data-title="<?=_('Select a room')?>"
+                            data-show-subtext="true"
+                            data-live-search="true"
+                    >
+                        <optgroup class="public" label="<?=_('Public rooms')?>"></optgroup>
+                        <optgroup class="private" label="<?=_('Private rooms')?>"></optgroup>
+                    </select>
+                    <input class="room-password" type="password" name="roomPassword"  placeholder="<?=_('Room password')?>">
+                    <button class="connect btn btn-primary" type="button"><?=_('Connect')?></button>
+                </div>
+
+                <!-- create room -->
+                <div class="create-room">
+                    <input class="room-name" type="text" name="roomName" value="" placeholder="<?=_('Room name')?>">
+                    <select class="room-type" name="roomType">
+                        <option value="public" selected><?=_('Public')?></option>
+                        <option value="private"><?=_('Private')?></option>
+                    </select>
+                    <input class="room-password" type="password" name="roomPassword" value="" placeholder="<?=_('Password')?>">
+                    <input class="room-max-users" type="number" name="roomMaxUsers" value="" placeholder="<?=_('Max users')?>">
+                    <button class="create" type="button"><?=_('Create a room')?></button>
+                </div>
+
+                <div id="chat">
+                    <!-- rooms -->
+                    <div id="room-sample"
+                        class="room hide"
+                        data-id=""
+                        data-name=""
+                        data-type=""
+                        data-pseudonym=""
+                        data-users=""
+                        data-max-users=""
+                        data-password=""
+                    >
+                        <!-- room title -->
+                        <h3 class="header">
+                            <span class="users glyphicon glyphicon-user pull-left"
+                                  type="button"
+                                  data-title="<?= _('Connected users')?>"
+                                  data-toggle="popover"
+                                  data-placement="right"
+                                  data-html="true"
+                            ></span>
+                            <span class="admin glyphicon glyphicon-cog pull-left"
+                                  data-toggle="modal"
+                                  data-target="#chat-admin-id"
+                            ></span>
+                            <span class="room-name"><?= _('default')?></span>
+                            <span class="badge messages-unread"></span>
+                            <span class="close-room pull-right glyphicon glyphicon-remove"></span>
+                            <span class="fullscreen pull-right glyphicon glyphicon-fullscreen"></span>
+                            <span class="minimize pull-right glyphicon glyphicon-minus"></span>
+                        </h3>
+                        <!-- room contents -->
+                        <div class="room-contents">
+                            <!-- messages display -->
+                            <div class="chat" data-last-message-date="">
+                                <button class="load-historic" type="button"><?=_('Load more')?></button>
                             </div>
+                            <!-- send message -->
+                            <form class="send-action no-ajax">
+                                <div class="form-group">
+                                    <textarea class="message form-control"
+                                              rows="3"
+                                              name="message"
+                                              placeholder="<?=_('Message')?>"
+                                    ></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group-btn dropup">
+                                        <button type="button"
+                                                class="btn btn-default dropdown-toggle recievers"
+                                                data-toggle="dropdown"
+                                                data-value="all"
+                                                aria-haspopup="true"
+                                                aria-expanded="false"
+                                        >
+                                            <?=_('Send to')?> (<span class="value"><?=_('All')?></span>)
+                                            &&nbsp;<span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu users-list">
+                                            <li data-value="all">
+                                                <a href="#" title="<?=_('All')?>"><?=_('All')?></a>
+                                            </li>
+                                        </ul>
+                                        <button class="send btn btn-default" type="submit"><?=_('Send message')?></button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
+
+            <!--====  End of Main page  ====-->
+
         </div>
+
+        <!--====  End of Canvas  ====-->
+
+        <!--============================
+        =            Modals            =
+        =============================-->
 
         <!-- register user modal -->
         <div class="modal" id="registerUserModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel">
@@ -377,6 +457,8 @@
                 </div>
             </div>
         </div>
+
+        <!--====  End of Modals  ====-->
 
         <!-- alert to display user choice input on kick / ban events -->
         <div id="alert-input-choice" class="alert alert-info">

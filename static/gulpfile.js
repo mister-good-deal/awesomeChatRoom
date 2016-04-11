@@ -89,19 +89,25 @@
         return bower({ cmd: 'update'});
     });
 
-    gulp.task('bower_move_js', ['bower_install'], function () {
+    gulp.task('bower_move_js', function () {
         return gulp.src(mainBowerFiles()).pipe(gulp.dest('js/lib/vendor'));
     });
 
-    gulp.task('bower_move_less', ['bower_install'], function () {
-        gulp.src(mainBowerFiles()).pipe(gulp.dest('less/vendor'));
+    gulp.task('bower_move_less', function () {
+        // Import less vendor src and exclude .*variables.less pattern
+        gulp.src(mainBowerFiles({"filter": /^(?!.*variables\.less$).*/})).pipe(gulp.dest('less/vendor'));
+        // Import less vendor src that have .*variables.less pattern and rename it
+        gulp.src('.bowerDependencies/jasny-bootstrap/less/variables.less')
+        .pipe(rename('jasny-bootstrap-variables.less'))
+        .pipe(gulp.dest('less/vendor'));
 
-        return gulp.src(
-            ['.bowerDependencies/bootstrap/less/**', '!.bowerDependencies/bootstrap/less/variables.less']
-        ).pipe(gulp.dest('less/vendor'));
+        return gulp.src([
+            '.bowerDependencies/bootstrap/less/**',
+            '!.bowerDependencies/bootstrap/less/variables.less'
+        ]).pipe(gulp.dest('less/vendor'));
     });
 
-    gulp.task('bower_move_fonts', ['bower_install'], function () {
+    gulp.task('bower_move_fonts', function () {
         return gulp.src('.bowerDependencies/bootstrap/fonts/**').pipe(gulp.dest('fonts'));
     });
 

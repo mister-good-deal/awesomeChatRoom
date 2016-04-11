@@ -1,6 +1,6 @@
 require(
-    ['forms', 'websocket', 'user', 'chat', 'message', 'iframe', 'bootstrap'],
-    function (FormsManager, WebsocketManager, User, ChatManager, Message, Iframe) {
+    ['jquery', 'forms', 'websocket', 'user', 'chat', 'message', 'iframe', 'bootstrap', 'jasny-bootstrap', 'domReady!'],
+    function ($, FormsManager, WebsocketManager, User, ChatManager, Message, Iframe) {
         'use strict';
 
         var forms          = new FormsManager(),

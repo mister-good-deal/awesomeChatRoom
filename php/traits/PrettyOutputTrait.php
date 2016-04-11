@@ -33,6 +33,8 @@ trait PrettyOutputTrait
      * @param      int               $position   The position to align as str_pad constant DEFAULT STR_PAD_RIGHT
      *
      * @return     string            The formatted value with extra spaces
+     *
+     * @todo refacto this shit
      */
     public function smartAlign(string $value, array $arrays, int $extraSize = 0, int $position = STR_PAD_RIGHT): string
     {
@@ -89,10 +91,10 @@ trait PrettyOutputTrait
      */
     public function prettyTwoDimensionalArray(array $arrays): string
     {
-        $maxLength        = $this->getMaxSize($arrays);
-        $separationLine   = '+' . str_pad('', 2 * ($maxLength + 2) + 1, '-', STR_PAD_BOTH) . '+';
-        $headers          = array_shift($arrays);
-        $arrayFormatted   = [$separationLine];
+        $maxLength      = $this->getMaxSize($arrays);
+        $separationLine = '+' . str_pad('', 2 * ($maxLength + 2) + 1, '-', STR_PAD_BOTH) . '+';
+        $headers        = array_shift($arrays);
+        $arrayFormatted = [$separationLine];
 
         $header = '| ';
 

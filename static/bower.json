@@ -22,13 +22,20 @@
         "bootstrap-select": "latest",
         "bootstrap-switch": "latest",
         "requirejs": "latest",
-        "domReady": "latest"
+        "domReady": "latest",
+        "jasny-bootstrap": "latest"
     },
     "overrides": {
         "bootstrap-switch": {
           "main": [
                 "src/less/bootstrap3/bootstrap-switch.less",
                 "dist/js/bootstrap-switch.js"
+            ]
+        },
+        "jasny-bootstrap": {
+            "main": [
+                "dist/js/jasny-bootstrap.js",
+                "less/*.less"
             ]
         }
     },
