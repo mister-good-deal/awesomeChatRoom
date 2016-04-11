@@ -21,13 +21,15 @@ define([
      * @constructor
      * @alias       module:lib/iframe
      * @param       {Object}       settings Overriden settings
+     *
+     * @todo this.page to get from navigation.js
      */
     var Iframe = function (settings) {
         var resizeThrottle = _.bind(_.throttle(this.resize, 100), this);
 
-        this.settings       = $.extend(true, {}, this.settings, module.config(), settings);
-        this.page           = $(this.settings.selectors.page);
-        this.iframe         = $(this.settings.selectors.iframe);
+        this.settings = $.extend(true, {}, this.settings, module.config(), settings);
+        this.page     = $(this.settings.selectors.page);
+        this.iframe   = $(this.settings.selectors.iframe);
 
         if (this.iframe.length > 0) {
             this.iframeContext  = this.iframe.get(0).contentWindow;
@@ -128,6 +130,7 @@ define([
         resize: function () {
             var iframeHeight;
 
+            this.page   = $(this.settings.selectors.page);
             this.iframe = $(this.settings.selectors.iframe);
 
             if (this.iframe.length === 0) {
@@ -136,7 +139,6 @@ define([
                 iframeHeight = this.getIframeHeight();
 
                 if (iframeHeight !== this.page.outerHeight()) {
-                    console.log('resize');
                     this.setPageHeight(iframeHeight);
                 }
             }
@@ -169,7 +171,10 @@ define([
          * @method     updateIframeWidth
          */
         updateIframeWidth: function () {
-            var width = this.page.outerWidth();
+            var width;
+
+            this.page = $(this.settings.selectors.page);
+            width     = this.page.outerWidth();
 
             this.iframeContext.$(this.settings.selectors.iframeWidthContainer).outerWidth(width);
             this.iframe.outerWidth(width);

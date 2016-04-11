@@ -49,6 +49,10 @@ define([
          * Current page parameters
          */
         "pageParameters": {},
+        /**
+         * Callbacks method to run actions on specific pages on loaded
+         */
+        "callbacks": {},
 
         /*=====  End of Object settings / properties  ======*/
 
@@ -88,8 +92,8 @@ define([
          * @param      {Event}  e       The event fired
          */
         openLink: function (e) {
-            this.loadPage($(e.currentTarget).attr('data-url'));
             e.preventDefault();
+            this.loadPage($(e.currentTarget).attr('href') || $(e.currentTarget).attr('data-url'));
         },
 
         /*=====  End of Events  ======*/
@@ -151,9 +155,12 @@ define([
             } else {
                 // Set page title
                 $('title').html(pageTitle);
+                // Hide the current page if exists
+                if (currentPage.length > 0) {
+                    currentPage.hide();
+                    currentPage.removeClass(this.settings.selectors.currentPage.substr(1));
+                }
                 // Display the page
-                currentPage.hide();
-                currentPage.removeClass(this.settings.selectors.currentPage.substr(1));
                 newPage.show();
                 newPage.addClass(this.settings.selectors.currentPage.substr(1));
                 // Set the URL hash
@@ -163,6 +170,10 @@ define([
                 // Set self attributes
                 this.pageUrl   = pageUrl;
                 this.pageTitle = pageTitle;
+                // Run the callback if it is set
+                if (this.callbacks[pageUrl]) {
+                    this.callbacks[pageUrl].callback.call(this.callbacks[pageUrl].context);
+                }
             }
         },
 
@@ -187,6 +198,30 @@ define([
 
                 this.parameters = parameters;
             }
+        },
+
+        /**
+         * Load the landing page
+         *
+         * @method     loadLandingPage
+         */
+        loadLandingPage: function () {
+            this.loadPage(this.settings.landingPage);
+        },
+
+        /**
+         * Add a callback to process data recieved from the WebSocket server
+         *
+         * @method     addCallback
+         * @param      {String}    pageUrl   The callback page
+         * @param      {Function}  callback  The callback function
+         * @param      {Object}    context   The callback context (null to use the navigation this context)
+         */
+        addCallback: function (pageUrl, callback, context) {
+            this.callbacks[pageUrl] = {
+                "callback": callback,
+                "context" : context || this
+            };
         }
 
         /*=====  End of Utilities methods  ======*/

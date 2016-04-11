@@ -4,42 +4,33 @@ html, body {
   height: 100%;
 }
 
-.navbar-toggle {
-  float: left;
-  margin-left: 15px;
+body {
+  padding: 50px 0 0 0;
 }
 
 .navmenu {
-  z-index: 1;
+  padding-top: 50px;
 }
 
-.canvas {
-  position: relative;
-  left: 0;
-  z-index: 2;
-  min-height: 100%;
-  padding: 50px 0 0 0;
-  background: #fff;
+.navbar-toggle {
+  position: absolute;
+  float: left;
 }
 
-@media (min-width: 0) {
+.page {
+  max-width: 100%;
+}
+
+@media (min-width: 1px) {
   .navbar-toggle {
-    display: block; /* force showing the toggle */
+    display: block !important;
   }
 }
 
-@media (min-width: 992px) {
-  body {
-    padding: 0;
-  }
-  .navbar {
-    right: auto;
-    background: none;
-    border: none;
-  }
-  .canvas {
-    padding: 0;
-  }
+/*----------  Page view system  ----------*/
+
+.page {
+    display: none;
 }
 
 /*----------  Chat room connect  ----------*/

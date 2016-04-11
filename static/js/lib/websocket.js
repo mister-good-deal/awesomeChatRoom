@@ -56,6 +56,8 @@ define([
 
         /**
          * Connect the client to the WebSocket server
+         *
+         * @method     connect
          */
         connect: function () {
             var self = this;
@@ -90,7 +92,8 @@ define([
         /**
          * Shorthand method to send data to the WebSocket server or delay until the websocket is ready
          *
-         * @param {String} data Data to send to the WebSocket server
+         * @method     send
+         * @param      {String}  data    Data to send to the WebSocket server
          */
         send: function (data) {
             var self = this;
@@ -106,6 +109,8 @@ define([
 
         /**
          * Disconnect the client from the WebSocket server
+         *
+         * @method     disconnect
          */
         disconnect: function () {
             this.socket.send(JSON.stringify({
@@ -116,7 +121,8 @@ define([
         /**
          * Treat data recieved from the WebSocket server
          *
-         * @param {String} data The text data recieved from the WebSocket server
+         * @method     treatData
+         * @param      {String}  data    The text data recieved from the WebSocket server
          */
         treatData: function (data) {
             data = JSON.parse(data);
@@ -135,9 +141,10 @@ define([
         /**
          * Add a callback to process data recieved from the WebSocket server
          *
-         * @param {String}   serviceName The callback service name
-         * @param {Function} callback    The callback function
-         * @param {Object}   context     The callback context
+         * @method     addCallback
+         * @param      {String}    serviceName  The callback service name
+         * @param      {Function}  callback     The callback function
+         * @param      {Object}    context      The callback context
          */
         addCallback: function (serviceName, callback, context) {
             this.callbacks[serviceName] = {
@@ -149,7 +156,8 @@ define([
         /**
          * Add a service to the WebSocket server
          *
-         * @param {String} serviceName The service name to add to the WebSocket server
+         * @method     addService
+         * @param      {String}  serviceName  The service name to add to the WebSocket server
          */
         addService: function (serviceName) {
             this.socket.send(JSON.stringify({
@@ -163,7 +171,8 @@ define([
         /**
          * Remove a service from the WebSocket server
          *
-         * @param {String} serviceName The service name to remove from the WebSocket server
+         * @method     removeService
+         * @param      {String}  serviceName  The service name to remove from the WebSocket server
          */
         removeService: function (serviceName) {
             this.socket.send(JSON.stringify({
@@ -176,6 +185,8 @@ define([
 
         /**
          * Query the currents running services from the WebSocket server
+         *
+         * @method     listServices
          */
         listServices: function () {
             this.socket.send(JSON.stringify({
@@ -189,7 +200,8 @@ define([
         /**
          * Parse the WebSocket server response to retrieve the services list
          *
-         * @param {Object} data JSON encoded data recieved from the WebSocket server
+         * @method     listServiceCallback
+         * @param      {Object}  data    JSON encoded data recieved from the WebSocket server
          */
         listServiceCallback: function (data) {
             console.log(data.services);
