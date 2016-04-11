@@ -13,7 +13,8 @@ requirejs.config({
         "message"         : "lib/message",
         "user"            : "lib/user",
         "websocket"       : "lib/websocket",
-        "iframe"          : "lib/iframe"
+        "iframe"          : "lib/iframe",
+        "navigation"      : "lib/navigation"
     },
     "shim"  : {
         "bootstrap"        : {
@@ -31,8 +32,9 @@ requirejs.config({
     },
     "config": {
         "navigation": {
-            "urlPrefix": "#!",
-            "selectors": {
+            "landingPage" : "chat",
+            "urlPrefix"   : "#!",
+            "selectors"   : {
                 "page"       : ".page",
                 "pageLink"   : ".page-link",
                 "currentPage": ".current-page"
