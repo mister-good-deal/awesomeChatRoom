@@ -3,6 +3,7 @@ requirejs.config({
         "bootstrap"       : "lib/vendor/bootstrap",
         "bootstrap-select": "lib/vendor/bootstrap-select",
         "bootstrap-switch": "lib/vendor/bootstrap-switch",
+        "jasny-bootstrap" : "lib/vendor/jasny-bootstrap",
         "domReady"        : "lib/vendor/domReady",
         "jquery"          : "lib/vendor/jquery",
         "lodash"          : "lib/vendor/lodash",
@@ -23,6 +24,9 @@ requirejs.config({
         },
         "bootstrap-switch" : {
             "deps": ['bootstrap']
+        },
+        "jasny-bootstrap"  : {
+            "deps": ['jquery', 'bootstrap']
         }
     },
     "config": {
