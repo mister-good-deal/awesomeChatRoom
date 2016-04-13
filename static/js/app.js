@@ -41,10 +41,9 @@ requirejs.config({
             }
         },
         "iframe"    : {
-            "refreshInterval": 1000,
-            "selectors"      : {
-                "page"                 : ".current-page",
-                "iframe"               : "#kibana-iframe",
+            "resizeInterval": 2000,
+            "selectors"     : {
+                "kibanaIframe"         : "#kibana-iframe",
                 "iframeWidthContainer" : "body",
                 "iframeHeightContainer": ".content"
             }

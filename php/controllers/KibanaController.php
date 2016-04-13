@@ -23,7 +23,6 @@ class KibanaController extends Controller
     {
         $userManager = new UserManager(isset($_SESSION['user']) ? unserialize($_SESSION['user']) : null);
 
-        // var_dump(unserialize($_SESSION['user'])->getRight());
         if ($userManager->hasKibanaRight()) {
             echo file_get_contents('http://127.0.0.1:5601');
         } else {
@@ -31,5 +30,15 @@ class KibanaController extends Controller
             // @todo check if Apache can serve custom page response on HTTP error code
             echo file_get_contents('../static/html/401Unauthorized.html');
         }
+    }
+
+    /**
+     * Get the kibana iframe
+     */
+    public function getIframe()
+    {
+        echo json_encode([
+            'src' => 'http://awesomechatroom.dev:8080/kibana/index',
+        ]);
     }
 }

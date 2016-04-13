@@ -17,7 +17,7 @@ require([
         var forms          = new FormsManager(),
             messageManager = new Message(),
             navigation     = new Navigation(),
-            iframe         = new Iframe(),
+            kibanaIframe   = new Iframe(navigation),
             user           = new User(forms),
             websocket      = new WebsocketManager(user);
         // Bind WebSocket server callbacks
@@ -39,9 +39,9 @@ require([
         if ($(window).outerWidth() > 768) {
             $('#navbar-menu-left').offcanvas('show');
         }
+        // Add navigation specific callbacks
+        navigation.addCallback('kibana', kibanaIframe.loadKibanaIframe, kibanaIframe);
         // Load the landing page configured in app.js => config => navigation => landingPage
         navigation.loadLandingPage();
-        // Add navigation specific callbacks
-        navigation.addCallback('kibana', iframe.updateIframeWidth, iframe);
     }
 );
