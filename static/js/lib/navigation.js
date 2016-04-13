@@ -38,6 +38,10 @@ define([
          */
         "settings" : {},
         /**
+         * Current jQuery DOM element page
+         */
+        "page": {},
+        /**
          * Current page URL (hash URL)
          */
         "pageUrl": "",
@@ -74,15 +78,20 @@ define([
          * Load a page when the page hash changes
          *
          * @method     loadPageFromHash
+         * @return     {Boolean}  True if a page was loaded else false
          */
         loadPageFromHash: function () {
-            var hash    = location.hash,
-                pageUrl = _.trimStart(_.head(_.split(hash, '?')), this.settings.urlPrefix);
+            var hash       = location.hash,
+                pageUrl    = _.trimStart(_.head(_.split(hash, '?')), this.settings.urlPrefix),
+                pageLoaded = false;
 
-            if (_.startsWith(hash, this.settings.urlPrefix)) {
+            if (_.startsWith(hash, this.settings.urlPrefix) && this.pageUrl !== pageUrl) {
                 this.loadPageParameters(hash);
                 this.loadPage(pageUrl);
+                pageLoaded = true;
             }
+
+            return pageLoaded;
         },
 
         /**
@@ -92,8 +101,13 @@ define([
          * @param      {Event}  e       The event fired
          */
         openLink: function (e) {
+            var url = $(e.currentTarget).attr('href') || $(e.currentTarget).attr('data-url');
+
             e.preventDefault();
-            this.loadPage($(e.currentTarget).attr('href') || $(e.currentTarget).attr('data-url'));
+
+            if (location.hash !== url) {
+                this.loadPage(url);
+            }
         },
 
         /*=====  End of Events  ======*/
@@ -101,6 +115,10 @@ define([
         /*===============================
         =            Getters            =
         ===============================*/
+
+        getPage: function () {
+            return this.page;
+        },
 
         /**
          * Get the current page URL (hash URL)
@@ -168,6 +186,7 @@ define([
                     location.hash = this.settings.urlPrefix + pageUrl;
                 }
                 // Set self attributes
+                this.page      = newPage;
                 this.pageUrl   = pageUrl;
                 this.pageTitle = pageTitle;
                 // Run the callback if it is set
@@ -206,7 +225,9 @@ define([
          * @method     loadLandingPage
          */
         loadLandingPage: function () {
-            this.loadPage(this.settings.landingPage);
+            if (!this.loadPageFromHash()) {
+                this.loadPage(this.settings.landingPage);
+            }
         },
 
         /**

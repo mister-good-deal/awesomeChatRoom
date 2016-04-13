@@ -18,33 +18,16 @@ define([
     /**
      * Iframe object
      *
-     * @constructor
-     * @alias       module:lib/iframe
-     * @param       {Object}       settings Overriden settings
-     *
-     * @todo this.page to get from navigation.js
+     * @class
+     * @alias      module:lib/iframe
+     * @param      {Object}  Navigation  A Navigation Object
+     * @param      {Object}  settings    Overriden settings
+     * @todo       Put iframe, iframeContext, resizeObserver, resizeObserverConfig out of the protype to handle multiple
+     *             iframes at the same time
      */
-    var Iframe = function (settings) {
-        var resizeThrottle = _.bind(_.throttle(this.resize, 100), this);
-
-        this.settings = $.extend(true, {}, this.settings, module.config(), settings);
-        this.page     = $(this.settings.selectors.page);
-        this.iframe   = $(this.settings.selectors.iframe);
-
-        if (this.iframe.length > 0) {
-            this.iframeContext  = this.iframe.get(0).contentWindow;
-            this.resizeObserver = new MutationObserver(function (mutations) {
-                mutations.forEach(function () {
-                    resizeThrottle();
-                });
-            });
-
-            if (_.isFunction(this.iframeContext.$)) {
-                this.initEvents();
-                this.updateIframeWidth();
-                this.resize();
-            }
-        }
+    var Iframe = function (Navigation, settings) {
+        this.settings   = $.extend(true, {}, this.settings, module.config(), settings);
+        this.navigation = Navigation;
     };
 
     Iframe.prototype = {
@@ -57,13 +40,9 @@ define([
          */
         "settings": {},
         /**
-         * The id of the setInterval function
+         * The navigation object
          */
-        "setIntervalId": "",
-        /**
-         * The current page displayed jQuery DOM element
-         */
-        "page": {},
+        "navigation": {},
         /**
          * The iframe jQuery DOM element
          */
@@ -73,17 +52,9 @@ define([
          */
         "iframeContext": {},
         /**
-         * Mutation observer that calls resize method on each mutation observed
+         * The resize setIntervall ID
          */
-        "resizeObserver": {},
-        /**
-         * Options for resizeObserver
-         */
-        "resizeObserverConfig": {
-            "childList" : true,
-            "attributes": true,
-            "subtree"   : true
-        },
+        "resizeSetInterval": null,
 
         /*=====  End of Object settings / properties  ======*/
 
@@ -92,17 +63,35 @@ define([
         ==============================*/
 
         /**
+         * Init an iframe
+         *
+         * @method     init
+         * @param      {String}  iframeId  The iframe ID DOM selector
+         */
+        init: function (iframeId) {
+            this.iframe         = $(iframeId);
+            this.iframeContext  = this.iframe.get(0).contentDocument;
+
+            $('body', this.iframeContext).css({
+                "margin" : 0,
+                "padding": 0,
+                "height" : "100%"
+            });
+
+            this.setPageHeight($('body').innerHeight);
+            this.destroyEvents();
+            this.initEvents();
+            this.updateIframeWidth();
+        },
+
+        /**
          * Initialize all the events
          *
          * @method     initEvents
          */
         initEvents: function () {
             $(window).on('resize', _.bind(_.throttle(this.updateIframeWidth, 100), this));
-
-            this.resizeObserver.observe(
-                this.iframeContext.$(this.settings.selectors.iframeHeightContainer).get(0),
-                this.resizeObserverConfig
-            );
+            this.resizeSetInterval = setInterval(_.bind(this.resize, this), this.settings.resizeInterval);
         },
 
         /**
@@ -112,7 +101,7 @@ define([
          */
         destroyEvents: function () {
             $(window).off('resize', _.bind(_.throttle(this.updateIframeWidth, 100), this));
-            this.resizeObserver.disconnect();
+            clearInterval(this.resizeSetInterval);
         },
 
         /*=====  End of Events  ======*/
@@ -130,17 +119,16 @@ define([
         resize: function () {
             var iframeHeight;
 
-            this.page   = $(this.settings.selectors.page);
-            this.iframe = $(this.settings.selectors.iframe);
-
             if (this.iframe.length === 0) {
                 this.destroyEvents();
             } else {
                 iframeHeight = this.getIframeHeight();
 
-                if (iframeHeight !== this.page.outerHeight()) {
+                if (iframeHeight !== this.navigation.getPage().outerHeight()) {
                     this.setPageHeight(iframeHeight);
                 }
+
+                this.updateIframeWidth();
             }
         },
 
@@ -151,7 +139,7 @@ define([
          * @param      {Number}  height  The page height with margin and padding
          */
         setPageHeight: function (height) {
-            this.page.outerHeight(height);
+            this.navigation.getPage().outerHeight(height);
             this.iframe.outerHeight(height);
         },
 
@@ -162,7 +150,7 @@ define([
          * @return     {Number}  The iframe height with margin and padding
          */
         getIframeHeight: function () {
-            return this.iframeContext.$(this.settings.selectors.iframeHeightContainer).outerHeight();
+            return $(this.settings.selectors.iframeHeightContainer, this.iframeContext).outerHeight();
         },
 
         /**
@@ -171,13 +159,34 @@ define([
          * @method     updateIframeWidth
          */
         updateIframeWidth: function () {
-            var width;
+            var width = this.navigation.getPage().outerWidth();
 
-            this.page = $(this.settings.selectors.page);
-            width     = this.page.outerWidth();
-
-            this.iframeContext.$(this.settings.selectors.iframeWidthContainer).outerWidth(width);
+            $(this.settings.selectors.iframeWidthContainer, this.iframeContext).outerWidth(width);
             this.iframe.outerWidth(width);
+        },
+
+        /**
+         * Append the kibana iframe if it is not already present on the page
+         *
+         * @method     loadKibanaIframe
+         */
+        loadKibanaIframe: function () {
+            var self = this,
+                iframe;
+
+            if ($(this.settings.selectors.kibanaIframe).length === 0) {
+                $.getJSON('kibana/getIframe', function (data) {
+                    iframe = $('<iframe/>', {
+                        "src"        : data.src,
+                        "id"         : self.settings.selectors.kibanaIframe.substr(1),
+                        "frameBorder": 0,
+                        "seamless"   : "seamless",
+                        "load"       : _.bind(self.init, self, self.settings.selectors.kibanaIframe)
+                    });
+
+                    $('.page[data-url="kibana"]').append(iframe);
+                });
+            }
         }
 
         /*=====  End of Utilities methods  ======*/
