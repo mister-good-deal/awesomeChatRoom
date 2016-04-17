@@ -9,14 +9,14 @@
 namespace classes\websocket\services;
 
 use \interfaces\ServiceInterface as Service;
-use classes\websocket\ServicesDispatcher as ServicesDispatcher;
-use Icicle\Log\Log as Log;
+use \classes\websocket\ServicesDispatcher as ServicesDispatcher;
 use \classes\IniManager as Ini;
 use \classes\entities\User as User;
 use \classes\entities\UserChatRight as UserChatRight;
 use \classes\entities\ChatRoom as ChatRoom;
 use \classes\managers\UserManager as UserManager;
 use \classes\managers\ChatManager as ChatManager;
+use Icicle\Log\Log as Log;
 use Icicle\WebSocket\Connection as Connection;
 
 /**

@@ -37,6 +37,7 @@ define([
          * Callbacks methods to process specifics responses on a XHR server response
          */
         "callbacks": {
+            'beforeRequest': [],
             'onSuccess'    : [],
             'onFail'       : [],
             'onRequestFail': []
@@ -79,6 +80,8 @@ define([
                     this.xhrs[url].abort();
                 }
 
+                this.beforeRequest(form, url);
+
                 this.xhrs[url] = $.ajax({
                     url     : url,
                     type    : form.attr('method'),
@@ -99,11 +102,25 @@ define([
         },
 
         /**
+         * Processing method before the request has been sent to the server
+         *
+         * @method     beforeRequest
+         * @param      {Object}  form    The jQuery DOM form element
+         * @param      {String}  url     The URL called to send the user data
+         */
+        beforeRequest: function (form, url) {
+            if (this.callbacks.beforeRequest[url] && typeof this.callbacks.beforeRequest[url].callback === 'function') {
+                this.callbacks.beforeRequest[url].callback.call(this.callbacks.beforeRequest[url].context, form);
+            }
+        },
+
+        /**
          * Processing method on server success response
          *
-         * @param {Object} form The jQuery DOM form element
-         * @param {String} url  The URL called to send the user data
-         * @param {Object} data The server JSON reponse
+         * @method     onSuccess
+         * @param      {Object}  form    The jQuery DOM form element
+         * @param      {String}  url     The URL called to send the user data
+         * @param      {Object}  data    The server JSON reponse
          */
         onSuccess: function (form, url, data) {
             if (this.callbacks.onSuccess[url] && typeof this.callbacks.onSuccess[url].callback === 'function') {
@@ -114,9 +131,10 @@ define([
         /**
          * Processing method on server fail response
          *
-         * @param {Object} form The jQuery DOM form element
-         * @param {String} url  The URL called to send the user data
-         * @param {Object} data The server JSON reponse
+         * @method     onFail
+         * @param      {Object}  form    The jQuery DOM form element
+         * @param      {String}  url     The URL called to send the user data
+         * @param      {Object}  data    The server JSON reponse
          */
         onFail: function (form, url, data) {
             if (this.callbacks.onFail[url] && typeof this.callbacks.onFail[url].callback === 'function') {
@@ -127,9 +145,10 @@ define([
         /**
          * Processing method on XHR error
          *
-         * @param {Object} form  The jQuery DOM form element
-         * @param {String} url   The URL called to send the user data
-         * @param {Object} jqXHR The jQuery jqXHR object
+         * @method     onRequestFail
+         * @param      {Object}  form    The jQuery DOM form element
+         * @param      {String}  url     The URL called to send the user data
+         * @param      {Object}  jqXHR   The jQuery jqXHR object
          */
         onRequestFail: function (form, url, jqXHR) {
             if (this.callbacks.onRequestFail[url] && typeof this.callbacks.onRequestFail[url].callback === 'function') {
@@ -140,14 +159,36 @@ define([
         /**
          * Processing method on sumbit event
          *
-         * @param {Object} form          The jQuery DOM form element
-         * @param {String} callbackName  The callback function name
-         * @param {Object} inputs        The user inputs as object
+         * @method     onJsCallback
+         * @param      {Object}  form          The jQuery DOM form element
+         * @param      {String}  callbackName  The callback function name
+         * @param      {Object}  inputs        The user inputs as object
          */
         onJsCallback: function (form, callbackName, inputs) {
             if (this.jsCallbacks[callbackName] && typeof this.jsCallbacks[callbackName].callback === 'function') {
                 this.jsCallbacks[callbackName].callback.call(this.jsCallbacks[callbackName].context, form, inputs);
             }
+        },
+
+        /**
+         * Add a callback to process the url server success JSON repsonse
+         *
+         * The callback takes 1 argument:
+         *
+         * - The jQuery DOM form element
+         *
+         * Example: function callback(form) { ... }
+         *
+         * @method     addBeforeRequestCallback
+         * @param      {String}    url       The URL called to send the user data
+         * @param      {Function}  callback  The callback function
+         * @param      {Object}    context   The callback context
+         */
+        addBeforeRequestCallback: function (url, callback, context) {
+            this.callbacks.beforeRequest[url] = {
+                "callback": callback,
+                "context" : context
+            };
         },
 
         /**
@@ -160,9 +201,10 @@ define([
          *
          * Example: function callback(form, data) { ... }
          *
-         * @param {String}   url      The URL called to send the user data
-         * @param {Function} callback The callback function
-         * @param {Object}   context  The callback context
+         * @method     addOnSuccessCallback
+         * @param      {String}    url       The URL called to send the user data
+         * @param      {Function}  callback  The callback function
+         * @param      {Object}    context   The callback context
          */
         addOnSuccessCallback: function (url, callback, context) {
             this.callbacks.onSuccess[url] = {
@@ -181,9 +223,10 @@ define([
          *
          * Example: function callback(form, data) { ... }
          *
-         * @param {String}   url      The URL called to send the user data
-         * @param {Function} callback The callback function
-         * @param {Object}   context  The callback context
+         * @method     addOnFailCallback
+         * @param      {String}    url       The URL called to send the user data
+         * @param      {Function}  callback  The callback function
+         * @param      {Object}    context   The callback context
          */
         addOnFailCallback: function (url, callback, context) {
             this.callbacks.onFail[url] = {
@@ -202,9 +245,10 @@ define([
          *
          * Example: function callback(form, jqXHR) { ... }
          *
-         * @param {String}   url      The URL called to send the user data
-         * @param {Function} callback The callback function
-         * @param {Object}   context  The callback context
+         * @method     addOnRequestFailCallback
+         * @param      {String}    url       The URL called to send the user data
+         * @param      {Function}  callback  The callback function
+         * @param      {Object}    context   The callback context
          */
         addOnRequestFailCallback: function (url, callback, context) {
             this.callbacks.onRequestFail[url] = {
@@ -223,9 +267,10 @@ define([
          *
          * Example: function callback(form, inputs) { ... }
          *
-         * @param {String}   callbackName The callback function name
-         * @param {Function} callback     The callback function
-         * @param {Object}   context      The callback context
+         * @method     addJsCallback
+         * @param      {String}    callbackName  The callback function name
+         * @param      {Function}  callback      The callback function
+         * @param      {Object}    context       The callback context
          */
         addJsCallback: function (callbackName, callback, context) {
             this.jsCallbacks[callbackName] = {

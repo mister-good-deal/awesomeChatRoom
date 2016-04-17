@@ -1,20 +1,21 @@
 requirejs.config({
     "paths" : {
-        "bootstrap"       : "lib/vendor/bootstrap",
-        "bootstrap-select": "lib/vendor/bootstrap-select",
-        "bootstrap-switch": "lib/vendor/bootstrap-switch",
-        "jasny-bootstrap" : "lib/vendor/jasny-bootstrap",
-        "domReady"        : "lib/vendor/domReady",
-        "jquery"          : "lib/vendor/jquery",
-        "lodash"          : "lib/vendor/lodash",
-        "require"         : "lib/vendor/require",
-        "chat"            : "lib/chat",
-        "forms"           : "lib/forms",
-        "message"         : "lib/message",
-        "user"            : "lib/user",
-        "websocket"       : "lib/websocket",
-        "iframe"          : "lib/iframe",
-        "navigation"      : "lib/navigation"
+        "bootstrap"             : "lib/vendor/bootstrap",
+        "bootstrap-select"      : "lib/vendor/bootstrap-select",
+        "bootstrap-switch"      : "lib/vendor/bootstrap-switch",
+        "jasny-bootstrap"       : "lib/vendor/jasny-bootstrap",
+        "domReady"              : "lib/vendor/domReady",
+        "jquery"                : "lib/vendor/jquery",
+        "loading-overlay"       : "lib/vendor/loading-overlay",
+        "lodash"                : "lib/vendor/lodash",
+        "require"               : "lib/vendor/require",
+        "chat"                  : "lib/chat",
+        "forms"                 : "lib/forms",
+        "message"               : "lib/message",
+        "user"                  : "lib/user",
+        "websocket"             : "lib/websocket",
+        "iframe"                : "lib/iframe",
+        "navigation"            : "lib/navigation"
     },
     "shim"  : {
         "bootstrap"        : {

@@ -15,6 +15,7 @@ use \classes\entitiesManager\UserRightEntityManager as UserRightEntityManager;
 use \classes\entitiesManager\UserChatRightEntityManager as UserChatRightEntityManager;
 use \classes\entitiesCollection\UserCollection as UserCollection;
 use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
+use \classes\LoggerManager as Logger;
 
 /**
  * Perform action relative to the User, UserRight and UserChatRight entities classes
@@ -134,6 +135,21 @@ class UserManager extends Manager
         }
 
         return $response;
+    }
+
+    /**
+     * Send an email to the user
+     *
+     * @param      string      $subject  The email subject
+     * @param      string      $content  The email content in HTML
+     */
+    public function sendEmail(string $subject, string $content)
+    {
+        try {
+            $this->userEntityManager->sendEmail($subject, $content);
+        } catch (\Exception $e) {
+            (new Logger())->log($e->getCode(), $e->getMessage());
+        }
     }
 
     /**
