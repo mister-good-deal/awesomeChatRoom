@@ -13,6 +13,9 @@ use \classes\entities\User as User;
 use \classes\entitiesCollection\UserCollection as UserCollection;
 use \classes\DataBase as DB;
 use \classes\IniManager as Ini;
+use \classes\LoggerManager as Logger;
+use \classes\logger\LogLevel as LogLevel;
+use \classes\WebContentInclude as WebContentInclude;
 
 /**
  * Performed database action relative to the User entity class
@@ -89,19 +92,33 @@ class UserEntityManager extends EntityManager
         $success = false;
         $errors  = $this->checkMustDefinedField(array_keys($inputs));
 
-        if (count($errors['SERVER']) === 0) {
-            $query            = 'SELECT MAX(id) FROM ' . $this->entity->getTableName();
-            $this->entity->id = DB::query($query)->fetchColumn() + 1;
+        try {
+            if (count($errors['SERVER']) === 0) {
+                $query            = 'SELECT MAX(id) FROM ' . $this->entity->getTableName();
+                $this->entity->id = DB::query($query)->fetchColumn() + 1;
 
-            $this->entity->bindInputs($inputs);
-            $errors = $this->entity->getErrors();
+                $this->entity->bindInputs($inputs);
+                $errors = $this->entity->getErrors();
 
-            if (count($errors) === 0) {
-                $success = $this->saveEntity();
+                if (count($errors) === 0) {
+                    $this->sendEmail(_('[awesomeChatRoom] Account created'), WebContentInclude::formatTemplate(
+                        WebContentInclude::getEmailTemplate('register'),
+                        [
+                            'firstName' => $this->entity->firstName,
+                            'lastName'  => $this->entity->lastName,
+                            'password'  => $inputs['password']
+                        ]
+                    ));
+
+                    $success = $this->saveEntity();
+                }
             }
+        } catch (\Exception $e) {
+            $errors['SERVER'] = _('Confirmation email failed to be sent by the server');
+            (new Logger())->log($e->getCode(), $e->getMessage());
+        } finally {
+            return array('success' => $success, 'errors' => $errors, 'user' => $this->entity->__toArray());
         }
-
-        return array('success' => $success, 'errors' => $errors, 'user' => $this->entity->__toArray());
     }
 
     /**
@@ -190,6 +207,40 @@ class UserEntityManager extends EntityManager
         }
 
         return array('success' => $success, 'errors' => $errors, 'user' => $this->entity->__toArray());
+    }
+
+    /**
+     * Send an email to the user
+     *
+     * @param      string      $subject  The email subject
+     * @param      string      $content  The email content in HTML
+     *
+     * @throws     \Exception  If the email failed to be sent
+     */
+    public function sendEmail(string $subject, string $content)
+    {
+        $mailParams = Ini::getSectionParams('Email');
+        $mail       = new \PHPMailer();
+
+        $mail->isSMTP();
+        $mail->SMTPDebug  = $mailParams['debugMode'];
+        $mail->Host       = $mailParams['smtpHost'];
+        $mail->SMTPAuth   = (bool) $mailParams['smtpAuth'];
+        $mail->Username   = $mailParams['smtpUserName'];
+        $mail->Password   = $mailParams['smtpPassword'];
+        $mail->SMTPSecure = $mailParams['smtpSecure'];
+        $mail->Port       = $mailParams['port'];
+        $mail->Subject    = $subject;
+
+        $mail->setFrom($mailParams['fromEmail'], $mailParams['fromAlias']);
+        $mail->addAddress($this->entity->email, $this->entity->firstName . ' ' . $this->entity->lastName);
+        $mail->addReplyTo($mailParams['replyToEmail'], $mailParams['replyToAlias']);
+        $mail->isHTML((bool) $mailParams['isHtml']);
+        $mail->msgHTML($content);
+
+        if (!$mail->send()) {
+            throw new \Exception($mail->ErrorInfo, LogLevel::ERROR);
+        }
     }
 
     /**

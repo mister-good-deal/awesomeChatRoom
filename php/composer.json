@@ -1,9 +1,8 @@
 {
-    "minimum-stability": "dev",
     "require": {
         "elasticsearch/elasticsearch": "~2.0",
         "icicleio/websocket": "*",
-        "icicleio/stream": "*"
+        "phpmailer/phpmailer": "^5.2"
     },
     "require-dev": {
         "phpdocumentor/phpdocumentor": "*",

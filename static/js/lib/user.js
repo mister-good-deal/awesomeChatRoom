@@ -8,7 +8,8 @@ define([
     'jquery',
     'module',
     'message',
-    'bootstrap'
+    'bootstrap',
+    'loading-overlay'
 ], function ($, module, Message) {
     'use strict';
 
@@ -26,6 +27,7 @@ define([
             Forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
             Forms.addOnFailCallback('user/connect', this.connectFail, this);
             Forms.addOnRequestFailCallback('user/connect', this.connectRequestFail, this);
+            Forms.addBeforeRequestCallback('user/register', this.beforeRegister, this);
             Forms.addOnSuccessCallback('user/register', this.registerSuccess, this);
             Forms.addOnFailCallback('user/register', this.registerFail, this);
             Forms.addOnRequestFailCallback('user/register', this.registerRequestFail, this);
@@ -204,6 +206,16 @@ define([
         },
 
         /**
+         * Callback before the register form has been sent
+         *
+         * @method     beforeRegister
+         * @param      {Object}  form    The jQuery DOM form element
+         */
+        beforeRegister: function (form) {
+            form.loadingOverlay();
+        },
+
+        /**
          * Callback when the user connection attempt succeed
          *
          * @method     registerSuccess
@@ -211,6 +223,7 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         registerSuccess: function (form, data) {
+            form.loadingOverlay('remove');
             this.setAttributes(data);
             this.connected = true;
             messageManager.add('Register success !');
@@ -225,6 +238,7 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         registerFail: function (form, data) {
+            form.loadingOverlay('remove');
             console.log('Fail !', data);
         },
 
@@ -236,6 +250,7 @@ define([
          * @param      {Object}  jqXHR   The jQuery jqXHR object
          */
         registerRequestFail: function (form, jqXHR) {
+            form.loadingOverlay('remove');
             console.log(jqXHR);
         }
     };

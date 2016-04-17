@@ -1,3 +1,56 @@
+/*----------  Loading overlay / loading-overlay  ----------*/
+
+.loading {
+    position: relative;
+    pointer-events: none;
+
+    @keyframes loadingStart {
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        animation: loadingStart 3s 300ms linear 1 both;
+        background: rgba(255, 255, 255, 0.6);
+        text-align: center;
+    }
+
+    .loading-text {
+        font-size: 1em;
+        line-height: 1.5em;
+        position: relative;
+        text-transform: uppercase;
+        font-weight: bold;
+
+        &:after {
+            content: "...";
+        }
+    }
+
+    .loading-spinner {
+        position: absolute;
+        top: 50%;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: -3.9375rem auto 0;
+        color: #1a1d1d;
+        background-image: url("/static/fonts/loading.svg");
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+}
+
 /*----------  Menu left style / Jasny  ----------*/
 
 html, body {

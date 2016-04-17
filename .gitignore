@@ -10,8 +10,7 @@
 /php/composer.lock
 /php/vendor
 /php/conf.ini
-log.txt
+error.log
 *.dmp
-.gitconfig
-
 *.lock
+.gitconfig
