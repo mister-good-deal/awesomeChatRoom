@@ -29,6 +29,9 @@ requirejs.config({
         },
         "jasny-bootstrap"  : {
             "deps": ['jquery', 'bootstrap']
+        },
+        "loading-overlay"  : {
+            "deps": ['jquery']
         }
     },
     "config": {

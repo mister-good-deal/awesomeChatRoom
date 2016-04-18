@@ -54,12 +54,14 @@ class ChatService extends ServicesDispatcher implements Service
      *                         userHash1 => [
      *                             'User'       => User,
      *                             'Connection' => Connection,
-     *                             'pseudonym'  => 'room user pseudonym'
+     *                             'pseudonym'  => 'room user pseudonym',
+     *                             'location'   => ['lat' => latitude, 'lon' => longitude]
      *                         ],
      *                         userHash2 => [
      *                             'User'       => User,
      *                             'Connection' => Connection,
-     *                             'pseudonym'  => 'room user pseudonym'
+     *                             'pseudonym'  => 'room user pseudonym',
+     *                             'location'   => ['lat' => latitude, 'lon' => longitude]
      *                         ],
      *                         ...
      *                     ],
@@ -253,7 +255,7 @@ class ChatService extends ServicesDispatcher implements Service
                         'room'  => $room
                     ];
 
-                    yield $this->addUserToTheRoom($client, $room, $userManager->getPseudonymForChat());
+                    yield $this->addUserToTheRoom($client, $room, $userManager->getPseudonymForChat(), $data['location']);
 
                     $message = sprintf(_('The chat room name "%s" is successfully created !'), $room->name);
 
@@ -311,7 +313,7 @@ class ChatService extends ServicesDispatcher implements Service
             } elseif ($chatManager->isIpBanned($client['Connection']->getRemoteAddress())) {
                 $message = _('You are banned from this room');
             } else {
-                $closure = $this->addUserToTheRoom($client, $room, trim($data['pseudonym'] ?? ''));
+                $closure = $this->addUserToTheRoom($client, $room, trim($data['pseudonym'] ?? ''), $data['location']);
 
                 foreach ($closure as $value) {
                     yield $value;
@@ -876,12 +878,14 @@ class ChatService extends ServicesDispatcher implements Service
                     'date'      => $date,
                     'room'      => $roomId,
                     'userFrom'  => [
-                        'id' => isset($clientFrom['User']) ? (int) $clientFrom['User']->id : -1,
-                        'ip' => $clientFrom['Connection']->getRemoteAddress()
+                        'id'       => isset($clientFrom['User']) ? (int) $clientFrom['User']->id : -1,
+                        'ip'       => $clientFrom['Connection']->getRemoteAddress(),
+                        'location' => $this->getUserLocationByRoom($clientFrom, $roomId)
                     ],
                     'userTo'  => [
-                        'id' => isset($clientTo['User']) ? (int) $clientTo['User']->id : -1,
-                        'ip' => count($clientTo) > 0 ? $clientTo['Connection']->getRemoteAddress() : '0.0.0.0'
+                        'id'       => isset($clientTo['User']) ? (int) $clientTo['User']->id : -1,
+                        'ip'       => count($clientTo) > 0 ? $clientTo['Connection']->getRemoteAddress() : '0.0.0.0',
+                        'location' => count($clientTo) > 0 ? $this->getUserLocationByRoom($clientTo, $roomId) : []
                     ]
                 ]
             ];
@@ -1054,6 +1058,18 @@ class ChatService extends ServicesDispatcher implements Service
     {
         return $this->rooms[$room->id]['users'][$this->getConnectionHash($client['Connection'])]['pseudonym'];
     }
+    /**
+     * Update the connected users list in a room
+     *
+     * @param      array  $client  The client information [Connection, User] array pair
+     * @param      int    $roomId  The room name
+     *
+     * @return     array  The user location in ['lat' => latitude, 'lon' => longitude] format
+     */
+    private function getUserLocationByRoom(array $client, int $roomId): array
+    {
+        return $this->rooms[$roomId]['users'][$this->getConnectionHash($client['Connection'])]['location'];
+    }
 
     /**
      * Update the connected users list in a room
@@ -1149,10 +1165,11 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      array     $client     The client information [Connection, User] array pair
      * @param      ChatRoom  $room       The chat room
      * @param      string    $pseudonym  The user pseudonym DEFAULT ''
+     * @param      array     $location   The user location ['lat' => latitude, 'lon' => longitude]
      *
      * @return     array  Result as an array of values (success, pseudonym, message)
      */
-    private function addUserToTheRoom(array $client, ChatRoom $room, string $pseudonym = '')
+    private function addUserToTheRoom(array $client, ChatRoom $room, string $pseudonym = '', array $location = [])
     {
         $response = ['success' => false];
         $userHash = $this->getConnectionHash($client['Connection']);
@@ -1178,6 +1195,7 @@ class ChatService extends ServicesDispatcher implements Service
             // Add user to the room
             $this->rooms[$room->id]['users'][$userHash]              = $client;
             $this->rooms[$room->id]['users'][$userHash]['pseudonym'] = $response['pseudonym'];
+            $this->rooms[$room->id]['users'][$userHash]['location']  = $location;
 
             // Send a message to all users in chat and warn them a new user is connected
             $message = sprintf(_("%s joins the room"), $response['pseudonym']);
