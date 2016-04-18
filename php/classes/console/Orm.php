@@ -83,6 +83,10 @@ class Orm extends Console
                     ],
                     'ip' => [
                         'type'  => 'ip',
+                    ],
+                    'location' => [
+                        'type'    => 'geo_point',
+                        'lat_lon' => true
                     ]
                 ]
             ],
@@ -93,6 +97,10 @@ class Orm extends Console
                     ],
                     'ip' => [
                         'type'  => 'ip',
+                    ],
+                    'location' => [
+                        'type'    => 'geo_point',
+                        'lat_lon' => true
                     ]
                 ]
             ]
@@ -263,9 +271,9 @@ class Orm extends Console
         $alias    = $args['a'] ?? '';
         $type     = $args['t'] ?? '';
         $mapping  = $args['m'] ?? '';
-        $version  = (int) $args['v'] ?? 1;
-        $shards   = (int) $args['s'] ?? 2;
-        $replicas = (int) $args['r'] ?? 0;
+        $version  = (int) ($args['v'] ?? 1);
+        $shards   = (int) ($args['s'] ?? 2);
+        $replicas = (int) ($args['r'] ?? 0);
 
         if (isset($args['init'])) {
             $this->initElasticsearch();

@@ -578,7 +578,8 @@ define([
                 "action"   : "connectRoom",
                 "pseudonym": pseudonym || "",
                 "roomId"   : roomId,
-                "password" : password
+                "password" : password,
+                "location" : this.user.getLocation()
             }));
         },
 
@@ -632,7 +633,8 @@ define([
                 "roomName"    : roomName,
                 "roomPassword": password,
                 "type"        : type,
-                "maxUsers"    : maxUsers
+                "maxUsers"    : maxUsers,
+                "location"    : this.user.getLocation()
             }));
         },
 

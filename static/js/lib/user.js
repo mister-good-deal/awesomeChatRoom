@@ -6,11 +6,12 @@
 
 define([
     'jquery',
+    'lodash',
     'module',
     'message',
     'bootstrap',
     'loading-overlay'
-], function ($, module, Message) {
+], function ($, _, module, Message) {
     'use strict';
 
     /**
@@ -31,6 +32,10 @@ define([
             Forms.addOnSuccessCallback('user/register', this.registerSuccess, this);
             Forms.addOnFailCallback('user/register', this.registerFail, this);
             Forms.addOnRequestFailCallback('user/register', this.registerRequestFail, this);
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(_.bind(this.setLocation, this));
+            }
         },
         messageManager = new Message();
 
@@ -59,6 +64,10 @@ define([
             "right"                : {},
             "chatRight"            : {}
         },
+        /**
+         * The user location in {"lat": "latitude", "lon": "longitude"} format
+         */
+        "location": {},
         /**
          * If the user is connected
          */
@@ -145,6 +154,16 @@ define([
         },
 
         /**
+         * Get the user location
+         *
+         * @method     getLocation
+         * @return     {Object}  The location in {"lat": "latitude", "lon": "longitude"} format
+         */
+        getLocation: function () {
+            return this.location;
+        },
+
+        /**
          * Tells if the user is connected
          *
          * @method     isConnected
@@ -162,6 +181,19 @@ define([
          */
         setAttributes: function (data) {
             this.attributes = $.extend(true, {}, this.attributes, data.user);
+        },
+
+        /**
+         * Set the location based on navigator.geolocation.getCurrentPosition returned object
+         *
+         * @method     setLocation
+         * @param      {Object}  coordinates  The navigator.geolocation.getCurrentPosition returned object
+         */
+        setLocation: function (coordinates) {
+            this.location = {
+                'lat': coordinates.coords.latitude,
+                'lon': coordinates.coords.longitude
+            };
         },
 
         /**
