@@ -377,7 +377,8 @@ class Orm extends Console
     private function createAllTables()
     {
         $entityManager = new EntityManager();
-
+        // @todo Handle table creation order based on constraint
+        DB::query('SET FOREIGN_KEY_CHECKS = 0;');
         foreach (DB::getAllEntites() as $entityName) {
             /**
              * @var        Entity  $entity  An entity
@@ -395,6 +396,8 @@ class Orm extends Console
                 static::out('Table table "' . $tableName . '" already exists' . PHP_EOL);
             }
         }
+        // @todo Handle table creation order based on constraint
+        DB::query('SET FOREIGN_KEY_CHECKS = 1;');
 
         static::ok(static::ACTION_DONE . PHP_EOL);
     }
