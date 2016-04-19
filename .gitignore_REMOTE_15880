@@ -1,0 +1,5 @@
+*.exe
+*.o
+/TP_ARCHI/TP_1/build/*
+TP_C/TP_5/etudiantsNotes.txt
+tp[0-9]+$
