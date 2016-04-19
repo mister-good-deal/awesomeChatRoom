@@ -93,7 +93,7 @@ Then the technical documentation repository of the projet by running the command
 `git clone https://github.com/ZiperRom1/ziperrom1.github.io.git awesomechatroom-doc`
 
 - Install PHP [last realese Thred Safe](http://windows.php.net/downloads/releases/php-7.0.2-Win32-VC14-x64.zip) (dezip and add the repository to the PATH windows variable)
-- Install APACHE [last realese](http://www.apachelounge.com/download/VC14/binaries/httpd-2.4.18-win64-VC14.zip) as a service (run `[path to apache repository]/httpd.exe -k install`)
+- Install APACHE [last realese](http://www.apachelounge.com/download/VC14/binaries/httpd-2.4.20-win64-VC14.zip) as a service (run `[path to apache repository]/httpd.exe -k install`)
 - Install MySQL [last realese](http://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-5.7.10.0.msi) as a service (use root as root password)
 - Install [Node.js](https://nodejs.org/dist/v5.4.1/node-v5.4.1-x64.msi) with NPM (Node packages manager) and add it to the PATH windows variable
 - Install [Composer](https://getcomposer.org/Composer-Setup.exe) (PHP packages manager)
