@@ -1058,6 +1058,7 @@ class ChatService extends ServicesDispatcher implements Service
     {
         return $this->rooms[$room->id]['users'][$this->getConnectionHash($client['Connection'])]['pseudonym'];
     }
+
     /**
      * Update the connected users list in a room
      *
