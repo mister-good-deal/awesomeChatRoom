@@ -19,7 +19,7 @@ setup:
     - rm -rf node_modules
     - npm cache clean
     - npm prune
-    - npm install
+    - npm install --quiet
 
 lintJs:
   stage: lint
