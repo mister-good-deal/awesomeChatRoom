@@ -14,7 +14,7 @@ cache:
 setup:
   stage: setup
   script:
-    - npm install || true
+    - npm install --quiet
 
 lintJs:
   stage: lint
