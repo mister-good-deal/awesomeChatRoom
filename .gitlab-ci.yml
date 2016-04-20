@@ -1,9 +1,17 @@
 before_script:
-  - pwd
-  - ls
+  - php --version
+  - echo "nodeJS "
+  - node --version
+  - echo "NPM "
+  - npm --version
+  - cd static
+  - npm install
 
-test:
+lint:
   script:
-    - pwd
-    - ls
-    - php --version
+    - gulp js_lint
+    - gulp php_lint
+
+build:
+  script:
+    - gulp build
