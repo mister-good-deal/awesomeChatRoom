@@ -2,22 +2,30 @@ stages:
   - setup
   - test
 
-setup:
-  stage: setup
-  cache:
-    paths:
-      - static/node_modules/
+cache:
+  key: "$CI_BUILD_REF_NAME"
+  untracked: true
+  paths:
+    - static/node_modules/
 
+setup:
+  stage:
+    - setup
   script:
-    - cd static
     - npm install --quiet
 
 lintJs:
-  stage: test
+  stage:
+    - test
+  tags:
+    - lint
   script:
-    - gulp js_lint
+    - static/gulp js_lint
 
 lintPHP:
-  stage: test
+  stage:
+    - test
+  tags:
+    - lint
   script:
-    - gulp php_lint
+    - static/gulp php_lint
