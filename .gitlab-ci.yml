@@ -13,7 +13,10 @@ cache:
 
 setup:
   stage: setup
+  tags:
+    - setup
   script:
+    - rm -rf node_modules
     - npm cache clean
     - npm prune
     - npm install
@@ -34,9 +37,9 @@ lintPHP:
     - gulp --version
     - gulp php_lint
 
-lintPHP:
+test:
   stage: lint
   tags:
-    - test
+    - setup
   script:
     - ls node_modules
