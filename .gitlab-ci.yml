@@ -2,6 +2,9 @@ stages:
   - setup
   - lint
 
+before_script:
+  - cd static
+
 cache:
   key: "$CI_BUILD_REF_NAME"
   untracked: true
@@ -18,11 +21,11 @@ lintJs:
   tags:
     - lint
   script:
-    - static/gulp js_lint
+    - gulp js_lint
 
 lintPHP:
   stage: lint
   tags:
     - lint
   script:
-    - static/gulp php_lint
+    - gulp php_lint
