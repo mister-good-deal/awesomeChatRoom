@@ -1,14 +1,23 @@
-before_script:
-  - php --version
-  - node --version
-  - npm --version
-  - cd static
-  - npm install
+stages:
+  - setup
+  - test
+
+setup:
+  stage: setup
+  cache:
+    paths:
+      - static/node_modules/
+
+  script:
+    - cd static
+    - npm install --quiet
 
 lintJs:
+  stage: test
   script:
     - gulp js_lint
 
 lintPHP:
+  stage: test
   script:
     - gulp php_lint
