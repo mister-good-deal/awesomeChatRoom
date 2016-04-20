@@ -1,17 +1,14 @@
 before_script:
   - php --version
-  - echo "nodeJS "
   - node --version
-  - echo "NPM "
   - npm --version
   - cd static
   - npm install
 
-lint:
+lintJs:
   script:
     - gulp js_lint
-    - gulp php_lint
 
-build:
+lintPHP:
   script:
-    - gulp build
+    - gulp php_lint
