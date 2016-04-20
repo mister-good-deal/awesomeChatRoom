@@ -14,13 +14,15 @@ cache:
 setup:
   stage: setup
   script:
-    - npm install --quiet
+    - npm install prune
+    - npm install
 
 lintJs:
   stage: lint
   tags:
     - lint
   script:
+    - npm install update
     - gulp js_lint
 
 lintPHP:
