@@ -1,6 +1,6 @@
 stages:
   - setup
-  - test
+  - lint
 
 cache:
   key: "$CI_BUILD_REF_NAME"
@@ -9,22 +9,19 @@ cache:
     - static/node_modules/
 
 setup:
-  stage:
-    - setup
+  stage: setup
   script:
     - npm install --quiet
 
 lintJs:
-  stage:
-    - test
+  stage: lint
   tags:
     - lint
   script:
     - static/gulp js_lint
 
 lintPHP:
-  stage:
-    - test
+  stage: lint
   tags:
     - lint
   script:
