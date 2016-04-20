@@ -32,7 +32,6 @@
     "gulp-phpcbf": "^0.1.2",
     "gulp-phpcs": "^1.0.0",
     "gulp-rename": "latest",
-    "gulp-sequence": "^0.4.5",
     "gulp-sourcemaps": "latest",
     "gulp-watch": "latest",
     "jscs-jsdoc": "latest",

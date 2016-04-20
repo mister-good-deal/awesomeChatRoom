@@ -17,7 +17,6 @@
         watch            = require('gulp-watch'),
         del              = require('del'),
         exec             = require('child_process').exec,
-        gulpSequence     = require('gulp-sequence'),
         CleanPlugin      = require('less-plugin-clean-css'),
         AutoprefixPlugin = require('less-plugin-autoprefix'),
         jsdocConfig      = require('./jsdocConfig.json'),
@@ -75,9 +74,7 @@
         del('dist/*');
     });
 
-    gulp.task('flush', function (done) {
-        gulpSequence(['flush_bower', 'flush_npm', 'flush_js', 'flush_less', 'flush_dist'], done);
-    });
+    gulp.task('flush', gulp.parallel('flush_bower', 'flush_npm', 'flush_js', 'flush_less', 'flush_dist'));
 
     /*=====  End of Flush vendor sources  ======*/
 
@@ -111,14 +108,16 @@
         return gulp.src('.bowerDependencies/bootstrap/fonts/**').pipe(gulp.dest('fonts'));
     });
 
-    gulp.task('bower_clean', ['bower_move_js', 'bower_move_less', 'bower_move_fonts'], function () {
+    gulp.task('bower_clean', gulp.series('bower_move_js', 'bower_move_less', 'bower_move_fonts'), function () {
         del(['js/lib/vendor/*', '!js/lib/vendor/*.js']);
         del(['less/vendor/*', '!less/vendor/*.less', '!less/vendor/mixins']);
     });
 
-    gulp.task('install', function (done) {
-        gulpSequence('bower_install', ['bower_move_js', 'bower_move_less', 'bower_move_fonts'], 'bower_clean', done);
-    });
+    gulp.task('install', gulp.series(
+        'bower_install',
+        gulp.parallel('bower_move_js', 'bower_move_less', 'bower_move_fonts'),
+        'bower_clean'
+    ));
 
     /*=====  End of Import vendor sources  ======*/
 
@@ -147,9 +146,7 @@
             .pipe(gulp.dest('dist'));
     });
 
-    gulp.task('build', function (done) {
-        gulpSequence(['build_js', 'build_less'], done);
-    });
+    gulp.task('build', gulp.parallel('build_js', 'build_less'));
 
     /*=====  End of Build js / less and optimize  ======*/
 
@@ -205,13 +202,9 @@
             }));
     });
 
-    gulp.task('js_lint', function (done) {
-        gulpSequence('js_jscs', 'js_jshint', done);
-    });
+    gulp.task('js_lint', gulp.parallel('js_jscs', 'js_jshint'));
 
-    gulp.task('php_lint', function (done) {
-        gulpSequence('php_phpcbf', 'php_phpcs', done);
-    });
+    gulp.task('php_lint', gulp.parallel('php_phpcbf', 'php_phpcs'));
 
     /*=====  End of Linters  ======*/
 
@@ -242,13 +235,9 @@
         gitDoc('phpDoc', done);
     });
 
-    gulp.task('jsDoc', function (done) {
-        gulpSequence('jsdoc_generation', 'git_js_doc', done);
-    });
+    gulp.task('jsDoc', gulp.series('jsdoc_generation', 'git_js_doc'));
 
-    gulp.task('phpDoc', function (done) {
-        gulpSequence('phpdoc_generation', 'git_php_doc', done);
-    });
+    gulp.task('phpDoc', gulp.series('phpdoc_generation', 'git_php_doc'));
 
     gulp.task('push_doc', function (done) {
         exec(
@@ -262,9 +251,7 @@
         );
     });
 
-    gulp.task('doc', function (done) {
-        gulpSequence('jsDoc', 'phpDoc', done);
-    });
+    gulp.task('doc', gulp.series('jsDoc', 'phpDoc'));
 
     /*=====  End of Documentation generation  ======*/
 
@@ -272,17 +259,11 @@
     =            Deployment preprocessing            =
     =================================================*/
 
-    gulp.task('deploy_static', function (done) {
-        gulpSequence('install', 'js_lint', 'build', 'jsDoc', 'push_doc', done);
-    });
+    gulp.task('deploy_static', gulp.series('install', 'js_lint', 'build', 'jsDoc', 'push_doc'));
 
-    gulp.task('deploy_php', function (done) {
-        gulpSequence('php_lint', 'phpDoc', 'push_doc', done);
-    });
+    gulp.task('deploy_php', gulp.series('php_lint', 'phpDoc', 'push_doc'));
 
-    gulp.task('deploy', function (done) {
-        gulpSequence('deploy_static', 'deploy_php', done);
-    });
+    gulp.task('deploy', gulp.series('deploy_static', 'deploy_php'));
 
     /*=====  End of Deployment preprocessing  ======*/
 
@@ -316,5 +297,5 @@
 
     /*=====  End of Watch less files  ======*/
 
-    gulp.task('default', ['install']);
+    gulp.task('default', gulp.series('install'));
 }());
