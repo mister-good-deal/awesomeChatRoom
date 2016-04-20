@@ -14,7 +14,8 @@ cache:
 setup:
   stage: setup
   script:
-    - npm install prune
+    - npm cache clean
+    - npm prune
     - npm install
 
 lintJs:
@@ -22,7 +23,7 @@ lintJs:
   tags:
     - lint
   script:
-    - npm install update
+    - gulp --version
     - gulp js_lint
 
 lintPHP:
@@ -30,4 +31,12 @@ lintPHP:
   tags:
     - lint
   script:
+    - gulp --version
     - gulp php_lint
+
+lintPHP:
+  stage: lint
+  tags:
+    - test
+  script:
+    - ls node_modules
