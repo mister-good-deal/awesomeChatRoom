@@ -1,0 +1,5 @@
+before_script:
+  - pwd
+  - php --version
+  - cd /var/www/
+  - ls
