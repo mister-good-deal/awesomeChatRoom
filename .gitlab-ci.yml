@@ -3,3 +3,7 @@ before_script:
   - php --version
   - cd /var/www/
   - ls
+
+test:
+  script:
+    - pwd
