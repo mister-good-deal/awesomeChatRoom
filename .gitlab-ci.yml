@@ -16,9 +16,6 @@ setup:
   tags:
     - setup
   script:
-    - rm -rf node_modules
-    - npm cache clean
-    - npm prune
     - npm install --quiet
 
 lintJs:
