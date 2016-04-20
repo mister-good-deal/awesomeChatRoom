@@ -1,9 +1,9 @@
 before_script:
   - pwd
-  - php --version
-  - cd /var/www/
   - ls
 
 test:
   script:
     - pwd
+    - ls
+    - php --version
