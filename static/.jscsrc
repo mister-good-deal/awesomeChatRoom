@@ -24,9 +24,6 @@
     "disallowPaddingNewLinesBeforeLineComments": true,
     "disallowPaddingNewlinesInBlocks": true,
     "disallowSpaceBeforeSemicolon": true,
-    "plugins": [
-        "jscs-jsdoc"
-    ],
     "jsDoc": {
         "checkAnnotations": {
             "preset": "jsdoc3"
