@@ -5,12 +5,11 @@ stages:
 before_script:
   - cd static
 
-cache:
- key: "$CI_BUILD_NAME"
- untracked: true
- paths:
-   - static/node_modules/
-   - php/vendor/
+#cache:
+#  key: "$CI_BUILD_REF_NAME"
+#  untracked: true
+#  paths:
+#    - static/node_modules/
 
 setup:
   stage: setup
@@ -18,8 +17,6 @@ setup:
     - setup
   script:
     - npm install --quiet
-    - cd ../php
-    - composer install
 
 lintJs:
   stage: lint
@@ -36,3 +33,10 @@ lintPHP:
   script:
     - gulp --version
     - gulp php_lint
+
+test:
+  stage: lint
+  tags:
+    - setup
+  script:
+    - ls node_modules

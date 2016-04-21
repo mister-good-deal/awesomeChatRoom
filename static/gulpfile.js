@@ -17,13 +17,10 @@
         watch            = require('gulp-watch'),
         del              = require('del'),
         exec             = require('child_process').exec,
-        nodePath         = require('path'),
-        nodeOs           = require('os'),
         CleanPlugin      = require('less-plugin-clean-css'),
         AutoprefixPlugin = require('less-plugin-autoprefix'),
         jsdocConfig      = require('./jsdocConfig.json'),
         docPath          = '../../ziperrom1.github.io/awesomechatroom-doc',
-        composerBinPath  = nodePath.sep + 'vendor' + nodePath.sep + 'bin' + nodePath.sep,
         jsSrc            = ['js/lib/*.js', 'js/app.js', 'js/main.js'],
         phpSrc           = ['../php/**/*.php', '!../php/vendor/**/*.*'],
         clean            = new CleanPlugin({
@@ -184,11 +181,9 @@
     });
 
     gulp.task('php_phpcs', function () {
-        var phpcsExec = 'phpcs' + (nodeOs.platform() === 'win32' ? '.bat' : '');
-
         return gulp.src(phpSrc)
             .pipe(phpcs({
-                bin            : process.cwd().replace('static', 'php') + composerBinPath + phpcsExec,
+                bin            : process.cwd().replace('static', 'php') + '\\vendor\\bin\\phpcs.bat',
                 standard       : 'PSR2',
                 warningSeverity: 0
             }))
@@ -196,11 +191,9 @@
     });
 
     gulp.task('php_phpcbf', function () {
-        var phpcbfExec = 'phpcs' + (nodeOs.platform() === 'win32' ? '.bat' : '');
-
         return gulp.src(phpSrc)
             .pipe(phpcbf({
-                bin            : process.cwd().replace('static', 'php') + composerBinPath + phpcbfExec,
+                bin            : process.cwd().replace('static', 'php') + '\\vendor\\bin\\phpcbf.bat',
                 standard       : 'PSR2',
                 warningSeverity: 0
             }))
