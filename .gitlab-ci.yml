@@ -6,7 +6,6 @@ before_script:
   - cd static
 
 cache:
- key: "$CI_BUILD_NAME"
  untracked: true
  paths:
    - static/node_modules/
@@ -19,7 +18,7 @@ setup:
   script:
     - npm install --quiet
     - cd ../php
-    - composer install
+    - composer install --dev
 
 lintJs:
   stage: lint
