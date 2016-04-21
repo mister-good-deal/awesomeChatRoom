@@ -5,11 +5,11 @@ stages:
 before_script:
   - cd static
 
-cache:
-  key: "$CI_BUILD_REF_NAME"
-  untracked: true
-  paths:
-    - static/node_modules/
+#cache:
+#  key: "$CI_BUILD_REF_NAME"
+#  untracked: true
+#  paths:
+#    - static/node_modules/
 
 setup:
   stage: setup
