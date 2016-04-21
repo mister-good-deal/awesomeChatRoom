@@ -5,10 +5,10 @@ stages:
 before_script:
   - cd static
 
-cache:
- paths:
-   - static/node_modules/
-   - php/vendor/
+# cache:
+#   paths:
+#     - static/node_modules/
+#     - php/vendor/
 
 setup:
   stage: setup
@@ -16,9 +16,11 @@ setup:
     - setup
   script:
     - npm install --quiet
-    # - npm install -g git+https://git@github.com/gulpjs/gulp.git#4.0
     - cd ../php
     - composer install
+  artifacts:
+    - static/node_modules/
+    - php/vendor/
 
 lintJs:
   stage: lint
