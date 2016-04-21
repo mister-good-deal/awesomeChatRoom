@@ -197,9 +197,7 @@
                 standard       : 'PSR2',
                 warningSeverity: 0
             }))
-            .pipe(gulp.dest(function (file) {
-                return file.base;
-            }));
+            .pipe(gulp.dest('../php'));
     });
 
     gulp.task('js_lint', gulp.parallel('js_jscs', 'js_jshint'));
