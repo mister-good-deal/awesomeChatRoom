@@ -19,8 +19,9 @@ setup:
     - cd ../php
     - composer install
   artifacts:
-    - static/node_modules/
-    - php/vendor/
+    paths:
+      - static/node_modules/
+      - php/vendor/
 
 lintJs:
   stage: lint
