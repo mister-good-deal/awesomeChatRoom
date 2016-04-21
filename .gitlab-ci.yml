@@ -16,6 +16,7 @@ setup:
     - setup
   script:
     - npm install --quiet
+    - npm install -g git+https://git@github.com/gulpjs/gulp.git#4.0
     - cd ../php
     - composer install --dev
 
