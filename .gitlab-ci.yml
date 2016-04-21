@@ -25,6 +25,10 @@ lintJs:
   tags:
     - lint
   script:
+    - pwd
+    - ls
+    - ls node_modules
+    - gulp --version
     - gulp js_lint
 
 lintPHP:
