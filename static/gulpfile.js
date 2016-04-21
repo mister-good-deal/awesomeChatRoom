@@ -196,7 +196,7 @@
     });
 
     gulp.task('php_phpcbf', function () {
-        var phpcbfExec = 'phpcs' + (nodeOs.platform() === 'win32' ? '.bat' : '');
+        var phpcbfExec = 'phpcbf' + (nodeOs.platform() === 'win32' ? '.bat' : '');
 
         return gulp.src(phpSrc)
             .pipe(phpcbf({
