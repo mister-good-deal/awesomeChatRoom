@@ -21,8 +21,6 @@ The new branch should me names as **(_feature|hotfix|refacto_)/nameInitial-devel
 
 When the developement is over, merge **master** into your branch and create a **pull request**.
 
-**Commits directly on master is forbidden**.
-
 ## Indent and spacing
 
 Indentation must be **4 spaces** in all files (no tabulation).
@@ -86,7 +84,7 @@ All PHP methods parameters type and methods return type must be specified as the
 
 First create the main repository of the project by running the command
 
-`git clone https://github.com/ZiperRom1/awesomeChatRoom.git awesomechatroom`
+`git clone http://gitlab.laneuville.me/Ziper_Rom1/awesomeChatRoom.git awesomechatroom`
 
 Then the technical documentation repository of the projet by running the command
 
@@ -99,7 +97,7 @@ Then the technical documentation repository of the projet by running the command
 - Install [Composer](https://getcomposer.org/Composer-Setup.exe) (PHP packages manager)
 - Install [gulp 4](http://gulpjs.com/) with NPM (run `npm install -g git+https://git@github.com/gulpjs/gulp.git#4.0`)
 
-####Setup Apache
+#### Setup Apache
 
 In [apache folder]/conf/httpd.conf check those lines
 
@@ -130,7 +128,7 @@ In [apache folder]/conf/httpd.conf check those lines
 </FilesMatch>
 ```
 
-####Setup PHP
+#### Setup PHP
 
 In php.ini, check thoses values
 
@@ -164,7 +162,7 @@ In project /php folder create a `conf.ini` based on `con-example.ini`
 
 Install dev dependencies with Composer (on /php PATH run `composer install`)
 
-####Setup Elasticsearch
+#### Setup Elasticsearch
 
 Install a local Elasticsearch server by [downloading](https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/zip/elasticsearch/2.3.0/elasticsearch-2.3.0.zip) the Elasticsearch package and dezip it. Then follow official [instructions](https://www.elastic.co/downloads/elasticsearch).
 
@@ -188,7 +186,7 @@ Mapping and indexes will be created with the ORM by running the followings comma
 
 If you want to play with Elasticsearch, it is recommended to install plugins like [Kibana](https://www.elastic.co/products/kibana), [Marvel](https://www.elastic.co/products/marvel) and [Sense](https://www.elastic.co/guide/en/sense/current/installing.html)
 
-####Setup MySQL
+#### Setup MySQL
 
 Create an empty database (ex: `CREATE SCHEMA ``awesomechatroom`` DEFAULT CHARACTER SET utf8 ;`) and setup its name in /php/conf.ini => `[Database]` => `dsn` dbname value
 
@@ -200,7 +198,7 @@ Create tables and some data with the ORM, run those commands
 
 `exit`
 
-####Setup source files
+#### Setup source files
 
 In /static project PATH run the followings commands to install dev-dependencies
 
@@ -270,7 +268,7 @@ Here are all the gulp commands you can run
 
 - `gulp watch`  Wait from any change in /static/less directory and run `gulp build_less` on change
 
-####Run the server
+#### Run the server
 
 Finally run the websocket server with this command
 
@@ -278,10 +276,10 @@ Finally run the websocket server with this command
 
 Then go to your web browser with javascript console enabled and hit the index.php of the project
 
-You can connect with the users you have created with the ORM init commande
+You can connect with the users you have created with the ORM init commande like `admin` with password `123`
 
-`window.WebsocketManager.addService('chatService');`
+You can also starting an *Elasticsearch* server to record chat messages and monitor the Elasticsearch server by running a *Kibana* server.
 
-####IDE
+## IDE
 
 For IDE I recommend [Sublime Text 3](https://download.sublimetext.com/Sublime%20Text%20Build%203083%20x64.zip) with a stack of [sublime packages](https://packagecontrol.io/) or [PhpStorm](https://download.jetbrains.com/webide/PhpStorm-10.0.3.exe) which is heavier than Sublime Text 3 but a quite nice IDE.
