@@ -17,7 +17,7 @@ setup:
   script:
     - npm install --quiet
     - cd ../php
-    - composer install
+    # - composer install
   artifacts:
     paths:
       - static/node_modules/
