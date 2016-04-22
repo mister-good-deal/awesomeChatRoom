@@ -97,7 +97,7 @@ Then the technical documentation repository of the projet by running the command
 - Install MySQL [last realese](http://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-5.7.10.0.msi) as a service (use root as root password)
 - Install [Node.js](https://nodejs.org/dist/v5.4.1/node-v5.4.1-x64.msi) with NPM (Node packages manager) and add it to the PATH windows variable
 - Install [Composer](https://getcomposer.org/Composer-Setup.exe) (PHP packages manager)
-- Install [gulp](http://gulpjs.com/) with NPM (run `npm install --global gulp`)
+- Install [gulp 4](http://gulpjs.com/) with NPM (run `npm install -g git+https://git@github.com/gulpjs/gulp.git#4.0`)
 
 ####Setup Apache
 
