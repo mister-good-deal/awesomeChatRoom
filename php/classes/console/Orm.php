@@ -377,7 +377,8 @@ class Orm extends Console
     private function createAllTables()
     {
         $entityManager = new EntityManager();
-
+        // @todo Handle table creation order based on constraint
+        DB::query('SET FOREIGN_KEY_CHECKS = 0;');
         foreach (DB::getAllEntites() as $entityName) {
             /**
              * @var        Entity  $entity  An entity
@@ -395,6 +396,8 @@ class Orm extends Console
                 static::out('Table table "' . $tableName . '" already exists' . PHP_EOL);
             }
         }
+        // @todo Handle table creation order based on constraint
+        DB::query('SET FOREIGN_KEY_CHECKS = 1;');
 
         static::ok(static::ACTION_DONE . PHP_EOL);
     }
@@ -653,7 +656,6 @@ class Orm extends Console
             ]);
 
             static::ok('ES index ' . $index . ' created' . PHP_EOL);
-
         } catch (\Exception $e) {
             if ($e->getMessage() === 'index_already_exists_exception: already exists') {
                 static::ok('ES index ' . $index . ' already created' . PHP_EOL);
@@ -683,7 +685,6 @@ class Orm extends Console
             ]);
 
             static::ok('ES ' . $index . '_v' . $version . ' for type ' . $type . ' mapping created' . PHP_EOL);
-
         } catch (\Exception $e) {
             static::fail(
                 'ES ' . $index . '_v' . $version . ' mapping not created' . PHP_EOL . $e->getMessage() . PHP_EOL
@@ -713,7 +714,6 @@ class Orm extends Console
                 $client->indices()->putAlias(['index' => $index, 'name' => $alias . '_write']);
                 static::ok('ES alias ' . $alias . '_write binded to ' . $index . PHP_EOL);
             }
-
         } catch (\Exception $e) {
             static::fail(
                 'ES alias ' . $index . ' not binded to ' . $index . PHP_EOL . $e->getMessage() . PHP_EOL

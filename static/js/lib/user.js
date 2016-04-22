@@ -34,8 +34,18 @@ define([
             Forms.addOnRequestFailCallback('user/register', this.registerRequestFail, this);
 
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(_.bind(this.setLocation, this));
+                navigator.geolocation.watchPosition(
+                    _.bind(this.setLocation, this),
+                    _.bind(this.setLocationWithGeoip, this),
+                    {
+                        "maximumAge"        : 60000,
+                        "timeout"           : 3000,
+                        "enableHighAccuracy": true
+                    }
+                );
             }
+
+            _.delay(_.bind(this.setLocationWithGeoip, this), 5000);
         },
         messageManager = new Message();
 
@@ -194,6 +204,19 @@ define([
                 'lat': coordinates.coords.latitude,
                 'lon': coordinates.coords.longitude
             };
+        },
+
+        /**
+         * Set location based on MaxMind geoip database and the user IP address
+         *
+         * @method     setLocationWithGeoip
+         */
+        setLocationWithGeoip: function () {
+            if (_.isEmpty(this.location)) {
+                $.getJSON('GeoIp/getLocation', function (location) {
+                    this.location = location;
+                });
+            }
         },
 
         /**

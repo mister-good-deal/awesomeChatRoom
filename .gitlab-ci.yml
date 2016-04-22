@@ -1,0 +1,38 @@
+stages:
+  - setup
+  - lint
+
+before_script:
+  - cd static
+
+# cache:
+#   paths:
+#     - static/node_modules/
+#     - php/vendor/
+
+setup:
+  stage: setup
+  tags:
+    - setup
+  script:
+    - npm install --quiet
+    - cd ../php
+    - composer install
+  artifacts:
+    paths:
+      - static/node_modules/
+      - php/vendor/
+
+lintJs:
+  stage: lint
+  tags:
+    - lint
+  script:
+    - gulp js_lint
+
+lintPHP:
+  stage: lint
+  tags:
+    - lint
+  script:
+    - gulp php_lint

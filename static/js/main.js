@@ -34,7 +34,6 @@ require([
         };
 
         new ChatManager(websocket, user, forms);
-
         // Auto show the menu on page on desktop
         if ($(window).outerWidth() > 768) {
             $('#navbar-menu-left').offcanvas('show');
