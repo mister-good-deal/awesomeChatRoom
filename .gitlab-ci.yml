@@ -28,8 +28,6 @@ lintJs:
   tags:
     - lint
   script:
-    - ls
-    - ls node_modules
     - gulp js_lint
 
 lintPHP:
