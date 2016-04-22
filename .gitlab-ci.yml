@@ -17,7 +17,7 @@ setup:
   script:
     - npm install --quiet
     - cd ../php
-    # - composer install
+    - composer install
   artifacts:
     paths:
       - static/node_modules/
@@ -28,10 +28,8 @@ lintJs:
   tags:
     - lint
   script:
-    - pwd
     - ls
     - ls node_modules
-    - gulp --version
     - gulp js_lint
 
 lintPHP:
