@@ -653,7 +653,6 @@ class Orm extends Console
             ]);
 
             static::ok('ES index ' . $index . ' created' . PHP_EOL);
-
         } catch (\Exception $e) {
             if ($e->getMessage() === 'index_already_exists_exception: already exists') {
                 static::ok('ES index ' . $index . ' already created' . PHP_EOL);
@@ -683,7 +682,6 @@ class Orm extends Console
             ]);
 
             static::ok('ES ' . $index . '_v' . $version . ' for type ' . $type . ' mapping created' . PHP_EOL);
-
         } catch (\Exception $e) {
             static::fail(
                 'ES ' . $index . '_v' . $version . ' mapping not created' . PHP_EOL . $e->getMessage() . PHP_EOL
@@ -713,7 +711,6 @@ class Orm extends Console
                 $client->indices()->putAlias(['index' => $index, 'name' => $alias . '_write']);
                 static::ok('ES alias ' . $alias . '_write binded to ' . $index . PHP_EOL);
             }
-
         } catch (\Exception $e) {
             static::fail(
                 'ES alias ' . $index . ' not binded to ' . $index . PHP_EOL . $e->getMessage() . PHP_EOL
