@@ -5,6 +5,8 @@
 - **php** files => [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer/wiki)
 - **js** files  => [jshint](http://jshint.com/) and [jscs](http://jscs.info/)
 
+***
+
 ## Git process
 
 For each developement, create a branch from **master** at the begining of the developement.
@@ -37,11 +39,15 @@ var oneVar     = 'toto',
 In **php** files, align variables declaration like this:
 
 ```php
+<?php
+
 $oneVar     = 'toto',
 $oneMoreVar = 'tata',
 $aNumber    = 5,
 $tempVar1, $tempVar2;
 ```
+
+***
 
 ## Documentation
 
@@ -50,6 +56,8 @@ All methods / functions must be documented with phpDoc / jsDoc and must not rais
 *Exemples*
 
 ```php
+<?php
+
 /**
  * [aCoolFunction description]
  *
@@ -77,6 +85,8 @@ All PHP methods parameters type and methods return type must be specified as the
 - float
 - int
 - string
+
+***
 
 ## Environment and IDE
 
@@ -279,6 +289,8 @@ Then go to your web browser with javascript console enabled and hit the index.ph
 You can connect with the users you have created with the ORM init commande like `admin` with password `123`
 
 You can also starting an *Elasticsearch* server to record chat messages and monitor the Elasticsearch server by running a *Kibana* server.
+
+***
 
 ## IDE
 

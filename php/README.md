@@ -2,7 +2,9 @@
 
 This repository contains the followings features / classes
 
-###IniFileManager class
+Read the full technical [documentation](http://ziperrom1.github.io/awesomechatroom-doc/phpDoc/)
+
+### IniFileManager class
 
 * parse ini conf file
 * get parameter from ini file
@@ -14,6 +16,8 @@ This repository contains the followings features / classes
 *code example:*
 
 ```php
+<?php
+
 // return an array containing all the sections params
 Ini::getSectionParams('my ini section');
 // return the param
@@ -26,34 +30,21 @@ Ini::setParamComment('my ini section', 'my param', 'my comment');
 
 ***
 
-###File and console logger class
+### File and console logger class
 
 * to log text in a file or/and in a console with pretty output (colors etc)
 
 ***
 
-###Entity / Manager design pattern abstract class
+### Entity / Manager design pattern abstract class
 
 * simply create entities based on INI conf files
-* support foreign keys set up with onDelete, onUpdate clauses
+* support foreign keys setup with onDelete, onUpdate clauses
 * simply manage entities with basic SELECT / DELETE / UPDATE
 * simply CREATE / DROP tables based on entities INI conf files
 * support multiple DB system (ORACLE, MySQL, ...)
 
 *code example:*
-
-```php
-use \classes\entities\User as UserEntity;
-use \classes\entitiesManager\UserEntityManager as UserEntityManager;
-
-$user            = new UserEntity();
-$userManager     = new UserEntityManager($user);
-$user->id        = 1;
-$user->firstName = 'Toto';
-$user->lastName  = 'Tata';
-// Will save the entity in the database with an Update if the ID already exist
-$userManager->saveEntity();
-```
 
 ```ini
 ; Ini file structure format
@@ -125,16 +116,33 @@ size   = 128
 isNull = false
 ```
 
+```php
+<?php
+
+use \classes\entities\User as UserEntity;
+use \classes\entitiesManager\UserEntityManager as UserEntityManager;
+
+$user            = new UserEntity();
+$userManager     = new UserEntityManager($user);
+$user->id        = 1;
+$user->firstName = 'Toto';
+$user->lastName  = 'Tata';
+// Will save the entity in the database with an Update if the ID already exist
+$userManager->saveEntity();
+```
+
 ***
 
-###DataBase class
+### DataBase class
 
 * singleton pattern using PDO PHP class with `__staticCall` magic method
-* use database action anywhere in you code by calling `DB::PDOmethod(params);` statically without initialize or set-up anything
+* use database action anywhere in you code by calling `DB::PDOmethod(params);` statically without initialize or setup anything
 
 *code example:*
 
 ```php
+<?php
+
 use \classes\DataBase as DB;
 
 DB::exec('DROP TABLE toto;');
@@ -143,13 +151,13 @@ DB::query('SELECT * FROM toto;')->fetch();
 
 ***
 
-###ORM console class
+### ORM console class
 
 * console mode based on the DataBase class to perform basic database manipulation with pretty console output.
 
 ***
 
-###ImagesManager class
+### ImagesManager class
 
 This class is based on Imagick class
 
@@ -159,6 +167,8 @@ This class is based on Imagick class
 *code example:*
 
 ```php
+<?php
+
 use \classes\ImagesManager as Images;
 
 $image = new Images(__DIR__ . '/test.jpeg');
@@ -173,7 +183,7 @@ $image->copyrightImage('©Copyright', 40, 'Verdana', 'top-left');
 
 ***
 
-###Benchmark class (uncomplete)
+### Benchmark class (todo)
 
 * test method performance
 
@@ -185,7 +195,7 @@ The code uses advanced strucure like Traits to avoid code replication.
 
 ***
 
-The [phpDoc](http://ziperrom1.github.io/web/phpDoc) is automatically generated and updated at each commit.
+The [phpDoc](http://ziperrom1.github.io/awesomechatroom-doc/phpDoc/) is automatically generated and updated at each commit.
 
 ***
 
