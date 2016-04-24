@@ -42,4 +42,17 @@ trait DateTrait
 
         return sprintf('%d%03d', $comps[1], $comps[0] * 1000);
     }
+
+    /**
+     * Get random microtime (from now to one year before) as an int but casted in a string
+     *
+     * @return     string  A random microtime as string
+     */
+    public static function microtimeRandomAsInt(): string
+    {
+        $microtime = microtime();
+        $comps     = explode(' ', $microtime);
+
+        return sprintf('%d%03d', $comps[1] - rand(0, 31536000), $comps[0] * 1000);
+    }
 }

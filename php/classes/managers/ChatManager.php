@@ -16,7 +16,6 @@ use \classes\entitiesCollection\ChatRoomBanCollection as ChatRoomBanCollection;
 use \classes\entitiesCollection\ChatRoomCollection as ChatRoomCollection;
 use \classes\entitiesManager\ChatRoomEntityManager as ChatRoomEntityManager;
 use \classes\entitiesManager\ChatRoomBanEntityManager as ChatRoomBanEntityManager;
-use \classes\ExceptionManager as Exception;
 
 /**
  * Perform action relative to the ChatRoom and ChatRoomBan entities classes

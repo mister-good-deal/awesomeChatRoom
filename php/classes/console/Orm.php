@@ -47,8 +47,8 @@ class Orm extends Console
         'es -i index -v sersion -s shards -r -replicas --index' => 'Create elasticsearch index',
         'es -i index -v version -t type -m mapping --mapping'   => 'Create elasticsearch mapping',
         'es -i index -a alias --aliases [--no-read --no-write]' => 'Create elasticsearch aliases',
+        'es -i index -n number --generate-data'                 => 'Generate `number (1000)` data in `index (chat)`',
         'es --init'                                             => 'Init ES with indexn mapping and aliases',
-        'es --generate-data'                                    => 'Generate data in chat index',
         'init --es --sql --all'                                 => 'Initialize mysql, ES or both with --all option'
     ];
 
@@ -269,13 +269,14 @@ class Orm extends Console
     private function elasticsearchProcess(string $command)
     {
         $args     = $this->getArgs($command);
-        $index    = $args['i'] ?? '';
+        $index    = $args['i'] ?? 'chat';
         $alias    = $args['a'] ?? '';
         $type     = $args['t'] ?? '';
         $mapping  = $args['m'] ?? '';
         $version  = (int) ($args['v'] ?? 1);
         $shards   = (int) ($args['s'] ?? 2);
         $replicas = (int) ($args['r'] ?? 0);
+        $number   = (int) ($args['n'] ?? 1000);
 
         if (isset($args['init'])) {
             $this->initElasticsearch();
@@ -286,7 +287,7 @@ class Orm extends Console
         } elseif (isset($args['aliases'])) {
             $this->bindAliasesToIndex($index, $alias, !isset($args['no-read']), !isset($args['no-write']));
         } elseif (isset($args['generate-data'])) {
-            $this->generateEsData($index);
+            $this->generateEsData($index, $number);
         }
     }
 
@@ -634,6 +635,9 @@ class Orm extends Console
 
         // Bind aliases
         $this->bindAliasesToIndex($conf['index'] . '_v'. $conf['version'], $conf['index']);
+
+        // Generate data
+        $this->generateEsData($conf['index']);
     }
     /**
      * Create an Elasticsearch index
@@ -748,13 +752,13 @@ class Orm extends Console
     /**
      * Generate data by inserting message in the given index
      *
-     * @param      string  $index   The index to insert in
+     * @param      string  $index   The index to insert in DEFAULT 'chat'
      * @param      int     $number  The number of insertion DEFAULT 1000
      */
-    private function generateEsData(string $index, int $number = 1000)
+    private function generateEsData(string $index = 'chat', int $number = 1000)
     {
         $client = \Elasticsearch\ClientBuilder::create()->build();
-        $date   = static::microtimeAsInt();
+        $params = ['body' => []];
         $ip     = [
             '118.240.12.136',
             '45.78.39.167',
@@ -786,37 +790,38 @@ class Orm extends Console
             $userIdFrom = rand(0, 9);
             $userIdTo   = rand(0, 9);
 
-            $params = [
-                'index' => $index . '_write',
-                'type'  => 'message',
-                'body'  => [
-                    'pseudonym' => 'User ' . $userIdFrom,
-                    'message'   => 'random message ' . $i,
-                    'type'      => ($public ? 'public' : 'private'),
-                    'date'      => $date,
-                    'room'      => rand(1, 10),
-                    'userFrom'  => [
-                        'id'       => $userIdFrom,
-                        'ip'       => $ip[$userIdFrom],
-                        'location' => $location[$userIdFrom]
-                    ],
-                    'userTo' => [
-                        'id'       => $public ? -1 : $userIdTo,
-                        'ip'       => $public ? '0.0.0.0' : $ip[$userIdTo],
-                        'location' => $public ? [] : $location[$userIdTo]
-                    ]
+            $params['body'][] = [
+                'index' => [
+                    '_index' => $index . '_write',
+                    '_type'  => 'message'
                 ]
             ];
 
-            try {
-                $result = $client->index($params);
-                static::ok('message ' . $i . ' inserted' . PHP_EOL);
-            } catch (\Exception $e) {
-                static::fail($e->getMessage() . PHP_EOL);
-            }
+            $params['body'][] = [
+                'pseudonym' => 'User ' . $userIdFrom,
+                'message'   => 'random message ' . $i,
+                'type'      => ($public ? 'public' : 'private'),
+                'date'      => static::microtimeRandomAsInt(),
+                'room'      => rand(1, 10),
+                'userFrom'  => [
+                    'id'       => $userIdFrom,
+                    'ip'       => $ip[$userIdFrom],
+                    'location' => $location[$userIdFrom]
+                ],
+                'userTo' => [
+                    'id'       => $public ? -1 : $userIdTo,
+                    'ip'       => $public ? '0.0.0.0' : $ip[$userIdTo],
+                    'location' => $public ? [] : $location[$userIdTo]
+                ]
+            ];
         }
 
-        static::ok('data inserted' . PHP_EOL);
+        try {
+            $client->bulk($params);
+            static::ok('data inserted' . PHP_EOL);
+        } catch (\Exception $e) {
+            static::fail($e->getMessage() . PHP_EOL);
+        }
     }
 
     /**
