@@ -832,7 +832,7 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         updateRoomUsersRightsCallback: function (data) {
-            var modal = $('.modal[data-room-id="' + data.room.id + '"]');
+            var modal = $('.modal[data-room-id="' + data.roomId + '"]');
 
             this.updateRoomUsersRights(modal, data.usersRights);
         },
@@ -844,7 +844,7 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         updateRoomUsersBannedCallback: function (data) {
-            var modal = $('.modal[data-room-id="' + data.room.id + '"]');
+            var modal = $('.modal[data-room-id="' + data.roomId + '"]');
 
             this.updateRoomUsersBanned(modal, data.usersBanned);
         },
@@ -1248,6 +1248,8 @@ define([
          * @param      {String}  pseudonym      The new user pseudonym
          * @param      {Object}  userChatRight  The new user chat right
          * @return     {Object}  The new user right line jQuery DOM element
+         *
+         * @todo use lodash and no jquery for iterate
          */
         getUserRightLine: function (modal, pseudonym, userChatRight) {
             var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),

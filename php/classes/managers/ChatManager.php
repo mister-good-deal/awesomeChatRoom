@@ -147,6 +147,16 @@ class ChatManager extends Manager
     }
 
     /**
+     * Get the users banned
+     *
+     * @return     ChatRoomBanCollection  The chat room ban collection
+     */
+    public function getUsersBanned(): ChatRoomBanCollection
+    {
+        return $this->chatRoomEntity->getChatRoomBanCollection();
+    }
+
+    /**
      * Save a chat room collection
      *
      * @param      ChatRoomCollection  $collection  The chat room collection to save

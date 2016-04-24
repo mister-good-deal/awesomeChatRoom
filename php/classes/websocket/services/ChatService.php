@@ -14,6 +14,8 @@ use \classes\IniManager as Ini;
 use \classes\entities\User as User;
 use \classes\entities\UserChatRight as UserChatRight;
 use \classes\entities\ChatRoom as ChatRoom;
+use \classes\entitiesCollection\ChatRoomCollection as ChatRoomCollection;
+use \classes\entitiesCollection\ChatRoomBanCollection as ChatRoomBanCollection;
 use \classes\entities\ChatRoomBan as ChatRoomBan;
 use \classes\managers\UserManager as UserManager;
 use \classes\managers\ChatManager as ChatManager;
@@ -244,7 +246,7 @@ class ChatService extends ServicesDispatcher implements Service
                 $userChatRight         = new UserChatRight();
                 $userChatRight->idUser = $client['User']->id;
                 $userChatRight->idRoom = $room->id;
-                $response['success']   = $userManager->addUserChatRight($userChatRight, true);
+                $response['success']   = $userManager->addUserGlobalChatRight($userChatRight, true);
 
                 if ($response['success']) {
                     $this->rooms[$room->id] = [
@@ -252,7 +254,12 @@ class ChatService extends ServicesDispatcher implements Service
                         'room'  => $room
                     ];
 
-                    yield $this->addUserToTheRoom($client, $room, $userManager->getPseudonymForChat(), $data['location']);
+                    yield $this->addUserToTheRoom(
+                        $client,
+                        $room,
+                        $userManager->getPseudonymForChat(),
+                        $data['location']
+                    );
 
                     $message = sprintf(_('The chat room name "%s" is successfully created !'), $room->name);
 
@@ -583,6 +590,9 @@ class ChatService extends ServicesDispatcher implements Service
                             ]
                         );
 
+                        // Update the users ban list for users who have access to the admin board EG registered users
+                        yield $this->updateRoomUsersBanned((int) $room->id);
+
                         $success = true;
                     } else {
                         $message = _('The room ip ban did not succeed');
@@ -609,61 +619,56 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      array  $client  The client information [Connection, User] array pair
      * @param      array  $data    JSON decoded client data
      *
-     * @todo       to refacto
+     * @todo       to test
      */
     private function updateRoomUserRight(array $client, array $data)
     {
-        $success = false;
-        @$this->setIfIsSetAndTrim($pseudonym, $data['pseudonym'], null);
-        @$this->setIfIsSetAndTrim($roomName, $data['roomName'], '');
-        @$this->setIfIsSetAndTrim($rightName, $data['rightName'], '');
-        @$this->setIfIsSetAndTrim($rightValue, $data['rightValue'], '');
+        $success     = false;
+        $message     = _('User right updated');
+        $chatManager = new ChatManager();
 
-        if ($roomName === '') {
-            $message = _('The room name is required');
-        } elseif (!in_array($roomName, $this->roomsName)) {
-            $message = sprintf(_('The chat room name "%s" does not exists'), $roomName);
-        } elseif ($client['User'] === null) {
+        if ($client['User'] === null) {
             $message = _('Authentication failed');
+        } elseif ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
+            $message = _('This room does not exist');
         } else {
-            $usersChatRightsEntityManager = new UsersChatRightsEntityManager();
-            $usersChatRightsEntityManager->loadEntity(['idUser' => $client['User']->id, 'roomName' => $roomName]);
+            $room        = $chatManager->getChatRoomEntity();
+            $userManager = new UserManager($client['User']);
 
-            if ($client['User']->getUserRights()->chatAdmin || $usersChatRightsEntityManager->getEntity()->grant === 1) {
-                $usersChatRightsEntityManager->loadEntity(
-                    [
-                        'idUser'   => $userEntityManager->getUserIdByPseudonym($pseudonym),
-                        'roomName' => $roomName
-                    ]
-                );
-
-                $usersChatRightsEntityManager->getEntity()->{$rightName} = (int) $rightValue;
-                $usersChatRightsEntityManager->saveEntity();
-                $text = sprintf(
-                    _('The user %s has now %s the right to %s in the room %s'),
-                    $pseudonym,
-                    ($rightValue ? '' : _('not')),
-                    $rightName,
-                    $roomName
-                );
-
-                // Update all others admin users panel
-                yield $this->updateRoomUsersRights($roomName);
-                yield $this->sendMessageToRoom([], $text, $roomName, 'public');
-
-                $success = true;
-                $message = _('User right successfully updated');
+            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
+                $message = _('Incorrect password');
+            } elseif (!$userManager->hasGrantChatRight((int) $room->id)) {
+                $message = _('You do not have the right to grant a user right in this room');
             } else {
-                $message = _('You do not have the right to grant a user right on this room');
+                try {
+                    $user      = $this->getUserByRoomByPseudonym((int) $room->id, $data['pseudonym']);
+                    $chatRight = $user->getChatRight()->getEntityById($room->id);
+                    $userManager->setUser($user);
+
+                    if ($chatRight === null) {
+                        $chatRight = new UserChatRight([
+                            'idUser' => $user->id,
+                            'idRoom' => $room->id
+                        ]);
+                    }
+
+                    $chatRight->{$data['rightName']} = (bool) $data['rightValue'];
+                    $success                         = $userManager->setUserChatRight($chatRight);
+
+                    // Update the users right for users who have access to the admin board EG registered users
+                    yield $this->updateRoomUsersRights((int) $room->id);
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
+                }
             }
         }
 
         yield $client['Connection']->send(json_encode([
-            'service'  => $this->chatService,
-            'action'   => 'updateRoomUserRight',
-            'success'  => $success,
-            'text'     => $message,
-            'roomName' => $roomName
+            'service' => $this->chatService,
+            'action'  => 'updateRoomUserRight',
+            'success' => $success,
+            'text'    => $message,
+            'roomId'  => $data['roomId']
         ]));
     }
 
@@ -998,32 +1003,6 @@ class ChatService extends ServicesDispatcher implements Service
     }
 
     /**
-     * Get all the users room rights
-     *
-     * @param      string  $roomName  The room name
-     *
-     * @return     array   An array containing all the users rights indexed by their ID
-     *
-     * 'userRight' => ['user ID' => [right]], 'userChatRight' => ['User ID'][chatRight]]
-     */
-    private function getUsersRightFromRoom(string $roomName): array
-    {
-        $rights = [
-            'userRight'     => [],
-            'userChatRight' => []
-        ];
-
-        foreach ($this->rooms[$roomName]['users'] as $userInfo) {
-            if ($userInfo['User'] !== null) {
-                $rights['userRight'][$userInfo['User']->id]     = $userInfo['User']->getRight()->__toArray();
-                $rights['userChatRight'][$userInfo['User']->id] = $userInfo['User']->getChatRight()->__toArray();
-            }
-        }
-
-        return $rights;
-    }
-
-    /**
      * Get all the room used pseudonyms
      *
      * @param      int    $roomId  The room ID
@@ -1039,6 +1018,57 @@ class ChatService extends ServicesDispatcher implements Service
         }
 
         return $pseudonyms;
+    }
+
+    /**
+     * Get all the room users right
+     *
+     * @param      int    $roomId  The room ID
+     *
+     * @return     array An array containing all the registered user chat right
+     */
+    private function getRoomUsersRight(int $roomId): array
+    {
+        $usersRight = [];
+
+        foreach ($this->rooms[$roomId]['users'] as $userInfo) {
+            if ($userInfo['User'] !== null) {
+                $chatRight = $userInfo['User']->getEntityCollection()->getEntityById($roomId);
+
+                if ($chatRight === null) {
+                    $chatRight = new UserChatRight([
+                        'idUser' => $userInfo['User']->id,
+                        'idRoom' => $roomId
+                    ]);
+                }
+
+                $usersRight[$userInfo['pseudonym']] = $chatRight->__toArray();
+            }
+        }
+
+        return $usersRight;
+    }
+
+    /**
+     * Get the room users ban
+     *
+     * @param      int    $roomId  The room ID
+     *
+     * @return     array  The chat room ban list as array
+     */
+    private function getRoomUsersBan(int $roomId): array
+    {
+        $usersBan    = [];
+        $chatManager = new ChatManager();
+        $userManager = new UserManager();
+        $chatManager->loadChatRoom($roomId);
+
+        foreach ($chatManager->getUsersBanned() as $key => $chatRoomBan) {
+            $usersBan[$key]          = $chatRoomBan->__toArray();
+            $usersBan[$key]['admin'] = $userManager->getUserPseudonymById((int) $usersBan[$key]['admin']);
+        }
+
+        return $usersBan;
     }
 
     /**
@@ -1070,14 +1100,12 @@ class ChatService extends ServicesDispatcher implements Service
     }
 
     /**
-     * Get a user hash from his pseudonym
+     * Get a user from his pseudonym in the specified room
      *
      * @param      int     $roomId     The room ID
      * @param      string  $pseudonym  The user pseudonym
      *
      * @return     User  The user
-     *
-     * @todo not used for the moment
      */
     private function getUserByRoomByPseudonym(int $roomId, string $pseudonym): User
     {
@@ -1101,7 +1129,7 @@ class ChatService extends ServicesDispatcher implements Service
      * Update the connected users list in a room
      *
      * @param      array  $client  The client information [Connection, User] array pair
-     * @param      int    $roomId  The room name
+     * @param      int    $roomId  The room ID
      *
      * @return     array  The user location in ['lat' => latitude, 'lon' => longitude] format
      */
@@ -1114,7 +1142,7 @@ class ChatService extends ServicesDispatcher implements Service
      * Update the connected users list in a room
      *
      * @param      array       $client  The client information [Connection, User] array pair
-     * @param      int         $roomId  The room name
+     * @param      int         $roomId  The room ID
      *
      * @return     \Generator
      */
@@ -1129,42 +1157,46 @@ class ChatService extends ServicesDispatcher implements Service
     }
 
     /**
-     * Update the connected users rights list in a room
+     * Update the connected users rights list for the registered user with admin dashboard in the room
      *
-     * @param      string      $roomName  The room name
+     * @param      int         $roomId  The room ID
      *
      * @return     \Generator
      */
-    private function updateRoomUsersRights(string $roomName)
+    private function updateRoomUsersRights(int $roomId)
     {
-        foreach ($this->rooms[$roomName]['users'] as $user) {
+        $usersRightList = $this->getRoomUsersRight($roomId);
+
+        foreach ($this->rooms[$roomId]['users'] as $user) {
             if ($user['User'] !== false) {
                 yield $user['Connection']->send(json_encode([
                     'service'     => $this->chatService,
                     'action'      => 'updateRoomUsersRights',
-                    'roomName'    => $roomName,
-                    'usersRights' => $this->rooms[$roomName]['usersRights']
+                    'roomId'      => $roomId,
+                    'usersRights' => $usersRightList
                 ]));
             }
         }
     }
 
     /**
-     * Update the ip banned list in a room
+     * Update the ip banned list for the registered user with admin dashboard in the room
      *
-     * @param      string      $roomName  The room name
+     * @param      int         $roomId  The room ID
      *
      * @return     \Generator
      */
-    private function updateRoomUsersBanned(string $roomName)
+    private function updateRoomUsersBanned(int $roomId)
     {
-        foreach ($this->rooms[$roomName]['users'] as $user) {
+        $banList = $this->getRoomUsersBan($roomId);
+
+        foreach ($this->rooms[$roomId]['users'] as $user) {
             if ($user['User'] !== false) {
                 yield $user['Connection']->send(json_encode([
                     'service'     => $this->chatService,
                     'action'      => 'updateRoomUsersBanned',
-                    'roomName'    => $roomName,
-                    'usersBanned' => $this->rooms[$roomName]['usersBanned']
+                    'roomId'      => $roomId,
+                    'usersBanned' => $banList
                 ]));
             }
         }

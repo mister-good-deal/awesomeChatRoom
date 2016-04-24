@@ -81,6 +81,24 @@ class UserEntityManager extends EntityManager
     }
 
     /**
+     * Get a user pseudonym by his ID
+     *
+     * @param      int     $id     The user ID
+     *
+     * @return     string  The user pseudonym
+     */
+    public function getUserPseudonymById(int $id): string
+    {
+        $sqlMarks = 'SELECT pseudonym, firstName, lastName FROM %s WHERE id = %d';
+        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $id);
+        $result   = DB::query($sql)->fetch();
+
+        return (
+            $result['pseudonym'] !== null ? $result['pseudonym'] : $result['firstName'] . ' ' . $result['lastName']
+        );
+    }
+
+    /**
      * Register a user and return errors if errors occured
      *
      * @param      array  $inputs  The user inputs in an array($columnName => $value) pairs to set the object

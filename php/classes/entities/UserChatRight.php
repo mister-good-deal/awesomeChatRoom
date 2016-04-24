@@ -28,11 +28,17 @@ class UserChatRight extends Entity
     =====================================*/
 
     /**
-     * Constructor that calls the parent Entity constructor
+     * Constructor that calls the parent Entity constructor and affect values if values are passed
+     *
+     * @param      array  $data   Array($columnName => $value) pairs to set the object DEFAULT null
      */
-    public function __construct()
+    public function __construct($data = null)
     {
         parent::__construct('UserChatRight');
+
+        if ($data !== null) {
+            $this->setAttributes($data);
+        }
     }
 
     /**

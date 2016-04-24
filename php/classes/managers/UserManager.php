@@ -10,6 +10,7 @@ namespace classes\managers;
 
 use \abstracts\Manager as Manager;
 use \classes\entities\User as User;
+use \classes\entities\UserChatRight as UserChatRight;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
 use \classes\entitiesManager\UserRightEntityManager as UserRightEntityManager;
 use \classes\entitiesManager\UserChatRightEntityManager as UserChatRightEntityManager;
@@ -92,7 +93,7 @@ class UserManager extends Manager
     }
 
     /**
-     * Get a user id by his pseudonym
+     * Get a user ID by his pseudonym
      *
      * @param      string  $pseudonym  The user pseudonym
      *
@@ -101,6 +102,18 @@ class UserManager extends Manager
     public function getUserIdByPseudonym(string $pseudonym): int
     {
         return $this->userEntityManager->getUserIdByPseudonym($pseudonym);
+    }
+
+    /**
+     * Get a user pseudonym by his ID
+     *
+     * @param      int     $id     The user ID
+     *
+     * @return     string  The user pseudonym
+     */
+    public function getUserPseudonymById(int $id): string
+    {
+        return $this->userEntityManager->getUserPseudonymById($id);
     }
 
     /**
@@ -221,6 +234,26 @@ class UserManager extends Manager
     }
 
     /**
+     * Check if a user has the right to grant a user right in the room
+     *
+     * @param      int   $roomId  The room ID where the user wants to ban someone
+     *
+     * @return     bool  True if a user has the right to grant a user right in the room else false
+     */
+    public function hasGrantChatRight(int $roomId): bool
+    {
+        return (
+            $this->userEntityManager->checkSecurityToken() &&
+            $this->userEntity->getRight() !== null && (
+                $this->userEntity->getRight()->chatAdmin || (
+                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
+                    $this->userEntity->getChatRight()->getEntityById($roomId)->grant
+                )
+            )
+        );
+    }
+
+    /**
      * Get a user pseudonym
      *
      * @return     string  The user pseudonym (first name + last name if not defined)
@@ -231,14 +264,14 @@ class UserManager extends Manager
     }
 
     /**
-     * Add a user chat right
+     * Add a user global chat right
      *
      * @param      UserChatRight  $userChatRight  The user chat right entity
      * @param      bool           $grantAll       If all the user chat right should be granted DEFAULT false
      *
      * @return     bool           True if the add succeed else false
      */
-    public function addUserChatRight(UserChatRight $userChatRight, bool $grantAll = false): bool
+    public function addUserGlobalChatRight(UserChatRight $userChatRight, bool $grantAll = false): bool
     {
         $this->userChatRightEntityManager->setEntity($userChatRight);
 
@@ -253,6 +286,26 @@ class UserManager extends Manager
         }
 
         return $success;
+    }
+
+    /**
+     * Set one user chat right
+     *
+     * @param      UserChatRight  $chatRight  The user chat right to set
+     *
+     * @return     bool           True if the operation succeed else false
+     */
+    public function setUserChatRight(UserChatRight $chatRight): bool
+    {
+        $success = true;
+
+        try {
+            $success = $this->userChatRightEntityManager->saveEntity($chatRight);
+        } catch (Exception $e) {
+            $success = false;
+        } finally {
+            return $success;
+        }
     }
 
     /**

@@ -75,11 +75,17 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Get the current Collection
      *
-     * @return     Collection  The current collection
+     * @return     array  The current collection as an array
      */
-    public function getCollection()
+    public function getCollection(): array
     {
-        return $this->collection;
+        $arrayStyle = [];
+
+        foreach ($this->collection as $entity) {
+            $arrayStyle[] = $entity->__toArray();
+        }
+
+        return $arrayStyle;
     }
 
     /**
@@ -102,6 +108,28 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
         } else {
             $this->collection[] = $entity;
             $this->indexId[$id] = $this->count();
+        }
+    }
+
+    /**
+     * Set an entity which is already in the collection
+     *
+     * @param      Entity     $entity  The entity object
+     * @param      string     $key     A key to save the entity DEFAULT null (auto generated)
+     *
+     * @throws     Exception  If the entity id is noy already in the collection
+     */
+    public function set($entity, $key = null)
+    {
+        $id = $key ?? $this->parseId($entity->getIdValue());
+
+        if (!array_key_exists($id, $this->indexId)) {
+            throw new Exception(
+                'This entity id(' . $this->formatVariable($id) .') is not already in the collection ' . $this,
+                Exception::$WARNING
+            );
+        } else {
+            $this->collection[$this->indexId[$id]] = $entity;
         }
     }
 
