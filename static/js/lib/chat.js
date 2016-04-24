@@ -925,7 +925,8 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         getKickedCallback: function (data) {
-            messageManager.add(data.text);
+            $(this.settings.selectors.global.room + '[data-id="' + data.roomId + '"]').remove();
+            messageManager.add(data.text, 'alert', 'info', 'Kicked from the room `' + data.roomName + '`', 10);
         },
 
         /**
@@ -945,7 +946,8 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         getBannedCallback: function (data) {
-            messageManager.add(data.text);
+            $(this.settings.selectors.global.room + '[data-id="' + data.roomId + '"]').remove();
+            messageManager.add(data.text, 'alert', 'danger', 'Banned from the room `' + data.roomName + '`', 20);
         },
 
         /**

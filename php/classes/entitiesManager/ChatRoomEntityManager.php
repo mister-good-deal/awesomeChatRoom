@@ -43,9 +43,9 @@ class ChatRoomEntityManager extends EntityManager
      */
     public function getAllRooms(): ChatRoomCollection
     {
-        $rooms      = new ChatRoomCollection();
-        $sqlMarks   = 'SELECT * FROM %s';
-        $sql        = static::sqlFormater($sqlMarks, $this->entity->getTableName());
+        $rooms    = new ChatRoomCollection();
+        $sqlMarks = 'SELECT * FROM %s';
+        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName());
 
         foreach (DB::query($sql)->fetchAll() as $roomAttributes) {
             $rooms->add(new ChatRoom($roomAttributes));

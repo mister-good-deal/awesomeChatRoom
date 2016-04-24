@@ -30,7 +30,7 @@ class ChatRoom extends Entity
     /**
      * @var        ChatRoomBanCollection  $chatRoomBanCollection    Collection of banned users
      */
-    private $chatRoomBanCollection = null;
+    private $chatRoomBanCollection;
 
     /*=====================================
     =            Magic methods            =
@@ -48,6 +48,8 @@ class ChatRoom extends Entity
         if ($data !== null) {
             $this->setAttributes($data);
         }
+
+        $this->chatRoomBanCollection = new ChatRoomBanCollection();
     }
 
     /*-----  End of Magic methods  ------*/
@@ -61,7 +63,7 @@ class ChatRoom extends Entity
      *
      * @return     ChatRoomBanCollection  The users banned collection
      */
-    public function getChatRoomBanCollection()
+    public function getChatRoomBanCollection(): ChatRoomBanCollection
     {
         return $this->chatRoomBanCollection;
     }

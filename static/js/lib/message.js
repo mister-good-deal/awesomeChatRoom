@@ -55,6 +55,8 @@ define([
 
         /**
          * Initialize events
+         *
+         * @method     initEvents
          */
         initEvents: function () {
             $('body').on(
@@ -79,7 +81,8 @@ define([
         /**
          * Display a message on a large alert div at the top of the user screen
          *
-         * @param {Object} message The message to display
+         * @method     alert
+         * @param      {Object}  message  The message to display
          */
         alert: function (message) {
             this.settings.alert.lock = true;
@@ -90,7 +93,8 @@ define([
         /**
          * Display a message on a modal to the user screen
          *
-         * @param {Object} message The message to display
+         * @method     popup
+         * @param      {Object}  message  The message to display
          */
         popup: function (message) {
             this.settings.popup.lock = true;
@@ -100,7 +104,8 @@ define([
         /**
          * Display a message on a medium div at the bottom-right of the user screen
          *
-         * @param {Object} message The message to display
+         * @method     notification
+         * @param      {Object}  message  The message to display
          */
         notification: function (message) {
             this.settings.notification.lock = true;
@@ -109,6 +114,8 @@ define([
 
         /**
          * Close the alert message
+         *
+         * @method     alertDismiss
          */
         alertDismiss: function () {
             if (this.settings.alert.lock) {
@@ -120,6 +127,8 @@ define([
 
         /**
          * Close the popup message
+         *
+         * @method     popupDismiss
          */
         popupDismiss: function () {
             if (this.settings.popup.lock) {
@@ -131,6 +140,8 @@ define([
 
         /**
          * Close the notification message
+         *
+         * @method     notificationDismiss
          */
         notificationDismiss: function () {
             if (this.settings.notification.lock) {
@@ -143,11 +154,12 @@ define([
         /**
          * Add a message in a specific queue to display it
          *
-         * @param {String} text     The message text to display
-         * @param {String} type     The message type ("alert", "popup", "notification")
-         * @param {String} level    The message level ("danger", "warning", "info", "success")
-         * @param {String} title    The message title
-         * @param {Number} duration The message maximum duration before dismiss (-1 for infinite)
+         * @method     add
+         * @param      {String}  text      The message text to display
+         * @param      {String}  type      The message type ("alert", "popup", "notification")
+         * @param      {String}  level     The message level ("danger", "warning", "info", "success")
+         * @param      {String}  title     The message title
+         * @param      {Number}  duration  The message maximum duration in second before dismiss (-1 for infinite)
          */
         add: function (text, type, level, title, duration) {
             if (!type) {
@@ -167,7 +179,8 @@ define([
         /**
          * Parse the WebSocket server response to notify it
          *
-         * @param {Object} data JSON encoded data recieved from the WebSocket server
+         * @method     parseWebsocketData
+         * @param      {Object}  data    JSON encoded data recieved from the WebSocket server
          */
         parseWebsocketData: function (data) {
             this.add(data.text, data.type, data.level, data.title, data.duration);
@@ -176,7 +189,8 @@ define([
         /**
          * Dequeue a message from the specific queue if the queue is not empty and the queue is not locked
          *
-         * @param {String} type The message type ("alert", "popup", "notification")
+         * @method     dequeueMessage
+         * @param      {String}  type    The message type ("alert", "popup", "notification")
          */
         dequeueMessage: function (type) {
             var message,

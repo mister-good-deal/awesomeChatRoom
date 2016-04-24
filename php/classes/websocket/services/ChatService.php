@@ -14,8 +14,10 @@ use \classes\IniManager as Ini;
 use \classes\entities\User as User;
 use \classes\entities\UserChatRight as UserChatRight;
 use \classes\entities\ChatRoom as ChatRoom;
+use \classes\entities\ChatRoomBan as ChatRoomBan;
 use \classes\managers\UserManager as UserManager;
 use \classes\managers\ChatManager as ChatManager;
+use \classes\ExceptionManager as Exception;
 use Icicle\Log\Log as Log;
 use Icicle\WebSocket\Connection as Connection;
 
@@ -37,10 +39,6 @@ class ChatService extends ServicesDispatcher implements Service
      * @var        string  $esIndex     The Elasticsearch index name
      */
     private $esIndex;
-    /**
-     * @var        array  $server   The server info
-     */
-    private $server;
     /**
      * @var        integer  $historicStep   The maximum number of message to retrieve per historic request
      */
@@ -76,7 +74,7 @@ class ChatService extends ServicesDispatcher implements Service
     =====================================*/
 
     /**
-     * Constructor that sets the WebSocket server address and create en empty default room
+     * Constructor that loads chat parameters
      *
      * @param      Log   $log    Logger object
      */
@@ -88,7 +86,6 @@ class ChatService extends ServicesDispatcher implements Service
         $this->chatService  = $conf['serviceName'];
         $this->historicStep = $conf['historicStep'];
         $this->log          = $log;
-        $this->server       = ['Connection' => 'SERVER'];
     }
 
     /*=====  End of Magic methods  ======*/
@@ -456,55 +453,60 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      array  $client  The client information [Connection, User] array pair
      * @param      array  $data    JSON decoded client data
      *
-     * @todo       to refacto
+     * @return     \Generator
      */
     private function kickUser(array $client, array $data)
     {
-        $success   = false;
-        $pseudonym = $data['pseudonym'] ?? null;
-        $reason    = $data['reason'] ?? '';
+        $success     = false;
+        $message     = _('User kicked');
+        $chatManager = new ChatManager();
 
         if ($client['User'] === null) {
             $message = _('Authentication failed');
+        } elseif ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
+            $message = _('This room does not exist');
         } else {
-            $chatManager = new ChatManager();
+            $room        = $chatManager->getChatRoomEntity();
+            $userManager = new UserManager($client['User']);
 
-            if ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
-                $message = _('This room does not exist');
-            } elseif (!$this->isPseudonymInRoom($pseudonym, $data['roomId'])) {
-                $message = _('This user does not exist in this room');
+            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
+                $message = _('Incorrect password');
+            } elseif (!$userManager->hasChatKickRight((int) $room->id)) {
+                $message = _('You do not have the right to kick a user from this room');
             } else {
-                $userManager = new UserManager($client['User']);
-                $room        = $chatManager->getChatRoomEntity();
+                try {
+                    $userHash = $this->getUserHashByPseudonym($room->id, $data['pseudonym'] ?? '');
 
-                if ($userManager->hasChatKickRight($room->id)) {
-                    $userHash  = $this->getUserHashByPseudonym($room->id, $pseudonym);
-                    $adminHash = $this->getConnectionHash($client['Connection']);
-
-                    if ($reason !== '') {
-                        $reason = sprintf(_(' for the following reason: %s'), $reason);
-                    }
-
-                    $success        = true;
-                    $message        = sprintf(_('You kicked "%s" from the room "%s"'), $pseudonym, $room->name) . $reason;
-                    $adminPseudonym = $this->getUserPseudonymByRoom($client, $room);
-
-                    $this->rooms[$room->id]['users'][$userHash]['Connection']->send(json_encode([
-                        'service' => $this->chatService,
-                        'action'  => 'getKicked',
-                        'text'    => sprintf(_('You got kicked from the room by "%s"'), $adminPseudonym) . $reason,
-                        'roomId'  => $room->id
+                    // Inform the user that he's kicked
+                    yield $this->rooms[$room->id]['users'][$userHash]['Connection']->send(json_encode([
+                        'service'  => $this->chatService,
+                        'action'   => 'getKicked',
+                        'roomId'   => $room->id,
+                        'roomName' => $room->name,
+                        'text'     => sprintf(
+                            _('You got kicked from the room by `%s'),
+                            $this->getUserPseudonymByRoom($client, $room) . '`'
+                            . (isset($data['reason']) ? _("\nReason: ") . $data['reason'] : '')
+                        )
                     ]));
 
-                    yield $this->disconnectUserFromRoomAction($userHash, $room->id, 'kicked');
+                    // Kick the user and inform others room users
+                    yield $this->disconnectUserFromRoomAction(
+                        $userHash,
+                        $room->id,
+                        'kicked',
+                        [
+                            'admin'  => $this->getUserPseudonymByRoom($client, $room),
+                            'reason' => (isset($data['reason']) ? _("\nReason: ") . $data['reason'] : '')
+                        ]
+                    );
 
-                    $text = sprintf(_('The user "%s" got kicked by "%s"'), $pseudonym, $adminPseudonym) . $reason;
-
-                    yield $this->sendMessageToRoom($this->server, $text, $roomName, 'public');
-                } else {
-                    $message = _('You do not have the right to kick a user on this room');
+                    $success = true;
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
                 }
             }
+
         }
 
         yield $client['Connection']->send(json_encode([
@@ -512,7 +514,7 @@ class ChatService extends ServicesDispatcher implements Service
             'action'  => 'kickUser',
             'success' => $success,
             'text'    => $message,
-            'roomId'  => $room ?? $room->id ?? null
+            'roomId'  => $data['roomId']
         ]));
     }
 
@@ -522,70 +524,82 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      array  $client  The client information [Connection, User] array pair
      * @param      array  $data    JSON decoded client data
      *
-     * @todo       to refacto
+     * @return     \Generator
      */
     private function banUser(array $client, array $data)
     {
-        $success = false;
-        @$this->setIfIsSetAndTrim($roomName, $data['roomName'], null);
-        @$this->setIfIsSetAndTrim($pseudonym, $data['pseudonym'], null);
-        @$this->setIfIsSetAndTrim($reasonInput, $data['reason'], '');
+        $success     = false;
+        $message     = _('User banned');
+        $chatManager = new ChatManager();
 
         if ($client['User'] === null) {
             $message = _('Authentication failed');
+        } elseif ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
+            $message = _('This room does not exist');
         } else {
-            $usersChatRightsEntityManager = new UsersChatRightsEntityManager();
-            $usersChatRightsEntityManager->loadEntity(['idUser' => $client['User']->id, 'roomName' => $roomName]);
+            $room        = $chatManager->getChatRoomEntity();
+            $userManager = new UserManager($client['User']);
 
-            if ($client['User']->getUserRights()->chatAdmin || $usersChatRightsEntityManager->getEntity()->ban === 1) {
-                $userHash  = $this->getUserHashByPseudonym($roomName, $pseudonym);
-                $adminHash = $this->getConnectionHash($client['Connection']);
-
-                if ($userHash !== false) {
-                    if ($reasonInput !== '') {
-                        $reason = sprintf(_(' for the reason %s'), $reasonInput);
-                    } else {
-                        $reason = '';
-                    }
-
-                    $success        = true;
-                    $message        = sprintf(_('You banned "%s" from the room "%s"'), $pseudonym, $roomName) . $reason;
-                    $adminPseudonym = $this->rooms[$roomName]['pseudonyms'][$adminHash];
-                    $userInfo       = $this->rooms[$roomName]['users'][$userHash];
-                    $banInfo        = [
-                        'ip'        => $userInfo['Connection']->getRemoteAddress(),
-                        'pseudonym' => $pseudonym,
-                        'admin'     => $adminPseudonym,
-                        'reason'    => $reasonInput,
-                        'date'      => static::microtimeAsInt()
-                    ];
-
-                    yield $userInfo['Connection']->send(json_encode([
-                        'service'  => $this->chatService,
-                        'action'   => 'getBanned',
-                        'text'     => sprintf(_('You got banned from the room by "%s"'), $adminPseudonym) . $reason,
-                        'roomName' => $roomName
-                    ]));
-
-                    $this->rooms[$roomName]['usersBanned'][] = $banInfo;
-                    $text = sprintf(_('The user "%s" got banned by "%s"'), $pseudonym, $adminPseudonym) . $reason;
-                    yield $this->disconnectUser($userInfo);
-                    yield $this->updateRoomUsersBanned($roomName);
-                    yield $this->sendMessageToRoom($this->server, $text, $roomName, 'public');
-                } else {
-                    $message = sprintf(_('The user "%s" cannot be found in the room "%s"'), $pseudonym, $roomName);
-                }
+            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
+                $message = _('Incorrect password');
+            } elseif (!$userManager->hasChatBanRight((int) $room->id)) {
+                $message = _('You do not have the right to ban a user from this room');
             } else {
-                $message = _('You do not have the right to ban a user on this room');
+                try {
+                    $userHash = $this->getUserHashByPseudonym($room->id, $data['pseudonym'] ?? '');
+
+                    // Add the ban user to the room data
+                    $banInfo = new ChatRoomBan([
+                        'idChatRoom' => $room->id,
+                        'ip'         => $this->rooms[$room->id]['users'][$userHash]['Connection']->getRemoteAddress(),
+                        'pseudonym'  => $data['pseudonym'],
+                        'admin'      => $client['User']->id,
+                        'reason'     => $data['reason'],
+                        'date'       => date('Y-m-d H:i:s')
+                    ]);
+
+                    if ($chatManager->banUser($banInfo)) {
+                        // Inform the user that he's banned
+                        yield $this->rooms[$room->id]['users'][$userHash]['Connection']->send(json_encode([
+                            'service'  => $this->chatService,
+                            'action'   => 'getBanned',
+                            'roomId'   => $room->id,
+                            'roomName' => $room->name,
+                            'text'     => sprintf(
+                                _('You got banned from the room by `%s'),
+                                $this->getUserPseudonymByRoom($client, $room) . '`'
+                                . (isset($data['reason']) ? _("\nReason: ") . $data['reason'] : '')
+                            )
+                        ]));
+
+                        // Ban the user and inform others room users
+                        yield $this->disconnectUserFromRoomAction(
+                            $userHash,
+                            $room->id,
+                            'banned',
+                            [
+                                'admin'  => $this->getUserPseudonymByRoom($client, $room),
+                                'reason' => (isset($data['reason']) ? _("\nReason: ") . $data['reason'] : '')
+                            ]
+                        );
+
+                        $success = true;
+                    } else {
+                        $message = _('The room ip ban did not succeed');
+                    }
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
+                }
             }
+
         }
 
-        yield $user['Connection']->send(json_encode([
-            'service'  => $this->chatService,
-            'action'   => 'banUser',
-            'success'  => $success,
-            'text'     => $message,
-            'roomName' => $roomName
+        yield $client['Connection']->send(json_encode([
+            'service' => $this->chatService,
+            'action'  => 'banUser',
+            'success' => $success,
+            'text'    => $message,
+            'roomId'  => $data['roomId']
         ]));
     }
 
@@ -635,7 +649,7 @@ class ChatService extends ServicesDispatcher implements Service
 
                 // Update all others admin users panel
                 yield $this->updateRoomUsersRights($roomName);
-                yield $this->sendMessageToRoom($this->server, $text, $roomName, 'public');
+                yield $this->sendMessageToRoom([], $text, $roomName, 'public');
 
                 $success = true;
                 $message = _('User right successfully updated');
@@ -794,7 +808,7 @@ class ChatService extends ServicesDispatcher implements Service
         float $date = null,
         bool $indexed = false
     ) {
-        if ($clientFrom['Connection'] === 'SERVER') {
+        if (count($clientFrom) === 0) {
             $pseudonym = 'SERVER';
         } else {
             $pseudonym = $this->getUserPseudonymByRoom($clientFrom, $this->rooms[$roomId]['room']);
@@ -821,7 +835,7 @@ class ChatService extends ServicesDispatcher implements Service
     /**
      * Send a message to all the room users
      *
-     * @param      array       $clientFrom  The client to send the message from array( Connection, User)
+     * @param      array       $clientFrom  The client to send the message from array(Connection, User)
      * @param      string      $message     The text message
      * @param      int         $roomId      The room ID
      * @param      string      $type        The message type ('public' || 'private')
@@ -866,7 +880,7 @@ class ChatService extends ServicesDispatcher implements Service
         string $type,
         string $date
     ) {
-        if ($clientFrom['Connection'] !== 'SERVER') {
+        if (count($clientFrom) !== 0) {
             $client = \Elasticsearch\ClientBuilder::create()->build();
             $params = [
                 'index' => $this->esIndex . '_write',
@@ -882,7 +896,7 @@ class ChatService extends ServicesDispatcher implements Service
                         'ip'       => $clientFrom['Connection']->getRemoteAddress(),
                         'location' => $this->getUserLocationByRoom($clientFrom, $roomId)
                     ],
-                    'userTo'  => [
+                    'userTo' => [
                         'id'       => isset($clientTo['User']) ? (int) $clientTo['User']->id : -1,
                         'ip'       => count($clientTo) > 0 ? $clientTo['Connection']->getRemoteAddress() : '0.0.0.0',
                         'location' => count($clientTo) > 0 ? $this->getUserLocationByRoom($clientTo, $roomId) : []
@@ -946,7 +960,7 @@ class ChatService extends ServicesDispatcher implements Service
                                             'room' => $roomId
                                         ]
                                     ],
-                                    // Must be a public message or private one destinate to the user
+                                    // Must be a public message or private one destinating to the user
                                     [
                                         'bool' => [
                                             'should' => [
@@ -1030,20 +1044,44 @@ class ChatService extends ServicesDispatcher implements Service
     /**
      * Get a user hash from his pseudonym
      *
-     * @param      int     $roomId     The room ID
-     * @param      string  $pseudonym  The user pseudonym
+     * @param      int        $roomId     The room ID
+     * @param      string     $pseudonym  The user pseudonym
      *
-     * @return     string  The user hash
+     * @throws     Exception  If the user does not exist in the room
+     *
+     * @return     string     The user hash
      */
     private function getUserHashByPseudonym(int $roomId, string $pseudonym): string
     {
+        $hash = null;
+
         foreach ($this->rooms[$roomId]['users'] as $userHash => $userInfo) {
             if ($userInfo['pseudonym'] === $pseudonym) {
+                $hash = $userHash;
                 break;
             }
         }
 
-        return $userHash;
+        if ($hash === null) {
+            throw new Exception('This user does not exists in this room', Exception::$WARNING);
+        }
+
+        return $hash;
+    }
+
+    /**
+     * Get a user hash from his pseudonym
+     *
+     * @param      int     $roomId     The room ID
+     * @param      string  $pseudonym  The user pseudonym
+     *
+     * @return     User  The user
+     *
+     * @todo not used for the moment
+     */
+    private function getUserByRoomByPseudonym(int $roomId, string $pseudonym): User
+    {
+        return $this->rooms[$roomId]['users'][$this->getUserHashByPseudonym($roomId, $pseudonym)];
     }
 
     /**
@@ -1207,7 +1245,7 @@ class ChatService extends ServicesDispatcher implements Service
                     $rights[$userInfo['pseudonym']] = ['chatRight' => $userInfo['User']->getChatRight()];
                 }
 
-                yield $this->sendMessageToUser($this->server, $userInfo, $message, $room->id, 'private');
+                yield $this->sendMessageToUser([], $userInfo, $message, $room->id, 'private');
                 yield $userInfo['Connection']->send(json_encode([
                     'service'    => $this->chatService,
                     'action'     => 'updateRoomUsers',
@@ -1272,11 +1310,18 @@ class ChatService extends ServicesDispatcher implements Service
      * @param      string      $userHash  The user hash
      * @param      int         $roomId    The room ID
      * @param      string      $cause     The event that caused the disconnection DEFAULT 'browserClosed'
+     * @param      array       $info      Additional information about the disconnection
      *
      * @return     \Generator
+     *
+     * @todo rename this method with disconnectUserFromRoom
      */
-    private function disconnectUserFromRoomAction(string $userHash, int $roomId, string $cause = 'browserClosed')
-    {
+    private function disconnectUserFromRoomAction(
+        string $userHash,
+        int $roomId,
+        string $cause = 'browserClosed',
+        array $info = []
+    ) {
         $pseudonym = $this->rooms[$roomId]['users'][$userHash]['pseudonym'];
 
         unset($this->rooms[$roomId]['users'][$userHash]);
@@ -1288,20 +1333,35 @@ class ChatService extends ServicesDispatcher implements Service
             foreach ($this->rooms[$roomId]['users'] as $userInfo) {
                 yield $this->updateRoomUsers($userInfo, $roomId);
 
-                if ($cause !== 'kicked') {
-                    yield $this->sendMessageToUser(
-                        $this->server,
-                        $userInfo,
-                        (
-                            $cause === 'browserClosed' ?
-                            sprintf(_('User "%s" left the room'), $pseudonym) :
-                            sprintf(_('User "%s" was disconnected from the room'), $pseudonym)
-                        ),
-                        $this->rooms[$roomId]['room']->id,
-                        'public',
-                        static::microtimeAsInt()
-                    );
+                switch ($cause) {
+                    case 'browserClosed':
+                        $message = sprintf(_('User `%s` was disconnected from the room'), $pseudonym);
+                        break;
+
+                    case 'leftRoom':
+                        $message = sprintf(_('User `%s` left the room'), $pseudonym);
+                        break;
+
+                    case 'kicked':
+                        $message = sprintf(
+                            _('User `%s` was kicked from the room by `%s` %s'),
+                            $pseudonym,
+                            $info['admin'],
+                            ($info['reason'] !== '' ? _("\nReason: ") . $info['reason'] : '')
+                        );
+                        break;
+
+                    case 'banned':
+                        $message = sprintf(
+                            _('User `%s` was banned from the room by `%s` %s'),
+                            $pseudonym,
+                            $info['admin'],
+                            ($info['reason'] !== '' ? _("\nReason: ") . $info['reason'] : '')
+                        );
+                        break;
                 }
+
+                yield $this->sendMessageToUser([], $userInfo, $message, $this->rooms[$roomId]['room']->id, 'public');
             }
         }
     }

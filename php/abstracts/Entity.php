@@ -18,7 +18,7 @@ use \abstracts\EntityManager as EntityManager;
  *
  * @abstract
  */
-abstract class Entity
+abstract class Entity implements \ArrayAccess
 {
     use \traits\PrettyOutputTrait;
     use \traits\ShortcutsTrait;
@@ -70,7 +70,8 @@ abstract class Entity
      */
     protected $columnsValue = array();
     /**
-     * @var        array  $columnsAttributes    An associative array with column name on key and column attributes on value
+     * @var        array  $columnsAttributes    An associative array with column name on key and column attributes on
+     *                    value
      */
     protected $columnsAttributes = array();
 
@@ -445,6 +446,53 @@ abstract class Entity
                 $this->{$columnName} = $value;
             }
         }
+    }
+
+    /*==========  ArrayAccess interface  ==========*/
+
+    /**
+     * Whether an attribute exists
+     *
+     * @param      int|string  $attribute  An attribute to check for
+     *
+     * @return     bool        True if the attribute exists, else false
+     */
+    public function offsetExists($attribute)
+    {
+        return $this->__isset($attribute);
+    }
+
+    /**
+     * Returns the value at specified attribute
+     *
+     * @param      int|string  $attribute  The attribute to retrieve
+     *
+     * @return     mixed       Return the attribute  value
+     */
+    public function offsetGet($attribute)
+    {
+        return $this->columnsValue[$attribute];
+    }
+
+    /**
+     * Assigns an value to the specified attribute
+     *
+     * @param      int|string  $attribute  The attribute to assign the value to
+     * @param      mixed       $value      The value to set
+     */
+    public function offsetSet($attribute, $value)
+    {
+        $this->columnsValue[$attribute] = $value;
+    }
+
+    /**
+     * Unset an attribute
+     *
+     * @param      int|string  $attribute  The attribute to unset
+     */
+    public function offsetUnset($attribute)
+    {
+        unset($this->columnsValue[$attribute]);
     }
 
     /*=========================================

@@ -33,7 +33,6 @@
     "gulp-phpcs": "latest",
     "gulp-rename": "latest",
     "gulp-sourcemaps": "latest",
-    "gulp-watch": "latest",
     "jshint": "latest",
     "jshint-stylish": "latest",
     "less-plugin-autoprefix": "latest",

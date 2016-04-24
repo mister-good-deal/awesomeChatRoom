@@ -135,27 +135,6 @@ class ServerRequestHandler implements RequestHandler
     }
 
     /**
-     * Check the authentication to perform administration action on the WebSocket server
-     *
-     * @param      array  $data   JSON decoded client data
-     *
-     * @return     bool   True if the authentication succeed else false
-     */
-    private function checkAuthentication(array $data): bool
-    {
-        $userEntityManager = new UserEntityManager();
-        $user              = $userEntityManager->authenticateUser($data['login'], $data['password']);
-
-        if ($user === false) {
-            $check = false;
-        } else {
-            $check = (int) $user->getUserRights()->webSocket === 1;
-        }
-
-        return $check;
-    }
-
-    /**
      * Log a message to the server if verbose mode is activated
      *
      * @param      string  $message  The message to output

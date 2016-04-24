@@ -31,6 +31,7 @@ class Orm extends Console
     use \traits\PrettyOutputTrait;
     use \traits\FiltersTrait;
     use \traits\EchoTrait;
+    use \traits\DateTrait;
 
     /**
      * @var        string[]  $SELF_COMMANDS     List of all commands with their description
@@ -47,6 +48,7 @@ class Orm extends Console
         'es -i index -v version -t type -m mapping --mapping'   => 'Create elasticsearch mapping',
         'es -i index -a alias --aliases [--no-read --no-write]' => 'Create elasticsearch aliases',
         'es --init'                                             => 'Init ES with indexn mapping and aliases',
+        'es --generate-data'                                    => 'Generate data in chat index',
         'init --es --sql --all'                                 => 'Initialize mysql, ES or both with --all option'
     ];
 
@@ -283,6 +285,8 @@ class Orm extends Console
             $this->createElasticsearchMapping($index, $version, $type, $mapping);
         } elseif (isset($args['aliases'])) {
             $this->bindAliasesToIndex($index, $alias, !isset($args['no-read']), !isset($args['no-write']));
+        } elseif (isset($args['generate-data'])) {
+            $this->generateEsData($index);
         }
     }
 
@@ -739,6 +743,102 @@ class Orm extends Console
         // - copy data from old to new index with SCROLL and BULK
         // - bind read alias on the new index
         // - delete old index
+    }
+
+    /**
+     * Generate data by inserting message in the given index
+     *
+     * @param      string  $index   The index to insert in
+     * @param      int     $number  The number of insertion DEFAULT 1000
+     */
+    private function generateEsData(string $index, int $number = 1000)
+    {
+        $client = \Elasticsearch\ClientBuilder::create()->build();
+        $date   = static::microtimeAsInt();
+        $ip     = [
+            '118.240.12.136',
+            '45.78.39.167',
+            '34.127.76.48',
+            '51.66.160.153',
+            '140.10.44.20',
+            '196.188.215.105',
+            '117.152.92.221',
+            '72.203.60.189',
+            '188.71.71.232',
+            '149.109.145.182'
+        ];
+
+        $location = [
+            $this->getCityLocation('paris'),
+            $this->getCityLocation('london'),
+            $this->getCityLocation('budapest'),
+            $this->getCityLocation('madrid'),
+            $this->getCityLocation('luxembourg'),
+            $this->getCityLocation('oslo'),
+            $this->getCityLocation('rome'),
+            $this->getCityLocation('prague'),
+            $this->getCityLocation('amsterdam'),
+            $this->getCityLocation('lisbon')
+        ];
+
+        for ($i = 0; $i < $number; $i++) {
+            $public     = rand(0, 1) === 0;
+            $userIdFrom = rand(0, 9);
+            $userIdTo   = rand(0, 9);
+
+            $params = [
+                'index' => $index . '_write',
+                'type'  => 'message',
+                'body'  => [
+                    'pseudonym' => 'User ' . $userIdFrom,
+                    'message'   => 'random message ' . $i,
+                    'type'      => ($public ? 'public' : 'private'),
+                    'date'      => $date,
+                    'room'      => rand(1, 10),
+                    'userFrom'  => [
+                        'id'       => $userIdFrom,
+                        'ip'       => $ip[$userIdFrom],
+                        'location' => $location[$userIdFrom]
+                    ],
+                    'userTo' => [
+                        'id'       => $public ? -1 : $userIdTo,
+                        'ip'       => $public ? '0.0.0.0' : $ip[$userIdTo],
+                        'location' => $public ? [] : $location[$userIdTo]
+                    ]
+                ]
+            ];
+
+            try {
+                $result = $client->index($params);
+                static::ok('message ' . $i . ' inserted' . PHP_EOL);
+            } catch (\Exception $e) {
+                static::fail($e->getMessage() . PHP_EOL);
+            }
+        }
+
+        static::ok('data inserted' . PHP_EOL);
+    }
+
+    /**
+     * Get the city location from google API
+     *
+     * @see http://maps.googleapis.com/maps/api/geocode/json?address=paris
+     *
+     * @param      string  $city   The city to get the location from
+     *
+     * @return     array   The latitude and longitude of the city as ['lat' => lat, 'lon' => lon]
+     */
+    private function getCityLocation($city)
+    {
+        $info = json_decode(
+            file_get_contents('http://maps.googleapis.com/maps/api/geocode/json?address=' . $city),
+            true
+        );
+
+        return [
+            'lat' => $info['results'][0]['geometry']['location']['lat'],
+            'lon' => $info['results'][0]['geometry']['location']['lng']
+        ];
     }
 
     /*=====  End of Elasticsearch  ======*/

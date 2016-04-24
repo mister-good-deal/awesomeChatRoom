@@ -201,6 +201,26 @@ class UserManager extends Manager
     }
 
     /**
+     * Check if a user has the right to ban a user
+     *
+     * @param      int   $roomId  The room ID where the user wants to ban someone
+     *
+     * @return     bool  True if a user has the right to ban a user from a room else false
+     */
+    public function hasChatBanRight(int $roomId): bool
+    {
+        return (
+            $this->userEntityManager->checkSecurityToken() &&
+            $this->userEntity->getRight() !== null && (
+                $this->userEntity->getRight()->chatAdmin || (
+                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
+                    $this->userEntity->getChatRight()->getEntityById($roomId)->ban
+                )
+            )
+        );
+    }
+
+    /**
      * Get a user pseudonym
      *
      * @return     string  The user pseudonym (first name + last name if not defined)

@@ -16,6 +16,7 @@ use \classes\entitiesCollection\ChatRoomBanCollection as ChatRoomBanCollection;
 use \classes\entitiesCollection\ChatRoomCollection as ChatRoomCollection;
 use \classes\entitiesManager\ChatRoomEntityManager as ChatRoomEntityManager;
 use \classes\entitiesManager\ChatRoomBanEntityManager as ChatRoomBanEntityManager;
+use \classes\ExceptionManager as Exception;
 
 /**
  * Perform action relative to the ChatRoom and ChatRoomBan entities classes
@@ -93,6 +94,7 @@ class ChatManager extends Manager
         if ($infos['success']) {
             $this->chatRoomEntity = $this->chatRoomEntityManager->getEntity();
             $this->chatRoomBanEntityManager->setEntity($this->chatRoomEntity);
+            $this->chatRoomBanEntityManager->setEntityCollection($this->chatRoomEntity->getChatRoomBanCollection());
         }
 
         return $infos;
@@ -112,9 +114,25 @@ class ChatManager extends Manager
         if ($success) {
             $this->chatRoomEntity = $this->chatRoomEntityManager->getEntity();
             $this->chatRoomBanEntityManager->setEntity($this->chatRoomEntity);
+            $this->chatRoomBanEntityManager->setEntityCollection($this->chatRoomEntity->getChatRoomBanCollection());
+            $this->chatRoomBanEntityManager->loadBannedUsers();
         }
 
         return $success;
+    }
+
+    /**
+     * Ban a user from a room
+     *
+     * @param      ChatRoomBan  $chatRoomBan  Ban info
+     *
+     * @return     bool         True if ip is banned else false
+     */
+    public function banUser(ChatRoomBan $chatRoomBan): bool
+    {
+        $this->chatRoomEntity->getChatRoomBanCollection()->add($chatRoomBan);
+
+        return $this->chatRoomBanEntityManager->saveCollection();
     }
 
     /**
@@ -141,10 +159,8 @@ class ChatManager extends Manager
         $success = $this->chatRoomEntityManager->saveCollection($collection);
 
         foreach ($this->chatRoomEntityManager->getEntityCollection() as $room) {
-            if ($success && $room->getChatRoomBanCollection() !== null) {
-                foreach ($room->getChatRoomBanCollection() as $chatRoomBan) {
-                    $success = $this->chatRoomBanEntityManager()->saveEntity($chatRoomBan);
-                }
+            if ($success) {
+                $success = $this->chatRoomBanEntityManager()->saveCollection($room->getChatRoomBanCollection());
             }
         }
 

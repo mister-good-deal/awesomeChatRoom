@@ -92,6 +92,33 @@ class ServicesDispatcher implements Application
     }
 
     /**
+     * Create a client array of a Connection and a User object and handle the client session with until the connection
+     * is closed
+     *
+     * @coroutine
+     *
+     * @param      \Icicle\WebSocket\Connection                 $connection
+     * @param      \Icicle\Http\Message\Response                $response
+     * @param      \Icicle\Http\Message\Request                 $request
+     *
+     * @return     \Generator|\Icicle\Awaitable\Awaitable|null
+     */
+    private function connectionSessionHandle(Connection $connection, Response $response, Request $request)
+    {
+        $this->clients[$this->getConnectionHash($connection)] = array('Connection' => $connection, 'User' => null);
+        $iterator                                             = $connection->read()->getIterator();
+
+        while (yield $iterator->isValid()) {
+            yield $this->serviceSelector(
+                json_decode($iterator->getCurrent()->getData(), true),
+                $this->clients[$this->getConnectionHash($connection)]
+            );
+        }
+
+        yield $this->onDisconnection($connection, $response, $request);
+    }
+
+    /**
      * This method is called when a WebSocket connection is closed from the WebSocket server.
      *
      * This method close the connection properly and alert services that a client is disconnected
@@ -130,33 +157,6 @@ class ServicesDispatcher implements Application
     protected function getConnectionHash(Connection $connection): string
     {
         return md5($connection->getRemoteAddress() + $connection->getRemotePort());
-    }
-
-    /**
-     * Create a client array of a Connection and a User object and handle the client session with until the connection
-     * is closed
-     *
-     * @coroutine
-     *
-     * @param      \Icicle\WebSocket\Connection                 $connection
-     * @param      \Icicle\Http\Message\Response                $response
-     * @param      \Icicle\Http\Message\Request                 $request
-     *
-     * @return     \Generator|\Icicle\Awaitable\Awaitable|null
-     */
-    private function connectionSessionHandle(Connection $connection, Response $response, Request $request)
-    {
-        $this->clients[$this->getConnectionHash($connection)] = array('Connection' => $connection, 'User' => null);
-        $iterator                                             = $connection->read()->getIterator();
-
-        while (yield $iterator->isValid()) {
-            yield $this->serviceSelector(
-                json_decode($iterator->getCurrent()->getData(), true),
-                $this->clients[$this->getConnectionHash($connection)]
-            );
-        }
-
-        yield $this->onDisconnection($connection, $response, $request);
     }
 
     /**

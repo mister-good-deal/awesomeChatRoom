@@ -32,9 +32,9 @@ class ChatRoomBanEntityManager extends EntityManager
 
         if ($entity === null) {
             $this->entity = new ChatRoom();
-        } elseif ($entity->getChatRoomBanCollection() === null) {
-            $this->loadBannedUsers();
         }
+
+        $this->loadBannedUsers();
     }
 
     /**
@@ -46,16 +46,14 @@ class ChatRoomBanEntityManager extends EntityManager
      */
     public function isIpBanned(string $ip): bool
     {
-        return (
-            $this->entity->getChatRoomBanCollection() !== null &&
-            $this->inSubArray($ip, $this->entity->getChatRoomBanCollection(), 'ip')
-        );
+        return ($this->inSubArray($ip, $this->entity->getChatRoomBanCollection()->getCollection(), 'ip'));
+        // return false;
     }
 
     /**
      * Load the banned users for the current chat room
      */
-    private function loadBannedUsers()
+    public function loadBannedUsers()
     {
         $chatRoomBanCollection = new ChatRoomBanCollection();
         $sqlMarks              = 'SELECT * FROM %s WHERE `idChatRoom` = %d';
@@ -66,9 +64,10 @@ class ChatRoomBanEntityManager extends EntityManager
         );
 
         foreach (DB::query($sql)->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-            $chatRoomBanCollection->add((new ChatRoomBan())->setAttributes($row));
+            $chatRoomBanCollection->add((new ChatRoomBan($row)));
         }
 
         $this->entity->setChatRoomBanCollection($chatRoomBanCollection);
+        $this->entityCollection = $chatRoomBanCollection;
     }
 }

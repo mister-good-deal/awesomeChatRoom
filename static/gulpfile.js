@@ -14,7 +14,6 @@
         stylish          = require('jshint-stylish'),
         jsdoc            = require('gulp-jsdoc3'),
         map              = require('map-stream'),
-        watch            = require('gulp-watch'),
         del              = require('del'),
         exec             = require('child_process').exec,
         nodePath         = require('path'),
@@ -277,27 +276,7 @@
     ========================================*/
 
     gulp.task('watch', function () {
-        watch('less/**/*.less', {read: false}, function (vinyl) {
-            var string = vinyl.path;
-
-            switch (vinyl.event) {
-            case 'add':
-                string += ' has been created';
-                break;
-
-            case 'change':
-                string += ' has changed';
-                break;
-
-            case 'unlink':
-            case 'unlinkDir':
-                string += ' has been removed';
-                break;
-            }
-
-            console.log(string);
-            gulp.start('build_less');
-        });
+        gulp.watch('less/**/*.less', gulp.parallel('build_less'));
     });
 
     /*=====  End of Watch less files  ======*/
