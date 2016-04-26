@@ -196,7 +196,7 @@ class UserManager extends Manager
     /**
      * Check if a user has the right to kick a user
      *
-     * @param      int   $roomId  The room ID where the user wants to kick someone
+     * @param      int   $roomId  The room ID
      *
      * @return     bool  True if a user has the right to kick a user from a room else false
      */
@@ -216,7 +216,7 @@ class UserManager extends Manager
     /**
      * Check if a user has the right to ban a user
      *
-     * @param      int   $roomId  The room ID where the user wants to ban someone
+     * @param      int   $roomId  The room ID
      *
      * @return     bool  True if a user has the right to ban a user from a room else false
      */
@@ -236,11 +236,11 @@ class UserManager extends Manager
     /**
      * Check if a user has the right to grant a user right in the room
      *
-     * @param      int   $roomId  The room ID where the user wants to ban someone
+     * @param      int   $roomId  The room ID
      *
      * @return     bool  True if a user has the right to grant a user right in the room else false
      */
-    public function hasGrantChatRight(int $roomId): bool
+    public function hasChatGrantRight(int $roomId): bool
     {
         return (
             $this->userEntityManager->checkSecurityToken() &&
@@ -248,6 +248,26 @@ class UserManager extends Manager
                 $this->userEntity->getRight()->chatAdmin || (
                     $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
                     $this->userEntity->getChatRight()->getEntityById($roomId)->grant
+                )
+            )
+        );
+    }
+
+    /**
+     * Check if a user has the right to edit the room's information
+     *
+     * @param      int   $roomId  The room ID
+     *
+     * @return     bool  True if a user has the right to edit the room's information else false
+     */
+    public function hasChatEditRight(int $roomId): bool
+    {
+        return (
+            $this->userEntityManager->checkSecurityToken() &&
+            $this->userEntity->getRight() !== null && (
+                $this->userEntity->getRight()->chatAdmin || (
+                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
+                    $this->userEntity->getChatRight()->getEntityById($roomId)->edit
                 )
             )
         );

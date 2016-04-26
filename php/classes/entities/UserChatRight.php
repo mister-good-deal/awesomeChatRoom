@@ -13,13 +13,12 @@ use \abstracts\Entity as Entity;
 /**
  * UserChatRight entity that extends the Entity abstact class
  *
- * @property   int     $idUser    The user id
- * @property   int     $idRoom    The chat room id
- * @property   bool    $kick      The kick right
- * @property   bool    $ban       The ban right
- * @property   bool    $grant     The grant right
- * @property   bool    $rename    The rename right
- * @property   bool    $password  The change password right
+ * @property   int   $idUser  The user id
+ * @property   int   $idRoom  The chat room id
+ * @property   bool  $kick    The kick right
+ * @property   bool  $ban     The ban right
+ * @property   bool  $grant   The grant right
+ * @property   bool  $edit    The edit right
  */
 class UserChatRight extends Entity
 {
@@ -51,13 +50,12 @@ class UserChatRight extends Entity
     public function __toArray(): array
     {
         return array(
-            'idUser'   => $this->idUser,
-            'idRoom'   => $this->idRoom,
-            'kick'     => (bool) $this->kick,
-            'ban'      => (bool) $this->ban,
-            'grant'    => (bool) $this->grant,
-            'rename'   => (bool) $this->rename,
-            'password' => (bool) $this->password
+            'idUser' => $this->idUser,
+            'idRoom' => $this->idRoom,
+            'kick'   => (bool) $this->kick,
+            'ban'    => (bool) $this->ban,
+            'grant'  => (bool) $this->grant,
+            'edit'   => (bool) $this->edit
         );
     }
 

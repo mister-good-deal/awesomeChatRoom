@@ -167,7 +167,7 @@ class ChatService extends ServicesDispatcher implements Service
     }
 
     /**
-     * Disconnet a user from all the chat he was connected to
+     * Disconnet a user from all the chat rooms he was connected to
      *
      * @param      array       $client  The client information [Connection, User] array pair
      *
@@ -190,32 +190,9 @@ class ChatService extends ServicesDispatcher implements Service
     =            Private methods            =
     =======================================*/
 
-    /**
-     * Get the rooms basic information (name, type, usersMax, usersConnected)
-     *
-     * @param      array       $client  The client information [Connection, User] array pair
-     *
-     * @return     \Generator
-     */
-    private function getRoomsInfo(array $client)
-    {
-        $chatManager = new ChatManager();
-        $rooms       = $chatManager->getAllRooms();
-        $roomsInfo   = [];
-
-        foreach ($rooms as $room) {
-            $roomsInfo[] = [
-                'room'           => $room->__toArray(),
-                'usersConnected' => isset($this->rooms[$room->id]) ? count($this->rooms[$room->id]['users']) : 0
-            ];
-        }
-
-        yield $client['Connection']->send(json_encode([
-            'service'   => $this->chatService,
-            'action'    => 'getRoomsInfo',
-            'roomsInfo' => $roomsInfo
-        ]));
-    }
+    /*============================================
+    =            Direct called method            =
+    ============================================*/
 
     /**
      * Create a chat room by an authenticated user request
@@ -418,43 +395,6 @@ class ChatService extends ServicesDispatcher implements Service
     }
 
     /**
-     * Get the next chat conversation historic part of a room
-     *
-     * @param      array       $client  The client information [Connection, User] array pair
-     * @param      array       $data    JSON decoded client data
-     *
-     * @return     \Generator
-     */
-    private function getHistoric(array $client, array $data)
-    {
-        $success     = false;
-        $message     = _('Historic successfully loaded !');
-        $chatManager = new ChatManager();
-
-        if ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
-            $message = _('This room does not exist');
-        } else {
-            $room = $chatManager->getChatRoomEntity();
-
-            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
-                $message = _('Room password is incorrect');
-            } else {
-                $success  = true;
-                $historic = $this->getRoomHistoric($room->id, $client, $data['lastMessageDate']);
-            }
-        }
-
-        yield $client['Connection']->send(json_encode([
-            'service'  => $this->chatService,
-            'action'   => 'getHistoric',
-            'success'  => $success,
-            'text'     => $message,
-            'historic' => $historic ?? null,
-            'roomId'   => $data['roomId']
-        ]));
-    }
-
-    /**
      * Kick a user from a room
      *
      * @param      array  $client  The client information [Connection, User] array pair
@@ -513,7 +453,6 @@ class ChatService extends ServicesDispatcher implements Service
                     $message = $e->getMessage();
                 }
             }
-
         }
 
         yield $client['Connection']->send(json_encode([
@@ -595,13 +534,12 @@ class ChatService extends ServicesDispatcher implements Service
 
                         $success = true;
                     } else {
-                        $message = _('The room ip ban did not succeed');
+                        $message = _('The room ip ban failed');
                     }
                 } catch (Exception $e) {
                     $message = $e->getMessage();
                 }
             }
-
         }
 
         yield $client['Connection']->send(json_encode([
@@ -614,11 +552,130 @@ class ChatService extends ServicesDispatcher implements Service
     }
 
     /**
+     * Get the next chat conversation historic part of a room
+     *
+     * @param      array       $client  The client information [Connection, User] array pair
+     * @param      array       $data    JSON decoded client data
+     *
+     * @return     \Generator
+     */
+    private function getHistoric(array $client, array $data)
+    {
+        $success     = false;
+        $message     = _('Historic successfully loaded !');
+        $chatManager = new ChatManager();
+
+        if ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
+            $message = _('This room does not exist');
+        } else {
+            $room = $chatManager->getChatRoomEntity();
+
+            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
+                $message = _('Room password is incorrect');
+            } else {
+                $success  = true;
+                $historic = $this->getRoomHistoric($room->id, $client, $data['lastMessageDate']);
+            }
+        }
+
+        yield $client['Connection']->send(json_encode([
+            'service'  => $this->chatService,
+            'action'   => 'getHistoric',
+            'success'  => $success,
+            'text'     => $message,
+            'historic' => $historic ?? null,
+            'roomId'   => $data['roomId']
+        ]));
+    }
+
+    /**
+     * Get the rooms basic information (name, type, usersMax, usersConnected)
+     *
+     * @param      array       $client  The client information [Connection, User] array pair
+     *
+     * @return     \Generator
+     */
+    private function getRoomsInfo(array $client)
+    {
+        $chatManager = new ChatManager();
+        $rooms       = $chatManager->getAllRooms();
+        $roomsInfo   = [];
+
+        foreach ($rooms as $room) {
+            $roomsInfo[] = [
+                'room'           => $room->__toArray(),
+                'usersConnected' => isset($this->rooms[$room->id]) ? count($this->rooms[$room->id]['users']) : 0
+            ];
+        }
+
+        yield $client['Connection']->send(json_encode([
+            'service'   => $this->chatService,
+            'action'    => 'getRoomsInfo',
+            'roomsInfo' => $roomsInfo
+        ]));
+    }
+
+    /**
+     * Change a room name / password
+     *
+     * @param      array  $client  The client information [Connection, User] array pair
+     * @param      array  $data    JSON decoded client data
+     *
+     * @return     \Generator
+     * @todo       to test
+     */
+    private function setRoomInfo(array $client, array $data)
+    {
+        $success     = false;
+        $message     = _('Room information updated');
+        $chatManager = new ChatManager();
+
+        if ($client['User'] === null) {
+            $message = _('Authentication failed');
+        } elseif ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
+            $message = _('This room does not exist');
+        } else {
+            $room        = $chatManager->getChatRoomEntity();
+            $userManager = new UserManager($client['User']);
+
+            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
+                $message = _('Incorrect password');
+            } elseif (!$userManager->hasChatEditRight((int) $room->id)) {
+                $message = _('You do not have the right to edit the room\'s information');
+            } else {
+                try {
+                    foreach ($data['roomInfo'] as $attribute => $value) {
+                        $room->{$attribute} = $value;
+                    }
+
+                    $success = $chatManager->saveChatRoom();
+
+                    // Update the room's information for all users in the room
+                    if ($success) {
+                        yield $this->updateRoomInformation($room);
+                    }
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
+                }
+            }
+        }
+
+        yield $client['Connection']->send(json_encode([
+            'service' => $this->chatService,
+            'action'  => 'changeRoomInfo',
+            'success' => $success,
+            'text'    => $message,
+            'roomId'  => $data['roomId']
+        ]));
+    }
+
+    /**
      * Update a user right for a room
      *
      * @param      array  $client  The client information [Connection, User] array pair
      * @param      array  $data    JSON decoded client data
      *
+     * @return     \Generator
      * @todo       to test
      */
     private function updateRoomUserRight(array $client, array $data)
@@ -637,7 +694,7 @@ class ChatService extends ServicesDispatcher implements Service
 
             if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
                 $message = _('Incorrect password');
-            } elseif (!$userManager->hasGrantChatRight((int) $room->id)) {
+            } elseif (!$userManager->hasChatGrantRight((int) $room->id)) {
                 $message = _('You do not have the right to grant a user right in this room');
             } else {
                 try {
@@ -656,7 +713,9 @@ class ChatService extends ServicesDispatcher implements Service
                     $success                         = $userManager->setUserChatRight($chatRight);
 
                     // Update the users right for users who have access to the admin board EG registered users
-                    yield $this->updateRoomUsersRights((int) $room->id);
+                    if ($success) {
+                        yield $this->updateRoomUsersRights((int) $room->id);
+                    }
                 } catch (Exception $e) {
                     $message = $e->getMessage();
                 }
@@ -672,124 +731,11 @@ class ChatService extends ServicesDispatcher implements Service
         ]));
     }
 
-    /**
-     * Change a room name / password
-     *
-     * @param      array  $client  The client information [Connection, User] array pair
-     * @param      array  $data    JSON decoded client data
-     *
-     * @todo       to refacto
-     */
-    private function setRoomInfo(array $client, array $data)
-    {
-        $success        = false;
-        $messageToUsers = array();
-        $user           = $client['User'];
-        @$this->setIfIsSetAndTrim($oldRoomName, $data['oldRoomName'], '');
-        @$this->setIfIsSetAndTrim($newRoomName, $data['newRoomName'], '');
-        @$this->setIfIsSetAndTrim($oldRoomPassword, $data['oldRoomPassword'], '');
-        @$this->setIfIsSetAndTrim($newRoomPassword, $data['newRoomPassword'], '');
+    /*=====  End of Direct called method  ======*/
 
-        if ($oldRoomName === '') {
-            $message[] = _('The room name is required');
-        } elseif ($newRoomName === '') {
-            $message[] = _('The new room name is required');
-        } elseif (!in_array($oldRoomName, $this->roomsName)) {
-            $message[] = sprintf(_('The chat room name "%s" does not exists'), $oldRoomName);
-        } elseif ($oldRoomName !== $newRoomName && in_array($newRoomName, $this->roomsName)) {
-            $message[] = sprintf(_('The chat room name "%s" already exists'), $newRoomName);
-        } elseif ($user === null) {
-            $message[] = _('Authentication failed');
-        } else {
-            $usersChatRightsEntityManager = new UsersChatRightsEntityManager();
-            $usersChatRightsEntityManager->loadEntity(['idUser' => $user->id, 'roomName' => $oldRoomName]);
-
-            if ($oldRoomPassword !== $newRoomPassword) {
-                if ($user->getUserRights()->chatAdmin || $usersChatRightsEntityManager->getEntity()->password === 1) {
-                    $success                               = true;
-                    $this->rooms[$oldRoomName]['password'] = $newRoomPassword;
-                    $message[]                             = _('The room password has been successfully updated');
-                    $messageToUsers[]                      = sprintf(
-                        _('The room password has been updated from "%s" to "%s"'),
-                        $oldRoomPassword,
-                        $newRoomPassword
-                    );
-
-                    if ($newRoomPassword === '') {
-                        $this->rooms[$oldRoomName]['type'] = 'public';
-                    } else {
-                        $this->rooms[$oldRoomName]['type'] = 'private';
-                    }
-                } else {
-                    $message[] = _('You do not have the right to change the room password');
-                }
-            }
-
-            if ($oldRoomName !== $newRoomName) {
-                if ($user->getUserRights()->chatAdmin || $usersChatRightsEntityManager->getEntity()->rename === 1) {
-                    $success                   = true;
-                    $this->rooms[$newRoomName] = $this->rooms[$oldRoomName];
-                    $message[]                 = _('The room name has been successfully updated');
-                    unset($this->rooms[$oldRoomName]);
-                    $this->roomsName[array_search($oldRoomName, $this->roomsName)] = $newRoomName;
-
-                    foreach ($this->usersRooms as &$roomName) {
-                        if ($roomName === $oldRoomName) {
-                            $roomName = $newRoomName;
-                        }
-                    }
-
-                    rename(
-                        stream_resolve_include_path($this->savingDir . DIRECTORY_SEPARATOR . $oldRoomName),
-                        stream_resolve_include_path($this->savingDir) . DIRECTORY_SEPARATOR . $newRoomName
-                    );
-
-                    $usersChatRightsEntityManager->changeRoomName($oldRoomName, $newRoomName);
-
-                    $this->setRoomsName();
-
-                    $messageToUsers[] = sprintf(
-                        _('The room name has been updated from "%s" to "%s"'),
-                        $oldRoomName,
-                        $newRoomName
-                    );
-                } else {
-                    $message[] = _('You do not have the right to change the room name');
-                }
-            }
-
-            $this->saveRoom($newRoomName);
-
-            $date = date('Y-m-d H:i:s');
-
-            foreach ($this->rooms[$newRoomName]['users'] as $userInfo) {
-                yield $userInfo['Connection']->send(json_encode(array(
-                    'service'         => $this->chatService,
-                    'action'          => 'changeRoomInfo',
-                    'oldRoomName'     => $oldRoomName,
-                    'newRoomName'     => $newRoomName,
-                    'oldRoomPassword' => $oldRoomPassword,
-                    'newRoomPassword' => $newRoomPassword,
-                    'pseudonym'       => 'SERVER',
-                    'time'            => $date,
-                    'roomName'        => $newRoomName,
-                    'type'            => 'public',
-                    'text'            => $messageToUsers
-                )));
-            }
-        }
-
-        yield $client['Connection']->send(json_encode(array(
-            'service'         => $this->chatService,
-            'action'          => 'setRoomInfo',
-            'success'         => $success,
-            'text'            => implode('. ', $message),
-            'oldRoomName'     => $oldRoomName,
-            'newRoomName'     => $newRoomName,
-            'oldRoomPassword' => $oldRoomPassword,
-            'newRoomPassword' => $newRoomPassword
-        )));
-    }
+    /*======================================
+    =            Helper methods            =
+    ======================================*/
 
     /**
      * Send a message to a user
@@ -1157,6 +1103,33 @@ class ChatService extends ServicesDispatcher implements Service
     }
 
     /**
+     * Update the room's information for all users in teh room
+     *
+     * @param      ChatRoom    $room   The room
+     *
+     * @return     \Generator
+     */
+    private function updateRoomInformation(ChatRoom $room)
+    {
+        $roomInfo = $room->__toArray();
+
+        foreach ($this->rooms[$room->id]['users'] as $user) {
+            yield $user['Connection']->send(json_encode([
+                'service'    => $this->chatService,
+                'action'     => 'updateRoomInformation',
+                'roomId'     => $room->id,
+                'roomInfo'   => $roomInfo,
+                'messageInfo' => [
+                    'pseudonym' => 'SERVER',
+                    'date'      => static::microtimeAsInt(),
+                    'type'      => 'public',
+                    'message'   => _('The room information has been updated')
+                ]
+            ]));
+        }
+    }
+
+    /**
      * Update the connected users rights list for the registered user with admin dashboard in the room
      *
      * @param      int         $roomId  The room ID
@@ -1412,6 +1385,8 @@ class ChatService extends ServicesDispatcher implements Service
     {
         return ($chatRoom->password === "" || $chatRoom->password === null || $chatRoom->password === $roomPassword);
     }
+
+    /*=====  End of Helper methods  ======*/
 
     /*=====  End of Private methods  ======*/
 }

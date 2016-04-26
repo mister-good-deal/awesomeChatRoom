@@ -157,6 +157,16 @@ class ChatManager extends Manager
     }
 
     /**
+     * Save the chat rom
+     *
+     * @return     bool  True if the chat room has been saved else false
+     */
+    public function saveChatRoom(): bool
+    {
+        return $this->chatRoomEntityManager->saveEntity();
+    }
+
+    /**
      * Save a chat room collection
      *
      * @param      ChatRoomCollection  $collection  The chat room collection to save

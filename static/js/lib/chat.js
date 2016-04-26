@@ -540,7 +540,7 @@ define([
                 newRoomPassword = _.find(inputs, {"name": "roomPassword"}).value;
 
             if (oldRoomName !== newRoomName || oldRoomPassword !== newRoomPassword) {
-                this.setRoomInfo(roomId, oldRoomName, newRoomName, oldRoomPassword, newRoomPassword);
+                this.setRoomInfo(roomId, newRoomName, newRoomPassword);
             }
         },
 
@@ -717,20 +717,18 @@ define([
          *
          * @method     setRoomInfo
          * @param      {Number}  roomId           The room ID
-         * @param      {String}  oldRoomName      The old room name
          * @param      {String}  newRoomName      The new room name
-         * @param      {String}  oldRoomPassword  The old room password
          * @param      {String}  newRoomPassword  The new room password
          */
-        setRoomInfo: function (roomId, oldRoomName, newRoomName, oldRoomPassword, newRoomPassword) {
+        setRoomInfo: function (roomId, newRoomName, newRoomPassword) {
             this.websocket.send(JSON.stringify({
-                "service"        : [this.settings.serviceName],
-                "action"         : "setRoomInfo",
-                "roomId"         : roomId,
-                "oldRoomName"    : oldRoomName,
-                "newRoomName"    : newRoomName,
-                "oldRoomPassword": oldRoomPassword,
-                "newRoomPassword": newRoomPassword
+                "service" : [this.settings.serviceName],
+                "action"  : "setRoomInfo",
+                "roomId"  : roomId,
+                "roomInfo": {
+                    "name"    : newRoomName,
+                    "password": newRoomPassword
+                }
             }));
         },
 
@@ -971,40 +969,41 @@ define([
         },
 
         /**
-         * Callback after a room name / password has been changed
+         * Callback after a room information has been changed
          *
          * @method     changeRoomInfoCallback
          * @param      {Object}  data    The server JSON reponse
          */
         changeRoomInfoCallback: function (data) {
-            var room = $(this.settings.selectors.global.room + '[data-id="' + data.id + '"]'),
+            messageManager.add(data.text);
+        },
+
+        /**
+         * Callback after a room information has been updated
+         *
+         * @method     changeRoomInfoCallback
+         * @param      {Object}  data    The server JSON reponse
+         */
+        updateRoomInformation: function (data) {
+            var room     = $(this.settings.selectors.global.room + '[data-id="' + data.roomId + '"]'),
+                roomInfo = data.roomInfo,
                 modal;
 
-            if (data.oldRoomName !== data.newRoomName) {
-                room.attr('data-name', data.newRoomName);
-                room.find(this.settings.selectors.global.roomName).text(data.newRoomName);
-            }
-
-            if (data.oldRoomPassword !== data.newRoomPassword) {
-                room.attr('data-password', data.newRoomPassword);
-            }
+            room.attr('data-name', roomInfo.name);
+            room.find(this.settings.selectors.global.roomName).text(roomInfo.name);
+            room.attr('data-password', roomInfo.password);
 
             if (this.user.connected) {
-                modal = $(this.settings.selectors.administrationPanel.modal + '[data-room-id="' + data.id + '"]');
+                modal = $(this.settings.selectors.administrationPanel.modal + '[data-room-id="' + data.roomId + '"]');
 
-                if (data.oldRoomName !== data.newRoomName) {
-                    modal.attr('data-room-name', data.newRoomName);
-                    modal.find(this.settings.selectors.administrationPanel.roomName).text(data.newRoomName);
-                    modal.find(this.settings.selectors.administrationPanel.inputRoomName).val(data.newRoomName);
-                }
-
-                if (data.oldRoomPassword !== data.newRoomPassword) {
-                    modal.attr('data-room-password', data.newRoomPassword);
-                    modal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(data.newRoomPassword);
-                }
+                modal.attr('data-room-name', roomInfo.name);
+                modal.find(this.settings.selectors.administrationPanel.roomName).text(roomInfo.name);
+                modal.find(this.settings.selectors.administrationPanel.inputRoomName).val(roomInfo.name);
+                modal.attr('data-room-password', roomInfo.password);
+                modal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(roomInfo.password);
             }
 
-            this.recieveMessageCallback(data);
+            this.recieveMessageCallback(data.messageInfo);
         },
 
         /**
