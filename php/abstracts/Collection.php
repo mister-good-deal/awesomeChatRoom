@@ -27,15 +27,15 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * @var        Entity[]  $collection    An array of entity object
      */
-    private $collection = array();
+    protected $collection = array();
     /**
      * @var        int[]|string[]  $indexId     An array of entity id key
      */
-    private $indexId = array();
+    protected $indexId = array();
     /**
      * @var        integer  $current    Current position of the pointer in the $collection
      */
-    private $current = 0;
+    protected $current = 0;
 
     /*=====================================
     =            Magic mathods            =

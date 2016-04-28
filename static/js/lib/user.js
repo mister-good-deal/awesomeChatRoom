@@ -156,11 +156,22 @@ define([
          * Get the given chat room right
          *
          * @method     getChatRoomRight
-         * @param      {Number}  roomId  The room name
+         * @param      {Number}  roomId  The room ID
          * @return     {Object}  The user chat rights for the room or empty object if he does not have right
          */
         getChatRoomRight: function (roomId) {
             return this.attributes.chatRight[roomId] ? this.attributes.chatRight[roomId] : {};
+        },
+
+        /**
+         * Set the given chat room right
+         *
+         * @method     getChatRoomRight
+         * @param      {Number}  roomId     The room ID
+         * @param      {Object}  chatRight  The new chat right
+         */
+        setChatRoomRight: function (roomId, chatRight) {
+            this.attributes.chatRight[roomId] = chatRight;
         },
 
         /**
@@ -190,7 +201,7 @@ define([
          * @param      {Object}  data    JSON data
          */
         setAttributes: function (data) {
-            this.attributes = $.extend(true, {}, this.attributes, data.user);
+            this.attributes = $.extend(true, {}, this.attributes, data.user, data.right, data.chatRight);
         },
 
         /**

@@ -189,12 +189,6 @@ define([
                 this.settings.selectors.global.roomChat,
                 $.proxy(this.mouseLeaveRoomChatEvent, this)
             );
-            // Set the modal admin contents before it is opened
-            $('body').on(
-                'show.bs.modal',
-                this.settings.selectors.administrationPanel.div,
-                $.proxy(this.setAministrationPanelEvent, this)
-            );
             // Toggle the user right in the administration panel
             $('body').on(
                 'click',
@@ -436,19 +430,6 @@ define([
             var roomId = $(e.currentTarget).closest(this.settings.selectors.global.room).attr('data-id');
 
             this.mouseInRoomChat[roomId] = false;
-        },
-
-        /**
-         * Event fired when the user wants to display the administration room panel
-         *
-         * @method     setAministrationPanelEvent
-         * @param      {event}  e       The fired event
-         */
-        setAministrationPanelEvent: function (e) {
-            var modal = $(e.currentTarget);
-
-            // modal.find(this.settings.selectors.administrationPanel.rights + ' input[type="checkbox"]')
-            //     .bootstrapSwitch();
         },
 
         /**
@@ -830,7 +811,7 @@ define([
         updateRoomUsersRightsCallback: function (data) {
             var modal = $('.modal[data-room-id="' + data.roomId + '"]');
 
-            this.updateRoomUsersRights(modal, data.usersRights);
+            this.updateRoomUsersRights(modal, data.usersRights, data.roomId);
         },
 
         /**
@@ -1111,7 +1092,7 @@ define([
                     newModal.find(this.settings.selectors.administrationPanel.inputRoomName).val(roomData.name);
                     newModal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(roomData.password);
                     newRoom.find(this.settings.selectors.roomAction.administration).attr('data-target', '#' + id);
-                    this.updateRoomUsersRights(newModal, data.usersRights);
+                    this.updateRoomUsersRights(newModal, data.usersRights, roomData.id);
 
                     modalSample.after(newModal);
                 }
@@ -1247,9 +1228,14 @@ define([
          * @method     updateRoomUsersRights
          * @param      {Object}  modal        The modal jQuery DOM element
          * @param      {Object}  usersRights  The users rights object returned by the server
+         * @param      {Number}  roomId       The room id
          */
-        updateRoomUsersRights: function (modal, usersRights) {
+        updateRoomUsersRights: function (modal, usersRights, roomId) {
             var self = this;
+            // Self update user chat room right
+            if (_.isObject(usersRights[this.user.getPseudonym()])) {
+                this.user.setChatRoomRight(roomId, usersRights[this.user.getPseudonym()]);
+            }
 
             _.forEach(usersRights, function (rights, pseudonym) {
                 self.updateUserRightLine(modal, pseudonym, rights);
@@ -1266,6 +1252,8 @@ define([
          */
         updateUserRightLine: function (modal, pseudonym, userChatRight) {
             var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),
+                roomId    = modal.attr('data-room-id'),
+                self      = this,
                 rights    = usersList.find(
                     this.settings.selectors.administrationPanel.rights + '[data-pseudonym="' + pseudonym + '"]'
                 ),
@@ -1275,10 +1263,41 @@ define([
                 rights.each(function () {
                     input     = $(this).find('input');
                     rightName = input.attr('name');
-
+                    // @fixme bootstrapSwitch issue on readonly and disabled state
+                    // @see https://github.com/nostalgiaz/bootstrap-switch/issues/494
+                    // Fix <<<
+                    if (input.bootstrapSwitch('readonly')) {
+                        input.bootstrapSwitch('readonly', false);
+                    }
+                    // Fix >>>
                     input.bootstrapSwitch(
-                        'state', userChatRight ? userChatRight[rightName] : false
+                        'state',
+                        userChatRight ? userChatRight[rightName] : false,
+                        true
                     );
+
+                    if (!userChatRight) {
+                        // Disabled rights on unregistered users
+                        input.bootstrapSwitch('state', false, true);
+                        input.bootstrapSwitch('readonly', true);
+                    } else {
+                        // Set the current user rights
+                        input.bootstrapSwitch(
+                            'state', userChatRight[rightName], true
+                        );
+
+                        if (!self.user.getChatRoomRight(roomId).grant && !self.user.getRight().chatAdmin) {
+                            // Disabled rights if the admin have no "grant" right
+                            input.bootstrapSwitch('readonly', true);
+                        } else {
+                            // @fixme need to reset the event on update because readonly inputs lost the event binding
+                            input.off('switchChange.bootstrapSwitch');
+                            // Bind event on right change event to update the right instantly
+                            input.on('switchChange.bootstrapSwitch', function (ignore, rightValue) {
+                                self.updateRoomUserRight(roomId, pseudonym, $(this).attr('name'), rightValue);
+                            });
+                        }
+                    }
                 });
             } else {
                 usersList.append(this.getUserRightLine(modal, pseudonym, userChatRight));
@@ -1317,15 +1336,15 @@ define([
                     // Unregistered user
                     if (!userChatRight) {
                         // Disabled rights on unregistered users
+                        input.bootstrapSwitch('state', false, true);
                         input.bootstrapSwitch('readonly', true);
-                        input.bootstrapSwitch('state', false);
                     } else {
                         // Set the current user rights
                         input.bootstrapSwitch(
-                            'state', userChatRight[rightName]
+                            'state', userChatRight[rightName], true
                         );
 
-                        if (!self.user.getRight().chatAdmin && !self.user.getChatRoomRight(roomId).grant) {
+                        if (!self.user.getChatRoomRight(roomId).grant && !self.user.getRight().chatAdmin) {
                             // Disabled rights if the admin have no "grant" right
                             input.bootstrapSwitch('readonly', true);
                         } else {

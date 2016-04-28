@@ -142,9 +142,8 @@ class UserManager extends Manager
         if ($response['success']) {
             $this->userEntity = $this->userEntityManager->getEntity();
             $this->loadUserRights();
-            $response['user']['chatRight'] = $this->userEntity->getChatRight()->getCollection();
-            $response['user']['right']     = $this->userEntity->getRight()->__toArray();
-            $_SESSION['user']              = serialize($this->userEntity);
+            $response['user'] = $this->userEntity->__toArray();
+            $_SESSION['user'] = serialize($this->userEntity);
         }
 
         return $response;

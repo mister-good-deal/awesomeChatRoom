@@ -81,6 +81,20 @@ class User extends Entity
         }
     }
 
+    /**
+     * Return the user entity in an array format
+     *
+     * @return     array  Array with all users attributes
+     */
+    public function __toArray(): array
+    {
+        $user = parent::__toArray();
+        $user['right']     = ($this->right !== null ? $this->right->__toArray() : []);
+        $user['chatRight'] = ($this->chatRight !== null ? $this->chatRight->__toArray() : []);
+
+        return $user;
+    }
+
     /*-----  End of Magic methods  ------*/
 
     /*=========================================
