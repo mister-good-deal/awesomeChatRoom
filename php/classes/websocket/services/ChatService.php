@@ -314,8 +314,7 @@ class ChatService extends ServicesDispatcher implements Service
                 'service'     => $this->chatService,
                 'action'      => 'connectRoom',
                 'success'     => false,
-                'text'        => $message ?? '',
-                'usersRights' => $this->getRoomUsersRight((int) $data['roomId'])
+                'text'        => $message ?? ''
             ],
             $response
         )));
@@ -1225,6 +1224,7 @@ class ChatService extends ServicesDispatcher implements Service
             $userManager           = new UserManager($client['User']);
             $response['success']   = true;
             $response['pseudonym'] = $userManager->getPseudonymForChat();
+            $response['user']      = $userManager->getUser()->__toArray();
         } elseif ($pseudonym !== '') {
             // Guest user
             if ($this->isPseudonymUsabled($pseudonym, $room->id)) {
@@ -1242,6 +1242,7 @@ class ChatService extends ServicesDispatcher implements Service
             $this->rooms[$room->id]['users'][$userHash]              = $client;
             $this->rooms[$room->id]['users'][$userHash]['pseudonym'] = $response['pseudonym'];
             $this->rooms[$room->id]['users'][$userHash]['location']  = $location;
+            $response['usersRights']                                 = $this->getRoomUsersRight($room->id);
 
             // Send a message to all users in chat and warn them a new user is connected
             $message = sprintf(_("%s joins the room"), $response['pseudonym']);

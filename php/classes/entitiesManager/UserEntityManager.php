@@ -74,8 +74,8 @@ class UserEntityManager extends EntityManager
      */
     public function getUserIdByPseudonym(string $pseudonym): int
     {
-        $sqlMarks   = 'SELECT id FROM %s WHERE pseudonym = %s';
-        $sql        = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($pseudonym));
+        $sqlMarks = 'SELECT id FROM %s WHERE pseudonym = %s';
+        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($pseudonym));
 
         return (int) DB::query($sql)->fetchColumn();
     }
@@ -224,7 +224,7 @@ class UserEntityManager extends EntityManager
             }
         }
 
-        return array('success' => $success, 'errors' => $errors, 'user' => $this->entity->__toArray());
+        return array('success' => $success, 'errors' => $errors);
     }
 
     /**

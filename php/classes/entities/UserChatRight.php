@@ -50,8 +50,8 @@ class UserChatRight extends Entity
     public function __toArray(): array
     {
         return array(
-            'idUser' => $this->idUser,
-            'idRoom' => $this->idRoom,
+            'idUser' => (int) $this->idUser,
+            'idRoom' => (int) $this->idRoom,
             'kick'   => (bool) $this->kick,
             'ban'    => (bool) $this->ban,
             'grant'  => (bool) $this->grant,

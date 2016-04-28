@@ -43,5 +43,21 @@ class UserChatRightCollection extends Collection
     {
     }
 
+    /**
+     * Return the UserChatRight collection in an array format with rooms ID as key
+     *
+     * @return     array  Array with all the UserChatRight attributes
+     */
+    public function __toArray(): array
+    {
+        $rights = [];
+
+        foreach ($this->collection as $right) {
+            $rights[$right->idRoom] = $right->__toArray();
+        }
+
+        return $rights;
+    }
+
     /*-----  End of Magic methods  ------*/
 }
