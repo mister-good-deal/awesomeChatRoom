@@ -75,10 +75,11 @@ class UserChatRightEntityManager extends EntityManager
     {
         $sqlMarks   = 'SELECT * FROM %s WHERE idUser = %d';
         $sql        = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $userId);
-        $chatRights = DB::query($sql)->fetchAll(\PDO::FETCH_COLUMN);
+        $chatRights = DB::query($sql)->fetchAll();
 
         foreach ($chatRights as $chatRightInfo) {
-            $chatRight = (new UserChatRight())->setAttributes($chatRightInfo);
+            $chatRight = new UserChatRight();
+            $chatRight->setAttributes($chatRightInfo);
             $this->entityCollection->add($chatRight, $chatRight->idRoom);
         }
     }

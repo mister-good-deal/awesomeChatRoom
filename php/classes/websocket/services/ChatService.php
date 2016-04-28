@@ -14,8 +14,6 @@ use \classes\IniManager as Ini;
 use \classes\entities\User as User;
 use \classes\entities\UserChatRight as UserChatRight;
 use \classes\entities\ChatRoom as ChatRoom;
-use \classes\entitiesCollection\ChatRoomCollection as ChatRoomCollection;
-use \classes\entitiesCollection\ChatRoomBanCollection as ChatRoomBanCollection;
 use \classes\entities\ChatRoomBan as ChatRoomBan;
 use \classes\managers\UserManager as UserManager;
 use \classes\managers\ChatManager as ChatManager;
@@ -313,10 +311,11 @@ class ChatService extends ServicesDispatcher implements Service
 
         yield $client['Connection']->send(json_encode(array_merge(
             [
-                'service' => $this->chatService,
-                'action'  => 'connectRoom',
-                'success' => false,
-                'text'    => $message ?? ''
+                'service'     => $this->chatService,
+                'action'      => 'connectRoom',
+                'success'     => false,
+                'text'        => $message ?? '',
+                'usersRights' => $this->getRoomUsersRight((int) $data['roomId'])
             ],
             $response
         )));
@@ -715,6 +714,8 @@ class ChatService extends ServicesDispatcher implements Service
                     // Update the users right for users who have access to the admin board EG registered users
                     if ($success) {
                         yield $this->updateRoomUsersRights((int) $room->id);
+                    } else {
+                        $message = _('The right update failed');
                     }
                 } catch (Exception $e) {
                     $message = $e->getMessage();
@@ -979,7 +980,7 @@ class ChatService extends ServicesDispatcher implements Service
 
         foreach ($this->rooms[$roomId]['users'] as $userInfo) {
             if ($userInfo['User'] !== null) {
-                $chatRight = $userInfo['User']->getEntityCollection()->getEntityById($roomId);
+                $chatRight = $userInfo['User']->getChatRight()->getEntityById($roomId);
 
                 if ($chatRight === null) {
                     $chatRight = new UserChatRight([
@@ -1055,7 +1056,7 @@ class ChatService extends ServicesDispatcher implements Service
      */
     private function getUserByRoomByPseudonym(int $roomId, string $pseudonym): User
     {
-        return $this->rooms[$roomId]['users'][$this->getUserHashByPseudonym($roomId, $pseudonym)];
+        return $this->rooms[$roomId]['users'][$this->getUserHashByPseudonym($roomId, $pseudonym)]['User'];
     }
 
     /**
@@ -1098,7 +1099,8 @@ class ChatService extends ServicesDispatcher implements Service
             'service'    => $this->chatService,
             'action'     => 'updateRoomUsers',
             'roomId'     => $roomId,
-            'pseudonyms' => $this->getRoomPseudonyms($roomId)
+            'pseudonyms' => $this->getRoomPseudonyms($roomId),
+            'rights'     => $this->getRoomUsersRight($roomId)
         ]));
     }
 
@@ -1243,25 +1245,10 @@ class ChatService extends ServicesDispatcher implements Service
 
             // Send a message to all users in chat and warn them a new user is connected
             $message = sprintf(_("%s joins the room"), $response['pseudonym']);
-            $rights  = [];
 
             foreach ($this->rooms[$room->id]['users'] as $userInfo) {
-                if ($userInfo['User'] !== null) {
-                    $rights[$userInfo['pseudonym']] = ['chatRight' => $userInfo['User']->getChatRight()];
-                }
-
                 yield $this->sendMessageToUser([], $userInfo, $message, $room->id, 'private');
-                yield $userInfo['Connection']->send(json_encode([
-                    'service'    => $this->chatService,
-                    'action'     => 'updateRoomUsers',
-                    'success'    => true,
-                    'roomId'     => $room->id,
-                    'pseudonyms' => $this->getRoomPseudonyms($room->id)
-                ]));
-            }
-
-            if ($client['User'] !== null) {
-                $response['chatRights'] = $rights;
+                yield $this->updateRoomUsers($userInfo, $room->id);
             }
 
             yield $this->log->log(

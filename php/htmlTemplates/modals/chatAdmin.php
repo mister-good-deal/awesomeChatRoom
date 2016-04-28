@@ -91,20 +91,9 @@
                             </tr>
                             <tr class="hide sample right" data-pseudonym="">
                                 <td colspan="4" class="warper">
-                                    <label><?=_('Rename room name')?></label>
+                                    <label><?=_('Edit room information')?></label>
                                     <input type="checkbox"
-                                           name="rename"
-                                           data-on-color="success"
-                                           data-off-color="danger"
-                                           data-size="mini"
-                                    >
-                                </td>
-                            </tr>
-                            <tr class="hide sample right" data-pseudonym="">
-                                <td colspan="4" class="warper">
-                                    <label><?=_('Change room password')?></label>
-                                    <input type="checkbox"
-                                           name="password"
+                                           name="edit"
                                            data-on-color="success"
                                            data-off-color="danger"
                                            data-size="mini"

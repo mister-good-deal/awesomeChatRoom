@@ -107,7 +107,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
             );
         } else {
             $this->collection[] = $entity;
-            $this->indexId[$id] = $this->count();
+            $this->indexId[$id] = $this->count() - 1;
         }
     }
 
@@ -143,8 +143,9 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     public function getEntityById($entityId)
     {
         $entity = null;
+        $id     = $this->parseId($entityId);
 
-        if (array_key_exists($this->parseId($entityId), $this->indexId)) {
+        if (array_key_exists($id, $this->indexId)) {
             $entity = $this->collection[$this->indexId[$id]];
         }
 

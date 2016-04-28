@@ -55,11 +55,9 @@ define([
         ====================================================*/
 
         /**
-         * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
+         * Default settings
          */
-        "settings": {
-            "users": []
-        },
+        "settings": {},
         /**
          * Global promises handler
          */
@@ -449,8 +447,8 @@ define([
         setAministrationPanelEvent: function (e) {
             var modal = $(e.currentTarget);
 
-            modal.find(this.settings.selectors.administrationPanel.rights + ' input[type="checkbox"]')
-                .bootstrapSwitch();
+            // modal.find(this.settings.selectors.administrationPanel.rights + ' input[type="checkbox"]')
+            //     .bootstrapSwitch();
         },
 
         /**
@@ -812,7 +810,7 @@ define([
 
                     _.forEach(newPseudonyms, function (pseudonym) {
                         users.append(
-                            self.getUserRightLine(modal, pseudonym, data.right)
+                            self.getUserRightLine(modal, pseudonym, data.rights[pseudonym])
                         );
                     });
 
@@ -1113,7 +1111,7 @@ define([
                     newModal.find(this.settings.selectors.administrationPanel.inputRoomName).val(roomData.name);
                     newModal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(roomData.password);
                     newRoom.find(this.settings.selectors.roomAction.administration).attr('data-target', '#' + id);
-                    this.updateRoomUsersRights(newModal, data.chatRights);
+                    this.updateRoomUsersRights(newModal, data.usersRights);
 
                     modalSample.after(newModal);
                 }
@@ -1215,89 +1213,6 @@ define([
         },
 
         /**
-         * Update the users list in the administration modal
-         *
-         * @method     updateRoomUsersRights
-         * @param      {Object}  modal        The modal jQuery DOM element
-         * @param      {Object}  usersRights  The users rights object returned by the server
-         */
-        updateRoomUsersRights: function (modal, usersRights) {
-            var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),
-                trSample  = usersList.find(this.settings.selectors.administrationPanel.trSample),
-                roomId    = modal.attr('data-room-id'),
-                room      = $(this.settings.selectors.global.room + '[data-id="' + roomId + '"]'),
-                newLines  = [],
-                self = this;
-
-            if (room.length > 0) {
-                _.forEach(room.attr('data-users').split(','), function (pseudonym) {
-                    newLines.push(self.getUserRightLine(modal, pseudonym, usersRights[pseudonym]));
-                });
-                // Clean and insert lines
-                usersList.find('tr').not(trSample).remove();
-                trSample.last().after(newLines);
-            }
-        },
-
-        /**
-         * Get a new user right line in the administration panel
-         *
-         * @method     getUserRightLine
-         * @param      {Object}  modal          The modal jQuery DOM element
-         * @param      {String}  pseudonym      The new user pseudonym
-         * @param      {Object}  userChatRight  The new user chat right
-         * @return     {Object}  The new user right line jQuery DOM element
-         *
-         * @todo use lodash and no jquery for iterate
-         */
-        getUserRightLine: function (modal, pseudonym, userChatRight) {
-            var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),
-                trSample  = usersList.find(this.settings.selectors.administrationPanel.trSample),
-                roomId    = modal.attr('data-room-id'),
-                newLine   = trSample.clone(),
-                refer     = _.uniqueId('right-'),
-                self      = this,
-                input, rightName;
-
-            newLine.removeClass('hide sample');
-            newLine.attr('data-pseudonym', pseudonym);
-            newLine.find(this.settings.selectors.administrationPanel.pseudonym).text(pseudonym);
-            newLine.find(this.settings.selectors.administrationPanel.toggleRights).attr('data-refer', '.' + refer);
-
-            newLine.each(function () {
-                if ($(this).hasClass(self.settings.selectors.administrationPanel.rights.substr(1))) {
-                    input = $(this).find('input');
-                    rightName = input.attr('name');
-
-                    $(this).addClass(refer);
-                    // Unregistered user
-                    if (!userChatRight) {
-                        // Disabled rights on unregistered users
-                        input.bootstrapSwitch('readonly', true);
-                        input.bootstrapSwitch('state', false);
-                    } else {
-                        // Set the current user rights
-                        input.bootstrapSwitch(
-                            'state', userChatRight[roomId] ? userChatRight[roomId][rightName] : false
-                        );
-
-                        if (!self.user.getChatRoomRight(roomId) || !self.user.getChatRoomRight(roomId).grant) {
-                            // Disabled rights if the admin have no "grant" right
-                            input.bootstrapSwitch('readonly', true);
-                        } else {
-                            // Bind event on right change event to update the right instantly
-                            input.on('switchChange.bootstrapSwitch', function (ignore, rightValue) {
-                                self.updateRoomUserRight(roomId, pseudonym, $(this).attr('name'), rightValue);
-                            });
-                        }
-                    }
-                }
-            });
-
-            return newLine;
-        },
-
-        /**
          * Update the ip banned list in the administration modal
          *
          * @method     updateRoomUsersBanned
@@ -1324,6 +1239,106 @@ define([
             // Clean and insert lines
             bannedList.find('tr').not(trSample).remove();
             trSample.last().after(newLines);
+        },
+
+        /**
+         * Update the users rights list in the administration modal
+         *
+         * @method     updateRoomUsersRights
+         * @param      {Object}  modal        The modal jQuery DOM element
+         * @param      {Object}  usersRights  The users rights object returned by the server
+         */
+        updateRoomUsersRights: function (modal, usersRights) {
+            var self = this;
+
+            _.forEach(usersRights, function (rights, pseudonym) {
+                self.updateUserRightLine(modal, pseudonym, rights);
+            });
+        },
+
+        /**
+         * Update a user right line in the administration panel
+         *
+         * @method     updateUserRightLine
+         * @param      {Object}  modal          The modal jQuery DOM element
+         * @param      {String}  pseudonym      The new user pseudonym
+         * @param      {Object}  userChatRight  The new user chat right
+         */
+        updateUserRightLine: function (modal, pseudonym, userChatRight) {
+            var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),
+                rights    = usersList.find(
+                    this.settings.selectors.administrationPanel.rights + '[data-pseudonym="' + pseudonym + '"]'
+                ),
+                input, rightName;
+
+            if (rights.length > 0) {
+                rights.each(function () {
+                    input     = $(this).find('input');
+                    rightName = input.attr('name');
+
+                    input.bootstrapSwitch(
+                        'state', userChatRight ? userChatRight[rightName] : false
+                    );
+                });
+            } else {
+                usersList.append(this.getUserRightLine(modal, pseudonym, userChatRight));
+            }
+        },
+
+        /**
+         * Get a new user right line in the administration panel
+         *
+         * @method     getUserRightLine
+         * @param      {Object}  modal          The modal jQuery DOM element
+         * @param      {String}  pseudonym      The new user pseudonym
+         * @param      {Object}  userChatRight  The new user chat right
+         * @return     {Object}  The new user right line jQuery DOM element
+         */
+        getUserRightLine: function (modal, pseudonym, userChatRight) {
+            var usersList = modal.find(this.settings.selectors.administrationPanel.usersList),
+                trSample  = usersList.find(this.settings.selectors.administrationPanel.trSample),
+                roomId    = modal.attr('data-room-id'),
+                newLine   = trSample.clone(),
+                refer     = _.uniqueId('right-'),
+                self      = this,
+                input, rightName;
+
+            newLine.removeClass('hide sample');
+            newLine.attr('data-pseudonym', pseudonym);
+            newLine.find(this.settings.selectors.administrationPanel.pseudonym).text(pseudonym);
+            newLine.find(this.settings.selectors.administrationPanel.toggleRights).attr('data-refer', '.' + refer);
+
+            newLine.each(function () {
+                if ($(this).hasClass(self.settings.selectors.administrationPanel.rights.substr(1))) {
+                    input     = $(this).find('input');
+                    rightName = input.attr('name');
+
+                    $(this).addClass(refer);
+                    // Unregistered user
+                    if (!userChatRight) {
+                        // Disabled rights on unregistered users
+                        input.bootstrapSwitch('readonly', true);
+                        input.bootstrapSwitch('state', false);
+                    } else {
+                        // Set the current user rights
+                        input.bootstrapSwitch(
+                            'state', userChatRight[rightName]
+                        );
+
+                        if (!self.user.getRight().chatAdmin && !self.user.getChatRoomRight(roomId).grant) {
+                            // Disabled rights if the admin have no "grant" right
+                            input.bootstrapSwitch('readonly', true);
+                        } else {
+                            // Bind event on right change event to update the right instantly
+                            input.on('switchChange.bootstrapSwitch', function (ignore, rightValue) {
+                                self.updateRoomUserRight(roomId, pseudonym, $(this).attr('name'), rightValue);
+                            });
+                        }
+                    }
+                }
+            });
+
+            return newLine;
         },
 
         /**

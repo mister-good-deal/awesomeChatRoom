@@ -157,10 +157,10 @@ define([
          *
          * @method     getChatRoomRight
          * @param      {Number}  roomId  The room name
-         * @return     {Object}  The user chat rights for the room
+         * @return     {Object}  The user chat rights for the room or empty object if he does not have right
          */
         getChatRoomRight: function (roomId) {
-            return this.attributes.chatRight[roomId];
+            return this.attributes.chatRight[roomId] ? this.attributes.chatRight[roomId] : {};
         },
 
         /**

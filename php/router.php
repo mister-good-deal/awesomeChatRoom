@@ -2,6 +2,8 @@
 
 require_once 'autoloader.php';
 
+use \classes\IniManager as Ini;
+
 /**
  * Routing function
  *
@@ -40,6 +42,13 @@ function route($route)
     }
 
     include_once $route;
+
+    Ini::setIniFileName(Ini::INI_CONF_FILE);
+
+    // If the print SQL debug mode is on start a buffer
+    if (Ini::getParam('Console', 'printSql')) {
+        ob_start();
+    }
 
     $controllerPath    = 'controllers\\' . $controller;
     $controllerIntance = new $controllerPath();

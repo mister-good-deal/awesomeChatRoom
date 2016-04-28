@@ -7,6 +7,8 @@
  */
 namespace abstracts;
 
+use \classes\IniManager as Ini;
+
 /**
  * Abstract Controller class to harmonize standards controllers methods
  *
@@ -21,6 +23,13 @@ abstract class AbstractController
      */
     public function JSONresponse(array $data)
     {
+        Ini::setIniFileName(Ini::INI_CONF_FILE);
+
+        // If the print SQL debug mode is on clean the buffer before output
+        if (Ini::getParam('Console', 'printSql')) {
+            ob_end_clean();
+        }
+
         echo json_encode($data, true);
     }
 }
