@@ -40,24 +40,5 @@ class UserChatRight extends Entity
         }
     }
 
-    /**
-     * To array overriden to handle boolean cast type
-     *
-     * @return     array  Array with columns name on keys and columns value on values
-     *
-     * @todo       See if boolean cast conversation can be done automatically
-     */
-    public function __toArray(): array
-    {
-        return array(
-            'idUser' => (int) $this->idUser,
-            'idRoom' => (int) $this->idRoom,
-            'kick'   => (bool) $this->kick,
-            'ban'    => (bool) $this->ban,
-            'grant'  => (bool) $this->grant,
-            'edit'   => (bool) $this->edit
-        );
-    }
-
     /*-----  End of Magic methods  ------*/
 }

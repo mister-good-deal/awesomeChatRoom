@@ -137,7 +137,7 @@ abstract class Entity implements \ArrayAccess
             throw new Exception('The attribute ' . $columnName . ' is undefined', Exception::$PARAMETER);
         }
 
-        $this->columnsValue[$columnName] = $value;
+        $this->columnsValue[$columnName] = $this->castType($columnName, $value);
     }
 
     /**
@@ -319,10 +319,10 @@ abstract class Entity implements \ArrayAccess
                     );
                 }
 
-                $this->columnsValue[$key] = $val;
+                $this->columnsValue[$key] = $this->castType($key, $val);
             }
         } else {
-            $this->columnsValue[$this->idKey[0]] = $value;
+            $this->columnsValue[$this->idKey[0]] = $this->castType($this->idKey[0], $value);
         }
     }
 
@@ -407,6 +407,26 @@ abstract class Entity implements \ArrayAccess
     }
 
     /**
+     * Get the columns value for SQL insertion purpose
+     *
+     * @return     array  The columns value with ['columnName' => columnValue]
+     */
+    public function getColumnsValueSQL(): array
+    {
+        $sqlParams = [];
+
+        foreach ($this->columnsValue as $column => $value) {
+            if (is_a($value, '\DateTime')) {
+                $sqlParams[$column] = $value->format('Y-m-d H:i:s');
+            } else {
+                $sqlParams[$column] = $value;
+            }
+        }
+
+        return $sqlParams;
+    }
+
+    /**
      * Get the entity name
      *
      * @return     string  The entity name
@@ -443,9 +463,34 @@ abstract class Entity implements \ArrayAccess
     {
         foreach ($attributes as $columnName => $value) {
             if (isset($this->{$columnName})) {
-                $this->{$columnName} = $value;
+                $this->{$columnName} = $this->castType($columnName, $value);
             }
         }
+    }
+
+    /**
+     * Check if a column value is not already in database if the column has a unique attribute constraint
+     *
+     * @param      string  $columnName  The column name
+     * @param      mixed   $value       The column value
+     *
+     * @return     bool    True if the value is already in database and the column has a unique attribute constraint
+     *                     else false
+     *
+     * @todo Move to EntityManager ?
+     */
+    public function checkUniqueField(string $columnName, $value): bool
+    {
+        $alreadyInDatabase = false;
+
+        if (strpos($this->constraints['unique'], $columnName) !== false) {
+            $sqlMarks = 'SELECT count(*) FROM %s WHERE %s = ' . DB::quote($value);
+            $sql      = EntityManager::sqlFormater($sqlMarks, $this->tableName, $columnName);
+
+            $alreadyInDatabase = ((int) DB::query($sql)->fetchColumn() > 0);
+        }
+
+        return $alreadyInDatabase;
     }
 
     /*==========  ArrayAccess interface  ==========*/
@@ -482,7 +527,7 @@ abstract class Entity implements \ArrayAccess
      */
     public function offsetSet($attribute, $value)
     {
-        $this->columnsValue[$attribute] = $value;
+        $this->columnsValue[$attribute] = $this->castType($attribute, $value);
     }
 
     /**
@@ -494,35 +539,6 @@ abstract class Entity implements \ArrayAccess
     {
         unset($this->columnsValue[$attribute]);
     }
-
-    /*=========================================
-    =            Protected methods            =
-    =========================================*/
-
-    /**
-     * Check if a column value is not already in database if the column has a unique attribute constraint
-     *
-     * @param      string  $columnName  The column name
-     * @param      mixed   $value       The column value
-     *
-     * @return     bool    True if the value is already in database and the column has a unique attribute constraint
-     *                     else false
-     */
-    protected function checkUniqueField(string $columnName, $value): bool
-    {
-        $alreadyInDatabase = false;
-
-        if (strpos($this->constraints['unique'], $columnName) !== false) {
-            $sqlMarks = 'SELECT count(*) FROM %s WHERE %s = ' . DB::quote($value);
-            $sql      = EntityManager::sqlFormater($sqlMarks, $this->tableName, $columnName);
-
-            $alreadyInDatabase = ((int) DB::query($sql)->fetchColumn() > 0);
-        }
-
-        return $alreadyInDatabase;
-    }
-
-    /*=====  End of Protected methods  ======*/
 
     /*=======================================
     =            Private methods            =
@@ -590,6 +606,71 @@ abstract class Entity implements \ArrayAccess
         $this->columnsValue      = $columnsValue;
         $this->columnsAttributes = $columnsAttributes;
         $this->constraints       = $constraints;
+    }
+
+    /**
+     * Cast the value with the type of the column
+     *
+     * @param      string  $columnName  The column name
+     * @param      mixed   $value       The column value
+     *
+     * @throws     Exception  If the value of TIMESTAMP and DATETIME fields is not a \DateTime object or a string
+     *
+     * @return     mixed   The casted column value
+     */
+    private function castType(string $columnName, $value)
+    {
+        switch ($this->columnsAttributes[$columnName]['type']) {
+            case 'VARCHAR':
+                $castedValue = (string) $value;
+                break;
+
+            case 'INT':
+                if ($this->columnsAttributes[$columnName]['size'] > 1) {
+                    $castedValue = (int) $value;
+                } else {
+                    $castedValue = (bool) $value;
+                }
+
+                break;
+
+            case 'TIMESTAMP':
+            case 'DATETIME':
+                if (is_string($value)) {
+                    $castedValue = new \DateTime($value);
+
+                    if ($castedValue === false) {
+                        throw new Exception(
+                            'The value of TIMESTAMP and DATETIME string format must be Y-m-d H:i:s',
+                            Exception::$PARAMETER
+                        );
+                    }
+                } elseif (is_array($value)) {
+                    $castedValue = new \DateTime($value['date'], new \DateTimeZone($value['timezone']));
+
+                    if ($castedValue === false) {
+                        throw new Exception(
+                            'The value of TIMESTAMP and DATETIME array format must be ["date" => d, "timezone" => t]',
+                            Exception::$PARAMETER
+                        );
+                    }
+                } elseif (is_a($value, '\DateTime')) {
+                    $castedValue = $value;
+                } else {
+                    throw new Exception(
+                        'The value of TIMESTAMP and DATETIME fields must be a \DateTime object',
+                        Exception::$PARAMETER
+                    );
+                }
+
+                break;
+
+            default:
+                $castedValue = $value;
+                break;
+        }
+
+        return $castedValue;
     }
 
     /*-----  End of Private methods  ------*/

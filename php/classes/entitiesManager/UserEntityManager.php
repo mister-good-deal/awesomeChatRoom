@@ -36,6 +36,10 @@ class UserEntityManager extends EntityManager
      * @var        array  $params   An array containing User params in conf.ini
      */
     private $params;
+    /**
+     * @var        array  $errors   An array containing the occured errors when fields are set
+     */
+    private $errors = array();
 
     /*=====================================
     =            Magic methods            =
@@ -115,8 +119,8 @@ class UserEntityManager extends EntityManager
                 $query            = 'SELECT MAX(id) FROM ' . $this->entity->getTableName();
                 $this->entity->id = DB::query($query)->fetchColumn() + 1;
 
-                $this->entity->bindInputs($inputs);
-                $errors = $this->entity->getErrors();
+                $this->bindInputs($inputs);
+                $errors = $this->errors;
 
                 if (count($errors) === 0) {
                     $this->sendEmail(_('[awesomeChatRoom] Account created'), WebContentInclude::formatTemplate(
@@ -151,16 +155,16 @@ class UserEntityManager extends EntityManager
     {
         $errors   = array();
         $success  = false;
-        $login    = @$this->getInput($inputs['login']);
-        $password = @$this->getInput($inputs['password']);
+        $login    = trim($inputs['login'] ?? '');
+        $password = $inputs['password'] ?? '';
 
-        if ($login === null || $login === '') {
+        if ($login === '') {
             $errors['login'] = _('Login can\'t be empty');
         } else {
             $login = DB::quote($login);
         }
 
-        if ($password === null || $password === '') {
+        if ($password === '') {
             $errors['password'] = _('Password can\'t be empty');
         }
 
@@ -175,8 +179,7 @@ class UserEntityManager extends EntityManager
                 $this->entity->setAttributes($userParams);
 
                 if ((int) $this->entity->connectionAttempt === -1) {
-                    $lastConnectionAttempt = new \DateTime($this->entity->lastConnectionAttempt);
-                    $intervalInSec         = $this->dateIntervalToSec($now->diff($lastConnectionAttempt));
+                    $intervalInSec         = $this->dateIntervalToSec($now->diff($this->entity->lastConnectionAttempt));
                     $minInterval           = (int) $this->params['minTimeAttempt'];
 
                     if ($intervalInSec < $minInterval) {
@@ -190,7 +193,7 @@ class UserEntityManager extends EntityManager
                 } else {
                     $this->entity->connectionAttempt++;
                     $this->entity->ipAttempt             = $_SERVER['REMOTE_ADDR'];
-                    $this->entity->lastConnectionAttempt = $now->format('Y-m-d H:i:s');
+                    $this->entity->lastConnectionAttempt = $now;
                 }
 
                 if ($this->entity->ipAttempt === $_SERVER['REMOTE_ADDR']) {
@@ -206,13 +209,13 @@ class UserEntityManager extends EntityManager
                     // Connection success
                     if (hash_equals($userParams['password'], crypt($password, $userParams['password']))) {
                         $success                            = true;
-                        $this->entity->lastConnection       = $now->format('Y-m-d H:i:s');
+                        $this->entity->lastConnection       = $now;
                         $this->entity->connectionAttempt    = 0;
                         $this->entity->ip                   = $_SERVER['REMOTE_ADDR'];
                         $this->entity->securityToken        = bin2hex(random_bytes($this->params['securityTokenLength']));
                         $this->entity->securityTokenExpires = $now->add(
                             new \DateInterval('PT' . $this->params['securityTokenDuration'] . 'S')
-                        )->format('Y-m-d H:i:s');
+                        );
                     } else {
                         $errors['password'] = _('Incorrect password');
                     }
@@ -300,6 +303,108 @@ class UserEntityManager extends EntityManager
     =            Private methods            =
     =======================================*/
 
+     /**
+     * Bind user inputs to set User class attributes with inputs check
+     *
+     * @param      array  $inputs  The user inputs
+     */
+    private function bindInputs(array $inputs)
+    {
+        foreach ($inputs as $inputName => &$inputValue) {
+            $inputValue = $this->validateField($inputName, $inputValue);
+        }
+
+        $this->entity->setAttributes($inputs);
+    }
+
+    /**
+     * Check and sanitize the input field before setting the value and keep errors trace
+     *
+     * @param      string     $columnName  The column name
+     * @param      string     $value       The new column value
+     *
+     * @return     string  The sanitized value
+     */
+    private function validateField(string $columnName, string $value): string
+    {
+        if ($columnName !== 'password') {
+            $value = trim($value);
+        }
+
+        $this->errors[$columnName] = array();
+        $length                    = strlen($value);
+        $maxLength                 = $this->entity->getColumnMaxSize($columnName);
+        $name                      = _(strtolower(preg_replace('/([A-Z])/', ' $0', $columnName)));
+
+        if (in_array($columnName, $this->entity::$mustDefinedFields) && $length === 0) {
+            $this->errors[$columnName][] = _('The ' . $name . ' can\'t be empty');
+        } elseif ($length > $maxLength) {
+            $this->errors[$columnName][] = _('The ' . $name . ' size can\'t exceed ' . $maxLength . ' characters');
+        }
+
+        if ($this->entity->checkUniqueField($columnName, $value)) {
+            $this->errors[$columnName][] = _('This ' . $name . ' is already used');
+        }
+
+        switch ($columnName) {
+            case 'lastName':
+                $value = ucwords(strtolower($value));
+                $value = preg_replace('/ ( )*/', ' ', $value);
+
+                break;
+
+            case 'firstName':
+                $value = ucfirst(strtolower($value));
+                $value = preg_replace('/ ( )*(.)?/', '-' . strtoupper('$2'), $value);
+
+                break;
+
+            case 'pseudonym':
+                if (in_array(strtolower($value), $this->entity::$pseudoBlackList)) {
+                    $this->errors[$columnName][] = _('The pseudonym "' . $value . '" is not accepted');
+                }
+
+                foreach ($this->entity::$forbiddenPseudoCharacters as $forbiddenPseudoCharacter) {
+                    if (strpos($value, $forbiddenPseudoCharacter) !== false) {
+                        $this->errors[$columnName][] = _(
+                            'The character "' . $forbiddenPseudoCharacter . '" is not accepted in pseudonyms'
+                        );
+                    }
+                }
+
+                if ($value === '') {
+                    $value = null;
+                }
+
+                break;
+
+            case 'email':
+                if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
+                    $this->errors[$columnName][] = _('This is not a valid email address');
+                }
+
+                break;
+
+            case 'password':
+                Ini::setIniFileName(Ini::INI_CONF_FILE);
+                $minPasswordLength = Ini::getParam('User', 'minPasswordLength');
+
+                if ($length < $minPasswordLength) {
+                    $this->errors[$columnName][] = _('The password length must be at least ' . $minPasswordLength);
+                }
+
+                $value = crypt($value, Ini::getParam('User', 'passwordCryptSalt'));
+
+                break;
+        }
+
+        if (count($this->errors[$columnName]) === 0) {
+            unset($this->errors[$columnName]);
+        }
+
+        return $value;
+    }
+
     /**
      * Check if a pseudonym exists in the database
      *
@@ -327,7 +432,7 @@ class UserEntityManager extends EntityManager
         $errors           = array();
         $errors['SERVER'] = array();
 
-        foreach (User::$mustDefinedFields as $field) {
+        foreach ($this->entity::$mustDefinedFields as $field) {
             if (!in_array($field, $fields)) {
                 $errors['SERVER'][] = _($field . ' must be defined');
             }

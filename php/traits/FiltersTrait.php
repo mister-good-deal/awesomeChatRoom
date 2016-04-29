@@ -96,38 +96,6 @@ trait FiltersTrait
     }
 
     /**
-     * Sanitize a user input by stripping unwanted blank characters
-     *
-     * @param      string  $input  The user input
-     *
-     * @return     string  The sanitized user input
-     *
-     * @todo useless => to delete
-     */
-    public function sanitizeInput(string $input): string
-    {
-        return trim($input);
-    }
-
-    /**
-     * Get the user input, return null if undefined or the sanitized value
-     *
-     * @param      string       $input  The user input
-     *
-     * @return     string|null  The sanitized user input or null if the input was undefined
-     */
-    public function getInput(string $input): string
-    {
-        if (!isset($input)) {
-            $input = null;
-        } else {
-            $input = $this->sanitizeInput($input);
-        }
-
-        return $input;
-    }
-
-    /**
      * Convert a DateInterval object to sec
      *
      * @param      \DateInterval  $dateInterval  The DateInterval object
