@@ -123,7 +123,8 @@ abstract class EntityManager
     /**
      * Save the entity in the database
      *
-     * @param      Entity  $entity  OPTIONAL If an entity is passed, this entity becomes the EntityManager Entity DEFAULT null
+     * @param      Entity  $entity  OPTIONAL If an entity is passed, this entity becomes the EntityManager Entity
+     *                              DEFAULT null
      *
      * @return     bool    True if the entity has been saved or updated else false
      */
@@ -222,13 +223,14 @@ abstract class EntityManager
      * Format a sql query with sprintf function First arg must be the sql string with markers (%s, %d, ...) Others args
      * should be the values for the markers
      *
-     * @return     string  The SQL formated string
+     * @param      string  $sql    The SQL string with markers (%s, %d, %f, ...)
+     * @param      ...     $args   The markers values
      *
-     * @todo PHP7 arguments prototype with (...)
+     * @return     string  The SQL formated string
      */
-    public static function sqlFormater(): string
+    public static function sqlFormater(string $sql, ... $args): string
     {
-        return call_user_func_array('sprintf', func_get_args());
+        return vsprintf($sql, $args);
     }
 
     /*-----  End of Public methods  ------*/
@@ -296,7 +298,7 @@ abstract class EntityManager
             $this->getEntityAttributesMarks($this->entity)
         );
 
-        return DB::prepare($sql)->execute(array_values($this->entity->getColumnsValue()));
+        return DB::prepare($sql)->execute($this->entity->getColumnsValueSQL());
     }
 
     /**
@@ -387,13 +389,13 @@ abstract class EntityManager
     /*==========  Utilities methods  ==========*/
 
     /**
-     * Get the "?" markers of the entity
+     * Get the ":columnName" markers of the entity
      *
-     * @return     string  The string markers (?, ?, ?)
+     * @return     string  The string markers (:columnName1, :columnName2, :columnName3, ...)
      */
     private function getEntityAttributesMarks(): string
     {
-        return '(' . implode(array_fill(0, count($this->entity->getColumnsAttributes()), '?'), ', ') . ')';
+        return '(:' . implode(', :', array_keys($this->entity->getColumnsValue())) . ')';
     }
 
     /**
@@ -406,15 +408,7 @@ abstract class EntityManager
         $marks = array();
 
         foreach ($this->entity->getColumnsKeyValueNoPrimary() as $columnName => $columnValue) {
-            if ($columnValue === null) {
-                $columnValue = 'NULL';
-            } elseif (is_bool($columnValue)) {
-                $columnValue = ($columnValue ? 1 : 0);
-            } else {
-                $columnValue = DB::quote($columnValue);
-            }
-
-            $marks[] = '`' . $columnName . '` = ' . $columnValue;
+            $marks[] = '`' . $columnName . '` = ' . $this->castValueForSQLInsertion($columnValue);
         }
 
         return implode(', ', $marks);
@@ -423,23 +417,56 @@ abstract class EntityManager
     /**
      * Get the "primaryKey1 = 'primaryKey1Value' AND primaryKey2 = 'primaryKey2Value'" of the entity
      *
-     * @return     string  The SQL segment string "primaryKey1 = 'primaryKey1Value' AND primaryKey2 = 'primaryKey2Value'"
+     * @return     string  The SQL segment string "primaryKey1 = 'value1' AND primaryKey2 = 'value2'"
      */
     private function getEntityPrimaryKeysWhereClause(): string
     {
         $columnsValue = array();
 
         foreach ($this->entity->getIdKeyValue() as $columnName => $columnValue) {
-            if ($columnValue === null) {
-                $columnValue = 'NULL';
-            } else {
-                $columnValue = DB::quote($columnValue);
-            }
-
-            $columnsValue[] = '`' . $columnName . '` = ' . $columnValue;
+            $columnsValue[] = '`' . $columnName . '` = ' . $this->castValueForSQLInsertion($columnValue);
         }
 
         return implode($columnsValue, ' AND ');
+    }
+
+    /**
+     * Get the casted value string for SQL insertion purpose
+     *
+     * @param      mixed       $value  The value to cast
+     *
+     * @return     int|string  The casted value
+     */
+    private function castValueForSQLInsertion($value)
+    {
+        switch (gettype($value)) {
+            case 'boolean':
+                $castedValue = ($value ? 1 : 0);
+                break;
+
+            case 'string':
+                $castedValue = DB::quote($value);
+                break;
+
+            case 'object':
+                if (is_a($value, '\DateTime')) {
+                    $castedValue = DB::quote($value->format('Y-m-d H:i:s'));
+                } else {
+                    $castedValue = DB::quote($value);
+                }
+
+                break;
+
+            case 'NULL':
+                $castedValue = 'NULL';
+                break;
+
+            default:
+                $castedValue = $value;
+                break;
+        }
+
+        return $castedValue;
     }
 
     /**
