@@ -31,7 +31,7 @@ use \classes\DataBase as DB;
  *      @return UserChatRightCollection The user chat right collection
  * }
  *
- * @todo       Move changeRoomName(), addRoomName() and removeRoomName() in a chatRoom entityManager class
+ * @todo       Move changeRoomName() and removeRoomName() in a chatRoom entityManager class
  */
 class UserChatRightEntityManager extends EntityManager
 {
@@ -59,11 +59,10 @@ class UserChatRightEntityManager extends EntityManager
      */
     public function grantAll()
     {
-        $this->entity->kick     = true;
-        $this->entity->ban      = true;
-        $this->entity->grant    = true;
-        $this->entity->password = true;
-        $this->entity->rename   = true;
+        $this->entity->kick  = true;
+        $this->entity->ban   = true;
+        $this->entity->grant = true;
+        $this->entity->edit  = true;
     }
 
     /**
