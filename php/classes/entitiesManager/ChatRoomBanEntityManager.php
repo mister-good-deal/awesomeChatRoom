@@ -15,7 +15,22 @@ use \classes\entitiesCollection\ChatRoomBanCollection as ChatRoomBanCollection;
 use \classes\DataBase as DB;
 
 /**
- * Performed database action relative to the ChatRoomBan entity class
+ * Performed database action relative to the chat room ban entity class
+ *
+ * @property   ChatRoom               $entity             The ChatRoom entity
+ * @property   ChatRoomBanCollection  $entityCollection   The ChatRoomBanCollection collection
+ *
+ * @method ChatRoom getEntity() {
+ *      Get the chat room entity
+ *
+ *      @return ChatRoom The chat room entity
+ * }
+ *
+ * @method ChatRoomBanCollection getEntityCollection() {
+ *      Get the chat room ban collection
+ *
+ *      @return ChatRoomBanCollection The chat room ban collection
+ * }
  */
 class ChatRoomBanEntityManager extends EntityManager
 {
@@ -46,8 +61,7 @@ class ChatRoomBanEntityManager extends EntityManager
      */
     public function isIpBanned(string $ip): bool
     {
-        return ($this->inSubArray($ip, $this->entity->getChatRoomBanCollection()->getCollection(), 'ip'));
-        // return false;
+        return $this->inSubArray($ip, $this->entity->getChatRoomBanCollection()->getCollection(), 'ip');
     }
 
     /**

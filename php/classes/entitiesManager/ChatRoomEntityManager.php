@@ -14,16 +14,22 @@ use \classes\entitiesCollection\ChatRoomCollection as ChatRoomCollection;
 use \classes\DataBase as DB;
 
 /**
- * Performed database action relative to the ChatRoom entity class
+ * Performed database action relative to the chat room entity class
  *
- * @property   ChatRoom  $entity  The chat room entity
+ * @property   ChatRoom     $entity     The ChatRoom entity
+ *
+ * @method ChatRoom getEntity() {
+ *      Get the chat room entity
+ *
+ *      @return ChatRoom The chat room entity
+ * }
  */
 class ChatRoomEntityManager extends EntityManager
 {
     /**
      * Constructor that can take a ChatRoom entity as first parameter
      *
-     * @param      ChatRoom  $entity  A ChatRooms entity object DEFAULT null
+     * @param      ChatRoom  $entity  A ChatRoom entity object DEFAULT null
      */
     public function __construct(ChatRoom $entity = null)
     {
@@ -75,7 +81,7 @@ class ChatRoomEntityManager extends EntityManager
         }
 
         if (!is_numeric($maxUsers) || $maxUsers < 2) {
-            $errors[] = _('The max number of users must be a number and must no be less than 2');
+            $errors[] = _('The max number of users must be a number and must be greater than 1');
         }
 
         $sqlMarks = 'SELECT COUNT(id) FROM %s WHERE name = %s';
@@ -87,14 +93,14 @@ class ChatRoomEntityManager extends EntityManager
 
         if (count($errors) === 0) {
             // Creation
-            $query = 'SELECT MAX(id) FROM ' . $this->entity->getTableName();
+            $query                      = 'SELECT MAX(id) FROM ' . $this->entity->getTableName();
             $this->entity->id           = (int) DB::query($query)->fetchColumn() + 1;
             $this->entity->creator      = $idUser;
             $this->entity->name         = $roomName;
             $this->entity->maxUsers     = $maxUsers;
             $this->entity->password     = $password;
-            $this->entity->creationDate = date('Y-m-d H:i:s');
-            $success = $this->saveEntity();
+            $this->entity->creationDate = new \DateTime();
+            $success                    = $this->saveEntity();
         }
 
         return array(

@@ -20,6 +20,8 @@ use \classes\LoggerManager as Logger;
 
 /**
  * Perform action relative to the User, UserRight and UserChatRight entities classes
+ *
+ * @todo remove getRight and getChatRight null check
  */
 class UserManager extends Manager
 {

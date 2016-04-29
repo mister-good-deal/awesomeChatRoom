@@ -20,12 +20,19 @@ use \classes\WebContentInclude as WebContentInclude;
 /**
  * Performed database action relative to the User entity class
  *
- * @property   User  $entity  The user entity
+ * @property   User             $entity             The user entity
+ * @property   UserCollection   $entityCollection   The UserCollection collection
  *
  * @method User getEntity() {
  *      Get the user entity
  *
  *      @return User The user entity
+ * }
+ *
+ * @method UserCollection getEntityCollection() {
+ *      Get the user collection
+ *
+ *      @return UserCollection The user collection
  * }
  */
 class UserEntityManager extends EntityManager
@@ -324,6 +331,8 @@ class UserEntityManager extends EntityManager
      * @param      string     $value       The new column value
      *
      * @return     string  The sanitized value
+     *
+     * @todo Global validateField in EntityManager with generic checks (size) and custom to define in entity ?
      */
     private function validateField(string $columnName, string $value): string
     {
