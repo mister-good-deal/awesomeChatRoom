@@ -32,9 +32,9 @@ class ChatService extends ServicesDispatcher implements Service
     use \traits\DateTrait;
 
     /**
-     * @var        string  $chatService     The chat service name
+     * @var        string  $serviceName     The chat service name
      */
-    private $chatService;
+    private $serviceName;
     /**
      * @var        string  $esIndex     The Elasticsearch index name
      */
@@ -83,7 +83,7 @@ class ChatService extends ServicesDispatcher implements Service
         Ini::setIniFileName(Ini::INI_CONF_FILE);
         $this->esIndex      = Ini::getParam('ElasticSearch', 'index');
         $conf               = Ini::getSectionParams('Chat service');
-        $this->chatService  = $conf['serviceName'];
+        $this->serviceName  = $conf['serviceName'];
         $this->historicStep = $conf['historicStep'];
         $this->log          = $log;
     }
@@ -157,7 +157,7 @@ class ChatService extends ServicesDispatcher implements Service
 
             default:
                 yield $client['Connection']->send(json_encode([
-                    'service' => $this->chatService,
+                    'service' => $this->serviceName,
                     'success' => false,
                     'text'    => _('Unknown action')
                 ]));
@@ -250,7 +250,7 @@ class ChatService extends ServicesDispatcher implements Service
 
         yield $client['Connection']->send(json_encode(array_merge(
             [
-                'service' => $this->chatService,
+                'service' => $this->serviceName,
                 'action'  => 'connectRoom',
                 'room'    => $chatManager->getChatRoomEntity()->__toArray(),
                 'success' => false,
@@ -311,7 +311,7 @@ class ChatService extends ServicesDispatcher implements Service
 
         yield $client['Connection']->send(json_encode(array_merge(
             [
-                'service'     => $this->chatService,
+                'service'     => $this->serviceName,
                 'action'      => 'connectRoom',
                 'success'     => false,
                 'text'        => $message ?? ''
@@ -384,7 +384,7 @@ class ChatService extends ServicesDispatcher implements Service
         yield $client['Connection']->send(json_encode(array_merge(
             $response,
             [
-                'service' => $this->chatService,
+                'service' => $this->serviceName,
                 'action'  => 'sendMessage',
                 'success' => $success,
                 'text'    => $message
@@ -424,7 +424,7 @@ class ChatService extends ServicesDispatcher implements Service
 
                     // Inform the user that he's kicked
                     yield $this->rooms[$room->id]['users'][$userHash]['Connection']->send(json_encode([
-                        'service'  => $this->chatService,
+                        'service'  => $this->serviceName,
                         'action'   => 'getKicked',
                         'roomId'   => $room->id,
                         'roomName' => $room->name,
@@ -454,7 +454,7 @@ class ChatService extends ServicesDispatcher implements Service
         }
 
         yield $client['Connection']->send(json_encode([
-            'service' => $this->chatService,
+            'service' => $this->serviceName,
             'action'  => 'kickUser',
             'success' => $success,
             'text'    => $message,
@@ -505,7 +505,7 @@ class ChatService extends ServicesDispatcher implements Service
                     if ($chatManager->banUser($banInfo)) {
                         // Inform the user that he's banned
                         yield $this->rooms[$room->id]['users'][$userHash]['Connection']->send(json_encode([
-                            'service'  => $this->chatService,
+                            'service'  => $this->serviceName,
                             'action'   => 'getBanned',
                             'roomId'   => $room->id,
                             'roomName' => $room->name,
@@ -541,7 +541,7 @@ class ChatService extends ServicesDispatcher implements Service
         }
 
         yield $client['Connection']->send(json_encode([
-            'service' => $this->chatService,
+            'service' => $this->serviceName,
             'action'  => 'banUser',
             'success' => $success,
             'text'    => $message,
@@ -577,7 +577,7 @@ class ChatService extends ServicesDispatcher implements Service
         }
 
         yield $client['Connection']->send(json_encode([
-            'service'  => $this->chatService,
+            'service'  => $this->serviceName,
             'action'   => 'getHistoric',
             'success'  => $success,
             'text'     => $message,
@@ -607,7 +607,7 @@ class ChatService extends ServicesDispatcher implements Service
         }
 
         yield $client['Connection']->send(json_encode([
-            'service'   => $this->chatService,
+            'service'   => $this->serviceName,
             'action'    => 'getRoomsInfo',
             'roomsInfo' => $roomsInfo
         ]));
@@ -659,7 +659,7 @@ class ChatService extends ServicesDispatcher implements Service
         }
 
         yield $client['Connection']->send(json_encode([
-            'service' => $this->chatService,
+            'service' => $this->serviceName,
             'action'  => 'changeRoomInfo',
             'success' => $success,
             'text'    => $message,
@@ -723,7 +723,7 @@ class ChatService extends ServicesDispatcher implements Service
         }
 
         yield $client['Connection']->send(json_encode([
-            'service' => $this->chatService,
+            'service' => $this->serviceName,
             'action'  => 'updateRoomUserRight',
             'success' => $success,
             'text'    => $message,
@@ -768,7 +768,7 @@ class ChatService extends ServicesDispatcher implements Service
         $date = ($date !== null ? $date : static::microtimeAsInt());
 
         yield $clientTo['Connection']->send(json_encode([
-            'service'   => $this->chatService,
+            'service'   => $this->serviceName,
             'action'    => 'recieveMessage',
             'pseudonym' => $pseudonym,
             'date'      => $date,
@@ -1095,7 +1095,7 @@ class ChatService extends ServicesDispatcher implements Service
     private function updateRoomUsers(array $client, int $roomId)
     {
         yield $client['Connection']->send(json_encode([
-            'service'    => $this->chatService,
+            'service'    => $this->serviceName,
             'action'     => 'updateRoomUsers',
             'roomId'     => $roomId,
             'pseudonyms' => $this->getRoomPseudonyms($roomId),
@@ -1116,7 +1116,7 @@ class ChatService extends ServicesDispatcher implements Service
 
         foreach ($this->rooms[$room->id]['users'] as $user) {
             yield $user['Connection']->send(json_encode([
-                'service'    => $this->chatService,
+                'service'    => $this->serviceName,
                 'action'     => 'updateRoomInformation',
                 'roomId'     => $room->id,
                 'roomInfo'   => $roomInfo,
@@ -1144,7 +1144,7 @@ class ChatService extends ServicesDispatcher implements Service
         foreach ($this->rooms[$roomId]['users'] as $user) {
             if ($user['User'] !== false) {
                 yield $user['Connection']->send(json_encode([
-                    'service'     => $this->chatService,
+                    'service'     => $this->serviceName,
                     'action'      => 'updateRoomUsersRights',
                     'roomId'      => $roomId,
                     'usersRights' => $usersRightList
@@ -1167,7 +1167,7 @@ class ChatService extends ServicesDispatcher implements Service
         foreach ($this->rooms[$roomId]['users'] as $user) {
             if ($user['User'] !== false) {
                 yield $user['Connection']->send(json_encode([
-                    'service'     => $this->chatService,
+                    'service'     => $this->serviceName,
                     'action'      => 'updateRoomUsersBanned',
                     'roomId'      => $roomId,
                     'usersBanned' => $banList
@@ -1289,7 +1289,7 @@ class ChatService extends ServicesDispatcher implements Service
         }
 
         yield $client['Connection']->send(json_encode([
-            'service' => $this->chatService,
+            'service' => $this->serviceName,
             'action'  => 'disconnectFromRoom',
             'success' => $success,
             'text'    => $message,
