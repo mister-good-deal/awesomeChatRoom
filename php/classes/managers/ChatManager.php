@@ -179,7 +179,7 @@ class ChatManager extends Manager
 
         foreach ($this->chatRoomEntityManager->getEntityCollection() as $room) {
             if ($success) {
-                $success = $this->chatRoomBanEntityManager()->saveCollection($room->getChatRoomBanCollection());
+                $success = $this->chatRoomBanEntityManager->saveCollection($room->getChatRoomBanCollection());
             }
         }
 
