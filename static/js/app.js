@@ -53,7 +53,7 @@ requirejs.config({
             }
         },
         "websocket" : {
-            "serverUrl"   : "ws://127.0.0.1:5000",
+            "serverUrl"   : "ws://92.222.79.192:5000",
             "serviceName" : "websocketService",
             "waitInterval": 1000
         },

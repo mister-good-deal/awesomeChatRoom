@@ -114,17 +114,18 @@ class ServicesDispatcher implements Application
 
         // Add a thread to handle the client session
         Thread::spawn(function (Parcel $clientsShared, Connection $connection, Response $response, Request $request) {
-
+            echo 'Flag 1' . PHP_EOL;
             // Add a client in the clientsShared Parcel
             yield $clientsShared->synchronized(function (Parcel $clientsShared) {
                 $clients                                        = $clientsShared->unwrap();
                 $clients[$this->getConnectionHash($connection)] = array('Connection' => $connection, 'User' => null);
                 $clientsShared->wrap($clients);
             });
-
+            echo 'Flag 2' . PHP_EOL;
             $iterator = $connection->read()->getIterator();
-
+            echo 'Flag 3' . PHP_EOL;
             while (yield $iterator->isValid()) {
+                echo 'Flag 4' . PHP_EOL;
                 $clients = $clientsShared->unwrap();
 
                 yield $this->serviceSelector(
