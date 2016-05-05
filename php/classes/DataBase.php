@@ -328,15 +328,16 @@ class DataBase
     /**
      * Get all the table name of he current database
      *
-     * @return     string[]  The table name as a string array
+     * @return     string[]  The table name as a string array converted in uppercase
      *
+     * @todo       MySQL 5.5 create tables with case sensitive and MySQL 5.7 convert to lower case...
      * @static
      */
     public static function getAllTables(): array
     {
         static::initialize();
 
-        return static::$PDO->query('SHOW TABLES')->fetchAll(\PDO::FETCH_COLUMN);
+        return array_map('strtoupper', static::$PDO->query('SHOW TABLES')->fetchAll(\PDO::FETCH_COLUMN));
     }
 
     /**
