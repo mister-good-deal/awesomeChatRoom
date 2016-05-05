@@ -110,8 +110,9 @@ class ServicesDispatcher implements Application
      */
     private function connectionSessionHandle(Connection $connection, Response $response, Request $request)
     {
+        echo 'Flag 0' . PHP_EOL;
         $clientsShared = $this->clientsShared;
-
+        echo 'Flag 0.1' . PHP_EOL;
         // Add a thread to handle the client session
         Thread::spawn(function (Parcel $clientsShared, Connection $connection, Response $response, Request $request) {
             echo 'Flag 1' . PHP_EOL;
