@@ -114,7 +114,7 @@ class ServicesDispatcher implements Application
         $clientsShared = $this->clientsShared;
         echo 'Flag 0.1' . PHP_EOL;
         // Add a thread to handle the client session
-        Thread::spawn(function (Parcel $clientsShared, Connection $connection, Response $response, Request $request) {
+        Thread::spawn(function (Parcel $clientsShared) {
             echo 'Flag 1' . PHP_EOL;
             // Add a client in the clientsShared Parcel
             yield $clientsShared->synchronized(function (Parcel $clientsShared) {
@@ -137,7 +137,7 @@ class ServicesDispatcher implements Application
             }
 
             yield $this->onDisconnection($connection, $response, $request, $clientsShared);
-        }, $clientsShared, $connection, $response, $request);
+        }, $clientsShared);
     }
 
     /**
