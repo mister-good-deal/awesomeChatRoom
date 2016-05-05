@@ -391,7 +391,7 @@ class Orm extends Console
             $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $entityName;
             $entity               = new $entityClassNamespace;
             // @todo bug SQL table name with uppercase
-            $tableName           = strtolower($entity->getTableName());
+            $tableName           = $entity->getTableName();
 
             if (!in_array($tableName, DB::getAllTables())) {
                 static::out('Create table "' . $tableName . '"' . PHP_EOL);
