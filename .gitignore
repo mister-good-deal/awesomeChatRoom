@@ -11,5 +11,6 @@ static/node_modules
 static/less/vendor
 !static/less/vendor/variables.less
 .gitconfig
+sftp-config.json
 error.log
 **/*.dmp

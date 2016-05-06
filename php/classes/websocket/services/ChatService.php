@@ -8,23 +8,23 @@
 
 namespace classes\websocket\services;
 
-use \interfaces\ServiceInterface as Service;
-use \classes\websocket\ServicesDispatcher as ServicesDispatcher;
-use \classes\IniManager as Ini;
-use \classes\entities\User as User;
-use \classes\entities\UserChatRight as UserChatRight;
-use \classes\entities\ChatRoom as ChatRoom;
-use \classes\entities\ChatRoomBan as ChatRoomBan;
-use \classes\managers\UserManager as UserManager;
-use \classes\managers\ChatManager as ChatManager;
-use \classes\ExceptionManager as Exception;
+use classes\websocket\Client as Client;
+use classes\websocket\ClientCollection as ClientCollection;
+use classes\IniManager as Ini;
+use classes\entities\User as User;
+use classes\entities\UserChatRight as UserChatRight;
+use classes\entities\ChatRoom as ChatRoom;
+use classes\entities\ChatRoomBan as ChatRoomBan;
+use classes\managers\UserManager as UserManager;
+use classes\managers\ChatManager as ChatManager;
+use classes\ExceptionManager as Exception;
 use Icicle\Log\Log as Log;
 use Icicle\WebSocket\Connection as Connection;
 
 /**
  * Chat services to manage a chat with a WebSocket server
  */
-class ChatService extends ServicesDispatcher implements Service
+class ChatService
 {
     use \traits\ShortcutsTrait;
     use \traits\PrettyOutputTrait;
@@ -43,31 +43,6 @@ class ChatService extends ServicesDispatcher implements Service
      * @var        integer  $historicStep   The maximum number of message to retrieve per historic request
      */
     private $historicStep;
-    /**
-     * @var array $rooms Rooms live sessions
-     *
-     * [
-     *      'room ID' => [
-     *          'users' => [
-     *                         userHash1 => [
-     *                             'User'       => User,
-     *                             'Connection' => Connection,
-     *                             'pseudonym'  => 'room user pseudonym',
-     *                             'location'   => ['lat' => latitude, 'lon' => longitude]
-     *                         ],
-     *                         userHash2 => [
-     *                             'User'       => User,
-     *                             'Connection' => Connection,
-     *                             'pseudonym'  => 'room user pseudonym',
-     *                             'location'   => ['lat' => latitude, 'lon' => longitude]
-     *                         ],
-     *                         ...
-     *                     ],
-     *          'room' => ChatRoom
-     *      ]
-     * ]
-     */
-    private $rooms = [];
 
     /*=====================================
     =            Magic methods            =
@@ -75,17 +50,14 @@ class ChatService extends ServicesDispatcher implements Service
 
     /**
      * Constructor that loads chat parameters
-     *
-     * @param      Log   $log    Logger object
      */
-    public function __construct(Log $log)
+    public function __construct()
     {
         Ini::setIniFileName(Ini::INI_CONF_FILE);
         $this->esIndex      = Ini::getParam('ElasticSearch', 'index');
         $conf               = Ini::getSectionParams('Chat service');
         $this->serviceName  = $conf['serviceName'];
         $this->historicStep = $conf['historicStep'];
-        $this->log          = $log;
     }
 
     /*=====  End of Magic methods  ======*/
@@ -95,68 +67,39 @@ class ChatService extends ServicesDispatcher implements Service
     ======================================*/
 
     /**
-     * Method to recieves data from the WebSocket server
+     * Method to recieves data from the WebSocket server and process it
      *
-     * @param      array       $data    JSON decoded client data
-     * @param      array       $client  The client information [Connection, User] array pair
+     * @param      array             $data     JSON decoded client data
+     * @param      Client            $client   The client object
+     * @param      ClientCollection  $clients  The clients collection
      *
      * @return     \Generator
      */
-    public function process(array $data, array &$client)
+    public function process(array $data, Client $client, ClientCollection $clients)
     {
         switch ($data['action']) {
             case 'sendMessage':
-                yield $this->sendMessage($client, $data);
-
-                break;
-
-            case 'connectRoom':
-                yield $this->connectUser($client, $data);
-
-                break;
-
-            case 'disconnectFromRoom':
-                yield $this->disconnectUserFromRoom($client, $data);
-
-                break;
-
-            case 'createRoom':
-                yield $this->createRoom($client, $data);
+                yield $this->sendMessage($data, $client);
 
                 break;
 
             case 'getHistoric':
-                yield $this->getHistoric($client, $data);
+                yield $this->getHistoric($data, $client);
 
                 break;
 
             case 'kickUser':
-                yield $this->kickUser($client, $data);
+                yield $this->kickUser($data, $client);
 
                 break;
 
             case 'banUser':
-                yield $this->banUser($client, $data);
-
-                break;
-
-            case 'updateRoomUserRight':
-                yield $this->updateRoomUserRight($client, $data);
-
-                break;
-
-            case 'setRoomInfo':
-                yield $this->setRoomInfo($client, $data);
-
-                break;
-
-            case 'getRoomsInfo':
-                yield $this->getRoomsInfo($client);
+                yield $this->banUser($data, $client);
 
                 break;
 
             default:
-                yield $client['Connection']->send(json_encode([
+                yield $client->getConnection()->send(json_encode([
                     'service' => $this->serviceName,
                     'success' => false,
                     'text'    => _('Unknown action')
@@ -191,134 +134,6 @@ class ChatService extends ServicesDispatcher implements Service
     /*============================================
     =            Direct called method            =
     ============================================*/
-
-    /**
-     * Create a chat room by an authenticated user request
-     *
-     * @param      array       $client  The client information [Connection, User] array pair
-     * @param      array       $data    JSON decoded client data
-     *
-     * @return     \Generator
-     */
-    private function createRoom(array &$client, array $data)
-    {
-        $message = _('An error occured');
-
-        if ($client['User'] === null) {
-            $message = _('Authentication failed');
-        } else {
-            $userManager = new UserManager($client['User']);
-            $chatManager = new ChatManager();
-            $response    = $chatManager->createChatRoom(
-                $client['User']->id,
-                $data['roomName'],
-                $data['maxUsers'],
-                $data['roomPassword']
-            );
-
-            if ($response['success']) {
-                $room                  = $chatManager->getChatRoomEntity();
-                $userChatRight         = new UserChatRight();
-                $userChatRight->idUser = $client['User']->id;
-                $userChatRight->idRoom = $room->id;
-                $response['success']   = $userManager->addUserGlobalChatRight($userChatRight, true);
-
-                if ($response['success']) {
-                    $this->rooms[$room->id] = [
-                        'users' => [],
-                        'room'  => $room
-                    ];
-
-                    yield $this->addUserToTheRoom(
-                        $client,
-                        $room,
-                        $userManager->getPseudonymForChat(),
-                        $data['location']
-                    );
-
-                    $message = sprintf(_('The chat room name "%s" is successfully created !'), $room->name);
-
-                    yield $this->log->log(
-                        Log::INFO,
-                        _('[chatService] New room added => %s by %s'),
-                        $room,
-                        $userManager->getPseudonymForChat()
-                    );
-                }
-            }
-        }
-
-        yield $client['Connection']->send(json_encode(array_merge(
-            [
-                'service' => $this->serviceName,
-                'action'  => 'connectRoom',
-                'room'    => $chatManager->getChatRoomEntity()->__toArray(),
-                'success' => false,
-                'text'    => $message
-            ],
-            $response
-        )));
-    }
-
-    /**
-     * Connect a user to one chat room as a registered or a guest user
-     *
-     * @param      array  $client  The client information [Connection, User] array pair
-     * @param      array  $data    JSON decoded client data
-     *
-     * @return     \Generator
-     */
-    private function connectUser(array $client, array $data)
-    {
-        $response    = [];
-        $chatManager = new ChatManager();
-
-        if ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
-            $message = _('This room does not exist');
-        } else {
-            if (!isset($this->rooms[$chatManager->getChatRoomEntity()->id])) {
-                $this->rooms[$chatManager->getChatRoomEntity()->id] = [
-                    'users' => [],
-                    'room'  => $chatManager->getChatRoomEntity()
-                ];
-            }
-
-            $room = $chatManager->getChatRoomEntity();
-
-            if (count($this->rooms[$room->id]['users']) >= $room->maxUsers) {
-                $message = _('The room is full');
-            } elseif (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
-                $message = _('Room password is incorrect');
-            } elseif ($chatManager->isIpBanned($client['Connection']->getRemoteAddress())) {
-                $message = _('You are banned from this room');
-            } else {
-                $closure = $this->addUserToTheRoom($client, $room, trim($data['pseudonym'] ?? ''), $data['location']);
-
-                foreach ($closure as $value) {
-                    yield $value;
-                }
-
-                $response = $closure->getReturn();
-            }
-
-            if (isset($response['success']) && $response['success']) {
-                $message                = sprintf(_('You\'re connected to the chat room "%s" !'), $room->name);
-                $response['room']       = $room->__toArray();
-                $response['pseudonyms'] = $this->getRoomPseudonyms($room->id);
-                $response['historic']   = $this->getRoomHistoric($room->id, $client);
-            }
-        }
-
-        yield $client['Connection']->send(json_encode(array_merge(
-            [
-                'service'     => $this->serviceName,
-                'action'      => 'connectRoom',
-                'success'     => false,
-                'text'        => $message ?? ''
-            ],
-            $response
-        )));
-    }
 
     /**
      * Send a public message to all the users in the room or a private message to one user in the room
@@ -552,12 +367,13 @@ class ChatService extends ServicesDispatcher implements Service
     /**
      * Get the next chat conversation historic part of a room
      *
-     * @param      array       $client  The client information [Connection, User] array pair
-     * @param      array       $data    JSON decoded client data
+     * @param      array             $data     JSON decoded client data
+     * @param      Client            $client   The client object
+     * @param      ClientCollection  $clients  The clients collection
      *
      * @return     \Generator
      */
-    private function getHistoric(array $client, array $data)
+    private function getHistoric(array $data, Client $client)
     {
         $success     = false;
         $message     = _('Historic successfully loaded !');
@@ -576,158 +392,13 @@ class ChatService extends ServicesDispatcher implements Service
             }
         }
 
-        yield $client['Connection']->send(json_encode([
+        yield $client->getConnection()->send(json_encode([
             'service'  => $this->serviceName,
             'action'   => 'getHistoric',
             'success'  => $success,
             'text'     => $message,
             'historic' => $historic ?? null,
             'roomId'   => $data['roomId']
-        ]));
-    }
-
-    /**
-     * Get the rooms basic information (name, type, usersMax, usersConnected)
-     *
-     * @param      array       $client  The client information [Connection, User] array pair
-     *
-     * @return     \Generator
-     */
-    private function getRoomsInfo(array $client)
-    {
-        $chatManager = new ChatManager();
-        $rooms       = $chatManager->getAllRooms();
-        $roomsInfo   = [];
-
-        foreach ($rooms as $room) {
-            $roomsInfo[] = [
-                'room'           => $room->__toArray(),
-                'usersConnected' => isset($this->rooms[$room->id]) ? count($this->rooms[$room->id]['users']) : 0
-            ];
-        }
-
-        yield $client['Connection']->send(json_encode([
-            'service'   => $this->serviceName,
-            'action'    => 'getRoomsInfo',
-            'roomsInfo' => $roomsInfo
-        ]));
-    }
-
-    /**
-     * Change a room name / password
-     *
-     * @param      array  $client  The client information [Connection, User] array pair
-     * @param      array  $data    JSON decoded client data
-     *
-     * @return     \Generator
-     * @todo       to test
-     */
-    private function setRoomInfo(array $client, array $data)
-    {
-        $success     = false;
-        $message     = _('Room information updated');
-        $chatManager = new ChatManager();
-
-        if ($client['User'] === null) {
-            $message = _('Authentication failed');
-        } elseif ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
-            $message = _('This room does not exist');
-        } else {
-            $room        = $chatManager->getChatRoomEntity();
-            $userManager = new UserManager($client['User']);
-
-            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
-                $message = _('Incorrect password');
-            } elseif (!$userManager->hasChatEditRight((int) $room->id)) {
-                $message = _('You do not have the right to edit the room\'s information');
-            } else {
-                try {
-                    foreach ($data['roomInfo'] as $attribute => $value) {
-                        $room->{$attribute} = $value;
-                    }
-
-                    $success = $chatManager->saveChatRoom();
-
-                    // Update the room's information for all users in the room
-                    if ($success) {
-                        yield $this->updateRoomInformation($room);
-                    }
-                } catch (Exception $e) {
-                    $message = $e->getMessage();
-                }
-            }
-        }
-
-        yield $client['Connection']->send(json_encode([
-            'service' => $this->serviceName,
-            'action'  => 'changeRoomInfo',
-            'success' => $success,
-            'text'    => $message,
-            'roomId'  => $data['roomId']
-        ]));
-    }
-
-    /**
-     * Update a user right for a room
-     *
-     * @param      array  $client  The client information [Connection, User] array pair
-     * @param      array  $data    JSON decoded client data
-     *
-     * @return     \Generator
-     * @todo       to test
-     */
-    private function updateRoomUserRight(array $client, array $data)
-    {
-        $success     = false;
-        $message     = _('User right updated');
-        $chatManager = new ChatManager();
-
-        if ($client['User'] === null) {
-            $message = _('Authentication failed');
-        } elseif ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
-            $message = _('This room does not exist');
-        } else {
-            $room        = $chatManager->getChatRoomEntity();
-            $userManager = new UserManager($client['User']);
-
-            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
-                $message = _('Incorrect password');
-            } elseif (!$userManager->hasChatGrantRight((int) $room->id)) {
-                $message = _('You do not have the right to grant a user right in this room');
-            } else {
-                try {
-                    $user      = $this->getUserByRoomByPseudonym((int) $room->id, $data['pseudonym']);
-                    $chatRight = $user->getChatRight()->getEntityById($room->id);
-                    $userManager->setUser($user);
-
-                    if ($chatRight === null) {
-                        $chatRight = new UserChatRight([
-                            'idUser' => $user->id,
-                            'idRoom' => $room->id
-                        ]);
-                    }
-
-                    $chatRight->{$data['rightName']} = (bool) $data['rightValue'];
-                    $success                         = $userManager->setUserChatRight($chatRight);
-
-                    // Update the users right for users who have access to the admin board EG registered users
-                    if ($success) {
-                        yield $this->updateRoomUsersRights((int) $room->id);
-                    } else {
-                        $message = _('The right update failed');
-                    }
-                } catch (Exception $e) {
-                    $message = $e->getMessage();
-                }
-            }
-        }
-
-        yield $client['Connection']->send(json_encode([
-            'service' => $this->serviceName,
-            'action'  => 'updateRoomUserRight',
-            'success' => $success,
-            'text'    => $message,
-            'roomId'  => $data['roomId']
         ]));
     }
 
@@ -870,7 +541,7 @@ class ChatService extends ServicesDispatcher implements Service
      * Get a room historic for a specific room ID and with message date lower than the given value
      *
      * @param      int     $roomId  The room ID to search messages in
-     * @param      array   $client  The client who asked the historic array(Connection, User)
+     * @param      Client  $client  The client who asked the historic
      * @param      string  $from    The maximum message published date in UNIX microtimestamp (string) DEFAULT null
      *
      * @return     array  The list of messages found
@@ -879,11 +550,11 @@ class ChatService extends ServicesDispatcher implements Service
     {
         $es     = \Elasticsearch\ClientBuilder::create()->build();
         $from   = $from ?? static::microtimeAsInt();
-        $userIp = $client['Connection']->getRemoteAddress();
+        $userIp = $client->getConnection()->getRemoteAddress();
         $userId = -1;
 
-        if ($client['User'] !== null) {
-            $userId  = $client['User']->id;
+        if ($client->getUser() !== null) {
+            $userId  = $client->getUser()->id;
         }
 
         return $this->filterEsHitsByArray($es->search([

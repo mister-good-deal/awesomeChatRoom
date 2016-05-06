@@ -2,17 +2,17 @@
 /**
  * ChatRoomBan Collection
  *
- * @package    Collection
+ * @package    CollectionEntity
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\entitiesCollection;
 
-use \abstracts\Collection as Collection;
-use \classes\entities\ChatRoomBan as ChatRoomBan;
+use abstracts\CollectionEntity as CollectionEntity;
+use classes\entities\ChatRoomBan as ChatRoomBan;
 
 /**
- * A collection of ChatRoomBan entity that extends the Collection pattern
+ * A collection of ChatRoomBan entity that extends the CollectionEntity pattern
  *
  *
  * @method add(ChatRoomBan $entity) {
@@ -31,7 +31,7 @@ use \classes\entities\ChatRoomBan as ChatRoomBan;
  *      @return ChatRoomBan The chatRoom ban entity
  * }
  */
-class ChatRoomBanCollection extends Collection
+class ChatRoomBanCollection extends CollectionEntity
 {
     /*=====================================
     =            Magic methods            =

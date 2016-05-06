@@ -1,6 +1,6 @@
 <?php
 /**
- * Abstarct Collection pattern
+ * Abstarct Collection entity pattern
  *
  * @package    Abstract
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -9,9 +9,10 @@
 namespace abstracts;
 
 use \classes\ExceptionManager as Exception;
+use \abstracts\Entity as Entity;
 
 /**
- * Abstract Collection pattern
+ * Abstract Collection pattern to use with Entity pattern
  *
  * @abstract
  *
@@ -19,16 +20,16 @@ use \classes\ExceptionManager as Exception;
  * @see https://wiki.php.net/rfc/nullable_types
  * @see https://wiki.php.net/rfc/union_types
  */
-abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \SeekableIterator
+abstract class CollectionEntity implements \Iterator, \ArrayAccess, \Countable, \SeekableIterator
 {
     use \traits\PrettyOutputTrait;
 
     /**
-     * @var        Object[]  $collection    An array of object
+     * @var        Entity[]  $collection    An array of entity object
      */
     protected $collection = array();
     /**
-     * @var        int[]|string[]  $indexId     An array of id key
+     * @var        int[]|string[]  $indexId     An array of entity id key
      */
     protected $indexId = array();
     /**
@@ -55,11 +56,11 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     public function __toString(): string
     {
         $string = PHP_EOL . 'Collection of (' . $this->count() . ') '
-            . ($this->count() > 0 ? str_replace('Collection', '', __CLASS__) : 'Unknown')
-            . PHP_EOL . implode(array_fill(0, 116, '-')) . PHP_EOL;
+            . ($this->count() > 0 ? $this->getEntityByIndex(0)->getEntityName() : 'Unknown')
+            . ' entity' . PHP_EOL . implode(array_fill(0, 116, '-')) . PHP_EOL;
 
-        foreach ($this->collection as $object) {
-            $string .= $object . implode(array_fill(0, 116, '-')) . PHP_EOL;
+        foreach ($this->collection as $entity) {
+            $string .= $entity . implode(array_fill(0, 116, '-')) . PHP_EOL;
         }
 
         return $string;
@@ -78,86 +79,95 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
      */
     public function getCollection(): array
     {
-        return $this->collection;
+        $arrayStyle = [];
+
+        foreach ($this->collection as $entity) {
+            $arrayStyle[] = $entity->__toArray();
+        }
+
+        return $arrayStyle;
     }
 
     /**
-     * Add an object at the end of the collection
+     * Add an entity at the end of the collection
      *
-     * @param      Object  $object  The object
-     * @param      string  $key     A key to save the object DEFAULT null (auto generated)
+     * @param      Entity     $entity  The entity object
+     * @param      string     $key     A key to save the entity DEFAULT null (auto generated)
      *
-     * @throws     Exception  If the object ID is already in the collection
+     * @throws     Exception  If the entity id is already in the collection
      */
-    public function add($object, $key = null)
+    public function add($entity, $key = null)
     {
-        $id = $key ?? $this->count() - 1;
+        $id = $key ?? $this->parseId($entity->getIdValue());
 
         if (array_key_exists($id, $this->indexId)) {
             throw new Exception(
-                'This object id(' . $this->formatVariable($id) .') is already in the collection ' . $this,
+                'This entity id(' . $this->formatVariable($id) .') is already in the collection ' . $this,
                 Exception::$WARNING
             );
         } else {
-            $this->collection[] = $object;
+            $this->collection[] = $entity;
             $this->indexId[$id] = $this->count() - 1;
         }
     }
 
     /**
-     * Set an object which is already in the collection
+     * Set an entity which is already in the collection
      *
-     * @param      Object      $object  The object
-     * @param      string|int  $id      The object ID
+     * @param      Entity     $entity  The entity object
+     * @param      string     $key     A key to save the entity DEFAULT null (auto generated)
      *
-     * @throws     Exception  If the object ID is not already in the collection
+     * @throws     Exception  If the entity id is not already in the collection
      */
-    public function set($object, $id)
+    public function set($entity, $key = null)
     {
+        $id = $key ?? $this->parseId($entity->getIdValue());
+
         if (!array_key_exists($id, $this->indexId)) {
             throw new Exception(
-                'This object id(' . $this->formatVariable($id) .') is not already in the collection ' . $this,
+                'This entity id(' . $this->formatVariable($id) .') is not already in the collection ' . $this,
                 Exception::$WARNING
             );
         } else {
-            $this->collection[$this->indexId[$id]] = $object;
+            $this->collection[$this->indexId[$id]] = $entity;
         }
     }
 
     /**
-     * Get an object by its id or null if there is no object at the given id
+     * Get an entity by its id or null if there is no entity at the given id
      *
-     * @param      string|int   $id     The object ID
+     * @param      mixed        $entityId  The entity id(s) in a array
      *
-     * @return     Object|null  The object or null if the object is not in the collection
+     * @return     Entity|null  The entity
      */
-    public function getObjectById($id)
+    public function getEntityById($entityId)
     {
-        $object = null;
+        $entity = null;
+        $id     = $this->parseId($entityId);
 
         if (array_key_exists($id, $this->indexId)) {
-            $object = $this->collection[$this->indexId[$id]];
+            $entity = $this->collection[$this->indexId[$id]];
         }
 
-        return $object;
+        return $entity;
     }
 
     /**
-     * Get an object by its index or null if there is no object at the given index
+     * Get an entity by its index or null if there is no entity at the given index
      *
-     * @param      int|string   $index  The object index in the Collection
+     * @param      int|string  $index  The entity index in the Collection
      *
-     * @return     Object|null  The object or null if the object is not in the collection
+     * @return     Entity|null      The entity
      */
-    public function getObjectByIndex($index)
+    public function getEntityByIndex($index)
     {
-        $object = null;
+        $entity = null;
 
         if (isset($this->collection[$index])) {
-            $object = $this->collection[$index];
+            $entity = $this->collection[$index];
         }
 
-        return $object;
+        return $entity;
     }
 
     /*==========  Iterator interface  ==========*/
@@ -165,7 +175,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     /**
      * Returns the current element
      *
-     * @return     Object  The current object
+     * @return     Entity  The current entity
      */
     public function current()
     {
@@ -173,7 +183,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     }
 
     /**
-     * Returns the key of the current object
+     * Returns the key of the current entity
      *
      * @return     int|null  Returns the key on success, or NULL on failure
      */
@@ -223,11 +233,11 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     }
 
     /**
-     * Returns the object at specified offset
+     * Returns the entity at specified offset
      *
      * @param      int|string  $offset  The offset to retrieve
      *
-     * @return     Object      Return the matching object
+     * @return     Entity      Return the matching entity
      */
     public function offsetGet($offset)
     {
@@ -235,14 +245,14 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     }
 
     /**
-     * Assigns an object to the specified offset
+     * Assigns an entity to the specified offset
      *
-     * @param      int|string  $offset  The offset to assign the object to
-     * @param      Object      $object  The object to set
+     * @param      int|string  $offset  The offset to assign the entity to
+     * @param      Entity      $entity  The entity to set
      */
-    public function offsetSet($offset, $object)
+    public function offsetSet($offset, $entity)
     {
-        $this->collection[$offset] = $object;
+        $this->collection[$offset] = $entity;
     }
 
     /**
@@ -288,4 +298,26 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     }
 
     /*-----  End of Public methods  ------*/
+
+    /*======================================
+    =            Private method            =
+    ======================================*/
+
+    /**
+     * Parse the id(s) sent to transform it in a string if the id is on multiple columns
+     *
+     * @param      mixed   $id     The id(s) in an array
+     *
+     * @return     string  The id(s) key
+     */
+    private function parseId($id): string
+    {
+        if (is_array($id)) {
+            $id = $this->md5Array($id);
+        }
+
+        return $id;
+    }
+
+    /*-----  End of Private method  ------*/
 }

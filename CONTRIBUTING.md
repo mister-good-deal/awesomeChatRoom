@@ -164,16 +164,6 @@ In php.ini, check thoses values
 
 - `extension=php_shmop.dll`
 
-- `extension=php_pthreads.dll`
-
-Manual install the extension `pthreads` by downloading the [PECL](http://windows.php.net/downloads/pecl/releases/pthreads/3.1.6/php_pthreads-3.1.6-7.0-ts-vc14-x64.zip) extension and putting the `php_pthreads.dll` file in the `ext` PHP directory. Then
-
-- Move pthreadVC2.dll to [PHP root directory]
-
-- Move pthreadVC2.dll to [Apache root directory]/bin
-
-- Move pthreadVC2.dll to C:\windows\system32 directory
-
 ##### Directives
 
 - `short_open_tag = On`

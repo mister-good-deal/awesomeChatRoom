@@ -10,16 +10,18 @@ namespace classes\websocket;
 
 use Icicle\Http\Message\Request as Request;
 use Icicle\Http\Message\Response as Response;
-use Icicle\Log\Log as Log;
 use Icicle\Socket\Socket as Socket;
 use Icicle\WebSocket\Application as Application;
 use Icicle\WebSocket\Connection as Connection;
-use Icicle\Concurrent\Threading\Parcel as Parcel;
-use Icicle\Concurrent\Threading\Thread as Thread;
 use classes\entities\User as User;
+use classes\websocket\Client as Client;
+use classes\websocket\ClientCollection as ClientCollection;
+use classes\websocket\Room as Room;
+use classes\websocket\RoomCollection as RoomCollection;
 use classes\websocket\services\ChatService as ChatService;
 use classes\websocket\services\RoomService as RoomService;
-use function Icicle\Log\log;
+use classes\LoggerManager as Logger;
+use classes\logger\LogLevel as LogLevel;
 
 /**
  * Services dispatcher class to handle client requests and root them to the right websocket service handler
@@ -33,25 +35,28 @@ class ServicesDispatcher implements Application
      */
     private $services;
     /**
-     * @var        $clientsShared       Parcel  The clients pool shared resource between threads
+     * @var        $logger      Logger A LoggerManager instance
      */
-    private $clientsShared;
+    private $logger;
     /**
-     * @var        $log  \Icicle\Log\Log
+     * @var        ClientCollection  $clients   Clients live session as ClientCollection
      */
-    protected $log = null;
+    private $clients;
+    /**
+     * @var        RoomCollection  $rooms   Rooms live sessions as RoomCollection
+     */
+    private $rooms;
 
     /**
      * Constructor the initialize the log function, the chat service handler and the chat service pipe
-     *
-     * @param      \Icicle\Log\Log|null  $log
      */
-    public function __construct(Log $log = null)
+    public function __construct()
     {
-        $this->clientsShared           = new Parcel([]);
-        $this->log                     = $log ?: log();
-        // $this->services['chatService'] = new ChatService($this->log);
-        $this->services['roomService'] = new RoomService($this->log);
+        $this->rooms                   = new RoomCollection();
+        $this->clients                 = new ClientCollection();
+        $this->logger                  = new Logger([Logger::CONSOLE]);
+        $this->services['chatService'] = new ChatService();
+        $this->services['roomService'] = new RoomService();
     }
 
     /**
@@ -86,11 +91,13 @@ class ServicesDispatcher implements Application
      */
     public function onConnection(Connection $connection, Response $response, Request $request)
     {
-        yield $this->log->log(
-            Log::INFO,
-            'WebSocket connection from %s:%d opened',
-            $connection->getRemoteAddress(),
-            $connection->getRemotePort()
+        $this->logger->log(
+            LogLevel::INFO,
+            sprintf(
+                'WebSocket connection from %s:%d opened',
+                $connection->getRemoteAddress(),
+                $connection->getRemotePort()
+            )
         );
 
         yield $this->connectionSessionHandle($connection, $response, $request);
@@ -110,34 +117,19 @@ class ServicesDispatcher implements Application
      */
     private function connectionSessionHandle(Connection $connection, Response $response, Request $request)
     {
-        echo 'Flag 0' . PHP_EOL;
-        $clientsShared = $this->clientsShared;
-        echo 'Flag 0.1' . PHP_EOL;
-        // Add a thread to handle the client session
-        Thread::spawn(function (Parcel $clientsShared) {
-            echo 'Flag 1' . PHP_EOL;
-            // Add a client in the clientsShared Parcel
-            yield $clientsShared->synchronized(function (Parcel $clientsShared) {
-                $clients                                        = $clientsShared->unwrap();
-                $clients[$this->getConnectionHash($connection)] = array('Connection' => $connection, 'User' => null);
-                $clientsShared->wrap($clients);
-            });
-            echo 'Flag 2' . PHP_EOL;
-            $iterator = $connection->read()->getIterator();
-            echo 'Flag 3' . PHP_EOL;
-            while (yield $iterator->isValid()) {
-                echo 'Flag 4' . PHP_EOL;
-                $clients = $clientsShared->unwrap();
+        $client   = new Client($connection);
+        $iterator = $connection->read()->getIterator();
 
-                yield $this->serviceSelector(
-                    json_decode($iterator->getCurrent()->getData(), true),
-                    $clients[$this->getConnectionHash($connection)],
-                    $clients
-                );
-            }
+        $this->clients->add($client);
 
-            yield $this->onDisconnection($connection, $response, $request, $clientsShared);
-        }, $clientsShared);
+        while (yield $iterator->isValid()) {
+            yield $this->serviceSelector(
+                json_decode($iterator->getCurrent()->getData(), true),
+                $this->clients->getObjectById($client->getId())
+            );
+        }
+
+        yield $this->onDisconnection($client, $response, $request);
     }
 
     /**
@@ -147,70 +139,46 @@ class ServicesDispatcher implements Application
      *
      * @coroutine
      *
-     * @param      \Icicle\WebSocket\Connection                 $connection
+     * @param      Client                                       $client
      * @param      \Icicle\Http\Message\Response                $response
      * @param      \Icicle\Http\Message\Request                 $request
-     * @param      Parcel                                       $clientsShared  The clients pool shared between threads
      *
      * @return     \Generator|\Icicle\Awaitable\Awaitable|null
      */
-    public function onDisconnection(Connection $connection, Response $response, Request $request, Parcel $clientsShared)
+    public function onDisconnection(Client $client, Response $response, Request $request)
     {
-        $connectionHash = $this->getConnectionHash($connection);
+        yield $this->services['chatService']->disconnectUser($client);
+        $this->clients->remove($client);
 
-        // Remove a client from the clientsShared Parcel
-        yield $clientsShared->synchronized(function (Parcel $clientsShared, string $connectionHash) {
-            $clients = $clientsShared->unwrap();
-
-            yield $this->services['chatService']->disconnectUser($clients[$connectionHash]);
-            unset($clients[$connectionHash]);
-            $clientsShared->wrap($clients);
-        });
-
-        yield $this->log->log(
-            Log::INFO,
-            'WebSocket connection from %s:%d closed',
-            $connection->getRemoteAddress(),
-            $connection->getRemotePort()
+        $this->logger->log(
+            LogLevel::INFO,
+            'WebSocket :: Client disconnected => ' . $client
         );
-    }
-
-    /**
-     * Get the connection hash like a Connecton ID
-     *
-     * @param      Connection  $connection  The connection to get the hash from
-     *
-     * @return     string The connection hash
-     */
-    protected function getConnectionHash(Connection $connection): string
-    {
-        return md5($connection->getRemoteAddress() + $connection->getRemotePort());
     }
 
     /**
      * Service dispatcher to call the class which can treat the client request
      *
-     * @param      array                                   $data     JSON decoded client data
-     * @param      array                                   $client   The client information [Connection, User]
-     * @param      Parcel                                  $clients  The clients pool parcel
+     * @param      array                                   $data    JSON decoded client data
+     * @param      Client                                  $client  The client object
      *
      * @return     \Generator|\Icicle\Awaitable\Awaitable
      */
-    private function serviceSelector(array $data, array $client, Parcel $clients)
+    private function serviceSelector(array $data, Client $client)
     {
-        // yield $this->log->log(Log::DEBUG, 'Data: %s', $this->formatVariable($data));
+        $this->logger->log(LogLevel::DEBUG, 'Data: ' . $this->formatVariable($data));
 
         foreach ($data['service'] as $service) {
             switch ($service) {
                 case 'server':
-                    yield $this->serverAction($data, $client, $clients);
+                    yield $this->serverAction($data, $client);
                     break;
 
                 case 'chatService':
                     break;
 
                 default:
-                    yield $this->services[$service]->process($data, $client, $clients);
+                    yield $this->services[$service]->process($data, $client, $this->rooms);
             }
         }
     }
@@ -218,25 +186,17 @@ class ServicesDispatcher implements Application
     /**
      * Action called by the client to be executed in the websocket server
      *
-     * @param      array                                   $data           JSON decoded client data
-     * @param      array                                   $client         The client information [Connection, User]
-     * @param      Parcel                                  $clientsShared  The clients shared pool parcel
+     * @param      array   $data    JSON decoded client data
+     * @param      Client  $client  The client object
      *
      * @return     \Generator|\Icicle\Awaitable\Awaitable
      */
-    private function serverAction(array $data, array $client, Parcel $clientsShared)
+    private function serverAction(array $data, Client $client)
     {
         switch ($data['action']) {
             // Register a client in the clients pool
             case 'register':
-                yield $clientsShared->synchronized(function (Parcel $clientsShared, array $client) {
-                    $clients = $clientsShared->unwrap();
-
-                    $clients[$this->getConnectionHash($client['Connection'])]['User'] = new User($data['user']);
-
-                    $clientsShared->wrap($clients);
-                });
-
+                $client->setUser(new User($data['user']));
                 break;
         }
     }

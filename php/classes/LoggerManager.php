@@ -30,7 +30,7 @@ class LoggerManager
      * @var        int[]  $implementedLoggers   An array containing all the implemented loggers
      *                                          (represented by their descriptors)
      */
-    private $implementedLoggers = array();
+    private $implementedLoggers = [];
 
     /*=====================================
     =            Magic methods            =
@@ -41,7 +41,7 @@ class LoggerManager
      *
      * @param      int[]  $loggerTypes  Loggers type to implement DEFAULT FILE
      */
-    public function __construct(array $loggerTypes = array(self::FILE))
+    public function __construct(array $loggerTypes = [self::FILE])
     {
         if (is_array($loggerTypes)) {
             foreach ($loggerTypes as $loggerType) {
@@ -63,7 +63,7 @@ class LoggerManager
      * @param      string  $message
      * @param      array   $context
      */
-    public function log($level, string $message, array $context = array())
+    public function log($level, string $message, array $context = [])
     {
         foreach ($this->implementedLoggers as $logger) {
             $logger->log($level, $message, $context);

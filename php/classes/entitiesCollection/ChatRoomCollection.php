@@ -2,17 +2,17 @@
 /**
  * ChatRoom Collection
  *
- * @package    Collection
+ * @package    CollectionEntity
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\entitiesCollection;
 
-use \abstracts\Collection as Collection;
-use \classes\entities\ChatRoom as ChatRoom;
+use abstracts\CollectionEntity as CollectionEntity;
+use classes\entities\ChatRoom as ChatRoom;
 
 /**
- * A collection of ChatRoom entity that extends the Collection pattern
+ * A collection of ChatRoom entity that extends the CollectionEntity pattern
  *
  *
  * @method add(ChatRoom $entity) {
@@ -31,7 +31,7 @@ use \classes\entities\ChatRoom as ChatRoom;
  *      @return ChatRoom The chatRoom entity
  * }
  */
-class ChatRoomCollection extends Collection
+class ChatRoomCollection extends CollectionEntity
 {
     /*=====================================
     =            Magic methods            =
