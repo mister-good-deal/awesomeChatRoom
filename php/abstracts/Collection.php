@@ -55,7 +55,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     public function __toString(): string
     {
         $string = PHP_EOL . 'Collection of (' . $this->count() . ') '
-            . ($this->count() > 0 ? str_replace('Collection', '', __CLASS__) : 'Unknown')
+            . str_replace('Collection', '', get_class($this))
             . PHP_EOL . implode(array_fill(0, 116, '-')) . PHP_EOL;
 
         foreach ($this->collection as $object) {

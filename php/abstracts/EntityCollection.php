@@ -20,7 +20,7 @@ use \abstracts\Entity as Entity;
  * @see https://wiki.php.net/rfc/nullable_types
  * @see https://wiki.php.net/rfc/union_types
  */
-abstract class CollectionEntity implements \Iterator, \ArrayAccess, \Countable, \SeekableIterator
+abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, \SeekableIterator
 {
     use \traits\PrettyOutputTrait;
 

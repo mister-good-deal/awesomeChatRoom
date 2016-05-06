@@ -2,17 +2,17 @@
 /**
  * UserChatRight Collection
  *
- * @package    CollectionEntity
+ * @package    EntityCollection
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\entitiesCollection;
 
-use abstracts\CollectionEntity as CollectionEntity;
+use abstracts\EntityCollection as EntityCollection;
 use classes\entities\UserChatRight as UserChatRight;
 
 /**
- * A collection of UserChatRight entity that extends the CollectionEntity pattern
+ * A collection of UserChatRight entity that extends the EntityCollection pattern
  *
  * @method add(UserChatRight $entity) {
  *      Add a chat right entity at the end of the collection
@@ -30,7 +30,7 @@ use classes\entities\UserChatRight as UserChatRight;
  *      @return UserChatRight The chat right entity
  * }
  */
-class UserChatRightCollection extends CollectionEntity
+class UserChatRightCollection extends EntityCollection
 {
     /*=====================================
     =            Magic methods            =

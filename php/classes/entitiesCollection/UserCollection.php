@@ -2,18 +2,18 @@
 /**
  * User Collection
  *
- * @package    CollectionEntity
+ * @package    EntityCollection
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\entitiesCollection;
 
-use abstracts\CollectionEntity as CollectionEntity;
+use abstracts\EntityCollection as EntityCollection;
 
 /**
- * A collection of User entity that extends the CollectionEntity pattern
+ * A collection of User entity that extends the EntityCollection pattern
  */
-class UserCollection extends CollectionEntity
+class UserCollection extends EntityCollection
 {
     /*=====================================
     =            Magic methods            =

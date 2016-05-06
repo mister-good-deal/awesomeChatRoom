@@ -58,10 +58,10 @@ class Client
     public function __toString(): string
     {
         return 'Client ::' . PHP_EOL
-            . "\t id         = " . $this->id . PHP_EOL
-            . "\t connection = " . $this->connection->getRemoteAddress() . ':' . $this->connection->getRemotePort() . PHP_EOL
-            . "\t location   = " . static::formatVariable($this->location) . PHP_EOL
-            . "\t user       = " . $this->user . PHP_EOL;
+            . 'id         = ' . $this->id . PHP_EOL
+            . 'connection = ' . $this->connection->getRemoteAddress() . ':' . $this->connection->getRemotePort() . PHP_EOL
+            . 'location   = ' . static::formatVariable($this->location) . PHP_EOL
+            . 'user       = ' . $this->user . PHP_EOL;
     }
 
     /*-----  End of Magic methods  ------*/

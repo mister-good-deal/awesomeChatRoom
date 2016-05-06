@@ -67,10 +67,6 @@ define([
 
                 this.socket.onopen = function () {
                     console.log('socket opened');
-
-                    if (self.user.connected) {
-                        self.send(JSON.stringify({"action": "register", "user": self.user.settings.attributes}));
-                    }
                 };
 
                 this.socket.onclose = function () {

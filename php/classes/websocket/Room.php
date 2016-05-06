@@ -48,8 +48,8 @@ class Room
     public function __toString(): string
     {
         return 'Room ::' . PHP_EOL
-            . "\t room    = " . $this->room . PHP_EOL
-            . "\t clients = " . $this->clients . PHP_EOL;
+            . 'room    = ' . $this->room . PHP_EOL
+            . 'clients = ' . $this->clients . PHP_EOL;
     }
 
     /*-----  End of Magic methods  ------*/

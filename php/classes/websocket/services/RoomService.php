@@ -83,13 +83,13 @@ class RoomService
 
                 break;
 
-            case 'getRoomsInfo':
-                yield $this->getRoomsInfo($client, $rooms);
+            case 'getAllRooms':
+                yield $this->getAllRooms($client, $rooms);
 
                 break;
 
             default:
-                yield $client['Connection']->send(json_encode([
+                yield $client->getConnection()->send(json_encode([
                     'service' => $this->serviceName,
                     'success' => false,
                     'text'    => _('Unknown action')
@@ -239,7 +239,7 @@ class RoomService
      *
      * @return     \Generator
      */
-    private function getRoomsInfo(Client $client, RoomCollection $rooms)
+    private function getAllRooms(Client $client, RoomCollection $rooms)
     {
         $chatManager = new ChatManager();
         $roomsInfo   = [];
@@ -247,14 +247,16 @@ class RoomService
         foreach ($chatManager->getAllRooms() as $room) {
             $roomsInfo[] = [
                 'room'           => $room->__toArray(),
-                'usersConnected' => count($rooms->getObjectById($room->id)->getClients())
+                'usersConnected' => $rooms->getObjectById($room->id) !== null ?
+                    count($rooms->getObjectById($room->id)->getClients()) :
+                    0
             ];
         }
 
         yield $client->getConnection()->send(json_encode([
-            'service'   => $this->serviceName,
-            'action'    => 'getRoomsInfo',
-            'roomsInfo' => $roomsInfo
+            'service' => $this->serviceName,
+            'action'  => 'getAllRooms',
+            'rooms'   => $roomsInfo
         ]));
     }
 

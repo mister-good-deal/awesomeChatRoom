@@ -34,8 +34,6 @@ define([
             this.websocket = WebSocket;
             this.user      = User;
             this.initEvents();
-            // Add websocket callbacks
-            this.websocket.addCallback(this.settings.serviceName, this.chatCallback, this);
             // Add forms callback
             Forms.addJsCallback('setReasonCallbackEvent', this.setReasonCallbackEvent, this);
             Forms.addJsCallback('setRoomInfoCallbackEvent', this.setRoomInfoCallbackEvent, this);
@@ -44,8 +42,6 @@ define([
                 $(self.settings.selectors.roomConnect.div + ' ' + self.settings.selectors.roomConnect.name)
                     .selectpicker();
             });
-
-            this.getRoomsInfo();
         },
         messageManager = new Message();
 
@@ -730,12 +726,12 @@ define([
         ==================================================================*/
 
         /**
-         * Handle the WebSocker server response and process action then
+         * Handle the WebSocker server response and process action with the right callback
          *
-         * @method     chatCallback
+         * @method     chatCallbackDispatcher
          * @param      {Object}  data    The server JSON reponse
          */
-        chatCallback: function (data) {
+        chatCallbackDispatcher: function (data) {
             if (typeof this[data.action + 'Callback'] === 'function') {
                 this[data.action + 'Callback'](data);
             } else if (data.text) {

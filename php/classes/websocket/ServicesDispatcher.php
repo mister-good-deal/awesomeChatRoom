@@ -94,7 +94,7 @@ class ServicesDispatcher implements Application
         $this->logger->log(
             LogLevel::INFO,
             sprintf(
-                'WebSocket connection from %s:%d opened',
+                '[WebSocket] :: connection from %s:%d opened',
                 $connection->getRemoteAddress(),
                 $connection->getRemotePort()
             )
@@ -127,6 +127,8 @@ class ServicesDispatcher implements Application
                 json_decode($iterator->getCurrent()->getData(), true),
                 $this->clients->getObjectById($client->getId())
             );
+
+            $this->logger->log(LogLevel::DEBUG, $this->clients);
         }
 
         yield $this->onDisconnection($client, $response, $request);
@@ -152,7 +154,7 @@ class ServicesDispatcher implements Application
 
         $this->logger->log(
             LogLevel::INFO,
-            'WebSocket :: Client disconnected => ' . $client
+            '[WebSocket] :: Client disconnected => ' . $client
         );
     }
 
@@ -195,7 +197,7 @@ class ServicesDispatcher implements Application
     {
         switch ($data['action']) {
             // Register a client in the clients pool
-            case 'register':
+            case 'connect':
                 $client->setUser(new User($data['user']));
                 break;
         }

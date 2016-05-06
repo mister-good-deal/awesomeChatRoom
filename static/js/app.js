@@ -1,21 +1,24 @@
 requirejs.config({
     "paths" : {
-        "bootstrap"             : "lib/vendor/bootstrap",
-        "bootstrap-select"      : "lib/vendor/bootstrap-select",
-        "bootstrap-switch"      : "lib/vendor/bootstrap-switch",
-        "jasny-bootstrap"       : "lib/vendor/jasny-bootstrap",
-        "domReady"              : "lib/vendor/domReady",
-        "jquery"                : "lib/vendor/jquery",
-        "loading-overlay"       : "lib/vendor/loading-overlay",
-        "lodash"                : "lib/vendor/lodash",
-        "require"               : "lib/vendor/require",
-        "chat"                  : "lib/chat",
-        "forms"                 : "lib/forms",
-        "message"               : "lib/message",
-        "user"                  : "lib/user",
-        "websocket"             : "lib/websocket",
-        "iframe"                : "lib/iframe",
-        "navigation"            : "lib/navigation"
+        "bootstrap"       : "lib/vendor/bootstrap",
+        "bootstrap-select": "lib/vendor/bootstrap-select",
+        "bootstrap-switch": "lib/vendor/bootstrap-switch",
+        "jasny-bootstrap" : "lib/vendor/jasny-bootstrap",
+        "domReady"        : "lib/vendor/domReady",
+        "jquery"          : "lib/vendor/jquery",
+        "loading-overlay" : "lib/vendor/loading-overlay",
+        "lodash"          : "lib/vendor/lodash",
+        "require"         : "lib/vendor/require",
+        "chat"            : "lib/chat",
+        "room"            : "lib/room",
+        "roomManager"     : "lib/roomManager",
+        "user"            : "lib/user",
+        "userManager"     : "lib/userManager",
+        "forms"           : "lib/forms",
+        "message"         : "lib/message",
+        "websocket"       : "lib/websocket",
+        "iframe"          : "lib/iframe",
+        "navigation"      : "lib/navigation"
     },
     "shim"  : {
         "bootstrap"        : {
@@ -35,7 +38,7 @@ requirejs.config({
         }
     },
     "config": {
-        "navigation": {
+        "navigation" : {
             "landingPage" : "chat",
             "urlPrefix"   : "#!",
             "selectors"   : {
@@ -44,7 +47,7 @@ requirejs.config({
                 "currentPage": ".current-page"
             }
         },
-        "iframe"    : {
+        "iframe"     : {
             "resizeInterval": 2000,
             "selectors"     : {
                 "kibanaIframe"         : "#kibana-iframe",
@@ -52,19 +55,22 @@ requirejs.config({
                 "iframeHeightContainer": ".content"
             }
         },
-        "websocket" : {
+        "websocket"  : {
             "serverUrl"   : "ws://127.0.0.1:5000",
             "serviceName" : "websocketService",
             "waitInterval": 1000
         },
-        "user"      : {
+        "userManager": {
             "selectors": {
                 "modals": {
                     "connect": "#connectUserModal"
                 }
             }
         },
-        "chat"      : {
+        "roomManager": {
+            "serviceName": "roomService"
+        },
+        "chat"       : {
             "serviceName"  : "chatService",
             "maxUsers"     : 15,
             "animationTime": 500,
@@ -148,7 +154,7 @@ requirejs.config({
                 "pm"  : /^\/pm '([^']*)' (.*)/
             }
         },
-        "message"   : {
+        "message"    : {
             "alert"       : {
                 "divId"          : "#alert-container",
                 "dismissClass"   : ".dismiss",
