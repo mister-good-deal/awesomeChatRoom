@@ -44,7 +44,6 @@ define([
             });
         },
         messageManager = new Message();
-
     ChatManager.prototype = {
         /*====================================================
         =            Object settings / properties            =

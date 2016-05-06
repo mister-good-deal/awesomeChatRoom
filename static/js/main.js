@@ -30,9 +30,10 @@ require([
 
         userManager.connectSuccessCallback = function () {
             websocket.send(JSON.stringify({
-                "action" : "connect",
-                "service": ["server"],
-                "user"   : this.user.getUser()
+                "action"  : "connect",
+                "service" : ["server"],
+                "user"    : this.user.getUser(),
+                "location": this.user.getLocation()
             }));
         };
         // Auto show the menu on page on desktop

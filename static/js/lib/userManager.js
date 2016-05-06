@@ -25,6 +25,8 @@ define([
      * @alias      module:lib/userManager
      */
     var UserManager = function (Forms, settings) {
+            var self = this;
+
             this.settings = $.extend(true, {}, this.settings, module.config(), settings);
             this.user     = new User();
             // Bind forms ajax callback
@@ -36,13 +38,14 @@ define([
             Forms.addOnFailCallback('user/register', this.registerFail, this);
             Forms.addOnRequestFailCallback('user/register', this.registerRequestFail, this);
             // Set user geoloc
+            // @todo seems that maximumAge value is not evaluated and the watch constant refresh every few seconds
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition(
                     _.bind(this.user.setLocation, this.user),
                     _.bind(this.user.setLocationWithGeoip, this.user),
                     {
-                        "maximumAge"        : 60000,
-                        "timeout"           : 3000,
+                        "maximumAge"        : self.settings.locationRefreshInterval,
+                        "timeout"           : self.settings.locationTimeout,
                         "enableHighAccuracy": true
                     }
                 );

@@ -61,7 +61,9 @@ requirejs.config({
             "waitInterval": 1000
         },
         "userManager": {
-            "selectors": {
+            "locationRefreshInterval": 15000,
+            "locationTimeout"        : 30000,
+            "selectors"              : {
                 "modals": {
                     "connect": "#connectUserModal"
                 }

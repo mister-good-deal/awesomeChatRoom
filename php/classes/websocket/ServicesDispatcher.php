@@ -14,6 +14,9 @@ use Icicle\Socket\Socket as Socket;
 use Icicle\WebSocket\Application as Application;
 use Icicle\WebSocket\Connection as Connection;
 use classes\entities\User as User;
+use classes\entities\UserRight as UserRight;
+use classes\entities\UserChatRight as UserChatRight;
+use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
 use classes\websocket\Client as Client;
 use classes\websocket\ClientCollection as ClientCollection;
 use classes\websocket\Room as Room;
@@ -198,7 +201,20 @@ class ServicesDispatcher implements Application
         switch ($data['action']) {
             // Register a client in the clients pool
             case 'connect':
+                $client->setLocation($data['location']);
                 $client->setUser(new User($data['user']));
+                $client->getUser()->setRight(new UserRight($data['user']['right']));
+
+                if (count($data['user']['chatRight']) > 0) {
+                    $userChatRightCollection = new UserChatRightCollection();
+
+                    foreach ($data['user']['chatRight'] as $userChatRightInfo) {
+                        $userChatRightCollection->add(new UserChatRight($userChatRightInfo));
+                    }
+
+                    $client->getUser()->setChatRight($userChatRightCollection);
+                }
+
                 break;
         }
     }

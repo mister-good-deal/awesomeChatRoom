@@ -61,7 +61,7 @@ class Client
             . 'id         = ' . $this->id . PHP_EOL
             . 'connection = ' . $this->connection->getRemoteAddress() . ':' . $this->connection->getRemotePort() . PHP_EOL
             . 'location   = ' . static::formatVariable($this->location) . PHP_EOL
-            . 'user       = ' . $this->user . PHP_EOL;
+            . PHP_EOL . $this->user . PHP_EOL;
     }
 
     /*-----  End of Magic methods  ------*/

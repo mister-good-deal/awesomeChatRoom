@@ -147,12 +147,12 @@ abstract class Entity implements \ArrayAccess
      */
     public function __toString(): string
     {
-        $string = '['  . $this->entityName . ']' . PHP_EOL;
+        $string = $this->entityName . ' ::' . PHP_EOL;
         $keys   = array_keys($this->columnsValue);
 
         foreach ($this->columnsValue as $columnName => $columnValue) {
             $string .=
-                '  ' . $this->smartAlign($columnName, $keys)
+                $this->smartAlign($columnName, $keys)
                 . '  ' . $this->smartAlign(
                     $this->columnsAttributes[$columnName]['type'] .
                     (isset($this->columnsAttributes[$columnName]['size']) ?

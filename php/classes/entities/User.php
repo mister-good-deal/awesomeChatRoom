@@ -79,6 +79,16 @@ class User extends Entity
     }
 
     /**
+     * Pretty output the User entity
+     *
+     * @return     string  The pretty output User entity
+     */
+    public function __toString(): string
+    {
+        return parent::__toString() . PHP_EOL . $this->right . PHP_EOL . $this->chatRight;
+    }
+
+    /**
      * Return the user entity in an array format
      *
      * @return     array  Array with all users attributes
