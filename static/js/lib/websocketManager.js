@@ -1,9 +1,8 @@
 /**
- * Websocket module
+ * WebsocketManager module
  *
- * @module lib/websocket
+ * @module websocketManager
  */
-
 define([
     'jquery',
     'module'
@@ -11,12 +10,18 @@ define([
     'use strict';
 
     /**
-     * Websocket manager class
+     * WebsocketManager module
      *
-     * @constructor
-     * @alias       module:lib/websocket
      * @param       {User}    User     The current User
      * @param       {Object}  settings Overriden settings
+     *
+     * @exports    websocketManager
+     *
+     * @property   {User}       User        The curent user
+     * @property   {Object}     settings    The websocketManager global settings
+     *
+     * @constructor
+     * @alias       module:websocketManager
      */
     var WebsocketManager = function (User, settings) {
             this.settings = $.extend(true, {}, this.settings, settings);

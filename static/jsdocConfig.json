@@ -3,7 +3,8 @@
         "allowUnknownTags": true
     },
     "source": {
-        "exclude"       : ["app.js", "app.build.js"],
+        "include"       : ["js", "../README.md"],
+        "exclude"       : ["js/app.build.js"],
         "includePattern": ".+\\.js(doc|x)?$",
         "excludePattern": "(^|\\/|\\\\)_"
     },

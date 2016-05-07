@@ -1,11 +1,8 @@
 /**
- * Room module
+ * Room module to handle all room attributes
  *
- * @module               lib/room
- *
- * Room object to handle all room attributes
+ * @module room
  */
-
 define([
     'jquery',
     'module',
@@ -14,13 +11,25 @@ define([
     'use strict';
 
     /**
-     * Room object
+     * Room module to handle all room attributes
      *
-     * @class
-     * @param      {Object}  attributes  JSON data representing the room attributes
-     * @param      {Object}  settings    Overriden settings
+     * @param      {Object}  attributes               JSON data representing the room attributes
+     * @param      {Object}  settings                 Overriden settings
      *
-     * @alias      module:lib/room
+     * @exports    room
+     *
+     * @property   {Object}  settings                 The room global settings
+     * @property   {Object}  attributes               The room attributes
+     * @property   {Number}  attributes.id            The room ID
+     * @property   {String}  attributes.name          The room name
+     * @property   {Number}  attributes.creator       The room creator user ID
+     * @property   {String}  attributes.password      The room password
+     * @property   {Object}  attributes.creationDate  The room creation date
+     * @property   {Number}  attributes.maxUsers      The room maximum number of users
+     * @property   {Array}   attributes.clients       The room connected clients
+     *
+     * @constructor
+     * @alias module:room
      */
     var Room = function (attributes, settings) {
         this.settings = $.extend(true, {}, this.settings, module.config(), settings);
@@ -39,7 +48,7 @@ define([
          * @return     {Object}  The room attributes as JSON
          */
         getRoom: function () {
-            return this.attributes.room;
+            return this.attributes;
         },
 
         /**
@@ -59,7 +68,7 @@ define([
          * @return     {Number}  The room ID
          */
         getId: function () {
-            return this.attributes.room.id;
+            return this.attributes.id;
         },
 
         /**
@@ -69,7 +78,7 @@ define([
          * @return     {String}  The room Name
          */
         getName: function () {
-            return this.attributes.room.name;
+            return this.attributes.name;
         },
 
         /**
@@ -79,7 +88,7 @@ define([
          * @param      {String}  name    The new room name
          */
         setName: function (name) {
-            this.attributes.room.name = name;
+            this.attributes.name = name;
         },
 
         /**
@@ -89,7 +98,7 @@ define([
          * @return     {Number}  The creator user ID
          */
         getCreator: function () {
-            return this.attributes.room.creator;
+            return this.attributes.creator;
         },
 
         /**
@@ -99,7 +108,7 @@ define([
          * @return     {String}  The room password
          */
         getPassword: function () {
-            return this.attributes.room.password;
+            return this.attributes.password;
         },
 
         /**
@@ -121,7 +130,7 @@ define([
          * @todo       Parse the type
          */
         getCreationDate: function () {
-            return this.attributes.room.creationDate;
+            return this.attributes.creationDate;
         },
 
         /**
@@ -131,7 +140,7 @@ define([
          * @return     {Number}  The max number of users
          */
         getMaxUsers: function () {
-            return this.attributes.room.maxUsers;
+            return this.attributes.maxUsers;
         },
 
         /**
@@ -154,6 +163,16 @@ define([
             return this.attributes.clients;
         },
 
+        /**
+         * Get the number of connected clients
+         *
+         * @method     getNumberOfConnectedClients
+         * @return     {Number}  The number of connected clients
+         */
+        getNumberOfConnectedClients: function () {
+            return _.size(this.attributes.clients);
+        },
+
         /*=====  End of Getters / setters  ======*/
 
         /**
@@ -163,7 +182,7 @@ define([
          * @return     {Boolean}  True if the room is public, False otherwise.
          */
         isPublic: function () {
-            return _.isUndefined(this.getPassword()) || this.getPassword().length > 0;
+            return _.isUndefined(this.getPassword()) || this.getPassword().length === 0;
         }
     };
 

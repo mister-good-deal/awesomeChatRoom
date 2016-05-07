@@ -1,11 +1,8 @@
 /**
- * RoomManager module
- *
- * @module               lib/roomManager
- *
  * RoomManager object to handle all room Object
+ *
+ * @module roomManager
  */
-
 define([
     'jquery',
     'module',
@@ -17,11 +14,19 @@ define([
     /**
      * RoomManager object
      *
-     * @class
      * @param      {WebSocket}  WebSocket  The websocket manager
      * @param      {Object}     settings   Overriden settings
      *
-     * @alias      module:lib/roomManager
+     * @exports    roomManager
+     * @see        module:room
+     * @see        module:websocket
+     *
+     * @property   {Object}             settings  The roomManager global settings
+     * @property   {WebsocketManager}   websocket The WebsocketManager module
+     * @property   {Object}             rooms     Collection of room module
+     *
+     * @constructor
+     * @alias      module:roomManager
      */
     var RoomManager = function (WebSocket, settings) {
         this.settings  = $.extend(true, {}, this.settings, module.config(), settings);
@@ -92,6 +97,41 @@ define([
             if (_.isUndefined(this.rooms[room.getId()])) {
                 this.rooms[room.getId()] = room;
             }
+
+            this.updateRoomList();
+        },
+
+        /**
+         * Update the room list in the select picker
+         *
+         * @method     updateRoomList
+         */
+        updateRoomList: function () {
+            var publicRooms  = [],
+                privateRooms = [],
+                select       = $(
+                    this.settings.selectors.roomConnect.div + ' ' + this.settings.selectors.roomConnect.name
+                ),
+                option;
+
+            _.forEach(this.rooms, function (room) {
+                option = $('<option>', {
+                    "value"       : room.getId(),
+                    "data-subtext": '(' + room.getNumberOfConnectedClients() + '/' + room.getMaxUsers() + ')',
+                    "data-type"   : room.isPublic() ? 'public' : 'private',
+                    "text"        : room.getName()
+                });
+
+                if (room.isPublic()) {
+                    publicRooms.push(option);
+                } else {
+                    privateRooms.push(option);
+                }
+            });
+
+            select.find(this.settings.selectors.roomConnect.publicRooms).html(publicRooms);
+            select.find(this.settings.selectors.roomConnect.privateRooms).html(privateRooms);
+            select.selectpicker('refresh');
         }
 
         /*=====  End of Utilities methods  ======*/

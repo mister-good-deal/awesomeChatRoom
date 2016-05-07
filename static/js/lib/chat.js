@@ -980,40 +980,6 @@ define([
             this.recieveMessageCallback(data.messageInfo);
         },
 
-        /**
-         * Callback after getting the new rooms info
-         *
-         * @method     getRoomsInfoCallback
-         * @param      {Object}  data    The server JSON reponse
-         */
-        getRoomsInfoCallback: function (data) {
-            var publicRooms  = [],
-                privateRooms = [],
-                select       = $(
-                    this.settings.selectors.roomConnect.div + ' ' + this.settings.selectors.roomConnect.name
-                ),
-                option;
-
-            _.forEach(data.roomsInfo, function (roomInfo) {
-                option = $('<option>', {
-                    "value"       : roomInfo.room.id,
-                    "data-subtext": '(' + roomInfo.usersConnected + '/' + roomInfo.room.maxUsers + ')',
-                    "data-type"   : roomInfo.room.password ? 'private' : 'public',
-                    "text"        : roomInfo.room.name
-                });
-
-                if (roomInfo.room.password) {
-                    privateRooms.push(option);
-                } else {
-                    publicRooms.push(option);
-                }
-            });
-
-            select.find(this.settings.selectors.roomConnect.publicRooms).html(publicRooms);
-            select.find(this.settings.selectors.roomConnect.privateRooms).html(privateRooms);
-            select.selectpicker('refresh');
-        },
-
         /*=====  End of Callbacks after WebSocket server responses  ======*/
 
         /*=========================================

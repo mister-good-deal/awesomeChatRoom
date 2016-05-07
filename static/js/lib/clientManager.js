@@ -42,7 +42,7 @@ define([
                 }
             );
         }
-
+        // If the location is not set after 5 sec, sets it with geoIp service
         _.delay(_.bind(this.setLocationWithGeoip, this), 5000);
     };
 

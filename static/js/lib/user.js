@@ -1,7 +1,7 @@
 /**
  * User module
  *
- * @module lib/user
+ * @module user
  */
 
 define([
@@ -12,13 +12,26 @@ define([
     'use strict';
 
     /**
-     * User object
+     * User module
      *
-     * @class
      * @param      {Object}  attributes  JSON data representing the user attributes
      * @param      {Object}  settings    Overriden settings
      *
-     * @alias      module:lib/user
+     * @exports    user
+     *
+     * @property   {Object}   settings              The user global settings
+     * @property   {Boolean}  connected             True if the user is connected, false otherwise
+     * @property   {Object}   attributes            The user attributes
+     * @property   {String}   attributes.firstName  The user first name
+     * @property   {String}   attributes.lastName   The user last name
+     * @property   {String}   attributes.pseudonym  The user pseudonym
+     * @property   {String}   attributes.email      The user email
+     * @property   {String}   attributes.password   The user password
+     * @property   {Object}   attributes.right      The user right
+     * @property   {Object}   attributes.chatRight  The user chatRight
+     *
+     * @constructor
+     * @alias      module:user
      */
     var User = function (attributes, settings) {
         this.settings   = $.extend(true, {}, this.settings, module.config(), settings);
@@ -146,7 +159,7 @@ define([
          * Set the connected state
          *
          * @method     setConnected
-         * @param      {Boolean}  connected  The connected state
+         * @param      {Boolean}  connected  True if the user is connected, false otherwise
          */
         setConnected: function (connected) {
             this.connected = connected;
@@ -158,7 +171,7 @@ define([
          * Determine if the user is connected.
          *
          * @method     isConnected
-         * @return     {Boolean}  True if the user is connected, False otherwise.
+         * @return     {Boolean}  True if the user is connected, false otherwise
          */
         isConnected: function () {
             return this.connected;

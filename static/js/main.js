@@ -3,7 +3,7 @@ require([
     'jquery',
     'lodash',
     'forms',
-    'websocket',
+    'websocketManager',
     'userManager',
     'clientManager',
     'roomManager',
@@ -31,7 +31,7 @@ require([
         websocket.addCallback(chatManager.settings.serviceName, chatManager.wsCallbackDispatcher, chatManager);
         websocket.addCallback(roomManager.settings.serviceName, roomManager.wsCallbackDispatcher, roomManager);
         websocket.addCallback(clientManager.settings.serviceName, clientManager.wsCallbackDispatcher, clientManager);
-
+        // Update the client user object on the WebSocket server after the client connection
         userManager.connectSuccessCallback = _.bind(clientManager.updateUser, clientManager);
         // Auto show the menu on page on desktop
         if ($(window).outerWidth() > 768) {

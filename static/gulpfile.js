@@ -9,10 +9,9 @@
         rename           = require('gulp-rename'),
         jshint           = require('gulp-jshint'),
         jscs             = require('gulp-jscs'),
-        phpcs            = require('gulp-phpcs'),
+        // phpcs            = require('gulp-phpcs'),
         phpcbf           = require('gulp-phpcbf'),
         stylish          = require('jshint-stylish'),
-        jsdoc            = require('gulp-jsdoc3'),
         map              = require('map-stream'),
         del              = require('del'),
         exec             = require('child_process').exec,
@@ -20,7 +19,6 @@
         nodeOs           = require('os'),
         CleanPlugin      = require('less-plugin-clean-css'),
         AutoprefixPlugin = require('less-plugin-autoprefix'),
-        jsdocConfig      = require('./jsdocConfig.json'),
         docPath          = '../../ziperrom1.github.io/awesomechatroom-doc',
         composerBinPath  = nodePath.sep + 'vendor' + nodePath.sep + 'bin' + nodePath.sep,
         jsSrc            = ['js/lib/*.js', 'js/app.js', 'js/main.js'],
@@ -182,17 +180,17 @@
             .pipe(jshintReporter);
     });
 
-    gulp.task('php_phpcs', function () {
-        var phpcsExec = 'phpcs' + (nodeOs.platform() === 'win32' ? '.bat' : '');
+    // gulp.task('php_phpcs', function () {
+    //     var phpcsExec = 'phpcs' + (nodeOs.platform() === 'win32' ? '.bat' : '');
 
-        return gulp.src(phpSrc)
-            .pipe(phpcs({
-                bin            : process.cwd().replace('static', 'php') + composerBinPath + phpcsExec,
-                standard       : 'PSR2',
-                warningSeverity: 0
-            }))
-            .pipe(phpcs.reporter('log'));
-    });
+    //     return gulp.src(phpSrc)
+    //         .pipe(phpcs({
+    //             bin            : process.cwd().replace('static', 'php') + composerBinPath + phpcsExec,
+    //             standard       : 'PSR2',
+    //             warningSeverity: 0
+    //         }))
+    //         .pipe(phpcs.reporter('log'));
+    // });
 
     gulp.task('php_phpcbf', function () {
         var phpcbfExec = 'phpcbf' + (nodeOs.platform() === 'win32' ? '.bat' : '');
@@ -208,7 +206,7 @@
 
     gulp.task('js_lint', gulp.parallel('js_jscs', 'js_jshint'));
 
-    gulp.task('php_lint', gulp.parallel('php_phpcbf', 'php_phpcs'));
+    // gulp.task('php_lint', gulp.parallel('php_phpcbf', 'php_phpcs'));
 
     /*=====  End of Linters  ======*/
 
@@ -216,8 +214,11 @@
     =            Documentation generation            =
     ================================================*/
 
-    gulp.task('jsdoc_generation', function (cb) {
-        gulp.src(['../README.md', './js/**/*.js'], {read: false}).pipe(jsdoc(jsdocConfig, cb));
+    gulp.task('jsdoc_generation', function (done) {
+        exec('"./node_modules/.bin/jsdoc" -c jsdocConfig.json -r -t ./node_modules/ink-docstrap/template --verbose', function (err, output) {
+            console.log(output);
+            done(err);
+        });
     });
 
     gulp.task('phpdoc_generation', function (done) {
@@ -265,9 +266,9 @@
 
     gulp.task('deploy_static', gulp.series('install', 'js_lint', 'build', 'jsDoc', 'push_doc'));
 
-    gulp.task('deploy_php', gulp.series('php_lint', 'phpDoc', 'push_doc'));
+    // gulp.task('deploy_php', gulp.series('php_lint', 'phpDoc', 'push_doc'));
 
-    gulp.task('deploy', gulp.series('deploy_static', 'deploy_php'));
+    // gulp.task('deploy', gulp.series('deploy_static', 'deploy_php'));
 
     /*=====  End of Deployment preprocessing  ======*/
 

@@ -159,7 +159,7 @@ class ServicesDispatcher implements Application
      */
     public function onDisconnection(Client $client, Response $response, Request $request)
     {
-        yield $this->services['chatService']->disconnectUser($client);
+        // yield $this->services['chatService']->disconnectUser($client);
         $this->clients->remove($client);
 
         $this->logger->log(
