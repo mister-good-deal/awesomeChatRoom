@@ -55,10 +55,10 @@ define([
         /**
          * Handle the WebSocker server response and process action with the right callback
          *
-         * @method     roomCallbackDispatcher
+         * @method     wsCallbackDispatcher
          * @param      {Object}  data    The server JSON reponse
          */
-        roomCallbackDispatcher: function (data) {
+        wsCallbackDispatcher: function (data) {
             if (typeof this[data.action + 'Callback'] === 'function') {
                 this[data.action + 'Callback'](data);
             }

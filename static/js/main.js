@@ -1,9 +1,11 @@
 
 require([
     'jquery',
+    'lodash',
     'forms',
     'websocket',
     'userManager',
+    'clientManager',
     'roomManager',
     'chat',
     'message',
@@ -12,7 +14,7 @@ require([
     'bootstrap',
     'jasny-bootstrap',
     'domReady!'
-], function ($, FormsManager, WebsocketManager, UserManager, RoomManager, ChatManager, Message, Iframe, Navigation) {
+], function ($, _, FormsManager, WebsocketManager, UserManager, ClientManager, RoomManager, ChatManager, Message, Iframe, Navigation) {
         'use strict';
 
         var forms          = new FormsManager(),
@@ -20,22 +22,17 @@ require([
             navigation     = new Navigation(),
             kibanaIframe   = new Iframe(navigation),
             userManager    = new UserManager(forms),
-            websocket      = new WebsocketManager(userManager.user),
-            chatManager    = new ChatManager(websocket, userManager.user, forms),
-            roomManager    = new RoomManager(websocket);
+            websocket      = new WebsocketManager(userManager.getCurrent()),
+            roomManager    = new RoomManager(websocket),
+            clientManager  = new ClientManager(websocket, userManager.getCurrent()),
+            chatManager    = new ChatManager(websocket, userManager.getCurrent(), forms);
         // Bind WebSocket server callbacks on different services
         websocket.addCallback(messageManager.settings.serviceName, messageManager.parseWebsocketData, messageManager);
-        websocket.addCallback(chatManager.settings.serviceName, chatManager.chatCallbackDispatcher, chatManager);
-        websocket.addCallback(roomManager.settings.serviceName, roomManager.roomCallbackDispatcher, roomManager);
+        websocket.addCallback(chatManager.settings.serviceName, chatManager.wsCallbackDispatcher, chatManager);
+        websocket.addCallback(roomManager.settings.serviceName, roomManager.wsCallbackDispatcher, roomManager);
+        websocket.addCallback(clientManager.settings.serviceName, clientManager.wsCallbackDispatcher, clientManager);
 
-        userManager.connectSuccessCallback = function () {
-            websocket.send(JSON.stringify({
-                "action"  : "connect",
-                "service" : ["server"],
-                "user"    : this.user.getUser(),
-                "location": this.user.getLocation()
-            }));
-        };
+        userManager.connectSuccessCallback = _.bind(clientManager.updateUser, clientManager);
         // Auto show the menu on page on desktop
         if ($(window).outerWidth() > 768) {
             $('#navbar-menu-left').offcanvas('show');

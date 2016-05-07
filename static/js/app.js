@@ -14,6 +14,8 @@ requirejs.config({
         "roomManager"     : "lib/roomManager",
         "user"            : "lib/user",
         "userManager"     : "lib/userManager",
+        "client"          : "lib/client",
+        "clientManager"   : "lib/clientManager",
         "forms"           : "lib/forms",
         "message"         : "lib/message",
         "websocket"       : "lib/websocket",
@@ -38,7 +40,7 @@ requirejs.config({
         }
     },
     "config": {
-        "navigation" : {
+        "navigation"   : {
             "landingPage" : "chat",
             "urlPrefix"   : "#!",
             "selectors"   : {
@@ -47,7 +49,7 @@ requirejs.config({
                 "currentPage": ".current-page"
             }
         },
-        "iframe"     : {
+        "iframe"       : {
             "resizeInterval": 2000,
             "selectors"     : {
                 "kibanaIframe"         : "#kibana-iframe",
@@ -55,24 +57,27 @@ requirejs.config({
                 "iframeHeightContainer": ".content"
             }
         },
-        "websocket"  : {
+        "websocket"    : {
             "serverUrl"   : "ws://127.0.0.1:5000",
             "serviceName" : "websocketService",
             "waitInterval": 1000
         },
-        "userManager": {
-            "locationRefreshInterval": 15000,
-            "locationTimeout"        : 30000,
-            "selectors"              : {
+        "userManager"  : {
+            "selectors": {
                 "modals": {
                     "connect": "#connectUserModal"
                 }
             }
         },
-        "roomManager": {
+        "clientManager": {
+            "serviceName"            : "clientService",
+            "locationRefreshInterval": 15000,
+            "locationTimeout"        : 30000
+        },
+        "roomManager"  : {
             "serviceName": "roomService"
         },
-        "chat"       : {
+        "chat"         : {
             "serviceName"  : "chatService",
             "maxUsers"     : 15,
             "animationTime": 500,
@@ -156,7 +161,7 @@ requirejs.config({
                 "pm"  : /^\/pm '([^']*)' (.*)/
             }
         },
-        "message"    : {
+        "message"      : {
             "alert"       : {
                 "divId"          : "#alert-container",
                 "dismissClass"   : ".dismiss",

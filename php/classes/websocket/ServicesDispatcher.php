@@ -13,16 +13,12 @@ use Icicle\Http\Message\Response as Response;
 use Icicle\Socket\Socket as Socket;
 use Icicle\WebSocket\Application as Application;
 use Icicle\WebSocket\Connection as Connection;
-use classes\entities\User as User;
-use classes\entities\UserRight as UserRight;
-use classes\entities\UserChatRight as UserChatRight;
-use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
 use classes\websocket\Client as Client;
 use classes\websocket\ClientCollection as ClientCollection;
-use classes\websocket\Room as Room;
 use classes\websocket\RoomCollection as RoomCollection;
 use classes\websocket\services\ChatService as ChatService;
 use classes\websocket\services\RoomService as RoomService;
+use classes\websocket\services\ClientService as ClientService;
 use classes\LoggerManager as Logger;
 use classes\logger\LogLevel as LogLevel;
 
@@ -55,11 +51,12 @@ class ServicesDispatcher implements Application
      */
     public function __construct()
     {
-        $this->rooms                   = new RoomCollection();
-        $this->clients                 = new ClientCollection();
-        $this->logger                  = new Logger([Logger::CONSOLE]);
-        $this->services['chatService'] = new ChatService();
-        $this->services['roomService'] = new RoomService();
+        $this->rooms                     = new RoomCollection();
+        $this->clients                   = new ClientCollection();
+        $this->logger                    = new Logger([Logger::CONSOLE]);
+        $this->services['chatService']   = new ChatService();
+        $this->services['roomService']   = new RoomService();
+        $this->services['clientService'] = new ClientService();
     }
 
     /**
@@ -125,6 +122,16 @@ class ServicesDispatcher implements Application
 
         $this->clients->add($client);
 
+        yield $connection->send(json_encode([
+            'service'    => 'clientService',
+            'action'     => 'connect',
+            'id'         => $client->getId(),
+            'connection' => [
+                'remoteAddress' => $connection->getRemoteAddress(),
+                'remotePort'    => $connection->getRemotePort()
+            ]
+        ]));
+
         while (yield $iterator->isValid()) {
             yield $this->serviceSelector(
                 json_decode($iterator->getCurrent()->getData(), true),
@@ -175,8 +182,8 @@ class ServicesDispatcher implements Application
 
         foreach ($data['service'] as $service) {
             switch ($service) {
-                case 'server':
-                    yield $this->serverAction($data, $client);
+                case $this->services['clientService']->getServiceName():
+                    yield $this->services['clientService']->process($data, $client);
                     break;
 
                 case 'chatService':
@@ -185,37 +192,6 @@ class ServicesDispatcher implements Application
                 default:
                     yield $this->services[$service]->process($data, $client, $this->rooms);
             }
-        }
-    }
-
-    /**
-     * Action called by the client to be executed in the websocket server
-     *
-     * @param      array   $data    JSON decoded client data
-     * @param      Client  $client  The client object
-     *
-     * @return     \Generator|\Icicle\Awaitable\Awaitable
-     */
-    private function serverAction(array $data, Client $client)
-    {
-        switch ($data['action']) {
-            // Register a client in the clients pool
-            case 'connect':
-                $client->setLocation($data['location']);
-                $client->setUser(new User($data['user']));
-                $client->getUser()->setRight(new UserRight($data['user']['right']));
-
-                if (count($data['user']['chatRight']) > 0) {
-                    $userChatRightCollection = new UserChatRightCollection();
-
-                    foreach ($data['user']['chatRight'] as $userChatRightInfo) {
-                        $userChatRightCollection->add(new UserChatRight($userChatRightInfo));
-                    }
-
-                    $client->getUser()->setChatRight($userChatRightCollection);
-                }
-
-                break;
         }
     }
 }

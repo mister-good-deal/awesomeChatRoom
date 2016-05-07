@@ -21,9 +21,9 @@ define([
      * @alias      module:lib/user
      */
     var User = function (attributes, settings) {
-        this.settings  = $.extend(true, {}, this.settings, module.config(), settings);
-        this.connected = false;
-        this.location  = {};
+        this.settings   = $.extend(true, {}, this.settings, module.config(), settings);
+        this.attributes = {};
+        this.connected  = false;
 
         if (!_.isEmpty(attributes)) {
             this.setAttributes(attributes);
@@ -38,10 +38,10 @@ define([
         /**
          * Get the User attributes
          *
-         * @method     getUser
+         * @method     getAttributes
          * @return     {Object}  The User attributes
          */
-        getUser: function () {
+        getAttributes: function () {
             return this.attributes;
         },
 
@@ -140,42 +140,6 @@ define([
          */
         setChatRoomRight: function (roomId, chatRight) {
             this.attributes.chatRight[roomId] = chatRight;
-        },
-
-        /**
-         * Get the user location
-         *
-         * @method     getLocation
-         * @return     {Object}  The location in {"lat": "latitude", "lon": "longitude"} format
-         */
-        getLocation: function () {
-            return this.location;
-        },
-
-        /**
-         * Set the location based on navigator.geolocation.getCurrentPosition returned object
-         *
-         * @method     setLocation
-         * @param      {Object}  coordinates  The navigator.geolocation.getCurrentPosition returned object
-         */
-        setLocation: function (coordinates) {
-            this.location = {
-                'lat': coordinates.coords.latitude,
-                'lon': coordinates.coords.longitude
-            };
-        },
-
-        /**
-         * Set location based on MaxMind geoip database and the user IP address
-         *
-         * @method     setLocationWithGeoip
-         */
-        setLocationWithGeoip: function () {
-            if (_.isEmpty(this.location)) {
-                $.getJSON('GeoIp/getLocation', function (location) {
-                    this.location = location;
-                });
-            }
         },
 
         /**
