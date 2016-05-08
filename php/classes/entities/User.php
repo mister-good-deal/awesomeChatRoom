@@ -12,7 +12,7 @@ use \abstracts\Entity as Entity;
 use \classes\ExceptionManager as Exception;
 use \classes\IniManager as Ini;
 use \classes\entities\UserRight as UserRight;
-use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
+use \classes\entitiesCollection\RoomRightCollection as RoomRightCollection;
 
 /**
  * User entity that extends the Entity abstact class
@@ -56,9 +56,9 @@ class User extends Entity
      */
     private $right = null;
     /**
-     * @var        UserChatRightCollection  $chatRight  The user chat right collection
+     * @var        RoomRightCollection  $roomRight  The user room right collection
      */
-    private $chatRight = null;
+    private $roomRight = null;
 
     /*=====================================
     =            Magic methods            =
@@ -85,7 +85,7 @@ class User extends Entity
      */
     public function __toString(): string
     {
-        return parent::__toString() . PHP_EOL . $this->right . PHP_EOL . $this->chatRight;
+        return parent::__toString() . PHP_EOL . $this->right . PHP_EOL . $this->roomRight;
     }
 
     /**
@@ -97,7 +97,7 @@ class User extends Entity
     {
         $user = parent::__toArray();
         $user['right']     = ($this->right !== null ? $this->right->__toArray() : []);
-        $user['chatRight'] = ($this->chatRight !== null ? $this->chatRight->__toArray() : []);
+        $user['roomRight'] = ($this->roomRight !== null ? $this->roomRight->__toArray() : []);
 
         return $user;
     }
@@ -129,23 +129,23 @@ class User extends Entity
     }
 
     /**
-     * Get the user chat right collection
+     * Get the user room right collection
      *
-     * @return     UserChatRightCollection|null  The user chat right collection
+     * @return     RoomRightCollection|null  The user room right collection
      */
-    public function getChatRight()
+    public function getRoomRight()
     {
-        return $this->chatRight;
+        return $this->roomRight;
     }
 
     /**
-     * Set the user chat right collection
+     * Set the user room right collection
      *
-     * @param      UserChatRightCollection  $chatRight  The user chat right collection
+     * @param      RoomRightCollection  $roomRight  The user room right collection
      */
-    public function setChatRight(UserChatRightCollection $chatRight)
+    public function setChatRight(RoomRightCollection $roomRight)
     {
-        $this->chatRight = $chatRight;
+        $this->roomRight = $roomRight;
     }
 
     /*-----  End of Setters / getters  ------*/

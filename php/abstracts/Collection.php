@@ -15,22 +15,20 @@ use \classes\ExceptionManager as Exception;
  *
  * @abstract
  *
- * @todo PHP7 defines object return OR null with method(...): ?Class
- * @see https://wiki.php.net/rfc/nullable_types
- * @see https://wiki.php.net/rfc/union_types
+ * @todo       PHP7 defines object return OR null with method(...): ?Class
+ * @see        https://wiki.php.net/rfc/nullable_types
+ * @see        https://wiki.php.net/rfc/union_types
  */
 abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \SeekableIterator
 {
-    use \traits\PrettyOutputTrait;
-
     /**
      * @var        Object[]  $collection    An array of object
      */
-    protected $collection = array();
+    protected $collection = [];
     /**
      * @var        int[]|string[]  $indexId     An array of id key
      */
-    protected $indexId = array();
+    protected $indexId = [];
     /**
      * @var        integer  $current    Current position of the pointer in the $collection
      */

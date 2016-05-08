@@ -69,7 +69,7 @@ class ConsoleLogger extends AbstractLogger
                 ConsoleColors::RED
             )
             . PHP_EOL
-            . $this->formatContext($context)
+            . static::formatContext($context)
         );
     }
 
@@ -90,7 +90,7 @@ class ConsoleLogger extends AbstractLogger
                 ConsoleColors::RED
             )
             . PHP_EOL
-            . $this->formatContext($context)
+            . static::formatContext($context)
         );
     }
 
@@ -111,7 +111,7 @@ class ConsoleLogger extends AbstractLogger
                 ConsoleColors::LIGHT_GRAY
             )
             . PHP_EOL
-            . $this->formatContext($context)
+            . static::formatContext($context)
         );
     }
 
@@ -130,7 +130,7 @@ class ConsoleLogger extends AbstractLogger
                 ConsoleColors::LIGHT_GRAY
             )
             . PHP_EOL
-            . $this->formatContext($context)
+            . static::formatContext($context)
         );
     }
 
@@ -151,7 +151,7 @@ class ConsoleLogger extends AbstractLogger
                 ConsoleColors::BLACK
             )
             . PHP_EOL
-            . $this->formatContext($context)
+            . static::formatContext($context)
         );
     }
 
@@ -172,7 +172,7 @@ class ConsoleLogger extends AbstractLogger
                 ConsoleColors::BLACK
             )
             . PHP_EOL
-            . $this->formatContext($context)
+            . static::formatContext($context)
         );
     }
 
@@ -191,7 +191,7 @@ class ConsoleLogger extends AbstractLogger
                 ConsoleColors::BLACK
             )
             . PHP_EOL
-            . $this->formatContext($context)
+            . static::formatContext($context)
         );
     }
 
@@ -210,7 +210,7 @@ class ConsoleLogger extends AbstractLogger
                 ConsoleColors::BLACK
             )
             . PHP_EOL
-            . $this->formatContext($context)
+            . static::formatContext($context)
         );
     }
 
@@ -243,7 +243,7 @@ class ConsoleLogger extends AbstractLogger
      *
      * @return     string  The output result as a string
      */
-    private function formatContext(array $contexts): string
+    private static function formatContext(array $contexts): string
     {
         $string = '';
 
@@ -255,11 +255,11 @@ class ConsoleLogger extends AbstractLogger
                     ConsoleColors::BLACK
                 ) . PHP_EOL;
 
-                $string .= $this->formatContextShortcut('in #file:', $context, 'file');
-                $string .= $this->formatContextShortcut('in #class:', $context, 'class');
-                $string .= $this->formatContextShortcut('in #function:', $context, 'function');
-                $string .= $this->formatContextShortcut('at #line:', $context, 'line');
-                $string .= $this->formatContextShortcut('with arguments:', $context, 'args');
+                $string .= static::formatContextShortcut('in #file:', $context, 'file');
+                $string .= static::formatContextShortcut('in #class:', $context, 'class');
+                $string .= static::formatContextShortcut('in #function:', $context, 'function');
+                $string .= static::formatContextShortcut('at #line:', $context, 'line');
+                $string .= static::formatContextShortcut('with arguments:', $context, 'args');
             }
         }
 
@@ -273,12 +273,12 @@ class ConsoleLogger extends AbstractLogger
      *
      * @return     string  The arguments in a formatted string
      */
-    private function formatArguments(array $arguments): string
+    private static function formatArguments(array $arguments): string
     {
         $argumentsFormatted = array();
 
         foreach ($arguments as $argument) {
-            $argumentsFormatted[] = $this->formatVariable($argument, 2);
+            $argumentsFormatted[] = static::formatVariable($argument, 2);
         }
 
         return '(' . implode(', ', $argumentsFormatted) . ')';
@@ -297,7 +297,7 @@ class ConsoleLogger extends AbstractLogger
      *
      * @return     string    The formatted context string
      */
-    private function formatContextShortcut(
+    private static function formatContextShortcut(
         string $description,
         array $context,
         string $type,
@@ -310,7 +310,7 @@ class ConsoleLogger extends AbstractLogger
 
         if (isset($context[$type])) {
             if ($type === 'args') {
-                $contextString = $this->formatArguments($context[$type]);
+                $contextString = static::formatArguments($context[$type]);
             } else {
                 $contextString = $context[$type];
             }

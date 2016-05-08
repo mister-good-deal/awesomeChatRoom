@@ -36,7 +36,7 @@ trait PrettyOutputTrait
      *
      * @todo refacto this shit
      */
-    public function smartAlign(string $value, array $arrays, int $extraSize = 0, int $position = STR_PAD_RIGHT): string
+    public static function smartAlign(string $value, array $arrays, int $extraSize = 0, int $position = STR_PAD_RIGHT): string
     {
         // if The array passed is a simple strings array we transform it into an array of one strings array
         if (!is_array($arrays[0])) {
@@ -47,10 +47,10 @@ trait PrettyOutputTrait
         $max = 0;
 
         foreach ($arrays as $array) {
-            $arrayHash = $this->md5Array($array);
+            $arrayHash = static::md5Array($array);
 
             if (!isset(static::$beautifullIndentMaxSize[$arrayHash])) {
-                $this->setMaxSize($array, 0, $arrayHash);
+                static::setMaxSize($array, 0, $arrayHash);
             }
 
             $max += static::$beautifullIndentMaxSize[$arrayHash];
@@ -67,7 +67,7 @@ trait PrettyOutputTrait
      *
      * @return     string  The array as a pretty string
      */
-    public function prettyArray(array $array, int $depth = 1): string
+    public static function prettyArray(array $array, int $depth = 1): string
     {
         $arrayFormatted = array();
         $arrayIndent    = implode(array_fill(0, $depth - 1, "\t"));
@@ -75,8 +75,8 @@ trait PrettyOutputTrait
         $keys           = array_keys($array);
 
         foreach ($array as $key => $value) {
-            $alignKey         = $valuesIndent . $this->smartAlign($key, $keys) . ' => ';
-            $arrayFormatted[] = $alignKey . $this->formatVariable($value, $depth + 1);
+            $alignKey         = $valuesIndent . static::smartAlign($key, $keys) . ' => ';
+            $arrayFormatted[] = $alignKey . static::formatVariable($value, $depth + 1);
         }
 
         return '[' . PHP_EOL . implode(',' . PHP_EOL, $arrayFormatted) . PHP_EOL . $arrayIndent . ']';
@@ -89,9 +89,9 @@ trait PrettyOutputTrait
      *
      * @return     string  The array as a pretty string
      */
-    public function prettyTwoDimensionalArray(array $arrays): string
+    public static function prettyTwoDimensionalArray(array $arrays): string
     {
-        $maxLength      = $this->getMaxSize($arrays);
+        $maxLength      = static::getMaxSize($arrays);
         $separationLine = '+' . str_pad('', 2 * ($maxLength + 2) + 1, '-', STR_PAD_BOTH) . '+';
         $headers        = array_shift($arrays);
         $arrayFormatted = [$separationLine];
@@ -128,11 +128,11 @@ trait PrettyOutputTrait
      *
      * @return     string  The variable in a formatted string
      */
-    public function formatVariable($variable, int $depth = 1): string
+    public static function formatVariable($variable, int $depth = 1): string
     {
         switch (gettype($variable)) {
             case 'array':
-                $argumentFormatted = $this->prettyArray($variable, $depth);
+                $argumentFormatted = static::prettyArray($variable, $depth);
                 break;
 
             case 'object':
@@ -174,12 +174,12 @@ trait PrettyOutputTrait
      *
      * @return     int    The max size
      */
-    public function getMaxSize(array $array): int
+    public static function getMaxSize(array $array): int
     {
-        $arrayHash = $this->md5Array($array);
+        $arrayHash = static::md5Array($array);
 
         if (!isset(static::$beautifullIndentMaxSize[$arrayHash])) {
-            $this->setMaxSize($array, 0, $arrayHash);
+            static::setMaxSize($array, 0, $arrayHash);
         }
 
         return static::$beautifullIndentMaxSize[$arrayHash];
@@ -193,7 +193,7 @@ trait PrettyOutputTrait
      *
      * @return     string  The md5 hash
      */
-    public function md5Array(array $array, bool $sort = true): string
+    public static function md5Array(array $array, bool $sort = true): string
     {
         if ($sort) {
             array_multisort($array);
@@ -217,17 +217,17 @@ trait PrettyOutputTrait
      * @param      integer  $minSize    OPTIONAL The minium size DEFAULT 0
      * @param      string   $arrayHash  OPTIONAL The already calculated array hash DEFAULT null
      */
-    private function setMaxSize(array $array, int $minSize = 0, string $arrayHash = null)
+    private static function setMaxSize(array $array, int $minSize = 0, string $arrayHash = null)
     {
         if ($arrayHash === null) {
-            $arrayHash = $this->md5Array($array);
+            $arrayHash = static::md5Array($array);
         }
 
         $max = 0;
 
         foreach ($array as $value) {
             if (is_array($value)) {
-                $size = $this->getMaxSize($value);
+                $size = static::getMaxSize($value);
             } else {
                 $size = strlen((string) $value);
             }

@@ -16,9 +16,9 @@ use \abstracts\Entity as Entity;
  *
  * @abstract
  *
- * @todo PHP7 defines object return OR null with method(...): ?Class
- * @see https://wiki.php.net/rfc/nullable_types
- * @see https://wiki.php.net/rfc/union_types
+ * @todo       PHP7 defines object return OR null with method(...): ?Class
+ * @see        https://wiki.php.net/rfc/nullable_types
+ * @see        https://wiki.php.net/rfc/union_types
  */
 abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, \SeekableIterator
 {
@@ -27,13 +27,13 @@ abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, 
     /**
      * @var        Entity[]  $collection    An array of entity object
      */
-    protected $collection = array();
+    protected $collection = [];
     /**
      * @var        int[]|string[]  $indexId     An array of entity id key
      */
-    protected $indexId = array();
+    protected $indexId = [];
     /**
-     * @var        integer  $current    Current position of the pointer in the $collection
+     * @var        int  $current    Current position of the pointer in the $collection
      */
     protected $current = 0;
 
@@ -46,6 +46,22 @@ abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, 
      */
     public function __construct()
     {
+    }
+
+    /**
+     * Return the collection in an array format
+     *
+     * @return     array  Array with all the entities attributes
+     */
+    public function __toArray(): array
+    {
+        $arrayCollection = $this->collection;
+
+        foreach ($this->collection as $key => $entity) {
+            $arrayCollection[$key] = $entity->__toArray();
+        }
+
+        return $arrayCollection;
     }
 
     /**
@@ -73,22 +89,6 @@ abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, 
     ======================================*/
 
     /**
-     * Get the current Collection
-     *
-     * @return     array  The current collection as an array
-     */
-    public function getCollection(): array
-    {
-        $arrayStyle = [];
-
-        foreach ($this->collection as $entity) {
-            $arrayStyle[] = $entity->__toArray();
-        }
-
-        return $arrayStyle;
-    }
-
-    /**
      * Add an entity at the end of the collection
      *
      * @param      Entity     $entity  The entity object
@@ -102,13 +102,36 @@ abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, 
 
         if (array_key_exists($id, $this->indexId)) {
             throw new Exception(
-                'This entity id(' . $this->formatVariable($id) .') is already in the collection ' . $this,
+                'This entity is already in the collection ' . $this,
                 Exception::$WARNING
             );
         } else {
             $this->collection[] = $entity;
             $this->indexId[$id] = $this->count() - 1;
         }
+    }
+
+    /**
+     * Remove an entity from the collection
+     *
+     * @param      Entity  $entity  The entity
+     *
+     * @throws     Exception  If the entity is not already in the collection
+     */
+    public function remove($entity)
+    {
+        $id = $this->parseId($entity->getIdValue());
+
+        if (!array_key_exists($id, $this->indexId)) {
+            throw new Exception(
+                'This entity is not already in the collection ' . $this,
+                Exception::$WARNING
+            );
+        }
+
+        $index = $this->indexId[$id];
+        unset($this->indexId[$id]);
+        unset($this->collection[$index]);
     }
 
     /**
@@ -125,7 +148,7 @@ abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, 
 
         if (!array_key_exists($id, $this->indexId)) {
             throw new Exception(
-                'This entity id(' . $this->formatVariable($id) .') is not already in the collection ' . $this,
+                'This entity id(' . static::formatVariable($id) .') is not already in the collection ' . $this,
                 Exception::$WARNING
             );
         } else {
@@ -134,7 +157,7 @@ abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, 
     }
 
     /**
-     * Get an entity by its id or null if there is no entity at the given id
+     * Get an entity by its ID or null if there is no entity at the given id
      *
      * @param      mixed        $entityId  The entity id(s) in a array
      *
@@ -313,7 +336,7 @@ abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, 
     private function parseId($id): string
     {
         if (is_array($id)) {
-            $id = $this->md5Array($id);
+            $id = static::md5Array($id);
         }
 
         return $id;

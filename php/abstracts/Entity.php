@@ -152,8 +152,8 @@ abstract class Entity implements \ArrayAccess
 
         foreach ($this->columnsValue as $columnName => $columnValue) {
             $string .=
-                $this->smartAlign($columnName, $keys)
-                . '  ' . $this->smartAlign(
+                static::smartAlign($columnName, $keys)
+                . '  ' . static::smartAlign(
                     $this->columnsAttributes[$columnName]['type'] .
                     (isset($this->columnsAttributes[$columnName]['size']) ?
                         '('. $this->columnsAttributes[$columnName]['size'] . ')' : ''
@@ -164,7 +164,7 @@ abstract class Entity implements \ArrayAccess
                     ),
                     2
                 )
-                . '  = ' . $this->formatVariable($columnValue) . PHP_EOL;
+                . '  = ' . static::formatVariable($columnValue) . PHP_EOL;
         }
 
         return $string;
@@ -182,8 +182,8 @@ abstract class Entity implements \ArrayAccess
 
         foreach ($columnsName as $columnName) {
             $string .=
-                '  ' . $this->smartAlign($columnName, $columnsName)
-                . '  ' . $this->smartAlign(
+                '  ' . static::smartAlign($columnName, $columnsName)
+                . '  ' . static::smartAlign(
                     $this->columnsAttributes[$columnName]['type'] .
                     (isset($this->columnsAttributes[$columnName]['size']) ?
                         '('. $this->columnsAttributes[$columnName]['size'] . ')' : ''

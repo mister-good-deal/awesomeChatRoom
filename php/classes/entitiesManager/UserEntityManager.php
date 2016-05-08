@@ -55,16 +55,12 @@ class UserEntityManager extends EntityManager
     /**
      * Constructor that can take a User entity as first parameter and a UserCollection as second parameter
      *
-     * @param      User            $entity            A user entity object DEFAULT null
-     * @param      UserCollection  $entityCollection  A users collection oject DEFAULT null
+     * @param      User            $user            A user entity object DEFAULT null
+     * @param      UserCollection  $userCollection  A users collection oject DEFAULT null
      */
-    public function __construct(User $entity = null, UserCollection $entityCollection = null)
+    public function __construct(User $user = null, UserCollection $userCollection = null)
     {
-        parent::__construct($entity, $entityCollection);
-
-        if ($entity === null) {
-            $this->entity = new User();
-        }
+        parent::__construct($user, $userCollection);
 
         Ini::setIniFileName('conf.ini');
         $this->params = Ini::getSectionParams('User');
@@ -86,7 +82,7 @@ class UserEntityManager extends EntityManager
     public function getUserIdByPseudonym(string $pseudonym): int
     {
         $sqlMarks = 'SELECT id FROM %s WHERE pseudonym = %s';
-        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($pseudonym));
+        $sql      = static::sqlFormater($sqlMarks, (new User())->getTableName(), DB::quote($pseudonym));
 
         return (int) DB::query($sql)->fetchColumn();
     }
@@ -101,7 +97,7 @@ class UserEntityManager extends EntityManager
     public function getUserPseudonymById(int $id): string
     {
         $sqlMarks = 'SELECT pseudonym, firstName, lastName FROM %s WHERE id = %d';
-        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $id);
+        $sql      = static::sqlFormater($sqlMarks, (new User())->getTableName(), $id);
         $result   = DB::query($sql)->fetch();
 
         return (
@@ -123,7 +119,7 @@ class UserEntityManager extends EntityManager
 
         try {
             if (count($errors['SERVER']) === 0) {
-                $query            = 'SELECT MAX(id) FROM ' . $this->entity->getTableName();
+                $query            = 'SELECT MAX(id) FROM ' . (new User())->getTableName();
                 $this->entity->id = DB::query($query)->fetchColumn() + 1;
 
                 $this->bindInputs($inputs);
@@ -177,7 +173,7 @@ class UserEntityManager extends EntityManager
 
         if (count($errors) === 0) {
             $sqlMarks   = 'SELECT * FROM %s WHERE email = %s OR pseudonym = %s';
-            $sql        = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $login, $login);
+            $sql        = static::sqlFormater($sqlMarks, (new User())->getTableName(), $login, $login);
             $userParams = DB::query($sql)->fetch();
             $now        = new \DateTime();
             $continue   = true;
@@ -186,7 +182,7 @@ class UserEntityManager extends EntityManager
                 $this->entity->setAttributes($userParams);
 
                 if ((int) $this->entity->connectionAttempt === -1) {
-                    $intervalInSec         = $this->dateIntervalToSec($now->diff($this->entity->lastConnectionAttempt));
+                    $intervalInSec         = static::dateIntervalToSec($now->diff($this->entity->lastConnectionAttempt));
                     $minInterval           = (int) $this->params['minTimeAttempt'];
 
                     if ($intervalInSec < $minInterval) {
@@ -295,7 +291,7 @@ class UserEntityManager extends EntityManager
     public function checkSecurityToken(): bool
     {
         $sqlMarks = 'SELECT securityToken, securityTokenExpires FROM %s WHERE id = %d';
-        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $this->entity->id);
+        $sql      = static::sqlFormater($sqlMarks, (new User())->getTableName(), $this->entity->id);
         $results  = DB::query($sql)->fetch();
 
         return (
@@ -424,7 +420,7 @@ class UserEntityManager extends EntityManager
     private function isPseudonymExist(string $pseudonym): bool
     {
         $sqlMarks = 'SELECT count(*) FROM %s WHERE pseudonym = %s';
-        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($pseudonym));
+        $sql      = static::sqlFormater($sqlMarks, (new User())->getTableName(), DB::quote($pseudonym));
 
         return (int) DB::query($sql)->fetchColumn() > 0;
     }

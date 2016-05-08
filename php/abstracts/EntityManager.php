@@ -44,7 +44,7 @@ abstract class EntityManager
      * @param      Entity      $entity            An entity object DEFAULT null
      * @param      Collection  $entityCollection  A EntityCollection object DEFAULT null
      */
-    public function __construct(Entity $entity = null, Collection $entityCollection = null)
+    public function __construct($entity = null, $entityCollection = null)
     {
         if ($entity !== null) {
             $this->entity = $entity;
@@ -126,7 +126,7 @@ abstract class EntityManager
      * @param      Entity  $entity  OPTIONAL If an entity is passed, this entity becomes the EntityManager Entity
      *                              DEFAULT null
      *
-     * @return     bool    True if the entity has been saved or updated else false
+     * @return     bool    True if the entity has been saved or updated, false otherwise
      */
     public function saveEntity($entity = null): bool
     {
@@ -151,9 +151,9 @@ abstract class EntityManager
      * @param      Collection  $collection  OPTIONAL If a collection is passed, this collection becomes the
      *                                      EntityManager Collection DEFAULT null
      *
-     * @return     bool        True if the entity collection has been saved else false
+     * @return     bool        True if the entity collection has been saved, false otherwise
      */
-    public function saveCollection(Collection $collection = null): bool
+    public function saveCollection($collection = null): bool
     {
         if ($collection !== null) {
             $this->setEntityCollection($collection);

@@ -13,12 +13,12 @@ use \classes\DataBase as DB;
 use \classes\IniManager as Ini;
 use \classes\entitiesManager\GlobalEntityManager as EntityManager;
 use \classes\managers\UserManager as UserManager;
-use \classes\managers\ChatManager as ChatManager;
+use \classes\managers\RoomManager as RoomManager;
 use \classes\entities\User as User;
 use \classes\entities\UserRight as UserRight;
-use \classes\entities\ChatRoom as ChatRoom;
+use \classes\entities\Room as Room;
 use \classes\entitiesCollection\UserCollection as UserCollection;
-use \classes\entitiesCollection\ChatRoomCollection as ChatRoomCollection;
+use \classes\entitiesCollection\RoomCollection as RoomCollection;
 use \abstracts\designPatterns\Entity as Entity;
 
 /**
@@ -135,7 +135,7 @@ class Orm extends Console
 
         switch (rtrim($commandName[0])) {
             case 'tables':
-                static::out('Tables name: ' . PHP_EOL . $this->tablePrettyPrint(DB::getAllTables()) . PHP_EOL);
+                static::out('Tables name: ' . PHP_EOL . static::tablePrettyPrint(DB::getAllTables()) . PHP_EOL);
                 break;
 
             case 'entities':
@@ -190,7 +190,7 @@ class Orm extends Console
         if (isset($args['sql']) || isset($args['all'])) {
             $this->createAllTables();
             $this->insertUserData();
-            $this->insertChatData();
+            $this->insertRoomData();
         }
 
         if (isset($args['es']) || isset($args['all'])) {
@@ -247,7 +247,7 @@ class Orm extends Console
                 Ini::setIniFileName(Ini::INI_CONF_FILE);
             }
 
-            static::out($this->prettyTwoDimensionalArray($tables) . PHP_EOL);
+            static::out(static::prettyTwoDimensionalArray($tables) . PHP_EOL);
         } elseif (isset($args['info'])) {
             foreach (DB::getAllEntites() as $entityName) {
                 $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $entityName;
@@ -257,7 +257,7 @@ class Orm extends Console
             $this->createAllTables();
         } elseif (isset($args['data'])) {
             $this->insertUserData();
-            $this->insertChatData();
+            $this->insertRoomData();
         }
     }
 
@@ -309,7 +309,7 @@ class Orm extends Console
                 if (DB::cleanTable($args['t'])) {
                     static::ok(static::ACTION_DONE . PHP_EOL);
                 } else {
-                    static::fail(static::ACTION_FAIL . PHP_EOL . $this->tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
+                    static::fail(static::ACTION_FAIL . PHP_EOL . static::tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
                 }
             } else {
                 static::out(static::ACTION_CANCEL . PHP_EOL);
@@ -331,7 +331,7 @@ class Orm extends Console
                 if (DB::dropTable($args['t'])) {
                     static::ok(static::ACTION_DONE . PHP_EOL);
                 } else {
-                    static::fail(static::ACTION_FAIL . PHP_EOL . $this->tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
+                    static::fail(static::ACTION_FAIL . PHP_EOL . static::tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
                 }
             } else {
                 static::out(static::ACTION_CANCEL . PHP_EOL);
@@ -358,7 +358,7 @@ class Orm extends Console
         }
 
         if ($data !== null) {
-            static::out($this->prettySqlResult($args['t'], $data) . PHP_EOL);
+            static::out(static::prettySqlResult($args['t'], $data) . PHP_EOL);
         }
     }
 
@@ -372,7 +372,7 @@ class Orm extends Console
         $args = $this->getArgs($command);
 
         if ($this->checkTableName($args)) {
-            static::out($this->prettySqlResult($args['t'], DB::descTable($args['t'])) . PHP_EOL);
+            static::out(static::prettySqlResult($args['t'], DB::descTable($args['t'])) . PHP_EOL);
         }
     }
 
@@ -455,21 +455,21 @@ class Orm extends Console
     }
 
     /**
-     * Insert chat data in database
+     * Insert room data in database
      */
-    private function insertChatData()
+    private function insertRoomData()
     {
-        $rooms       = new ChatRoomCollection();
-        $chatManager = new ChatManager();
+        $rooms       = new RoomCollection();
+        $roomManager = new RoomManager(null, $rooms);
 
-        static::out('Create chat data' . PHP_EOL);
+        static::out('Create room data' . PHP_EOL);
 
         // Create a default chat room
-        $default = new ChatRoom([
+        $default = new Room([
             'id'           => 1,
             'name'         => 'Default',
             'creator'      => 1,
-            'creationDate' => date('Y-m-d H:i:s'),
+            'creationDate' => new \DateTime(),
             'maxUsers'     => 50
         ]);
 
@@ -477,19 +477,19 @@ class Orm extends Console
 
         // Create some rooms some public and some with password 123
         for ($i = 1; $i < 11; $i++) {
-            $room = new ChatRoom([
+            $room = new Room([
                 'id'           => ($i + 1),
                 'name'         => 'Room ' . $i,
                 'creator'      => 1,
                 'password'     => (mt_rand(0, 1) ? null : '123'),
-                'creationDate' => date('Y-m-d H:i:s'),
+                'creationDate' => new \DateTime(),
                 'maxUsers'     => 20
             ]);
 
             $rooms->add($room);
         }
 
-        if ($chatManager->saveChatRoomCollection($rooms)) {
+        if ($roomManager->saveRoomCollection()) {
             static::ok(sprintf('The followings chat rooms are inserted %s' . PHP_EOL, $rooms));
         } else {
             static::fail('An error occured on chat rooms collection save' . PHP_EOL);
@@ -548,11 +548,11 @@ class Orm extends Console
      *
      * @return     string  The pretty output
      *
-     * @todo move to PrettyOutputTrait
+     * @todo       Move to PrettyOutputTrait
      */
-    private function prettySqlResult(string $tableName, array $data): string
+    private static function prettySqlResult(string $tableName, array $data): string
     {
-        $columns       = $this->filterFecthAllByColumn($data);
+        $columns       = static::filterFecthAllByColumn($data);
         $colmunsNumber = count($columns);
         $rowsNumber    = ($colmunsNumber > 0) ? count($columns[key($columns)]) : 0;
         $columnsName   = [];
@@ -560,16 +560,16 @@ class Orm extends Console
 
         foreach ($columns as $columnName => $column) {
             $columnsName[] = $columnName;
-            $this->setMaxSize($column, strlen($columnName));
+            static::setMaxSize($column, strlen($columnName));
             // 3 because 2 spaces and 1 | are added between name
-            $maxLength += ($this->getMaxSize($column) + 3);
+            $maxLength += (static::getMaxSize($column) + 3);
         }
 
         // don't touch it's magic ;p
         $maxLength      -= 1;
 
-        if ($maxLength > $this->maxLength) {
-            return 'The console width is to small to print the output (console max-width = ' . $this->maxLength
+        if ($maxLength > static::$maxLength) {
+            return 'The console width is to small to print the output (console max-width = ' . static::$maxLength
                 . ' and content output width = ' . $maxLength . ')' . PHP_EOL;
         }
 
@@ -584,7 +584,7 @@ class Orm extends Console
         $prettyString   .= $separationLine;
 
         for ($i = 0; $i < $colmunsNumber; $i++) {
-            $prettyString .= '| ' . $this->smartAlign($columnsName[$i], $columns[$columnsName[$i]], 0, STR_PAD_BOTH)
+            $prettyString .= '| ' . static::smartAlign($columnsName[$i], $columns[$columnsName[$i]], 0, STR_PAD_BOTH)
                 . ' ';
         }
 
@@ -596,7 +596,7 @@ class Orm extends Console
         for ($i = 0; $i < $rowsNumber; $i++) {
             for ($j = 0; $j < $colmunsNumber; $j++) {
                 $prettyString .= '| ' .
-                    $this->smartAlign($columns[$columnsName[$j]][$i], $columns[$columnsName[$j]]) . ' ';
+                    static::smartAlign($columns[$columnsName[$j]][$i], $columns[$columnsName[$j]]) . ' ';
             }
 
             $prettyString .= '|' . PHP_EOL;

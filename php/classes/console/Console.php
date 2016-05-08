@@ -151,11 +151,11 @@ GODDBYE;
                     break;
 
                 case 'all cmd':
-                    static::out('Commands historic:' . $this->tablePrettyPrint($this->commandsHistoric) . PHP_EOL);
+                    static::out('Commands historic:' . static::tablePrettyPrint($this->commandsHistoric) . PHP_EOL);
                     break;
 
                 case 'help':
-                    static::out('List of all command' . PHP_EOL . $this->tableAssociativPrettyPrint(static::$COMMANDS));
+                    static::out('List of all command' . PHP_EOL . static::tableAssociativPrettyPrint(static::$COMMANDS));
                     break;
 
                 default:
@@ -229,8 +229,8 @@ GODDBYE;
         // --argument
         preg_match_all('/\-\-(?P<argKey>[a-zA-Z\-]+)(?P<argValue>[^ \-\-]*)/', $command, $matches2);
 
-        $args1 = $this->filterPregMatchAllWithFlags($matches1, 'argKey', 'argValue');
-        $args2 = $this->filterPregMatchAllWithFlags($matches2, 'argKey', 'argValue');
+        $args1 = static::filterPregMatchAllWithFlags($matches1, 'argKey', 'argValue');
+        $args2 = static::filterPregMatchAllWithFlags($matches2, 'argKey', 'argValue');
 
         return $args1 + $args2;
     }
@@ -241,8 +241,10 @@ GODDBYE;
      * @param      array   $table  The table to print
      *
      * @return     string  The pretty output table data
+     *
+     * @todo       Move to prettyOutput trait
      */
-    protected function tablePrettyPrint(array $table): string
+    protected static function tablePrettyPrint(array $table): string
     {
         return PHP_EOL . '- ' . implode(PHP_EOL . '- ', $table);
     }
@@ -253,15 +255,17 @@ GODDBYE;
      * @param      array   $table  The associative array to print
      *
      * @return     string  The pretty output table data
+     *
+     * @todo       Move to prettyOutput trait
      */
-    protected function tableAssociativPrettyPrint(array $table): string
+    protected static function tableAssociativPrettyPrint(array $table): string
     {
         $keys =  array_keys($table);
 
         $string = '';
 
         foreach ($table as $key => $value) {
-            $string .= $this->smartAlign($key, $keys) . ' : ' . $value . PHP_EOL;
+            $string .= static::smartAlign($key, $keys) . ' : ' . $value . PHP_EOL;
         }
 
         return PHP_EOL . $string;

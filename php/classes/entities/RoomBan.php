@@ -1,6 +1,6 @@
 <?php
 /**
- * ChatRoomBan entity
+ * RoomBan entity
  *
  * @package    Entity
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -11,16 +11,16 @@ namespace classes\entities;
 use \abstracts\Entity as Entity;
 
 /**
- * ChatRoomBan entity that extends the Entity abstact class
+ * RoomBan entity that extends the Entity abstact class
  *
- * @property   int     $idChatRoom  The chat room id
- * @property   string  $ip          The user banned ip
- * @property   string  $pseudonym   The user banned pseudonym
- * @property   int     $admin       The user admin id who banned the user
- * @property   string  $reason      The reason why the user got banned
- * @property   string  $date        The date when the user got banned
+ * @property   int     $idRoom     The room ID
+ * @property   string  $ip         The user banned ip
+ * @property   string  $pseudonym  The user banned pseudonym
+ * @property   int     $admin      The user admin ID who banned the user
+ * @property   string  $reason     The reason why the user got banned
+ * @property   string  $date       The date when the user got banned
  */
-class ChatRoomBan extends Entity
+class RoomBan extends Entity
 {
     /*=====================================
     =            Magic methods            =
@@ -33,7 +33,7 @@ class ChatRoomBan extends Entity
      */
     public function __construct(array $data = null)
     {
-        parent::__construct('ChatRoomBan');
+        parent::__construct('RoomBan');
 
         if ($data !== null) {
             $this->setAttributes($data);

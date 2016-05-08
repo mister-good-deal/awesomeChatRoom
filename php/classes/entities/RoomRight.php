@@ -1,6 +1,6 @@
 <?php
 /**
- * UserChatRight entity
+ * RoomRight entity
  *
  * @package    Entity
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -11,16 +11,16 @@ namespace classes\entities;
 use \abstracts\Entity as Entity;
 
 /**
- * UserChatRight entity that extends the Entity abstact class
+ * UserRoomRight entity that extends the Entity abstact class
  *
- * @property   int   $idUser  The user id
- * @property   int   $idRoom  The chat room id
+ * @property   int   $idUser  The user ID
+ * @property   int   $idRoom  The room ID
  * @property   bool  $kick    The kick right
  * @property   bool  $ban     The ban right
  * @property   bool  $grant   The grant right
  * @property   bool  $edit    The edit right
  */
-class UserChatRight extends Entity
+class RoomRight extends Entity
 {
     /*=====================================
     =            Magic methods            =
@@ -33,7 +33,7 @@ class UserChatRight extends Entity
      */
     public function __construct($data = null)
     {
-        parent::__construct('UserChatRight');
+        parent::__construct('RoomRight');
 
         if ($data !== null) {
             $this->setAttributes($data);

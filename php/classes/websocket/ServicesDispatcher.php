@@ -13,9 +13,10 @@ use Icicle\Http\Message\Response as Response;
 use Icicle\Socket\Socket as Socket;
 use Icicle\WebSocket\Application as Application;
 use Icicle\WebSocket\Connection as Connection;
+use classes\entitiesCollection\RoomCollection as RoomCollection;
+use classes\managers\RoomManager as RoomManager;
 use classes\websocket\Client as Client;
 use classes\websocket\ClientCollection as ClientCollection;
-use classes\websocket\RoomCollection as RoomCollection;
 use classes\websocket\services\ChatService as ChatService;
 use classes\websocket\services\RoomService as RoomService;
 use classes\websocket\services\ClientService as ClientService;
@@ -30,11 +31,11 @@ class ServicesDispatcher implements Application
     use \traits\PrettyOutputTrait;
 
     /**
-     * @var        $services    array     The differents services
+     * @var        array  $services     The differents services
      */
     private $services;
     /**
-     * @var        $logger      Logger A LoggerManager instance
+     * @var        Logger  $logger  A LoggerManager instance
      */
     private $logger;
     /**
@@ -58,8 +59,9 @@ class ServicesDispatcher implements Application
         $this->services['roomService']   = new RoomService();
         $this->services['clientService'] = new ClientService();
 
-        // Loads all the rooms
-        $this->rooms->loadRooms();
+        // Get all the rooms on server start
+        $roomManager = new RoomManager();
+        $this->rooms = $roomManager->getAllRooms();
     }
 
     /**
@@ -181,7 +183,7 @@ class ServicesDispatcher implements Application
      */
     private function serviceSelector(array $data, Client $client)
     {
-        $this->logger->log(LogLevel::DEBUG, 'Data: ' . $this->formatVariable($data));
+        $this->logger->log(LogLevel::DEBUG, 'Data: ' . static::formatVariable($data));
 
         foreach ($data['service'] as $service) {
             switch ($service) {

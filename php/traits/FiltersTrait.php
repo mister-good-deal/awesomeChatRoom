@@ -22,7 +22,7 @@ trait FiltersTrait
      *
      * @return     array   The filterd array with $keyName = $keyValue
      */
-    public function filterPregMatchAllWithFlags(array $matches, string $keyName, string $valueName): array
+    public static function filterPregMatchAllWithFlags(array $matches, string $keyName, string $valueName): array
     {
         $cleanArray = array();
 
@@ -44,7 +44,7 @@ trait FiltersTrait
      *
      * @return     array  The filtered array by columns
      */
-    public function filterFecthAllByColumn(array $data): array
+    public static function filterFecthAllByColumn(array $data): array
     {
         $columnsArray = array();
 
@@ -68,7 +68,7 @@ trait FiltersTrait
      *
      * @return     array  The filtered array with only fields
      */
-    public function filterEsHitsByArray(array $data): array
+    public static function filterEsHitsByArray(array $data): array
     {
         $filteredArray = [];
 
@@ -104,7 +104,7 @@ trait FiltersTrait
      *
      * @todo move to DateTrait
      */
-    public function dateIntervalToSec(\DateInterval $dateInterval): int
+    public static function dateIntervalToSec(\DateInterval $dateInterval): int
     {
         $sec = 0;
 

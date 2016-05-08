@@ -1,6 +1,6 @@
 <?php
 /**
- * Manager for he entity User
+ * Manager for the entities User, UserRight and RoomRight
  *
  * @package    Manager
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -13,34 +13,26 @@ use \classes\entities\User as User;
 use \classes\entities\UserChatRight as UserChatRight;
 use \classes\entitiesManager\UserEntityManager as UserEntityManager;
 use \classes\entitiesManager\UserRightEntityManager as UserRightEntityManager;
-use \classes\entitiesManager\UserChatRightEntityManager as UserChatRightEntityManager;
+use \classes\entitiesManager\RoomRightEntityManager as RoomRightEntityManager;
 use \classes\entitiesCollection\UserCollection as UserCollection;
-use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
+use \classes\entitiesCollection\UserRoomRightCollection as UserRoomRightCollection;
 use \classes\LoggerManager as Logger;
 
 /**
- * Perform action relative to the User, UserRight and UserChatRight entities classes
+ * Perform action relative to the User, UserRight and RoomRight entities classes
  *
- * @todo remove getRight and getChatRight null check
+ * @todo refacto like RoomManager...
  */
 class UserManager extends Manager
 {
     /**
-     * @var        User  $userEntity    A user entity
+     * @var        User  $user    A user entity to work with
      */
-    private $userEntity;
+    private $user;
     /**
-     * @var        UserEntityManager  $userEntityManager    A user entity manager
+     * @var        UserCollection  $userCollection  A user collection to work with
      */
-    private $userEntityManager;
-    /**
-     * @var        UserRightEntityManager  $userRightEntityManager  A user right entity manager
-     */
-    private $userRightEntityManager;
-    /**
-     * @var        UserChatRightEntityManager  $userChatRightEntityManager  A user chat right entity manager
-     */
-    private $userChatRightEntityManager;
+    private $userCollection;
 
     /*=====================================
     =            Magic Methods            =
@@ -49,20 +41,15 @@ class UserManager extends Manager
     /**
      * Constructor that can take a User entity as first parameter and a Collection as second parameter
      *
-     * @param      User|null            $entity      A user entity object DEFAULT null
-     * @param      UserCollection|null  $collection  A users collection oject DEFAULT null
+     * @param      User|null            $user            A user entity object DEFAULT null
+     * @param      UserCollection|null  $userCollection  A users collection oject DEFAULT null
      */
-    public function __construct($entity = null, $collection = null)
+    public function __construct($user = null, $userCollection = null)
     {
         parent::__construct();
-        $this->userEntityManager          = new UserEntityManager($entity, $collection);
-        $this->userEntity                 = $this->userEntityManager->getEntity();
-        $this->userRightEntityManager     = new UserRightEntityManager($this->userEntity->getRight());
-        $this->userChatRightEntityManager = new UserChatRightEntityManager(null, $this->userEntity->getChatRight());
 
-        if ($entity !== null) {
-            $this->loadUserRights();
-        }
+        $this->user           = $user;
+        $this->userCollection = $userCollection;
     }
 
     /*=====  End of Magic Methods  ======*/
@@ -78,7 +65,7 @@ class UserManager extends Manager
      */
     public function getUser(): User
     {
-        return $this->userEntity;
+        return $this->user;
     }
 
     /**
@@ -88,10 +75,7 @@ class UserManager extends Manager
      */
     public function setUser(User $user)
     {
-        $this->userEntity = $user;
-        $this->userEntityManager->setEntity($user);
-        $this->userRightEntityManager->setEntity($user->getRight());
-        $this->userChatRightEntityManager->setEntityCollection($user->getChatRight());
+        $this->user = $user;
     }
 
     /**
@@ -103,7 +87,9 @@ class UserManager extends Manager
      */
     public function getUserIdByPseudonym(string $pseudonym): int
     {
-        return $this->userEntityManager->getUserIdByPseudonym($pseudonym);
+        $userEntityManager = new UserEntityManager();
+
+        return $userEntityManager->getUserIdByPseudonym($pseudonym);
     }
 
     /**
@@ -115,7 +101,9 @@ class UserManager extends Manager
      */
     public function getUserPseudonymById(int $id): string
     {
-        return $this->userEntityManager->getUserPseudonymById($id);
+        $userEntityManager = new UserEntityManager();
+
+        return $userEntityManager->getUserPseudonymById($id);
     }
 
     /**
@@ -127,7 +115,9 @@ class UserManager extends Manager
      */
     public function register(array $inputs): array
     {
-        return $this->userEntityManager->register($inputs);
+        $userEntityManager = new UserEntityManager();
+
+        return $userEntityManager->register($inputs);
     }
 
     /**
@@ -139,11 +129,11 @@ class UserManager extends Manager
      */
     public function connect(array $inputs): array
     {
-        $response = $this->userEntityManager->connect($inputs);
+        $userEntityManager = new UserEntityManager();
+        $response          = $userEntityManager->connect($inputs);
 
         if ($response['success']) {
-            $this->userEntity = $this->userEntityManager->getEntity();
-            $this->loadUserRights();
+            $this->userEntity = $userEntityManager->getEntity();
             $response['user'] = $this->userEntity->__toArray();
             $_SESSION['user'] = serialize($this->userEntity);
         }
@@ -332,24 +322,23 @@ class UserManager extends Manager
     /**
      * Save the current user collection
      *
-     * @param      UserCollection  $collection  A user collection to save
-     *
-     * @return     bool            True if the user collection has been saved else false
-     *
-     * @todo Can't update a User entity
+     * @return     bool  True if the user collection has been saved, false otherwise
      */
-    public function saveUserCollection($collection): bool
+    public function saveUserCollection(): bool
     {
-        $success = $this->userEntityManager->saveCollection($collection);
+        $userEntityManager      = new UserEntityManager();
+        $userRightEntityManager = new UserRightEntityManager();
+        $roomRightEntityManager = new RoomRightEntityManager();
+        $success                = $userEntityManager->saveCollection($this->userCollection);
 
-        foreach ($this->userEntityManager->getEntityCollection() as $user) {
-            if ($success && $user->getRight() !== null) {
-                $success = $this->userRightEntityManager->saveEntity($user->getRight());
-            }
+        if ($success) {
+            foreach ($this->userCollection as $user) {
+                if ($success && $user->getRight() !== null) {
+                    $success = $userRightEntityManager->saveEntity($user->getRight());
+                }
 
-            if ($success && $user->getChatRight() !== null) {
-                foreach ($user->getChatRight() as $chatRight) {
-                    $success = $this->userChatRightEntityManager->saveEntity($chatRight);
+                if ($success && $user->getRoomRight() !== null) {
+                    $success = $roomRightEntityManager->saveCollection($user->getRoomRight());
                 }
             }
         }
@@ -369,13 +358,13 @@ class UserManager extends Manager
     private function loadUserRights()
     {
         if ($this->userEntity->getRight() === null) {
-            $this->userRightEntityManager->loadEntity($this->userEntity->id);
+            $this->roomRightEntityManager->loadEntity($this->userEntity->id);
             $this->userEntity->setRight($this->userRightEntityManager->getEntity());
         }
 
         if ($this->userEntity->getChatRight() === null) {
-            $this->userChatRightEntityManager->loadUserChatRight((int) $this->userEntity->id);
-            $this->userEntity->setChatRight($this->userChatRightEntityManager->getEntityCollection());
+            $this->userRoomRightEntityManager->loadUserRoomRight((int) $this->userEntity->id);
+            $this->userEntity->setRoomRight($this->userRoomRightEntityManager->getEntityCollection());
         }
     }
 
