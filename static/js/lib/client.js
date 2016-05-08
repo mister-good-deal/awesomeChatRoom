@@ -1,11 +1,8 @@
 /**
- * Client module
+ * Client module to handle all client attributes
  *
- * @module               lib/client
- *
- * Client object to handle all client attributes
+ * @module  client
  */
-
 define([
     'jquery',
     'module',
@@ -14,13 +11,25 @@ define([
     'use strict';
 
     /**
-     * Client object
+     * Client module to handle all client attributes
      *
-     * @class
-     * @param      {Object}  attributes  JSON data representing the client attributes
-     * @param      {Object}  settings    Overriden settings
+     * @param       {Object}  attributes  JSON data representing the client attributes
+     * @param       {Object}  settings    Overriden settings
      *
-     * @alias      module:lib/client
+     * @exports     client
+    * @see          module:user
+     *
+     * @property   {Object} settings                The client global settings
+     * @property   {Object} attributes              The client attributes
+     * @property   {Object} attributes.connection   The client connection
+     * @property   {Number} attributes.id           The client ID
+     * @property   {User}   attributes.user         The client user object
+     * @property   {Object} attributes.location     The location in {"lat": "latitude", "lon": "longitude"} format
+     * @property   {Number} attributes.location.lat The location latitude
+     * @property   {Number} attributes.location.lon The location longitude
+     *
+     * @constructor
+     * @alias      module:client
      */
     var Client = function (attributes, settings) {
         this.settings   = $.extend(true, {}, this.settings, module.config(), settings);

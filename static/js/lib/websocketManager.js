@@ -15,42 +15,25 @@ define([
      * @param       {User}    User     The current User
      * @param       {Object}  settings Overriden settings
      *
-     * @exports    websocketManager
+     * @exports     websocketManager
      *
-     * @property   {User}       User        The curent user
      * @property   {Object}     settings    The websocketManager global settings
+     * @property   {User}       User        The curent user
+     * @property   {WebSocket}  socket      The websocket ressource
+     * @property   {Object}     callbacks   Callbacks method to process data recieved from the WebSocket server
      *
      * @constructor
      * @alias       module:websocketManager
      */
     var WebsocketManager = function (User, settings) {
-            this.settings = $.extend(true, {}, this.settings, settings);
-            this.user     = User;
+            this.settings  = $.extend(true, {}, this.settings, module.config(), settings);
+            this.user      = User;
+            this.socket    = {};
+            this.callbacks = {};
             this.init();
         };
 
     WebsocketManager.prototype = {
-        /**
-         * Default settings will get overriden if they are set when the WebsocketManager will be instanciated
-         */
-        "settings": {
-            "serverUrl"   : module.config().serverUrl,
-            "serviceName" : module.config().serviceName,
-            "waitInterval": module.config().waitInterval
-        },
-        /**
-         * The websocket ressource
-         */
-        "socket": {},
-        /**
-         * The current User instance
-         */
-        "user": {},
-        /**
-         * Callbacks method to process data recieved from the WebSocket server
-         */
-        "callbacks": {},
-
         /**
          * Launch the WebSocket server and add the WebSocket server callbacks
          */

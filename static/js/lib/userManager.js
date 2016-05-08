@@ -1,7 +1,7 @@
 /**
  * UserManager module
  *
- * @module lib/userManager
+ * @module userManager
  */
 
 define([
@@ -16,17 +16,26 @@ define([
     'use strict';
 
     /**
-     * UserManager object
+     * UserManager module
      *
-     * @class
      * @param      {FormsManager}  Forms     A FormsManager to handle form XHR ajax calls or jsCallbacks
      * @param      {Object}        settings  Overriden settings
      *
-     * @alias      module:lib/userManager
+     * @exports    userManager
+     * @see        module:user
+     * @see        module:form
+     *
+     * @property   {Object}         settings                The userManager global settings
+     * @property   {User}           user                    The current user object
+     * @property   {Function|null}  connectSuccessCallback  Callback when the user is successfully connected
+     *
+     * @constructor
+     * @alias      module:userManager
      */
     var UserManager = function (Forms, settings) {
-            this.settings = $.extend(true, {}, this.settings, module.config(), settings);
-            this.user     = new User();
+            this.settings               = $.extend(true, {}, this.settings, module.config(), settings);
+            this.user                   = new User();
+            this.connectSuccessCallback = null;
             // Bind forms ajax callback
             Forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
             Forms.addOnFailCallback('user/connect', this.connectFail, this);
@@ -36,14 +45,10 @@ define([
             Forms.addOnFailCallback('user/register', this.registerFail, this);
             Forms.addOnRequestFailCallback('user/register', this.registerRequestFail, this);
         },
+        // @todo remove this
         messageManager = new Message();
 
     UserManager.prototype = {
-        /**
-         * Callback when the user is successfully connected
-         */
-        "connectSuccessCallback": null,
-
         /**
          * Get the current user
          *

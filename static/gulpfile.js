@@ -70,8 +70,9 @@
         del(['less/vendor/*', '!less/vendor/variables.less']);
     });
 
-    gulp.task('flush_dist', function () {
+    gulp.task('flush_dist', function (done) {
         del('dist/*');
+        done();
     });
 
     gulp.task('flush', gulp.parallel('flush_bower', 'flush_npm', 'flush_js', 'flush_less', 'flush_dist'));
@@ -215,7 +216,10 @@
     ================================================*/
 
     gulp.task('jsdoc_generation', function (done) {
-        exec('"./node_modules/.bin/jsdoc" -c jsdocConfig.json -r -t ./node_modules/ink-docstrap/template --verbose', function (err, output) {
+        del('../../ziperrom1.github.io/awesomechatroom-doc/jsDoc');
+        exec('"./node_modules/.bin/jsdoc"' +
+            ' -c jsdocConfig.json' +
+            ' -r -t ./node_modules/ink-docstrap/template --verbose', function (err, output) {
             console.log(output);
             done(err);
         });

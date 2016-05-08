@@ -16,10 +16,10 @@ requirejs.config({
         "userManager"     : "lib/userManager",
         "client"          : "lib/client",
         "clientManager"   : "lib/clientManager",
-        "forms"           : "lib/forms",
-        "message"         : "lib/message",
+        "formManager"     : "lib/formManager",
         "websocketManager": "lib/websocketManager",
-        "iframe"          : "lib/iframe",
+        "iframeManager"   : "lib/iframeManager",
+        "message"         : "lib/message",
         "navigation"      : "lib/navigation"
     },
     "shim"  : {

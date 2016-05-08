@@ -10,6 +10,7 @@ namespace classes\websocket;
 
 use abstracts\Collection as Collection;
 use classes\websocket\Client as Client;
+use classes\ExceptionManager as Exception;
 
 /**
  * A collection of Client that extends the Collection pattern
@@ -39,6 +40,22 @@ class ClientCollection extends Collection
     {
     }
 
+    /**
+     * Client collection as an array
+     *
+     * @return     array  Client collection as an array
+     */
+    public function __toArray(): array
+    {
+        $clients = [];
+
+        foreach ($this->collection as $client) {
+            $clients[$client->getId()] = $client->__toArray();
+        }
+
+        return $clients;
+    }
+
     /*-----  End of Magic methods  ------*/
 
     /*======================================
@@ -58,10 +75,7 @@ class ClientCollection extends Collection
         $id = $client->getId();
 
         if (array_key_exists($id, $this->indexId)) {
-            throw new Exception(
-                'This client' . $client . ' is already in the collection ' . $this,
-                Exception::$WARNING
-            );
+            throw new Exception(_('You are already in this room'), Exception::$WARNING);
         }
 
         $this->collection[] = $client;

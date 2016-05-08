@@ -2,27 +2,27 @@
 require([
     'jquery',
     'lodash',
-    'forms',
+    'formManager',
     'websocketManager',
     'userManager',
     'clientManager',
     'roomManager',
     'chat',
     'message',
-    'iframe',
+    'iframeManager',
     'navigation',
     'bootstrap',
     'jasny-bootstrap',
     'domReady!'
-], function ($, _, FormsManager, WebsocketManager, UserManager, ClientManager, RoomManager, ChatManager, Message, Iframe, Navigation) {
+], function ($, _, Forms, Websocket, UserManager, ClientManager, RoomManager, ChatManager, Message, Iframe, Navigation) {
         'use strict';
 
-        var forms          = new FormsManager(),
+        var forms          = new Forms(),
             messageManager = new Message(),
             navigation     = new Navigation(),
             kibanaIframe   = new Iframe(navigation),
             userManager    = new UserManager(forms),
-            websocket      = new WebsocketManager(userManager.getCurrent()),
+            websocket      = new Websocket(userManager.getCurrent()),
             roomManager    = new RoomManager(websocket),
             clientManager  = new ClientManager(websocket, userManager.getCurrent()),
             chatManager    = new ChatManager(websocket, userManager.getCurrent(), forms);

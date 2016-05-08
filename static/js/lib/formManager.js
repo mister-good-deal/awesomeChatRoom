@@ -1,52 +1,50 @@
 /**
- * Forms module
+ * FormManager module
  *
- * @module lib/forms
- * @exports lib/vendors/jquery-2.1.4
+ * @module formManager
  */
 
 define([
     'jquery',
+    'module',
     'domReady!'
-], function ($) {
+], function ($, module) {
     'use strict';
 
     /**
-     * FormsManager object
+     * FormManager module
+     *
+     * @param       {Object}    settings Overriden settings
+     *
+     * @exports     formManager
+     *
+     * @property    {Object}    settings                The formManager global settings
+     * @property    {Object}    xhrs                    The currents xhr processing
+     * @property    {Object}    jsCallbacks             Callbacks methods to process users input on user sumbit action
+     * @property    {Object}    callbacks               Callbacks to process the XHR server response
+     * @property    {Object}    callbacks.beforeRequest Before request callbacks
+     * @property    {Object}    callbacks.onSuccess     On success callbacks
+     * @property    {Object}    callbacks.onFail        On fail callbacks
+     * @property    {Object}    callbacks.onRequestFail On request fail callbacks
      *
      * @constructor
-     * @alias       module:lib/forms
-     * @param       {Object}  settings Overriden settings
+     * @alias       module:formManager
      */
-    var FormsManager = function (settings) {
-            this.settings = $.extend(true, {}, this.settings, settings);
+    var FormManager = function (settings) {
+            this.settings    = $.extend(true, {}, this.settings, module.config(), settings);
+            this.xhrs        = {};
+            this.jsCallbacks = {};
+            this.callbacks   = {
+                "beforeRequest": {},
+                "onSuccess"    : {},
+                "onFail"       : {},
+                "onRequestFail": {}
+            };
+
             this.initEvents();
         };
 
-    FormsManager.prototype = {
-        /**
-         * Default settings will get overriden if they are set when the FormsManager will be instanciated
-         */
-        "settings" : {
-        },
-        /**
-         * The currents xhr processing
-         */
-        "xhrs": [],
-        /**
-         * Callbacks methods to process specifics responses on a XHR server response
-         */
-        "callbacks": {
-            'beforeRequest': [],
-            'onSuccess'    : [],
-            'onFail'       : [],
-            'onRequestFail': []
-        },
-        /**
-         * Callbacks methods to process users input on user sumbit action
-         */
-        "jsCallbacks": {},
-
+    FormManager.prototype = {
         /**
          * Bind events on all form
          */
@@ -280,5 +278,5 @@ define([
         }
     };
 
-    return FormsManager;
+    return FormManager;
 });

@@ -22,6 +22,8 @@ define([
      * @constructor
      * @alias       module:lib/navigation
      * @param       {Object}       settings Overriden settings
+     *
+     * @todo update jsDoc
      */
     var Navigation = function (settings) {
         this.settings = $.extend(true, {}, this.settings, module.config(), settings);

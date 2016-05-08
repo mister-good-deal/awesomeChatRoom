@@ -10,8 +10,10 @@ namespace classes\websocket\services;
 
 use classes\IniManager as Ini;
 use classes\websocket\Client as Client;
+use classes\websocket\Room as Room;
 use classes\websocket\RoomCollection as RoomCollection;
 use classes\managers\ChatManager as ChatManager;
+use classes\ExceptionManager as Exception;
 use Icicle\WebSocket\Connection as Connection;
 
 /**
@@ -50,7 +52,7 @@ class RoomService
      * Method to recieves data from the WebSocket server and process it
      *
      * @param      array           $data    JSON decoded client data
-     * @param      Client          $client  The client object
+     * @param      Client          $client  The client calling the request
      * @param      RoomCollection  $rooms   The rooms collection
      *
      * @return     \Generator
@@ -58,18 +60,18 @@ class RoomService
     public function process(array $data, Client $client, RoomCollection $rooms)
     {
         switch ($data['action']) {
-            case 'connectRoom':
-                yield $this->connectUser($client, $data);
+            case 'create':
+                yield $this->create($client, $data, $rooms);
+
+                break;
+
+            case 'connect':
+                yield $this->connect($client, $data);
 
                 break;
 
             case 'disconnectFromRoom':
                 yield $this->disconnectUserFromRoom($client, $data);
-
-                break;
-
-            case 'createRoom':
-                yield $this->createRoom($client, $data);
 
                 break;
 
@@ -104,131 +106,117 @@ class RoomService
     =======================================*/
 
     /**
-     * Create a chat room by an authenticated user request
+     * Create a room by an authenticated user request
      *
-     * @param      array       $client  The client information [Connection, User] array pair
-     * @param      array       $data    JSON decoded client data
+     * @param      array           $data    JSON decoded client data
+     * @param      Client          $client  The client calling the request
+     * @param      RoomCollection  $rooms   The actives rooms
      *
      * @return     \Generator
+     *
+     * @todo       to test
      */
-    private function createRoom(array &$client, array $data)
+    private function create(array $data, Client $client, RoomCollection $rooms)
     {
+        $success = false;
         $message = _('An error occured');
 
-        if ($client['User'] === null) {
+        if (!$client->isRegistered()) {
             $message = _('Authentication failed');
         } else {
-            $userManager = new UserManager($client['User']);
+            $userManager = new UserManager($client->getUser());
             $chatManager = new ChatManager();
+            // @todo createChatRoom() must throw error with message on failure
             $response    = $chatManager->createChatRoom(
-                $client['User']->id,
-                $data['roomName'],
-                $data['maxUsers'],
-                $data['roomPassword']
+                $client->getUser()->id,
+                $data['roomName'] ?? '',
+                $data['maxUsers'] ?? 0,
+                $data['roomPassword'] ?? ''
             );
 
             if ($response['success']) {
-                $room                  = $chatManager->getChatRoomEntity();
+                $room                  = new Room($chatManager->getChatRoomEntity());
                 $userChatRight         = new UserChatRight();
-                $userChatRight->idUser = $client['User']->id;
-                $userChatRight->idRoom = $room->id;
+                $userChatRight->idUser = $client->getUser()->id;
+                $userChatRight->idRoom = $room->getRoom()->id;
                 $response['success']   = $userManager->addUserGlobalChatRight($userChatRight, true);
 
                 if ($response['success']) {
-                    $this->rooms[$room->id] = [
-                        'users' => [],
-                        'room'  => $room
-                    ];
-
-                    yield $this->addUserToTheRoom(
-                        $client,
-                        $room,
-                        $userManager->getPseudonymForChat(),
-                        $data['location']
-                    );
-
+                    $room->addClient($client);
+                    $rooms->add($room);
+                    $success = true;
                     $message = sprintf(_('The chat room name "%s" is successfully created !'), $room->name);
 
                     yield $this->log->log(
                         Log::INFO,
-                        _('[chatService] New room added => %s by %s'),
-                        $room,
-                        $userManager->getPseudonymForChat()
+                        _('[chatService] New room added by %s ' . PHP_EOL . '%s'),
+                        $client,
+                        $room
                     );
                 }
             }
         }
 
-        yield $client['Connection']->send(json_encode(array_merge(
+        yield $client->getConnection()->send(json_encode(array_merge(
             [
                 'service' => $this->serviceName,
-                'action'  => 'connectRoom',
-                'room'    => $chatManager->getChatRoomEntity()->__toArray(),
-                'success' => false,
-                'text'    => $message
+                'action'  => 'create',
+                'success' => $success,
+                'text'    => $message,
+                'room'    => $success ? $room->__toArray() : []
             ],
             $response
         )));
     }
 
     /**
-     * Connect a user to one chat room as a registered or a guest user
+     * Connect a user to one room as a registered or a guest user
      *
-     * @param      array  $client  The client information [Connection, User] array pair
-     * @param      array  $data    JSON decoded client data
+     * @param      array           $data    JSON decoded client data
+     * @param      Client          $client  The client calling the request
+     * @param      RoomCollection  $rooms   The actives rooms
      *
      * @return     \Generator
+     *
+     * @todo       To test
      */
-    private function connectUser(array $client, array $data)
+    private function connect(array $data, Client $client, RoomCollection $rooms)
     {
-        $response    = [];
-        $chatManager = new ChatManager();
+        $success = false;
 
-        if ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
+        if (!$rooms->isRoomExist((int) ($data['roomId'] ?? -1))) {
             $message = _('This room does not exist');
         } else {
-            if (!isset($this->rooms[$chatManager->getChatRoomEntity()->id])) {
-                $this->rooms[$chatManager->getChatRoomEntity()->id] = [
-                    'users' => [],
-                    'room'  => $chatManager->getChatRoomEntity()
-                ];
-            }
+            $room = $rooms->getObjectById((int) $data['roomId']);
 
-            $room = $chatManager->getChatRoomEntity();
-
-            if (count($this->rooms[$room->id]['users']) >= $room->maxUsers) {
+            if ($room->isFull()) {
                 $message = _('The room is full');
-            } elseif (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
+            } elseif (!$room->isPasswordCorrect(($data['password'] ?? ''))) {
                 $message = _('Room password is incorrect');
-            } elseif ($chatManager->isIpBanned($client['Connection']->getRemoteAddress())) {
+            } elseif ($room->isClientBanned($client)) {
+                // @todo add ban info ?
                 $message = _('You are banned from this room');
             } else {
-                $closure = $this->addUserToTheRoom($client, $room, trim($data['pseudonym'] ?? ''), $data['location']);
-
-                foreach ($closure as $value) {
-                    yield $value;
+                // Insert the client in the room
+                try {
+                    $room->addClient($client);
+                    $message = sprintf(_('You are connected to the room `%s`'), $room->getRoom()->name);
+                    $success = true;
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
                 }
-
-                $response = $closure->getReturn();
-            }
-
-            if (isset($response['success']) && $response['success']) {
-                $message                = sprintf(_('You\'re connected to the chat room "%s" !'), $room->name);
-                $response['room']       = $room->__toArray();
-                $response['pseudonyms'] = $this->getRoomPseudonyms($room->id);
-                $response['historic']   = $this->getRoomHistoric($room->id, $client);
             }
         }
 
-        yield $client['Connection']->send(json_encode(array_merge(
+        yield $client->getConnection()->send(json_encode(
             [
-                'service'     => $this->serviceName,
-                'action'      => 'connectRoom',
-                'success'     => false,
-                'text'        => $message ?? ''
-            ],
-            $response
-        )));
+                'service' => $this->serviceName,
+                'action'  => 'connect',
+                'success' => $success,
+                'text'    => $message,
+                'room'    => $success ? $room->__toArray() : []
+            ]
+        ));
     }
 
     /**
@@ -267,7 +255,7 @@ class RoomService
      * @param      array  $data    JSON decoded client data
      *
      * @return     \Generator
-     * @todo       to test
+     * @todo To refacto
      */
     private function setRoomInfo(array $client, array $data)
     {
@@ -321,7 +309,7 @@ class RoomService
      * @param      array  $data    JSON decoded client data
      *
      * @return     \Generator
-     * @todo       to test
+     * @todo To refacto
      */
     private function updateRoomUserRight(array $client, array $data)
     {

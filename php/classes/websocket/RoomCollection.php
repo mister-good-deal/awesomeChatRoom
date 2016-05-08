@@ -55,7 +55,7 @@ class RoomCollection extends Collection
      */
     public function add($room, $key = null)
     {
-        $id = $room->getRoom()->id;
+        $id = $room->getId();
 
         if (array_key_exists($id, $this->indexId)) {
             throw new Exception(
@@ -89,6 +89,18 @@ class RoomCollection extends Collection
         $index = $this->indexId[$id];
         unset($this->indexId[$id]);
         unset($this->collection[$index]);
+    }
+
+    /**
+     * Determine if room exist
+     *
+     * @param      int   $roomId  The room ID
+     *
+     * @return     bool  True if room exist, false otherwise.
+     */
+    public function isRoomExist(int $roomId): bool
+    {
+        return in_array($roomId, $this->indexId);
     }
 
     /*=====  End of Public methods  ======*/

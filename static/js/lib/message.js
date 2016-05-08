@@ -16,6 +16,8 @@ define([
      * @constructor
      * @alias       module:lib/message
      * @param       {Object} settings Overriden settings
+     *
+     * @todo update jsDoc
      */
     var Message = function (settings) {
         this.settings = $.extend(true, {}, this.settings, settings);

@@ -19,19 +19,19 @@ class Client
     use \traits\PrettyOutputTrait;
 
     /**
-     * @var        $connection      Connection An Icicle Connection
+     * @var        Connection  $connection  An Icicle Connection
      */
     private $connection;
     /**
-     * @var        $user    User A user entity representing the client if he's registered
+     * @var        User  $user     A user entity representing the client if he's registered
      */
     private $user = null;
     /**
-     * @var        $location    array An array ['lat'= > lat, 'lon' => lon] containing the client geo location
+     * @var        array  $location     An array ['lat'= > lat, 'lon' => lon] containing the client geo location
      */
     private $location = [];
     /**
-     * @var        $id      string A client ID auto generated from his Icicle Connection
+     * @var        string  $id  A client ID auto generated from his Icicle Connection
      */
     private $id;
 
@@ -62,6 +62,21 @@ class Client
             . 'connection = ' . $this->connection->getRemoteAddress() . ':' . $this->connection->getRemotePort() . PHP_EOL
             . 'location   = ' . static::formatVariable($this->location) . PHP_EOL
             . PHP_EOL . $this->user . PHP_EOL;
+    }
+
+    /**
+     * Client object as an array
+     *
+     * @return     array  Client object as an array
+     */
+    public function __toArray(): array
+    {
+        return [
+            'id'         => $this->id,
+            'connection' => $this->connection->getRemoteAddress() . ':' . $this->connection->getRemotePort(),
+            'user'       => $this->user->__toArray(),
+            'location'   => $this->location
+        ];
     }
 
     /*-----  End of Magic methods  ------*/
@@ -141,6 +156,23 @@ class Client
     }
 
     /*=====  End of Getters / setters  ======*/
+
+    /*=========================================
+    =            Utilities methods            =
+    =========================================*/
+
+    /**
+     * Determine if the client is registered
+     *
+     * @return     bool  True if the client is registered, False otherwise.
+     */
+    public function isRegistered()
+    {
+        return $this->user !== null;
+    }
+
+    /*=====  End of Utilities methods  ======*/
+
 
     /*======================================
     =            Private method            =

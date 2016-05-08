@@ -22,7 +22,7 @@ trait ShortcutsTrait
      *
      * @return     bool    True if the value is found else false
      */
-    public function inSubArray($needle, array $haystack, string $key): bool
+    public static function inSubArray($needle, array $haystack, string $key): bool
     {
         $found = false;
 

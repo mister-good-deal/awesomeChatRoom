@@ -1,12 +1,11 @@
 /**
- * Iframe module
- *
- * @module               lib/iframe
+ * IframeManager module
  *
  * Helper class to integrate iframe in a page without scroll barre and in full width / height well integrated on the
  * page
+ *
+ * @module iframe
  */
-
 define([
     'jquery',
     'module',
@@ -16,21 +15,28 @@ define([
     'use strict';
 
     /**
-     * Iframe object
+     * IframeManager module
      *
-     * @class
-     * @alias      module:lib/iframe
-     * @param      {Object}  Navigation  A Navigation Object
-     * @param      {Object}  settings    Overriden settings
+     * Helper class to integrate iframe in a page without scroll barre and in full width / height well integrated on the
+     * page
+     *
+     * @exports     iframeManager
+     *
+     * @param      {Navigation} Navigation  A Navigation Object
+     * @param      {Object}     settings    Overriden settings
+     *
      * @todo       Put iframe, iframeContext, resizeObserver, resizeObserverConfig out of the protype to handle multiple
      *             iframes at the same time
+     *
+     * @constructor
+     * @alias      module:iframeManager
      */
-    var Iframe = function (Navigation, settings) {
+    var IframeManager = function (Navigation, settings) {
         this.settings   = $.extend(true, {}, this.settings, module.config(), settings);
         this.navigation = Navigation;
     };
 
-    Iframe.prototype = {
+    IframeManager.prototype = {
         /*====================================================
         =            Object settings / properties            =
         ====================================================*/
@@ -192,5 +198,5 @@ define([
         /*=====  End of Utilities methods  ======*/
     };
 
-    return Iframe;
+    return IframeManager;
 });

@@ -1,7 +1,7 @@
 /**
  * ClientManager module
  *
- * @module lib/clientManager
+ * @module clientManager
  */
 
 define([
@@ -13,14 +13,20 @@ define([
     'use strict';
 
     /**
-     * ClientManager object
+     * ClientManager module
      *
-     * @class
-     * @param      {WebSocket}  WebSocket  The websocket manager
-     * @param      {User}       user       A User object to bind to teh client
-     * @param      {Object}     settings   Overriden settings
+     * @param      {WebsocketManager}   WebSocket  The websocket manager
+     * @param      {User}               user       The current User object to bind to the client
+     * @param      {Object}             settings   Overriden settings
      *
-     * @alias      module:lib/clientManager
+     * @exports    clientManager
+     *
+     * @property   {Object}             settings    The clientManager global settings
+     * @property   {WebsocketManager}   websocket   The WebsocketManager module
+     * @property   {Client}             client      The current Client object
+     *
+     * @constructor
+     * @alias      module:clientManager
      */
     var ClientManager = function (WebSocket, user, settings) {
         var self = this;

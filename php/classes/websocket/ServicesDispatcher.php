@@ -172,7 +172,7 @@ class ServicesDispatcher implements Application
      * Service dispatcher to call the class which can treat the client request
      *
      * @param      array                                   $data    JSON decoded client data
-     * @param      Client                                  $client  The client object
+     * @param      Client                                  $client  The client calling the request
      *
      * @return     \Generator|\Icicle\Awaitable\Awaitable
      */
