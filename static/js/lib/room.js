@@ -183,6 +183,16 @@ define([
          */
         isPublic: function () {
             return _.isUndefined(this.getPassword()) || this.getPassword().length === 0;
+        },
+
+        /**
+         * Update the room clients
+         *
+         * @method     updateClients
+         * @param      {Array}  clients  The new room clients
+         */
+        updateClients: function (clients) {
+            this.clients = clients;
         }
     };
 

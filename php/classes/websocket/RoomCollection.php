@@ -10,6 +10,7 @@ namespace classes\websocket;
 
 use abstracts\Collection as Collection;
 use classes\websocket\Room as Room;
+use classes\managers\ChatManager as ChatManager;
 
 /**
  * A collection of Room that extends the Collection pattern
@@ -101,6 +102,18 @@ class RoomCollection extends Collection
     public function isRoomExist(int $roomId): bool
     {
         return in_array($roomId, $this->indexId);
+    }
+
+    /**
+     * Load all the rooms from the database in the collection
+     */
+    public function loadRooms()
+    {
+        $chatManager = new ChatManager();
+
+        foreach ($chatManager->getAllRooms() as $chatRoom) {
+            $this->add(new Room($chatRoom));
+        }
     }
 
     /*=====  End of Public methods  ======*/

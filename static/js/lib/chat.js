@@ -33,7 +33,7 @@ define([
             this.settings  = $.extend(true, {}, this.settings, module.config(), settings);
             this.websocket = WebSocket;
             this.user      = User;
-            this.initEvents();
+            // this.initEvents();
             // Add forms callback
             Forms.addJsCallback('setReasonCallbackEvent', this.setReasonCallbackEvent, this);
             Forms.addJsCallback('setRoomInfoCallbackEvent', this.setRoomInfoCallbackEvent, this);

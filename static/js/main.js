@@ -42,6 +42,6 @@ require([
         // Load the landing page configured in app.js => config => navigation => landingPage
         navigation.loadLandingPage();
         // Load all the rooms
-        roomManager.getAllRooms();
+        roomManager.getAll();
     }
 );

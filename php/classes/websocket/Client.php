@@ -74,7 +74,7 @@ class Client
         return [
             'id'         => $this->id,
             'connection' => $this->connection->getRemoteAddress() . ':' . $this->connection->getRemotePort(),
-            'user'       => $this->user->__toArray(),
+            'user'       => $this->user !== null ? $this->user->__toArray() : [],
             'location'   => $this->location
         ];
     }

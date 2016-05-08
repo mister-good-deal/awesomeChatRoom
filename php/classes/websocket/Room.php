@@ -17,12 +17,16 @@ use Icicle\WebSocket\Connection as Connection;
  */
 class Room
 {
-    use traits\ShortcutsTrait;
+    use \traits\ShortcutsTrait;
 
     /**
      * @var        ClientCollection  $clients   The clients connected to the room
      */
     private $clients;
+    /**
+     * @var        array  $pseudonyms   The clients pseudonym
+     */
+    private $pseudonyms;
     /**
      * @var        ChatRoom  $room  A ChatRoom entity representing the room instance
      */
@@ -39,7 +43,9 @@ class Room
      */
     public function __construct(ChatRoom $room)
     {
-        $this->room = $room;
+        $this->room       = $room;
+        $this->clients    = new ClientCollection();
+        $this->pseudonyms = [];
     }
 
     /**
@@ -123,6 +129,16 @@ class Room
         return $this->room->id;
     }
 
+    /**
+     * Get the room pseudonyms
+     *
+     * @return     array  The room pseudonyms
+     */
+    public function getPseudonyms(): array
+    {
+        return $this->pseudonyms;
+    }
+
     /*=====  End of Getters / setters  ======*/
 
     /*=========================================
@@ -132,11 +148,13 @@ class Room
     /**
      * Add a client to the room
      *
-     * @param      Client  $client  The client to add
+     * @param      Client  $client     The client to add
+     * @param      string  $pseudonym  The client pseudonym for this room
      */
-    public function addClient(Client $client)
+    public function addClient(Client $client, string $pseudonym)
     {
         $this->clients->add($client);
+        $this->pseudonyms[$client->getId()] = $pseudonym;
     }
 
     /**
@@ -156,7 +174,7 @@ class Room
      */
     public function isPublic(): bool
     {
-        return $this->room->password === null || count($this->room->password) === 0;
+        return $this->room->password === null || strlen($this->room->password) === 0;
     }
 
     /**
@@ -185,6 +203,18 @@ class Room
             $this->room->getChatRoomBanCollection(),
             'ip'
         );
+    }
+
+    /**
+     * Determine if a pseudonym is already used in the room
+     *
+     * @param      string  $pseudonym  The pseudonym to check
+     *
+     * @return     bool    True if the pseudonym is already used in the room, false otherwise.
+     */
+    public function isPseudonymAlreadyUsed(string $pseudonym): bool
+    {
+        return in_array($pseudonym, $this->pseudonyms);
     }
 
     /*=====  End of Utilities methods  ======*/

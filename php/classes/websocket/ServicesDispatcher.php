@@ -57,6 +57,9 @@ class ServicesDispatcher implements Application
         $this->services['chatService']   = new ChatService();
         $this->services['roomService']   = new RoomService();
         $this->services['clientService'] = new ClientService();
+
+        // Loads all the rooms
+        $this->rooms->loadRooms();
     }
 
     /**

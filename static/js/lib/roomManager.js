@@ -32,9 +32,45 @@ define([
         this.settings  = $.extend(true, {}, this.settings, module.config(), settings);
         this.websocket = WebSocket;
         this.rooms     = {};
+
+        this.initEvents();
     };
 
     RoomManager.prototype = {
+        /*==============================
+        =            Events            =
+        ==============================*/
+
+        /**
+         * Initialize all the events
+         *
+         * @method     initEvents
+         */
+        initEvents: function () {
+            // Connect to a room
+            $('body').on(
+                'click',
+                this.settings.selectors.roomConnect.div + ' ' + this.settings.selectors.roomConnect.connect,
+                $.proxy(this.connectEvent, this)
+            );
+        },
+
+        /**
+         * Event fired when a user want to connect to a room
+         *
+         * @method     connectEvent
+         */
+        connectEvent: function () {
+            var connectDiv = $(this.settings.selectors.roomConnect.div),
+                pseudonym  = connectDiv.find(this.settings.selectors.roomConnect.pseudonym).val(),
+                roomId     = connectDiv.find('select' + this.settings.selectors.roomConnect.name).val(),
+                password   = connectDiv.find(this.settings.selectors.roomConnect.password).val();
+            //@todo error message when no room selected...
+            this.connect(pseudonym, roomId, password);
+        },
+
+        /*=====  End of Events  ======*/
+
         /*==================================================================
         =            Actions that query to the WebSocket server            =
         ==================================================================*/
@@ -42,12 +78,30 @@ define([
         /**
          * Get the all rooms
          *
-         * @method     getAllRooms
+         * @method     getAll
          */
-        getAllRooms: function () {
+        getAll: function () {
             this.websocket.send(JSON.stringify({
                 "service": [this.settings.serviceName],
-                "action" : "getAllRooms"
+                "action" : "getAll"
+            }));
+        },
+
+        /**
+         * Connect to a room
+         *
+         * @method     connect
+         * @param      {String}  pseudonym  The user pseudonym
+         * @param      {Number}  roomId     The room id
+         * @param      {String}  password   The room password
+         */
+        connect: function (pseudonym, roomId, password) {
+            this.websocket.send(JSON.stringify({
+                "service"  : [this.settings.serviceName],
+                "action"   : "connect",
+                "pseudonym": pseudonym || this.websocket.user.getPseudonym(),
+                "roomId"   : roomId,
+                "password" : password || ''
             }));
         },
 
@@ -72,11 +126,21 @@ define([
         /**
          * Add all rooms to the rooms collection
          *
-         * @method     getAllRoomsCallback
+         * @method     getAllCallback
          * @param      {Object}  data    The server JSON reponse
          */
-        getAllRoomsCallback: function (data) {
+        getAllCallback: function (data) {
             _.map(data.rooms, _.bind(this.addRoom, this));
+        },
+
+        /**
+         * Action called after a connect room attempt
+         *
+         * @method     connectCallback
+         * @param      {Object}  data    The server JSON reponse
+         */
+        connectCallback: function (data) {
+            // just output a message and create the room DOM element
         },
 
         /*=====  End of Callbacks after WebSocket server responses  ======*/
@@ -92,7 +156,7 @@ define([
          * @param      {Object}  roomAttributes  The room attributes as JSON
          */
         addRoom: function (roomAttributes) {
-            var room = new Room(roomAttributes);
+            var room = new Room(roomAttributes.room);
 
             if (_.isUndefined(this.rooms[room.getId()])) {
                 this.rooms[room.getId()] = room;
