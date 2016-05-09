@@ -389,10 +389,11 @@ class RoomService
     {
         foreach ($room->getClients() as $client) {
             yield $client->getConnection()->send(json_encode([
-                'service' => $this->serviceName,
-                'action'  => 'updateClients',
-                'roomId'  => $room->id,
-                'clients' => $room->getClients()->__toArray()
+                'service'    => $this->serviceName,
+                'action'     => 'updateClients',
+                'roomId'     => $room->id,
+                'clients'    => $room->getClients()->__toArray(),
+                'pseudonyms' => $room->getPseudonyms()
             ]));
         }
     }

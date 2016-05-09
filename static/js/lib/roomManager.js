@@ -7,8 +7,9 @@ define([
     'jquery',
     'module',
     'lodash',
-    'room'
-], function ($, module, _, Room) {
+    'room',
+    'client'
+], function ($, module, _, Room, Client) {
     'use strict';
 
     /**
@@ -19,6 +20,7 @@ define([
      *
      * @exports    roomManager
      * @see        module:room
+     * @see        module:client
      * @see        module:websocket
      *
      * @property   {Object}             settings  The roomManager global settings
@@ -140,7 +142,24 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         connectCallback: function (data) {
-            // just output a message and create the room DOM element
+            // Output the message
+        },
+
+        /**
+         * Update the client list in the room
+         *
+         * @method     updateClientsCallback
+         * @param      {Object}  data    The server JSON reponse
+         */
+        updateClientsCallback: function (data) {
+            var self = this,
+                client;
+
+            _.forEach(data.clients, function (clientInfo) {
+                client = new Client(clientInfo);
+                client.setPseudonym(data.pseudonyms[client.getId()]);
+                self.rooms[data.roomId].addClient(client);
+            });
         },
 
         /*=====  End of Callbacks after WebSocket server responses  ======*/

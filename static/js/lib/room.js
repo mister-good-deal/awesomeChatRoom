@@ -27,12 +27,15 @@ define([
      * @property   {Object}  attributes.creationDate  The room creation date
      * @property   {Number}  attributes.maxUsers      The room maximum number of users
      * @property   {Array}   attributes.clients       The room connected clients
+     * @property   {Object}  attributes.pseudonyms    The room clients pseudonym indexed by their ID
      *
      * @constructor
      * @alias module:room
      */
     var Room = function (attributes, settings) {
         this.settings = $.extend(true, {}, this.settings, module.config(), settings);
+        this.attributes         = {};
+        this.attributes.clients = {};
         this.setAttributes(attributes);
     };
 
@@ -164,6 +167,16 @@ define([
         },
 
         /**
+         * Get the room clients pseudonym
+         *
+         * @method     getPseudonyms
+         * @return     {Object}  The room clients pseudonym indexed by their ID
+         */
+        getPseudonyms: function () {
+            return this.attributes.pseudonyms;
+        },
+
+        /**
          * Get the number of connected clients
          *
          * @method     getNumberOfConnectedClients
@@ -186,13 +199,15 @@ define([
         },
 
         /**
-         * Update the room clients
+         * Add a new client in the room
          *
-         * @method     updateClients
-         * @param      {Array}  clients  The new room clients
+         * @method     addClient
+         * @param      {Client}  client  The new client to add in the room
          */
-        updateClients: function (clients) {
-            this.clients = clients;
+        addClient: function (client) {
+            if (typeof this.attributes.clients[client.getId()] === 'undefined') {
+                this.attributes.clients[client.getId()] = client;
+            }
         }
     };
 

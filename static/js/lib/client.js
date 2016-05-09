@@ -6,8 +6,9 @@
 define([
     'jquery',
     'module',
-    'lodash'
-], function ($, module, _) {
+    'lodash',
+    'user'
+], function ($, module, _, User) {
     'use strict';
 
     /**
@@ -17,13 +18,14 @@ define([
      * @param       {Object}  settings    Overriden settings
      *
      * @exports     client
-    * @see          module:user
+     * @see         module:user
      *
      * @property   {Object} settings                The client global settings
      * @property   {Object} attributes              The client attributes
      * @property   {Object} attributes.connection   The client connection
      * @property   {Number} attributes.id           The client ID
      * @property   {User}   attributes.user         The client user object
+     * @property   {String} attributes.pseudonym    The client pseudonym for a room
      * @property   {Object} attributes.location     The location in {"lat": "latitude", "lon": "longitude"} format
      * @property   {Number} attributes.location.lat The location latitude
      * @property   {Number} attributes.location.lon The location longitude
@@ -32,8 +34,9 @@ define([
      * @alias      module:client
      */
     var Client = function (attributes, settings) {
-        this.settings   = $.extend(true, {}, this.settings, module.config(), settings);
-        this.attributes = {};
+        this.settings             = $.extend(true, {}, this.settings, module.config(), settings);
+        this.attributes           = {};
+        this.attributes.pseudonym = '';
 
         if (!_.isEmpty(attributes)) {
             this.setAttributes(attributes);
@@ -62,7 +65,32 @@ define([
          * @param      {Object}  data    JSON data
          */
         setAttributes: function (data) {
-            this.attributes = $.extend(true, {}, this.attributes, data);
+            var user = new User(data.user);
+
+            delete data.user;
+
+            this.attributes      = $.extend(true, {}, this.attributes, data);
+            this.attributes.user = user;
+        },
+
+        /**
+         * Get the client pseudonym for a room
+         *
+         * @method     getPseudonym
+         * @return     {String}  The client pseudonym for a room
+         */
+        getPseudonym: function () {
+            return this.attributes.pseudonym;
+        },
+
+        /**
+         * Set the client pseudonym for a room
+         *
+         * @method     setPseudonym
+         * @param      {String}  pseudonym  The client pseudonym for a room
+         */
+        setPseudonym: function (pseudonym) {
+            this.attributes.pseudonym = pseudonym;
         },
 
         /**
