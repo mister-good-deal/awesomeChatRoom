@@ -269,7 +269,7 @@ class RoomService
                 try {
                     $roomManager->addClient($client, $pseudonym);
                     // Inform others clients
-                    $this->updateClientsInRoom($room);
+                    yield $this->updateClientsInRoom($roomManager->getRoom());
                     $message = sprintf(_('You are connected to the room `%s`'), $roomManager->getRoom()->name);
                     $success = true;
                 } catch (Exception $e) {
@@ -391,8 +391,8 @@ class RoomService
             yield $client->getConnection()->send(json_encode([
                 'service' => $this->serviceName,
                 'action'  => 'updateClients',
-                'roomId'  => $room->getId(),
-                'clients' => $room->getClients()
+                'roomId'  => $room->id,
+                'clients' => $room->getClients()->__toArray()
             ]));
         }
     }

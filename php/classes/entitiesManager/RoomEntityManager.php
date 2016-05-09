@@ -94,14 +94,16 @@ class RoomEntityManager extends EntityManager
 
         // Creation
 
-        $query                      = 'SELECT MAX(id) FROM ' . $this->entity->getTableName();
-        $this->entity->id           = (int) DB::query($query)->fetchColumn() + 1;
-        $this->entity->creator      = $idUser;
-        $this->entity->name         = $roomName;
-        $this->entity->maxUsers     = $maxUsers;
-        $this->entity->password     = $password;
-        $this->entity->creationDate = new \DateTime();
+        $query = 'SELECT MAX(id) FROM ' . $this->entity->getTableName();
+        $room  = new Room([
+            'id'           => (int) DB::query($query)->fetchColumn() + 1,
+            'name'         => $roomName,
+            'creator'      => $idUser,
+            'password'     => $password,
+            'creationDate' => new \DateTime(),
+            'maxUsers'     => $maxUsers
+        ]);
 
-        return $this->saveEntity();
+        return $this->saveEntity($room);
     }
 }

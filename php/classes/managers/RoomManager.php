@@ -77,7 +77,7 @@ class RoomManager extends Manager
     public function addClient(Client $client, string $pseudonym)
     {
         $this->room->getClients()->add($client);
-        $this->room->getPseudonyms()[$client->getId()] = $pseudonym;
+        $this->room->addPseudonym($client->getId(), $pseudonym);
     }
 
     /**
@@ -118,7 +118,7 @@ class RoomManager extends Manager
      */
     public function createRoom(int $idUser, string $roomName, int $maxUsers, string $password = ''): bool
     {
-        $roomEntityManager = new RoomEntityManager($this->room, $this->roomCollection);
+        $roomEntityManager = new RoomEntityManager();
 
         $success = $roomEntityManager->createRoom($idUser, $roomName, $maxUsers, $password);
 

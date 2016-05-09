@@ -72,7 +72,7 @@ abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, 
     public function __toString(): string
     {
         $string = PHP_EOL . 'Collection of (' . $this->count() . ') '
-            . ($this->count() > 0 ? $this->getEntityByIndex(0)->getEntityName() : 'Unknown')
+            . str_replace('Collection', '', get_class($this))
             . ' entity' . PHP_EOL . implode(array_fill(0, 116, '-')) . PHP_EOL;
 
         foreach ($this->collection as $entity) {

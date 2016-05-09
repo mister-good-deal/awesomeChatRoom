@@ -149,6 +149,27 @@ class Room extends Entity
     }
 
     /**
+     * Add a pseudonym to the room binding to a client ID
+     *
+     * @param      string  $id         The client ID
+     * @param      string  $pseudonym  The pseudonym
+     */
+    public function addPseudonym(string $id, string $pseudonym)
+    {
+        $this->pseudonyms[$id] = $pseudonym;
+    }
+
+    /**
+     * Remove a pseudonym to the room binding to a client ID
+     *
+     * @param      string  $id     The client ID
+     */
+    public function removePseudonym(string $id)
+    {
+        unset($this->pseudonyms[$id]);
+    }
+
+    /**
      * Get the room basic attributes only
      *
      * @return     array  The room basic attributes only
