@@ -8,11 +8,11 @@ define([
     'jquery',
     'lodash',
     'module',
-    'message',
+    'notification',
     'user',
     'bootstrap',
     'loading-overlay'
-], function ($, _, module, Message, User) {
+], function ($, _, module, Notification, User) {
     'use strict';
 
     /**
@@ -26,6 +26,7 @@ define([
      * @see        module:form
      *
      * @property   {Object}         settings                The userManager global settings
+     * @property   {Notification}   notification            The Notification module
      * @property   {User}           user                    The current user object
      * @property   {Function|null}  connectSuccessCallback  Callback when the user is successfully connected
      *
@@ -33,20 +34,19 @@ define([
      * @alias      module:userManager
      */
     var UserManager = function (Forms, settings) {
-            this.settings               = $.extend(true, {}, this.settings, module.config(), settings);
-            this.user                   = new User();
-            this.connectSuccessCallback = null;
-            // Bind forms ajax callback
-            Forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
-            Forms.addOnFailCallback('user/connect', this.connectFail, this);
-            Forms.addOnRequestFailCallback('user/connect', this.connectRequestFail, this);
-            Forms.addBeforeRequestCallback('user/register', this.beforeRegister, this);
-            Forms.addOnSuccessCallback('user/register', this.registerSuccess, this);
-            Forms.addOnFailCallback('user/register', this.registerFail, this);
-            Forms.addOnRequestFailCallback('user/register', this.registerRequestFail, this);
-        },
-        // @todo remove this
-        messageManager = new Message();
+        this.settings               = $.extend(true, {}, this.settings, module.config(), settings);
+        this.notification           = new Notification();
+        this.user                   = new User();
+        this.connectSuccessCallback = null;
+        // Bind forms ajax callback
+        Forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
+        Forms.addOnFailCallback('user/connect', this.connectFail, this);
+        Forms.addOnRequestFailCallback('user/connect', this.connectRequestFail, this);
+        Forms.addBeforeRequestCallback('user/register', this.beforeRegister, this);
+        Forms.addOnSuccessCallback('user/register', this.registerSuccess, this);
+        Forms.addOnFailCallback('user/register', this.registerFail, this);
+        Forms.addOnRequestFailCallback('user/register', this.registerRequestFail, this);
+    };
 
     UserManager.prototype = {
         /**
@@ -71,7 +71,7 @@ define([
             this.user.setConnected(true);
 
             $(this.settings.selectors.modals.connect).modal('hide');
-            messageManager.add('Connect success !');
+            this.notification.add('Connect success !');
 
             if (typeof this.connectSuccessCallback === 'function') {
                 this.connectSuccessCallback.call(this);
@@ -121,7 +121,7 @@ define([
             form.loadingOverlay('remove');
             this.user.setAttributes(data);
             this.user.setConnected(true);
-            messageManager.add('Register success !');
+            this.notification.add('Register success !');
             // @todo close the modal
         },
 

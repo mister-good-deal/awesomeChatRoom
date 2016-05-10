@@ -31,8 +31,8 @@
         <button class="create" type="button"><?=_('Create a room')?></button>
     </div>
 
-    <div id="chat">
-        <!-- rooms -->
+    <!-- rooms -->
+    <div id="rooms">
         <div id="room-sample"
             class="room hide"
             data-id=""

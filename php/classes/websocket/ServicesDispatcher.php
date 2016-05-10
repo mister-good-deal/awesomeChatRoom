@@ -146,7 +146,7 @@ class ServicesDispatcher implements Application
             $this->logger->log(LogLevel::DEBUG, $this->rooms[0]);
         }
 
-        yield $this->onDisconnection($client, $response, $request);
+        $this->onDisconnection($client, $response, $request);
     }
 
     /**

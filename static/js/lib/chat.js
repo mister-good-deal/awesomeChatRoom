@@ -8,11 +8,11 @@ define([
     'jquery',
     'module',
     'lodash',
-    'message',
+    'notification',
     'bootstrap-switch',
     'bootstrap-select',
     'bootstrap'
-], function ($, module, _, Message) {
+], function ($, module, _, Notification) {
     'use strict';
 
     /**
@@ -20,30 +20,31 @@ define([
      *
      * @constructor
      * @alias       module:lib/chat
-     * @param       {WebSocket}    WebSocket The websocket manager
-     * @param       {User}         User      The current User
-     * @param       {FormsManager} Forms     A FormsManager to handle form XHR ajax calls or jsCallbacks
-     * @param       {Object}       settings  Overriden settings
+     * @param       {WebSocket}    WebSocket    The websocket manager
+     * @param       {User}         User         The current User
+     * @param       {FormsManager} Forms        A FormsManager to handle form XHR ajax calls or jsCallbacks
+     * @param       {Object}       settings     Overriden settings
      *
      * @todo ._assign instead of $.extend ?
      */
     var ChatManager = function (WebSocket, User, Forms, settings) {
-            var self = this;
+        var self = this;
 
-            this.settings  = $.extend(true, {}, this.settings, module.config(), settings);
-            this.websocket = WebSocket;
-            this.user      = User;
-            // this.initEvents();
-            // Add forms callback
-            Forms.addJsCallback('setReasonCallbackEvent', this.setReasonCallbackEvent, this);
-            Forms.addJsCallback('setRoomInfoCallbackEvent', this.setRoomInfoCallbackEvent, this);
-            // Enable selectpicker and load rooms
-            $(document).ready(function () {
-                $(self.settings.selectors.roomConnect.div + ' ' + self.settings.selectors.roomConnect.name)
-                    .selectpicker();
-            });
-        },
-        messageManager = new Message();
+        this.settings     = $.extend(true, {}, this.settings, module.config(), settings);
+        this.websocket    = WebSocket;
+        this.notification = new Notification();
+        this.user         = User;
+        // this.initEvents();
+        // Add forms callback
+        Forms.addJsCallback('setReasonCallbackEvent', this.setReasonCallbackEvent, this);
+        Forms.addJsCallback('setRoomInfoCallbackEvent', this.setRoomInfoCallbackEvent, this);
+        // Enable selectpicker and load rooms
+        $(document).ready(function () {
+            $(self.settings.selectors.roomConnect.div + ' ' + self.settings.selectors.roomConnect.name)
+                .selectpicker();
+        });
+    };
+
     ChatManager.prototype = {
         /*====================================================
         =            Object settings / properties            =
@@ -734,7 +735,7 @@ define([
             if (typeof this[data.action + 'Callback'] === 'function') {
                 this[data.action + 'Callback'](data);
             } else if (data.text) {
-                messageManager.add(data.text);
+                this.notification.add(data.text);
             }
         },
 
@@ -749,7 +750,7 @@ define([
                 this.insertRoomInDOM(data);
             }
 
-            messageManager.add(data.text);
+            this.notification.add(data.text);
         },
 
         /**
@@ -759,7 +760,7 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         disconnectRoomCallback: function (data) {
-            messageManager.add(data.text);
+            this.notification.add(data.text);
         },
 
         /**
@@ -832,7 +833,7 @@ define([
                 this.insertRoomInDOM(data);
             }
 
-            messageManager.add(data.text);
+            this.notification.add(data.text);
         },
 
         /**
@@ -869,7 +870,7 @@ define([
          */
         sendMessageCallback: function (data) {
             if (!data.success) {
-                messageManager.add(data.text);
+                this.notification.add(data.text);
             }
         },
 
@@ -887,7 +888,7 @@ define([
                 this.loadHistoric(roomChat, data.historic);
             }
 
-            messageManager.add(data.text);
+            this.notification.add(data.text);
         },
 
         /**
@@ -898,7 +899,7 @@ define([
          */
         getKickedCallback: function (data) {
             $(this.settings.selectors.global.room + '[data-id="' + data.roomId + '"]').remove();
-            messageManager.add(data.text, 'alert', 'info', 'Kicked from the room `' + data.roomName + '`', 10);
+            this.notification.add(data.text, 'alert', 'info', 'Kicked from the room `' + data.roomName + '`', 10);
         },
 
         /**
@@ -908,7 +909,7 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         kickUserCallback: function (data) {
-            messageManager.add(data.text);
+            this.notification.add(data.text);
         },
 
         /**
@@ -919,7 +920,7 @@ define([
          */
         getBannedCallback: function (data) {
             $(this.settings.selectors.global.room + '[data-id="' + data.roomId + '"]').remove();
-            messageManager.add(data.text, 'alert', 'danger', 'Banned from the room `' + data.roomName + '`', 20);
+            this.notification.add(data.text, 'alert', 'danger', 'Banned from the room `' + data.roomName + '`', 20);
         },
 
         /**
@@ -929,7 +930,7 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         banUserCallback: function (data) {
-            messageManager.add(data.text);
+            this.notification.add(data.text);
         },
 
         /**
@@ -939,7 +940,7 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         setRoomInfoCallback: function (data) {
-            messageManager.add(data.text);
+            this.notification.add(data.text);
         },
 
         /**
@@ -949,7 +950,7 @@ define([
          * @param      {Object}  data    The server JSON reponse
          */
         changeRoomInfoCallback: function (data) {
-            messageManager.add(data.text);
+            this.notification.add(data.text);
         },
 
         /**

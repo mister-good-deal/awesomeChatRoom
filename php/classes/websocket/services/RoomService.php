@@ -283,7 +283,8 @@ class RoomService
                 'service' => $this->serviceName,
                 'action'  => 'connect',
                 'success' => $success,
-                'text'    => $message
+                'text'    => $message,
+                'roomId'  => $data['roomId']
             ]
         ));
     }
@@ -302,8 +303,8 @@ class RoomService
 
         foreach ($rooms as $room) {
             $roomsInfo[] = [
-                'room'           => $room->getRoomBasicAttributes(),
-                'usersConnected' => count($room->getClients())
+                'room'             => $room->getRoomBasicAttributes(),
+                'connectedClients' => count($room->getClients())
             ];
         }
 

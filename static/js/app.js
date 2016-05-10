@@ -19,7 +19,7 @@ requirejs.config({
         "formManager"     : "lib/formManager",
         "websocketManager": "lib/websocketManager",
         "iframeManager"   : "lib/iframeManager",
-        "message"         : "lib/message",
+        "notification"    : "lib/notification",
         "navigation"      : "lib/navigation"
     },
     "shim"  : {
@@ -78,6 +78,7 @@ requirejs.config({
             "serviceName": "roomService",
             "selectors"  : {
                 "global"             : {
+                    "rooms"             : "#rooms",
                     "room"              : ".room",
                     "roomName"          : ".room-name",
                     "roomContents"      : ".room-contents",
@@ -229,21 +230,24 @@ requirejs.config({
                 "pm"  : /^\/pm '([^']*)' (.*)/
             }
         },
-        "message"         : {
+        "notification"    : {
             "alert"       : {
                 "divId"          : "#alert-container",
                 "dismissClass"   : ".dismiss",
-                "defaultDuration": 2
+                "defaultDuration": 2,
+                "queue"          : []
             },
             "popup"       : {
                 "divId"          : "#popup-container",
                 "dismissClass"   : ".dismiss",
-                "defaultDuration": 6
+                "defaultDuration": 6,
+                "queue"          : []
             },
             "notification": {
                 "divId"          : "#notification-container",
                 "dismissClass"   : ".dismiss",
-                "defaultDuration": 4
+                "defaultDuration": 4,
+                "queue"          : []
             },
             "serviceName" : "notificationService",
             "defaultType" : "alert",

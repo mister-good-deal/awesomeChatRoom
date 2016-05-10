@@ -19,6 +19,8 @@ define([
      * @exports    room
      *
      * @property   {Object}  settings                 The room global settings
+     * @property   {Boolean} opened                   The room opened state
+     * @property   {Number}  connectedClients         The room number of connected clients
      * @property   {Object}  attributes               The room attributes
      * @property   {Number}  attributes.id            The room ID
      * @property   {String}  attributes.name          The room name
@@ -33,7 +35,8 @@ define([
      * @alias module:room
      */
     var Room = function (attributes, settings) {
-        this.settings = $.extend(true, {}, this.settings, module.config(), settings);
+        this.settings           = $.extend(true, {}, this.settings, module.config(), settings);
+        this.opened             = false;
         this.attributes         = {};
         this.attributes.clients = {};
         this.setAttributes(attributes);
@@ -177,13 +180,43 @@ define([
         },
 
         /**
+         * Set the room clients pseudonym
+         *
+         * @method     setPseudonyms
+         * @param      {Object}  pseudonyms  The room clients pseudonym
+         */
+        setPseudonyms: function (pseudonyms) {
+            this.attributes.pseudonyms = pseudonyms;
+        },
+
+        /**
+         * Set the number of connected clients
+         *
+         * @method     setConnectedClients
+         * @param      {Number}  connectedClients  The number of connected clients
+         */
+        setNumberOfConnectedClients: function (connectedClients) {
+            this.connectedClients = connectedClients;
+        },
+
+        /**
          * Get the number of connected clients
          *
          * @method     getNumberOfConnectedClients
          * @return     {Number}  The number of connected clients
          */
         getNumberOfConnectedClients: function () {
-            return _.size(this.attributes.clients);
+            return _.size(this.attributes.clients) === 0 ? this.connectedClients : _.size(this.attributes.clients);
+        },
+
+        /**
+         * Set the room opened state
+         *
+         * @method     setOpened
+         * @param      {Boolean}  opened  The room opened state
+         */
+        setOpened: function (opened) {
+            this.opened = opened;
         },
 
         /*=====  End of Getters / setters  ======*/
@@ -196,6 +229,16 @@ define([
          */
         isPublic: function () {
             return _.isUndefined(this.getPassword()) || this.getPassword().length === 0;
+        },
+
+        /**
+         * Determine if a room is opened
+         *
+         * @method     isOpened
+         * @return     {Boolean}  True if the room is opened, false otherwise
+         */
+        isOpened: function () {
+            return this.opened;
         },
 
         /**

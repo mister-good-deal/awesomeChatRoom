@@ -8,32 +8,42 @@ define([
     'module',
     'lodash',
     'room',
-    'client'
-], function ($, module, _, Room, Client) {
+    'client',
+    'notification',
+    'bootstrap-select',
+    'bootstrap'
+], function ($, module, _, Room, Client, Notification) {
     'use strict';
 
     /**
      * RoomManager object
      *
      * @param      {WebSocket}  WebSocket  The websocket manager
+     * @param      {Client}     Client  The current Client
      * @param      {Object}     settings   Overriden settings
      *
      * @exports    roomManager
      * @see        module:room
      * @see        module:client
+     * @see        module:notification
      * @see        module:websocket
      *
-     * @property   {Object}             settings  The roomManager global settings
-     * @property   {WebsocketManager}   websocket The WebsocketManager module
-     * @property   {Object}             rooms     Collection of room module
+     * @property   {Object}             settings        The roomManager global settings
+     * @property   {WebsocketManager}   websocket       The WebsocketManager module
+     * @property   {Notification}       notification    The Notification module
+     * @property   {Array}              mouseInRoom     Array of rooms ID that tells if the mouse is in a room DOM area
+     * @property   {Object}             rooms           Collection of room module
      *
      * @constructor
      * @alias      module:roomManager
      */
-    var RoomManager = function (WebSocket, settings) {
-        this.settings  = $.extend(true, {}, this.settings, module.config(), settings);
-        this.websocket = WebSocket;
-        this.rooms     = {};
+    var RoomManager = function (WebSocket, Client, settings) {
+        this.settings     = $.extend(true, {}, this.settings, module.config(), settings);
+        this.websocket    = WebSocket;
+        this.client       = Client;
+        this.notification = new Notification();
+        this.mouseInRoom  = [];
+        this.rooms        = {};
 
         this.initEvents();
     };
@@ -136,13 +146,17 @@ define([
         },
 
         /**
-         * Action called after a connect room attempt
+         * Insert the room in DOM if it is not already in
          *
          * @method     connectCallback
          * @param      {Object}  data    The server JSON reponse
          */
         connectCallback: function (data) {
-            // Output the message
+            if (data.success && !this.isRoomInDom(this.rooms[data.roomId])) {
+                this.insertRoomInDOM(this.rooms[data.roomId]);
+            }
+
+            this.notification.add(data.text);
         },
 
         /**
@@ -160,6 +174,8 @@ define([
                 client.setPseudonym(data.pseudonyms[client.getId()]);
                 self.rooms[data.roomId].addClient(client);
             });
+
+            this.rooms[data.roomId].setPseudonyms(data.pseudonyms);
         },
 
         /*=====  End of Callbacks after WebSocket server responses  ======*/
@@ -176,6 +192,8 @@ define([
          */
         addRoom: function (roomAttributes) {
             var room = new Room(roomAttributes.room);
+
+            room.setNumberOfConnectedClients(roomAttributes.connectedClients);
 
             if (_.isUndefined(this.rooms[room.getId()])) {
                 this.rooms[room.getId()] = room;
@@ -215,6 +233,69 @@ define([
             select.find(this.settings.selectors.roomConnect.publicRooms).html(publicRooms);
             select.find(this.settings.selectors.roomConnect.privateRooms).html(privateRooms);
             select.selectpicker('refresh');
+        },
+
+        /**
+         * Insert a room in the DOM with a Room object
+         *
+         * @method     insertRoomInDOM
+         * @param      {Room}  room    The Room object to insert
+         */
+        insertRoomInDOM: function (room) {
+            var roomSample = $(this.settings.selectors.global.roomSample),
+                newRoom    = roomSample.clone(true),
+                modalSample, newModal, id;
+
+            newRoom.attr('data-id', room.getId());
+            newRoom.removeAttr('id');
+            newRoom.removeClass('hide');
+            newRoom.find(this.settings.selectors.global.roomName).text(room.getName());
+            newRoom.find(this.settings.selectors.roomAction.showUsers).popover({
+                content: function () {
+                    var list = $('<ul>');
+
+                    _.forEach(room.getPseudonyms(), function (pseudonym) {
+                        list.append($('<li>', {"text": pseudonym}));
+                    });
+
+                    return list.html();
+                }
+            });
+            // @todo this.loadHistoric(room);
+            this.mouseInRoom[room.getId()] = false;
+            room.setOpened(true);
+
+            $(this.settings.selectors.global.rooms).append(newRoom);
+            // Modal room chat administration creation if the user is connected
+            if (this.client.getUser().isConnected()) {
+                modalSample = $(this.settings.selectors.administrationPanel.modalSample);
+                newModal    = modalSample.clone();
+                id          = 'chat-admin-' + room.getId();
+
+                newModal.attr({
+                    "id"          : id,
+                    "data-room-id": room.getId()
+                });
+
+                newModal.find(this.settings.selectors.administrationPanel.roomName).text(room.getName());
+                newModal.find(this.settings.selectors.administrationPanel.inputRoomName).val(room.getName());
+                newModal.find(this.settings.selectors.administrationPanel.inputRoomPassword).val(room.getPassword());
+                newRoom.find(this.settings.selectors.roomAction.administration).attr('data-target', '#' + id);
+                // @todo this.updateRoomUsersRights(newModal, data.usersRights, room.getId());
+
+                modalSample.after(newModal);
+            }
+        },
+
+        /**
+         * Determine if room is in DOM
+         *
+         * @method     isRoomInDom
+         * @param      {Room}     room    The room object to check
+         * @return     {Boolean}  True if room is in DOM, False otherwise
+         */
+        isRoomInDom: function (room) {
+            return $(this.settings.selectors.global.room + '[data-id="' + room.getId() + '"]').length > 0;
         }
 
         /*=====  End of Utilities methods  ======*/

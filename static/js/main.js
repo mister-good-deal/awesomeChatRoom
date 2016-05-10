@@ -8,26 +8,26 @@ require([
     'clientManager',
     'roomManager',
     'chat',
-    'message',
+    'notification',
     'iframeManager',
     'navigation',
     'bootstrap',
     'jasny-bootstrap',
     'domReady!'
-], function ($, _, Forms, Websocket, UserManager, ClientManager, RoomManager, ChatManager, Message, Iframe, Navigation) {
+], function ($, _, Forms, Websocket, UserManager, ClientManager, RoomManager, ChatManager, Notification, Iframe, Navigation) {
         'use strict';
 
         var forms          = new Forms(),
-            messageManager = new Message(),
+            notification   = new Notification(),
             navigation     = new Navigation(),
             kibanaIframe   = new Iframe(navigation),
             userManager    = new UserManager(forms),
             websocket      = new Websocket(userManager.getCurrent()),
-            roomManager    = new RoomManager(websocket),
             clientManager  = new ClientManager(websocket, userManager.getCurrent()),
+            roomManager    = new RoomManager(websocket, clientManager.getCurrent()),
             chatManager    = new ChatManager(websocket, userManager.getCurrent(), forms);
         // Bind WebSocket server callbacks on different services
-        websocket.addCallback(messageManager.settings.serviceName, messageManager.parseWebsocketData, messageManager);
+        websocket.addCallback(notification.settings.serviceName, notification.parseWebsocketData, notification);
         websocket.addCallback(chatManager.settings.serviceName, chatManager.wsCallbackDispatcher, chatManager);
         websocket.addCallback(roomManager.settings.serviceName, roomManager.wsCallbackDispatcher, roomManager);
         websocket.addCallback(clientManager.settings.serviceName, clientManager.wsCallbackDispatcher, clientManager);
