@@ -8,8 +8,9 @@
 
 namespace classes\entities;
 
-use \abstracts\Entity as Entity;
-use \classes\entitiesCollection\RoomBanCollection as RoomBanCollection;
+use abstracts\Entity as Entity;
+use classes\websocket\Client as Client;
+use classes\entitiesCollection\RoomBanCollection as RoomBanCollection;
 use classes\websocket\ClientCollection as ClientCollection;
 
 /**
@@ -146,6 +147,18 @@ class Room extends Entity
     public function getPseudonyms(): array
     {
         return $this->pseudonyms;
+    }
+
+    /**
+     * Get the client pseudonym for a room
+     *
+     * @param      Client  $client  The client to get the pseudonym from
+     *
+     * @return     string  The client pseudonym for the room
+     */
+    public function getClientPseudonym(Client $client): string
+    {
+        return $this->pseudonyms[$client->getId()];
     }
 
     /**

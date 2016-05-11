@@ -28,17 +28,18 @@ define([
      * @property   {String}  attributes.password      The room password
      * @property   {Object}  attributes.creationDate  The room creation date
      * @property   {Number}  attributes.maxUsers      The room maximum number of users
-     * @property   {Array}   attributes.clients       The room connected clients
+     * @property   {Object}  attributes.clients       The room connected clients
      * @property   {Object}  attributes.pseudonyms    The room clients pseudonym indexed by their ID
      *
      * @constructor
      * @alias module:room
      */
     var Room = function (attributes, settings) {
-        this.settings           = $.extend(true, {}, this.settings, module.config(), settings);
-        this.opened             = false;
-        this.attributes         = {};
-        this.attributes.clients = {};
+        this.settings              = $.extend(true, {}, this.settings, module.config(), settings);
+        this.opened                = false;
+        this.attributes            = {};
+        this.attributes.clients    = {};
+        this.attributes.pseudonyms = {};
         this.setAttributes(attributes);
     };
 
@@ -170,6 +171,16 @@ define([
         },
 
         /**
+         * Set the connected clients
+         *
+         * @method     setClients
+         * @param      {Array}  clients  Array of clients object
+         */
+        setClients: function (clients) {
+            this.attributes.clients = clients;
+        },
+
+        /**
          * Get the room clients pseudonym
          *
          * @method     getPseudonyms
@@ -248,9 +259,8 @@ define([
          * @param      {Client}  client  The new client to add in the room
          */
         addClient: function (client) {
-            if (typeof this.attributes.clients[client.getId()] === 'undefined') {
-                this.attributes.clients[client.getId()] = client;
-            }
+            this.attributes.clients[client.getId()]    = client;
+            this.attributes.pseudonyms[client.getId()] = client.getPseudonym();
         }
     };
 

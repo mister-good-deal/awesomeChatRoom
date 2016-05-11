@@ -146,36 +146,38 @@ define([
         },
 
         /**
-         * Insert the room in DOM if it is not already in
+         * Insert the room in DOM if it is not already in and add clients to the room
          *
          * @method     connectCallback
          * @param      {Object}  data    The server JSON reponse
          */
         connectCallback: function (data) {
-            if (data.success && !this.isRoomInDom(this.rooms[data.roomId])) {
-                this.insertRoomInDOM(this.rooms[data.roomId]);
+            var self = this;
+
+            if (data.success) {
+                _.forEach(data.clients, function (clientAttributes) {
+                    self.addClient(clientAttributes, self.rooms[data.roomId], data.pseudonyms);
+                });
+
+                if (!this.isRoomInDom(this.rooms[data.roomId])) {
+                    this.insertRoomInDOM(this.rooms[data.roomId]);
+                }
             }
 
             this.notification.add(data.text);
         },
 
         /**
-         * Update the client list in the room
+         * Add a client in the room
          *
          * @method     updateClientsCallback
          * @param      {Object}  data    The server JSON reponse
          */
-        updateClientsCallback: function (data) {
-            var self = this,
-                client;
+        addClientInRoomCallback: function (data) {
+            var client = new Client(data.client);
 
-            _.forEach(data.clients, function (clientInfo) {
-                client = new Client(clientInfo);
-                client.setPseudonym(data.pseudonyms[client.getId()]);
-                self.rooms[data.roomId].addClient(client);
-            });
-
-            this.rooms[data.roomId].setPseudonyms(data.pseudonyms);
+            client.setPseudonym(data.pseudonym);
+            this.rooms[data.roomId].addClient(client);
         },
 
         /*=====  End of Callbacks after WebSocket server responses  ======*/
@@ -183,6 +185,21 @@ define([
         /*=========================================
         =            Utilities methods            =
         =========================================*/
+
+        /**
+         * Add a client in a room
+         *
+         * @method     addClient
+         * @param      {Object}  clientAttributes  The client attributes
+         * @param      {Room}    room              The room to add the client in
+         * @param      {Object}  pseudonyms        The room pseudonyms list
+         */
+        addClient: function (clientAttributes, room, pseudonyms) {
+            var client = new Client(clientAttributes);
+
+            client.setPseudonym(pseudonyms[client.getId()]);
+            room.addClient(client);
+        },
 
         /**
          * Add a room to the rooms collection

@@ -248,11 +248,13 @@ class RoomService
         $success     = false;
         $pseudonym   = trim(($data['pseudonym'] ?? ''));
         $roomManager = new RoomManager(null, $rooms);
+        $room        = null;
 
         if (!is_numeric(($data['roomId'] ?? null)) && !$roomManager->isRoomExist((int) $data['roomId'])) {
             $message = _('This room does not exist');
         } else {
             $roomManager->loadRoomFromCollection((int) $data['roomId']);
+            $room = $roomManager->getRoom();
 
             if ($roomManager->isFull()) {
                 $message = _('The room is full');
@@ -268,9 +270,9 @@ class RoomService
                 // Insert the client in the room
                 try {
                     $roomManager->addClient($client, $pseudonym);
-                    // Inform others clients
-                    yield $this->updateClientsInRoom($roomManager->getRoom());
-                    $message = sprintf(_('You are connected to the room `%s`'), $roomManager->getRoom()->name);
+                    // Inform room's clients to add the new one
+                    yield $this->addClientInRoom($room, $client);
+                    $message = sprintf(_('You are connected to the room `%s`'), $room->name);
                     $success = true;
                 } catch (Exception $e) {
                     $message = $e->getMessage();
@@ -280,11 +282,13 @@ class RoomService
 
         yield $client->getConnection()->send(json_encode(
             [
-                'service' => $this->serviceName,
-                'action'  => 'connect',
-                'success' => $success,
-                'text'    => $message,
-                'roomId'  => $data['roomId']
+                'service'    => $this->serviceName,
+                'action'     => 'connect',
+                'success'    => $success,
+                'text'       => $message,
+                'roomId'     => $data['roomId'],
+                'clients'    => $room !== null ? $room->getClients()->__toArray() : [],
+                'pseudonyms' => $room !== null ? $room->getPseudonyms() : []
             ]
         ));
     }
@@ -380,22 +384,25 @@ class RoomService
     }
 
     /**
-     * Update the clients list for all the client in the room
+     * Inform room's clients to add the new one
      *
-     * @param      Room        $room   The room to update the clients from
+     * @param      Room        $room    The room to update the clients from
+     * @param      Client      $client  The new client ot add
      *
      * @return     \Generator
      */
-    private function updateClientsInRoom(Room $room)
+    private function addClientInRoom(Room $room, Client $client)
     {
-        foreach ($room->getClients() as $client) {
-            yield $client->getConnection()->send(json_encode([
-                'service'    => $this->serviceName,
-                'action'     => 'updateClients',
-                'roomId'     => $room->id,
-                'clients'    => $room->getClients()->__toArray(),
-                'pseudonyms' => $room->getPseudonyms()
-            ]));
+        foreach ($room->getClients() as $roomClient) {
+            if ($roomClient !== $client) {
+                yield $roomClient->getConnection()->send(json_encode([
+                    'service'   => $this->serviceName,
+                    'action'    => 'addClientInRoom',
+                    'roomId'    => $room->id,
+                    'client'    => $client->__toArray(),
+                    'pseudonym' => $room->getClientPseudonym($client)
+                ]));
+            }
         }
     }
 
