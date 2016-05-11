@@ -240,6 +240,8 @@ class RoomService
      * @param      RoomCollection  $rooms   The actives rooms
      *
      * @return     \Generator
+     *
+     * @todo       to test
      */
     private function connect(array $data, Client $client, RoomCollection $rooms)
     {
