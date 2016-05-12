@@ -83,12 +83,14 @@
     =            Import vendor sources            =
     =============================================*/
 
-    gulp.task('bower_install', function () {
-        return bower({ cmd: 'update'});
+    gulp.task('bower_install', function (done) {
+        bower({ cmd: 'update'});
+        done();
     });
 
-    gulp.task('bower_move_js', function () {
-        return gulp.src(mainBowerFiles()).pipe(gulp.dest('js/lib/vendor'));
+    gulp.task('bower_move_js', function (done) {
+        gulp.src(mainBowerFiles()).pipe(gulp.dest('js/lib/vendor'));
+        done();
     });
 
     gulp.task('bower_move_less', function () {

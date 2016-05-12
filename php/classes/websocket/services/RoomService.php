@@ -80,13 +80,13 @@ class RoomService
 
                 break;
 
-            case 'disconnectFromRoom':
-                yield $this->disconnectUserFromRoom($data, $client, $rooms);
+            case 'updateUserRight':
+                yield $this->updateUserRight($data, $client, $rooms);
 
                 break;
 
-            case 'updateRoomUserRight':
-                yield $this->updateRoomUserRight($data, $client, $rooms);
+            case 'disconnectFromRoom':
+                yield $this->disconnectUserFromRoom($data, $client, $rooms);
 
                 break;
 
@@ -182,7 +182,7 @@ class RoomService
      *
      * @return     \Generator
      *
-     * @todo       To refacto
+     * @todo       To test
      */
     private function update(array $data, Client $client, RoomCollection $rooms)
     {
@@ -201,27 +201,22 @@ class RoomService
                 $message = _('You are not registered so you cannot update the room information');
             } elseif (!$roomManager->isPasswordCorrect(($data['password'] ?? ''))) {
                 $message = _('Room password is incorrect');
-            } else {
-                $userManager = new UserManager($client->getUser());
-
-                if (!$userManager->hasChatEditRight($room->getId())) {
+            } elseif (!$roomManager->hasEditRight($client)) {
                     $message = _('You do not have the right to edit the room\'s information');
-                } else {
-                    try {
-                        foreach ($data['roomInfo'] as $attribute => $value) {
-                            $room->getRoom()->{$attribute} = $value;
-                        }
-
-                        $chatManager = new ChatManager($room->getRoom());
-                        $success     = $chatManager->saveChatRoom();
-
-                        // Update the room's information for all users in the room
-                        if ($success) {
-                            yield $this->updateRoom($room);
-                        }
-                    } catch (Exception $e) {
-                        $message = $e->getMessage();
+            } else {
+                try {
+                    foreach ($data['roomInfo'] as $attribute => $value) {
+                        $room->{$attribute} = $value;
                     }
+
+                    $success = $roomManager->saveRomm();
+
+                    // Update the room's information for all users in the room
+                    if ($success) {
+                        yield $this->updateRoom($room);
+                    }
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
                 }
             }
         }
@@ -297,41 +292,17 @@ class RoomService
     }
 
     /**
-     * Get the rooms basic information (name, type, usersMax, usersConnected)
+     * Update a user right in a room
      *
-     * @param      Client          $client  The client
-     * @param      RoomCollection  $rooms   The rooms
-     *
-     * @return     \Generator
-     */
-    private function getAll(Client $client, RoomCollection $rooms)
-    {
-        $roomsInfo = [];
-
-        foreach ($rooms as $room) {
-            $roomsInfo[] = [
-                'room'             => $room->getRoomBasicAttributes(),
-                'connectedClients' => count($room->getClients())
-            ];
-        }
-
-        yield $client->getConnection()->send(json_encode([
-            'service' => $this->serviceName,
-            'action'  => 'getAll',
-            'rooms'   => $roomsInfo
-        ]));
-    }
-
-    /**
-     * Update a user right for a room
-     *
-     * @param      array  $client  The client information [Connection, User] array pair
-     * @param      array  $data    JSON decoded client data
+     * @param      array           $data    JSON decoded client data
+     * @param      Client          $client  The client calling the request
+     * @param      RoomCollection  $rooms   The actives rooms
      *
      * @return     \Generator
-     * @todo To refacto
+     *
+     * @todo       to test
      */
-    private function updateRoomUserRight(array $client, array $data)
+    private function updateUserRight(array $data, Client $client, RoomCollection $rooms)
     {
         $success     = false;
         $message     = _('User right updated');
@@ -387,6 +358,36 @@ class RoomService
     }
 
     /**
+     * Get the rooms basic information (name, type, usersMax, usersConnected)
+     *
+     * @param      Client          $client  The client
+     * @param      RoomCollection  $rooms   The rooms
+     *
+     * @return     \Generator
+     */
+    private function getAll(Client $client, RoomCollection $rooms)
+    {
+        $roomsInfo = [];
+
+        foreach ($rooms as $room) {
+            $roomsInfo[] = [
+                'room'             => $room->getRoomBasicAttributes(),
+                'connectedClients' => count($room->getClients())
+            ];
+        }
+
+        yield $client->getConnection()->send(json_encode([
+            'service' => $this->serviceName,
+            'action'  => 'getAll',
+            'rooms'   => $roomsInfo
+        ]));
+    }
+
+    /*=========================================
+    =            Utilities methods            =
+    =========================================*/
+
+    /**
      * Inform room's clients to add the new one
      *
      * @param      Room        $room    The room to update the clients from
@@ -427,6 +428,8 @@ class RoomService
             ]));
         }
     }
+
+    /*=====  End of Utilities methods  ======*/
 
     /*=====  End of Private methods  ======*/
 }

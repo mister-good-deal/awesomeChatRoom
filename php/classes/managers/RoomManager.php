@@ -155,6 +155,18 @@ class RoomManager extends Manager
     }
 
     /**
+     * Save the room
+     *
+     * @return     bool  True if the room has been saved, false otherwise
+     */
+    public function saveRomm(): bool
+    {
+        $roomEntityManager = new RoomEntityManager($this->room, $this->roomCollection);
+
+        return $roomEntityManager->saveEntity();
+    }
+
+    /**
      * Save the room collection
      *
      * @return     bool  True if the collection has been saved, false otherwise
