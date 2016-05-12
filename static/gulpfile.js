@@ -88,9 +88,8 @@
         done();
     });
 
-    gulp.task('bower_move_js', function (done) {
-        gulp.src(mainBowerFiles()).pipe(gulp.dest('js/lib/vendor'));
-        done();
+    gulp.task('bower_move_js', function () {
+        return gulp.src(mainBowerFiles()).pipe(gulp.dest('js/lib/vendor'));
     });
 
     gulp.task('bower_move_less', function () {
