@@ -18,6 +18,7 @@ use classes\entitiesCollection\RoomBanCollection as RoomBanCollection;
 use classes\entitiesManager\RoomEntityManager as RoomEntityManager;
 use classes\entitiesManager\RoomRightEntityManager as RoomRightEntityManagers;
 use classes\entitiesManager\RoomBanEntityManager as RoomBanEntityManager;
+use classes\managers\UserManager as UserManager;
 use classes\websocket\Client as Client;
 
 /**
@@ -153,11 +154,30 @@ class RoomManager extends Manager
         return $roomRightEntityManager->grantAll();
     }
 
+    /**
+     * Save the room collection
+     *
+     * @return     bool  True if the collection has been saved, false otherwise
+     */
     public function saveRoomCollection()
     {
         $roomEntityManager = new RoomEntityManager($this->room, $this->roomCollection);
 
         return $roomEntityManager->saveCollection();
+    }
+
+    /**
+     * Determine if a client has edit right
+     *
+     * @param      Client  $client  The client to check the edit right
+     *
+     * @return     bool    True if the client has edit right, False otherwise
+     */
+    public function hasEditRight(Client $client): bool
+    {
+        $userManager = new UserManager($client->getUser());
+
+        return $userManager->hasRoomEditRight($this->room);
     }
 
     /**

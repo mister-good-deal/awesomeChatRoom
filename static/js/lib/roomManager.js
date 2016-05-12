@@ -150,6 +150,8 @@ define([
          *
          * @method     connectCallback
          * @param      {Object}  data    The server JSON reponse
+         *
+         * @todo Add roomBan collection from server ?
          */
         connectCallback: function (data) {
             var self = this;

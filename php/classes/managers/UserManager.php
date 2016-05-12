@@ -8,15 +8,16 @@
 
 namespace classes\managers;
 
-use \abstracts\Manager as Manager;
-use \classes\entities\User as User;
-use \classes\entities\UserChatRight as UserChatRight;
-use \classes\entitiesManager\UserEntityManager as UserEntityManager;
-use \classes\entitiesManager\UserRightEntityManager as UserRightEntityManager;
-use \classes\entitiesManager\RoomRightEntityManager as RoomRightEntityManager;
-use \classes\entitiesCollection\UserCollection as UserCollection;
-use \classes\entitiesCollection\UserRoomRightCollection as UserRoomRightCollection;
-use \classes\LoggerManager as Logger;
+use abstracts\Manager as Manager;
+use classes\entities\User as User;
+use classes\entities\UserChatRight as UserChatRight;
+use classes\entities\Room as Room;
+use classes\entitiesManager\UserEntityManager as UserEntityManager;
+use classes\entitiesManager\UserRightEntityManager as UserRightEntityManager;
+use classes\entitiesManager\RoomRightEntityManager as RoomRightEntityManager;
+use classes\entitiesCollection\UserCollection as UserCollection;
+use classes\entitiesCollection\UserRoomRightCollection as UserRoomRightCollection;
+use classes\LoggerManager as Logger;
 
 /**
  * Perform action relative to the User, UserRight and RoomRight entities classes
@@ -185,80 +186,76 @@ class UserManager extends Manager
     }
 
     /**
-     * Check if a user has the right to kick a user
+     * Determine if the user has room kick right
      *
-     * @param      int   $roomId  The room ID
+     * @param      Room  $room   The room to check in
      *
-     * @return     bool  True if a user has the right to kick a user from a room else false
+     * @return     bool  True if the user has room kick right, false otherwise.
      */
-    public function hasChatKickRight(int $roomId): bool
+    public function hasRoomKickRight(Room $room): bool
     {
         return (
-            $this->userEntityManager->checkSecurityToken() &&
-            $this->userEntity->getRight() !== null && (
+            $this->userEntityManager->checkSecurityToken() && (
                 $this->userEntity->getRight()->chatAdmin || (
-                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
-                    $this->userEntity->getChatRight()->getEntityById($roomId)->kick
+                    $this->userEntity->getRoomRight()->getEntityById($room->id) !== null &&
+                    $this->userEntity->getRoomRight()->getEntityById($room->id)->kick
                 )
             )
         );
     }
 
     /**
-     * Check if a user has the right to ban a user
+     * Determine if the user has room ban right
      *
-     * @param      int   $roomId  The room ID
+     * @param      Room  $room   The room to check in
      *
-     * @return     bool  True if a user has the right to ban a user from a room else false
+     * @return     bool  True if the user has room ban right, false otherwise
      */
-    public function hasChatBanRight(int $roomId): bool
+    public function hasRoomBanRight(Room $room): bool
     {
         return (
-            $this->userEntityManager->checkSecurityToken() &&
-            $this->userEntity->getRight() !== null && (
+            $this->userEntityManager->checkSecurityToken() && (
                 $this->userEntity->getRight()->chatAdmin || (
-                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
-                    $this->userEntity->getChatRight()->getEntityById($roomId)->ban
+                    $this->userEntity->getRoomRight()->getEntityById($room->id) !== null &&
+                    $this->userEntity->getRoomRight()->getEntityById($room->id)->ban
                 )
             )
         );
     }
 
     /**
-     * Check if a user has the right to grant a user right in the room
+     * Determine if the user has chat grant right
      *
-     * @param      int   $roomId  The room ID
+     * @param      Room  $room   The room to check in
      *
-     * @return     bool  True if a user has the right to grant a user right in the room else false
+     * @return     bool  True if the user has chat grant right, false otherwise
      */
-    public function hasChatGrantRight(int $roomId): bool
+    public function hasRoomGrantRight(Room $room): bool
     {
         return (
-            $this->userEntityManager->checkSecurityToken() &&
-            $this->userEntity->getRight() !== null && (
+            $this->userEntityManager->checkSecurityToken() && (
                 $this->userEntity->getRight()->chatAdmin || (
-                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
-                    $this->userEntity->getChatRight()->getEntityById($roomId)->grant
+                    $this->userEntity->getRoomRight()->getEntityById($room->id) !== null &&
+                    $this->userEntity->getRoomRight()->getEntityById($room->id)->grant
                 )
             )
         );
     }
 
     /**
-     * Check if a user has the right to edit the room's information
+     * Determine if the user has room edit right
      *
-     * @param      int   $roomId  The room ID
+     * @param      Room  $room   The room to check in
      *
-     * @return     bool  True if a user has the right to edit the room's information else false
+     * @return     bool  True if the user has room edit right, false otherwise
      */
-    public function hasChatEditRight(int $roomId): bool
+    public function hasRoomEditRight(Room $room): bool
     {
         return (
-            $this->userEntityManager->checkSecurityToken() &&
-            $this->userEntity->getRight() !== null && (
+            $this->userEntityManager->checkSecurityToken() && (
                 $this->userEntity->getRight()->chatAdmin || (
-                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
-                    $this->userEntity->getChatRight()->getEntityById($roomId)->edit
+                    $this->userEntity->getRoomRight()->getEntityById($roomId) !== null &&
+                    $this->userEntity->getRoomRight()->getEntityById($roomId)->edit
                 )
             )
         );

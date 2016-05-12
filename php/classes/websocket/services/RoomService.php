@@ -186,10 +186,12 @@ class RoomService
      */
     private function update(array $data, Client $client, RoomCollection $rooms)
     {
-        $success = false;
-        $message = _('Room information updated');
+        $success     = false;
+        $message     = _('Room information updated');
+        $roomManager = new RoomManager(null, $rooms);
+        $room        = null;
 
-        if (is_numeric($data['roomId']) && !$rooms->isRoomExist((int) ($data['roomId'] ?? -1))) {
+        if (!is_numeric(($data['roomId'] ?? null)) && !$roomManager->isRoomExist((int) $data['roomId'])) {
             $message = _('This room does not exist');
         } else {
             $room = $rooms->getEntityById((int) $data['roomId']);
