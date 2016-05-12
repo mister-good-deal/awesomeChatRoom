@@ -194,11 +194,12 @@ class RoomService
         if (!is_numeric(($data['roomId'] ?? null)) && !$roomManager->isRoomExist((int) $data['roomId'])) {
             $message = _('This room does not exist');
         } else {
-            $room = $rooms->getEntityById((int) $data['roomId']);
+            $roomManager->loadRoomFromCollection((int) $data['roomId']);
+            $room = $roomManager->getRoom();
 
             if (!$client->isRegistered()) {
                 $message = _('You are not registered so you cannot update the room information');
-            } elseif (!$room->isPasswordCorrect(($data['password'] ?? ''))) {
+            } elseif (!$roomManager->isPasswordCorrect(($data['password'] ?? ''))) {
                 $message = _('Room password is incorrect');
             } else {
                 $userManager = new UserManager($client->getUser());
