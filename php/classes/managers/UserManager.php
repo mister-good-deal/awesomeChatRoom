@@ -10,7 +10,7 @@ namespace classes\managers;
 
 use abstracts\Manager as Manager;
 use classes\entities\User as User;
-use classes\entities\UserChatRight as UserChatRight;
+use classes\entities\RoomRight as RoomRight;
 use classes\entities\Room as Room;
 use classes\entitiesManager\UserEntityManager as UserEntityManager;
 use classes\entitiesManager\UserRightEntityManager as UserRightEntityManager;
@@ -105,6 +105,16 @@ class UserManager extends Manager
         $userEntityManager = new UserEntityManager();
 
         return $userEntityManager->getUserPseudonymById($id);
+    }
+
+    /**
+     * Get a user pseudonym
+     *
+     * @return     string  The user pseudonym (first name + last name if not defined)
+     */
+    public function getPseudonymForChat(): string
+    {
+        return $this->userEntityManager->getPseudonymForChat();
     }
 
     /**
@@ -224,11 +234,11 @@ class UserManager extends Manager
     }
 
     /**
-     * Determine if the user has chat grant right
+     * Determine if the user has room grant right
      *
      * @param      Room  $room   The room to check in
      *
-     * @return     bool  True if the user has chat grant right, false otherwise
+     * @return     bool  True if the user has room grant right, false otherwise
      */
     public function hasRoomGrantRight(Room $room): bool
     {
@@ -262,16 +272,6 @@ class UserManager extends Manager
     }
 
     /**
-     * Get a user pseudonym
-     *
-     * @return     string  The user pseudonym (first name + last name if not defined)
-     */
-    public function getPseudonymForChat(): string
-    {
-        return $this->userEntityManager->getPseudonymForChat();
-    }
-
-    /**
      * Add a user global chat right
      *
      * @param      UserChatRight  $userChatRight  The user chat right entity
@@ -294,26 +294,6 @@ class UserManager extends Manager
         }
 
         return $success;
-    }
-
-    /**
-     * Set one user chat right
-     *
-     * @param      UserChatRight  $chatRight  The user chat right to set
-     *
-     * @return     bool           True if the operation succeed else false
-     */
-    public function setUserChatRight(UserChatRight $chatRight): bool
-    {
-        $success = true;
-
-        try {
-            $success = $this->userChatRightEntityManager->saveEntity($chatRight);
-        } catch (Exception $e) {
-            $success = false;
-        } finally {
-            return $success;
-        }
     }
 
     /**

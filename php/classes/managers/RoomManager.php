@@ -16,7 +16,7 @@ use classes\entities\RoomRight as RoomRight;
 use classes\entitiesCollection\RoomCollection as RoomCollection;
 use classes\entitiesCollection\RoomBanCollection as RoomBanCollection;
 use classes\entitiesManager\RoomEntityManager as RoomEntityManager;
-use classes\entitiesManager\RoomRightEntityManager as RoomRightEntityManagers;
+use classes\entitiesManager\RoomRightEntityManager as RoomRightEntityManager;
 use classes\entitiesManager\RoomBanEntityManager as RoomBanEntityManager;
 use classes\managers\UserManager as UserManager;
 use classes\websocket\Client as Client;
@@ -155,11 +155,37 @@ class RoomManager extends Manager
     }
 
     /**
+     * Update a room right
+     *
+     * @param      Client  $client     The client to update the room right to
+     * @param      string  $roomRight  The room right name
+     * @param      bool    $value      The new room right value
+     *
+     * @return     bool    True if the room right has been updated, false otherwise
+     */
+    public function updateRoomRight(Client $client, string $roomRight, bool $value): bool
+    {
+        $roomRight = $client->getUser()->getRoomRight()->getEntityById($this->room->id);
+
+        // Create the room right if it does not exist and add it to the user room right collection
+        if ($roomRight === null) {
+            $roomRight         = new RoomRight();
+            $roomRight->idRoom = $this->room->id;
+            $roomRight->idUser = $client->getUser()->id;
+            $client->getUser()->getRoomRight()->add($roomRight);
+        }
+
+        $roomRightEntityManager = new RoomRightEntityManager($roomRight);
+
+        return $roomRightEntityManager->update($roomRight, $value);
+    }
+
+    /**
      * Save the room
      *
      * @return     bool  True if the room has been saved, false otherwise
      */
-    public function saveRomm(): bool
+    public function saveRoom(): bool
     {
         $roomEntityManager = new RoomEntityManager($this->room, $this->roomCollection);
 
@@ -179,9 +205,9 @@ class RoomManager extends Manager
     }
 
     /**
-     * Determine if a client has edit right
+     * Determine if a client has room edit right
      *
-     * @param      Client  $client  The client to check the edit right
+     * @param      Client  $client  The client to check the right on
      *
      * @return     bool    True if the client has edit right, False otherwise
      */
@@ -190,6 +216,20 @@ class RoomManager extends Manager
         $userManager = new UserManager($client->getUser());
 
         return $userManager->hasRoomEditRight($this->room);
+    }
+
+    /**
+     * Determine if the client has room grant right
+     *
+     * @param      Client  $client  The client to check the right on
+     *
+     * @return     bool    True if the client has chat grant right, false otherwise
+     */
+    public function hasGrantRight(Client $client): bool
+    {
+        $userManager = new UserManager($client->getUser());
+
+        return $userManager->hasRoomGrantRight($this->room);
     }
 
     /**

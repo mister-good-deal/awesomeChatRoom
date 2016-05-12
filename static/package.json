@@ -35,6 +35,7 @@
     "jsdoc": "latest",
     "ink-docstrap": "latest",
     "jshint": "latest",
+    "jscs": "latest",
     "jshint-stylish": "latest",
     "less-plugin-autoprefix": "latest",
     "less-plugin-clean-css": "latest",

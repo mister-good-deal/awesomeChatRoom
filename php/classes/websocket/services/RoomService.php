@@ -85,11 +85,6 @@ class RoomService
 
                 break;
 
-            case 'disconnectFromRoom':
-                yield $this->disconnectUserFromRoom($data, $client, $rooms);
-
-                break;
-
             case 'getAll':
                 yield $this->getAll($client, $rooms);
 
@@ -162,15 +157,13 @@ class RoomService
             }
         }
 
-        yield $client->getConnection()->send(json_encode(
-            [
+        yield $client->getConnection()->send(json_encode([
                 'service' => $this->serviceName,
                 'action'  => 'create',
                 'success' => $success,
                 'text'    => $message,
                 'room'    => $success ? $roomManager->getRoom()->__toArray() : []
-            ]
-        ));
+        ]));
     }
 
      /**
@@ -209,7 +202,7 @@ class RoomService
                         $room->{$attribute} = $value;
                     }
 
-                    $success = $roomManager->saveRomm();
+                    $success = $roomManager->saveRoom();
 
                     // Update the room's information for all users in the room
                     if ($success) {
@@ -278,8 +271,7 @@ class RoomService
             }
         }
 
-        yield $client->getConnection()->send(json_encode(
-            [
+        yield $client->getConnection()->send(json_encode([
                 'service'    => $this->serviceName,
                 'action'     => 'connect',
                 'success'    => $success,
@@ -287,8 +279,7 @@ class RoomService
                 'roomId'     => $data['roomId'],
                 'clients'    => $room !== null ? $room->getClients()->__toArray() : [],
                 'pseudonyms' => $room !== null ? $room->getPseudonyms() : []
-            ]
-        ));
+        ]));
     }
 
     /**
@@ -306,51 +297,39 @@ class RoomService
     {
         $success     = false;
         $message     = _('User right updated');
-        $chatManager = new ChatManager();
+        $roomManager = new RoomManager(null, $rooms);
+        $room        = null;
 
-        if ($client['User'] === null) {
-            $message = _('Authentication failed');
-        } elseif ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
+        if (!is_numeric(($data['roomId'] ?? null)) && !$roomManager->isRoomExist((int) $data['roomId'])) {
             $message = _('This room does not exist');
         } else {
-            $room        = $chatManager->getChatRoomEntity();
-            $userManager = new UserManager($client['User']);
+            $roomManager->loadRoomFromCollection((int) $data['roomId']);
+            $room = $roomManager->getRoom();
 
-            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
-                $message = _('Incorrect password');
-            } elseif (!$userManager->hasChatGrantRight((int) $room->id)) {
+            if (!$client->isRegistered()) {
+                $message = _('You are not registered so you cannot update the room information');
+            } elseif (!$roomManager->isPasswordCorrect(($data['password'] ?? ''))) {
+                $message = _('Room password is incorrect');
+            } elseif (!$roomManager->hasGrantRight($client)) {
                 $message = _('You do not have the right to grant a user right in this room');
+            } elseif ($room->getClients()->getObjectById(($data['clientId'] ?? -1)) === null) {
+                $message = _('This client does not exists in this room');
             } else {
                 try {
-                    $user      = $this->getUserByRoomByPseudonym((int) $room->id, $data['pseudonym']);
-                    $chatRight = $user->getChatRight()->getEntityById($room->id);
-                    $userManager->setUser($user);
-
-                    if ($chatRight === null) {
-                        $chatRight = new UserChatRight([
-                            'idUser' => $user->id,
-                            'idRoom' => $room->id
-                        ]);
-                    }
-
-                    $chatRight->{$data['rightName']} = (bool) $data['rightValue'];
-                    $success                         = $userManager->setUserChatRight($chatRight);
-
-                    // Update the users right for users who have access to the admin board EG registered users
-                    if ($success) {
-                        yield $this->updateRoomUsersRights((int) $room->id);
-                    } else {
-                        $message = _('The right update failed');
-                    }
+                    $success = $roomManager->updateRoomRight(
+                        $room->getClients()->getObjectById($data['clientId']),
+                        $data['rightName'] ?? '',
+                        (bool) $data['rightValue'] ?? false
+                    );
                 } catch (Exception $e) {
                     $message = $e->getMessage();
                 }
             }
         }
 
-        yield $client['Connection']->send(json_encode([
+        yield $client->getConnection()->send(json_encode([
             'service' => $this->serviceName,
-            'action'  => 'updateRoomUserRight',
+            'action'  => 'updateUserRight',
             'success' => $success,
             'text'    => $message,
             'roomId'  => $data['roomId']

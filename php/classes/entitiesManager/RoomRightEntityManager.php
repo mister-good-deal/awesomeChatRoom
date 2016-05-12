@@ -45,7 +45,7 @@ class RoomRightEntityManager extends EntityManager
     }
 
     /**
-     * Grant all the rights to the user in the current chat room
+     * Grant all the rights to the user in the current room
      *
      * @return     bool  True if the room right was updated, false otherwise
      */
@@ -55,6 +55,21 @@ class RoomRightEntityManager extends EntityManager
         $this->entity->ban   = true;
         $this->entity->grant = true;
         $this->entity->edit  = true;
+
+        return $this->saveEntity();
+    }
+
+    /**
+     * Update a room right
+     *
+     * @param      string  $roomRight  The room right name
+     * @param      bool    $value      The new room right value
+     *
+     * @return     bool    True if the room right has been updated, false otherwise
+     */
+    public function update(string $roomRight, bool $value): bool
+    {
+        $this->{$roomRight} = $value;
 
         return $this->saveEntity();
     }
