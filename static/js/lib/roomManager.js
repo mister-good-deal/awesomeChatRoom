@@ -182,6 +182,26 @@ define([
             this.rooms[data.roomId].addClient(client);
         },
 
+        /**
+         * Callback after updated a user room right
+         *
+         * @method     updateUserRightCallback
+         * @param      {Object}  data    The server JSON reponse
+         */
+        updateUserRightCallback: function (data) {
+            this.notification.add(data.text);
+        },
+
+        /**
+         * Change a user right in the admin panel
+         *
+         * @method     changeUserRightCallback
+         * @param      {Object}  data    The server JSON reponse
+         */
+        changeUserRightCallback: function (data) {
+            console.log("changeUserRightCallback", data);
+        },
+
         /*=====  End of Callbacks after WebSocket server responses  ======*/
 
         /*=========================================

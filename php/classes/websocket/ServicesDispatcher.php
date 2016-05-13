@@ -15,8 +15,6 @@ use Icicle\WebSocket\Application as Application;
 use Icicle\WebSocket\Connection as Connection;
 use classes\entitiesCollection\RoomCollection as RoomCollection;
 use classes\managers\RoomManager as RoomManager;
-use classes\websocket\Client as Client;
-use classes\websocket\ClientCollection as ClientCollection;
 use classes\websocket\services\ChatService as ChatService;
 use classes\websocket\services\RoomService as RoomService;
 use classes\websocket\services\ClientService as ClientService;
@@ -31,7 +29,7 @@ class ServicesDispatcher implements Application
     use \traits\PrettyOutputTrait;
 
     /**
-     * @var        array  $services     The differents services
+     * @var        array  $services     The different services
      */
     private $services;
     /**
@@ -105,7 +103,7 @@ class ServicesDispatcher implements Application
             )
         );
 
-        yield $this->connectionSessionHandle($connection, $response, $request);
+        yield $this->connectionSessionHandle($connection);
     }
 
     /**
@@ -115,12 +113,10 @@ class ServicesDispatcher implements Application
      * @coroutine
      *
      * @param      \Icicle\WebSocket\Connection   $connection
-     * @param      \Icicle\Http\Message\Response  $response
-     * @param      \Icicle\Http\Message\Request   $request
      *
      * @return     \Generator|\Icicle\Awaitable\Awaitable|null
      */
-    private function connectionSessionHandle(Connection $connection, Response $response, Request $request)
+    private function connectionSessionHandle(Connection $connection)
     {
         $client   = new Client($connection);
         $iterator = $connection->read()->getIterator();
@@ -140,13 +136,13 @@ class ServicesDispatcher implements Application
         while (yield $iterator->isValid()) {
             yield $this->serviceSelector(
                 json_decode($iterator->getCurrent()->getData(), true),
-                $this->clients->getObjectById($client->getId())
+                $client
             );
 
             $this->logger->log(LogLevel::DEBUG, $this->rooms[0]);
         }
 
-        $this->onDisconnection($client, $response, $request);
+        $this->onDisconnection($client);
     }
 
     /**
@@ -156,13 +152,11 @@ class ServicesDispatcher implements Application
      *
      * @coroutine
      *
-     * @param      Client                                       $client
-     * @param      \Icicle\Http\Message\Response                $response
-     * @param      \Icicle\Http\Message\Request                 $request
+     * @param      Client   $client
      *
      * @return     \Generator|\Icicle\Awaitable\Awaitable|null
      */
-    public function onDisconnection(Client $client, Response $response, Request $request)
+    public function onDisconnection(Client $client)
     {
         // yield $this->services['chatService']->disconnectUser($client);
         $this->clients->remove($client);

@@ -185,7 +185,7 @@ class Client
      */
     protected function generateClientHash(): string
     {
-        return md5($this->connection->getRemoteAddress() + $this->connection->getRemotePort());
+        return md5($this->connection->getRemoteAddress() . $this->connection->getRemotePort());
     }
 
     /*=====  End of Private method  ======*/

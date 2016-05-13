@@ -60,10 +60,6 @@ class Orm extends Console
             'enabled' => false
         ],
         'properties' => [
-            'pseudonym' => [
-                'type'  => 'string',
-                'index' => 'not_analyzed'
-            ],
             'message' => [
                 'type' => 'string'
             ],
@@ -89,6 +85,10 @@ class Orm extends Console
                     'location' => [
                         'type'    => 'geo_point',
                         'lat_lon' => true
+                    ],
+                    'pseudonym' => [
+                        'type'  => 'string',
+                        'index' => 'not_analyzed'
                     ]
                 ]
             ],
@@ -103,6 +103,10 @@ class Orm extends Console
                     'location' => [
                         'type'    => 'geo_point',
                         'lat_lon' => true
+                    ],
+                    'pseudonym' => [
+                        'type'  => 'string',
+                        'index' => 'not_analyzed'
                     ]
                 ]
             ]

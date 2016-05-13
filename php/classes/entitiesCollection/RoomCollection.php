@@ -14,6 +14,9 @@ use classes\entities\Room as Room;
 /**
  * A collection of Room entity that extends the EntityCollection pattern
  *
+ * @method Room current() {
+ *     Returns the current element
+ * }
  *
  * @method add(Room $entity) {
  *      Add a Room entity at the end of the collection

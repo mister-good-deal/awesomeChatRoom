@@ -62,14 +62,14 @@ class RoomRightEntityManager extends EntityManager
     /**
      * Update a room right
      *
-     * @param      string  $roomRight  The room right name
-     * @param      bool    $value      The new room right value
+     * @param      string  $roomRightName   The room right name
+     * @param      bool    $value           The new room right value
      *
      * @return     bool    True if the room right has been updated, false otherwise
      */
-    public function update(string $roomRight, bool $value): bool
+    public function update(string $roomRightName, bool $value): bool
     {
-        $this->{$roomRight} = $value;
+        $this->{$roomRightName} = $value;
 
         return $this->saveEntity();
     }

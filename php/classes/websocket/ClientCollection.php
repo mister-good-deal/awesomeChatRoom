@@ -9,7 +9,6 @@
 namespace classes\websocket;
 
 use abstracts\Collection as Collection;
-use classes\websocket\Client as Client;
 use classes\ExceptionManager as Exception;
 
 /**

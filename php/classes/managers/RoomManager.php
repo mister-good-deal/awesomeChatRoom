@@ -9,17 +9,13 @@
 namespace classes\managers;
 
 use abstracts\Manager as Manager;
-use classes\entities\User as User;
 use classes\entities\Room as Room;
-use classes\entities\RoomBan as RoomBan;
 use classes\entities\RoomRight as RoomRight;
 use classes\entitiesCollection\RoomCollection as RoomCollection;
-use classes\entitiesCollection\RoomBanCollection as RoomBanCollection;
 use classes\entitiesManager\RoomEntityManager as RoomEntityManager;
 use classes\entitiesManager\RoomRightEntityManager as RoomRightEntityManager;
-use classes\entitiesManager\RoomBanEntityManager as RoomBanEntityManager;
-use classes\managers\UserManager as UserManager;
 use classes\websocket\Client as Client;
+use classes\ExceptionManager as Exception;
 
 /**
  * Perform action relative to the Room and RoomBan entities classes
@@ -157,13 +153,13 @@ class RoomManager extends Manager
     /**
      * Update a room right
      *
-     * @param      Client  $client     The client to update the room right to
-     * @param      string  $roomRight  The room right name
-     * @param      bool    $value      The new room right value
+     * @param      Client  $client          The client to update the room right to
+     * @param      string  $roomRightName   The room right name
+     * @param      bool    $value           The new room right value
      *
      * @return     bool    True if the room right has been updated, false otherwise
      */
-    public function updateRoomRight(Client $client, string $roomRight, bool $value): bool
+    public function updateRoomRight(Client $client, string $roomRightName, bool $value): bool
     {
         $roomRight = $client->getUser()->getRoomRight()->getEntityById($this->room->id);
 
@@ -177,7 +173,7 @@ class RoomManager extends Manager
 
         $roomRightEntityManager = new RoomRightEntityManager($roomRight);
 
-        return $roomRightEntityManager->update($roomRight, $value);
+        return $roomRightEntityManager->update($roomRightName, $value);
     }
 
     /**

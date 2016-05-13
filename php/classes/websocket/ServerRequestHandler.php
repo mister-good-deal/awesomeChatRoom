@@ -8,10 +8,8 @@
 
 namespace classes\websocket;
 
-use \classes\ExceptionManager as Exception;
-use \classes\IniManager as Ini;
-use \classes\entitiesManager\UserEntityManager as UserEntityManager;
-use \classes\websocket\ServicesDispatcher as Application;
+use classes\IniManager as Ini;
+use classes\websocket\ServicesDispatcher as Application;
 use Icicle\Http\Message\Request;
 use Icicle\Http\Message\BasicResponse;
 use Icicle\Http\Server\RequestHandler;

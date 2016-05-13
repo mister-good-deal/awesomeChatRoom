@@ -13,12 +13,9 @@ use classes\websocket\Client as Client;
 use classes\entities\Room as Room;
 use classes\entitiesCollection\RoomCollection as RoomCollection;
 use classes\managers\RoomManager as RoomManager;
-use classes\managers\ChatManager as ChatManager;
-use classes\managers\UserManager as UserManager;
 use classes\ExceptionManager as Exception;
 use classes\LoggerManager as Logger;
 use classes\logger\LogLevel as LogLevel;
-use Icicle\WebSocket\Connection as Connection;
 
 /**
  * Chat services to manage a chat with a WebSocket server
@@ -36,8 +33,6 @@ class RoomService
 
     /**
      * Constructor that loads chat parameters
-     *
-     * @param      Log   $log    Logger object
      */
     public function __construct()
     {
@@ -54,7 +49,7 @@ class RoomService
     ======================================*/
 
     /**
-     * Method to recieves data from the WebSocket server and process it
+     * Method to receive data from the WebSocket server and process it
      *
      * @param      array           $data    JSON decoded client data
      * @param      Client          $client  The client calling the request
@@ -77,6 +72,16 @@ class RoomService
 
             case 'connect':
                 yield $this->connect($data, $client, $rooms);
+
+                break;
+
+            case 'kickUser':
+                yield $this->kickUser($data, $client, $rooms);
+
+                break;
+
+            case 'banUser':
+                yield $this->banUser($data, $client, $rooms);
 
                 break;
 
@@ -105,6 +110,10 @@ class RoomService
     =            Private methods            =
     =======================================*/
 
+    /*============================================
+    =            Direct called method            =
+    ============================================*/
+
     /**
      * Create a room by an authenticated user request
      *
@@ -118,16 +127,15 @@ class RoomService
      */
     private function create(array $data, Client $client, RoomCollection $rooms)
     {
-        $success = false;
-        $message = _('An error occured');
+        $success     = false;
+        $message     = _('An error occurred');
+        $roomManager = new RoomManager(null, $rooms);
 
         if (!$client->isRegistered()) {
             $message = _('You must be registered to create a room');
         } else {
-            $roomManager = new RoomManager(null, $rooms);
-
             try {
-                $success = $roomManager->createChatRoom(
+                $success = $roomManager->createRoom(
                     $client->getUser()->id,
                     $data['roomName'] ?? '',
                     $data['maxUsers'] ?? 0,
@@ -145,11 +153,13 @@ class RoomService
                     $success = true;
                     $message = sprintf(_('The room `%s` is successfully created !'), $roomManager->getRoom()->name);
 
-                    yield $this->log->log(
-                        Log::INFO,
-                        _('[chatService] New room added by %s ' . PHP_EOL . '%s'),
-                        $client,
-                        $roomManager->getRoom()
+                    $this->logger->log(
+                        LogLevel::INFO,
+                        sprintf(
+                            _('[chatService] New room added by %s ' . PHP_EOL . '%s'),
+                            $client,
+                            $roomManager->getRoom()
+                        )
                     );
                 }
             } else {
@@ -231,8 +241,6 @@ class RoomService
      * @param      RoomCollection  $rooms   The actives rooms
      *
      * @return     \Generator
-     *
-     * @todo       to test
      */
     private function connect(array $data, Client $client, RoomCollection $rooms)
     {
@@ -272,13 +280,174 @@ class RoomService
         }
 
         yield $client->getConnection()->send(json_encode([
-                'service'    => $this->serviceName,
-                'action'     => 'connect',
-                'success'    => $success,
-                'text'       => $message,
-                'roomId'     => $data['roomId'],
-                'clients'    => $room !== null ? $room->getClients()->__toArray() : [],
-                'pseudonyms' => $room !== null ? $room->getPseudonyms() : []
+            'service'    => $this->serviceName,
+            'action'     => 'connect',
+            'success'    => $success,
+            'text'       => $message,
+            'roomId'     => $data['roomId'],
+            'clients'    => $room !== null ? $room->getClients()->__toArray() : [],
+            'pseudonyms' => $room !== null ? $room->getPseudonyms() : []
+        ]));
+    }
+
+    /**
+     * Kick a user from a room
+     *
+     * @param      array  $client  The client information [Connection, User] array pair
+     * @param      array  $data    JSON decoded client data
+     *
+     * @return     \Generator
+     *
+     * @todo       to refacto
+     */
+    private function kickUser(array $client, array $data)
+    {
+        $success     = false;
+        $message     = _('User kicked');
+        $chatManager = new ChatManager();
+
+        if ($client['User'] === null) {
+            $message = _('Authentication failed');
+        } elseif ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
+            $message = _('This room does not exist');
+        } else {
+            $room        = $chatManager->getChatRoomEntity();
+            $userManager = new UserManager($client['User']);
+
+            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
+                $message = _('Incorrect password');
+            } elseif (!$userManager->hasChatKickRight((int) $room->id)) {
+                $message = _('You do not have the right to kick a user from this room');
+            } else {
+                try {
+                    $userHash = $this->getUserHashByPseudonym($room->id, $data['pseudonym'] ?? '');
+
+                    // Inform the user that he's kicked
+                    yield $this->rooms[$room->id]['users'][$userHash]['Connection']->send(json_encode([
+                        'service'  => $this->serviceName,
+                        'action'   => 'getKicked',
+                        'roomId'   => $room->id,
+                        'roomName' => $room->name,
+                        'text'     => sprintf(
+                            _('You got kicked from the room by `%s'),
+                            $this->getUserPseudonymByRoom($client, $room) . '`'
+                            . (isset($data['reason']) ? _("\nReason: ") . $data['reason'] : '')
+                        )
+                    ]));
+
+                    // Kick the user and inform others room users
+                    yield $this->disconnectUserFromRoomAction(
+                        $userHash,
+                        $room->id,
+                        'kicked',
+                        [
+                            'admin'  => $this->getUserPseudonymByRoom($client, $room),
+                            'reason' => (isset($data['reason']) ? _("\nReason: ") . $data['reason'] : '')
+                        ]
+                    );
+
+                    $success = true;
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
+                }
+            }
+        }
+
+        yield $client['Connection']->send(json_encode([
+            'service' => $this->serviceName,
+            'action'  => 'kickUser',
+            'success' => $success,
+            'text'    => $message,
+            'roomId'  => $data['roomId']
+        ]));
+    }
+
+    /**
+     * Ban a user from a room
+     *
+     * @param      array  $client  The client information [Connection, User] array pair
+     * @param      array  $data    JSON decoded client data
+     *
+     * @return     \Generator
+     *
+     * @todo       to refacto
+     */
+    private function banUser(array $client, array $data)
+    {
+        $success     = false;
+        $message     = _('User banned');
+        $chatManager = new ChatManager();
+
+        if ($client['User'] === null) {
+            $message = _('Authentication failed');
+        } elseif ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
+            $message = _('This room does not exist');
+        } else {
+            $room        = $chatManager->getChatRoomEntity();
+            $userManager = new UserManager($client['User']);
+
+            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
+                $message = _('Incorrect password');
+            } elseif (!$userManager->hasChatBanRight((int) $room->id)) {
+                $message = _('You do not have the right to ban a user from this room');
+            } else {
+                try {
+                    $userHash = $this->getUserHashByPseudonym($room->id, $data['pseudonym'] ?? '');
+
+                    // Add the ban user to the room data
+                    $banInfo = new ChatRoomBan([
+                        'idChatRoom' => $room->id,
+                        'ip'         => $this->rooms[$room->id]['users'][$userHash]['Connection']->getRemoteAddress(),
+                        'pseudonym'  => $data['pseudonym'],
+                        'admin'      => $client['User']->id,
+                        'reason'     => $data['reason'],
+                        'date'       => date('Y-m-d H:i:s')
+                    ]);
+
+                    if ($chatManager->banUser($banInfo)) {
+                        // Inform the user that he's banned
+                        yield $this->rooms[$room->id]['users'][$userHash]['Connection']->send(json_encode([
+                            'service'  => $this->serviceName,
+                            'action'   => 'getBanned',
+                            'roomId'   => $room->id,
+                            'roomName' => $room->name,
+                            'text'     => sprintf(
+                                _('You got banned from the room by `%s'),
+                                $this->getUserPseudonymByRoom($client, $room) . '`'
+                                . (isset($data['reason']) ? _("\nReason: ") . $data['reason'] : '')
+                            )
+                        ]));
+
+                        // Ban the user and inform others room users
+                        yield $this->disconnectUserFromRoomAction(
+                            $userHash,
+                            $room->id,
+                            'banned',
+                            [
+                                'admin'  => $this->getUserPseudonymByRoom($client, $room),
+                                'reason' => (isset($data['reason']) ? _("\nReason: ") . $data['reason'] : '')
+                            ]
+                        );
+
+                        // Update the users ban list for users who have access to the admin board EG registered users
+                        yield $this->updateRoomUsersBanned((int) $room->id);
+
+                        $success = true;
+                    } else {
+                        $message = _('The room ip ban failed');
+                    }
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
+                }
+            }
+        }
+
+        yield $client['Connection']->send(json_encode([
+            'service' => $this->serviceName,
+            'action'  => 'banUser',
+            'success' => $success,
+            'text'    => $message,
+            'roomId'  => $data['roomId']
         ]));
     }
 
@@ -321,6 +490,10 @@ class RoomService
                         $data['rightName'] ?? '',
                         (bool) $data['rightValue'] ?? false
                     );
+
+                    if ($success) {
+                        yield $this->changeUserRight($room, $room->getClients()->getObjectById($data['clientId']));
+                    }
                 } catch (Exception $e) {
                     $message = $e->getMessage();
                 }
@@ -331,8 +504,7 @@ class RoomService
             'service' => $this->serviceName,
             'action'  => 'updateUserRight',
             'success' => $success,
-            'text'    => $message,
-            'roomId'  => $data['roomId']
+            'text'    => $message
         ]));
     }
 
@@ -361,6 +533,8 @@ class RoomService
             'rooms'   => $roomsInfo
         ]));
     }
+
+    /*=====  End of Direct called method  ======*/
 
     /*=========================================
     =            Utilities methods            =
@@ -402,9 +576,33 @@ class RoomService
             yield $client->getConnection()->send(json_encode([
                 'service'         => $this->serviceName,
                 'action'          => 'updateRoom',
-                'roomId'          => $room->getId(),
-                'roomInformation' => $room->getRoom()->__toArray()
+                'roomId'          => $room->id,
+                'roomInformation' => $room->__toArray()
             ]));
+        }
+    }
+
+    /**
+     * Change a user right in a room to display it in the admin panel
+     *
+     * @param      Room        $room    The room where the right has been updated
+     * @param      Client      $client  The client who got a right changed
+     *
+     * @return     \Generator
+     */
+    public function changeUserRight(Room $room, Client $client)
+    {
+        $clientRight = $client->getUser()->getRoomRight()->getEntityById($room->id)->__toArray();
+
+        foreach ($room->getClients() as $roomClient) {
+            if ($roomClient->isRegistered()) {
+                yield $roomClient->getConnection()->send(json_encode([
+                    'service'      => $this->serviceName,
+                    'action'       => 'updateRoom',
+                    'roomId'       => $room->id,
+                    'changedRight' => $clientRight
+                ]));
+            }
         }
     }
 

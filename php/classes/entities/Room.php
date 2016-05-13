@@ -16,9 +16,9 @@ use classes\websocket\ClientCollection as ClientCollection;
 /**
  * Room entity that extends the Entity abstact class
  *
- * @property   int     $id            The chat room id
- * @property   string  $name          The chat room name
- * @property   int     $creator       The creator id user
+ * @property   int     $id            The room ID
+ * @property   string  $name          The room name
+ * @property   int     $creator       The creator user ID
  * @property   int     $password      The room password
  * @property   string  $creationDate  The room creation date
  * @property   int     $maxUsers      The room max users number

@@ -8,7 +8,8 @@
     },
     "require-dev": {
         "phpdocumentor/phpdocumentor": "*",
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "phpmd/phpmd": "*"
     },
     "config": {
         "COMPOSER_DISABLE_XDEBUG_WARN": 1

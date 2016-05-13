@@ -136,7 +136,7 @@ trait PrettyOutputTrait
                 break;
 
             case 'object':
-                $argumentFormatted = 'object::' . get_class($variable);
+                $argumentFormatted = 'object(' . get_class($variable) . ')::' . PHP_EOL . $variable;
                 break;
 
             case 'resource':
