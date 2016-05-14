@@ -18,9 +18,9 @@ define([
     /**
      * RoomManager object
      *
-     * @param      {WebSocket}  WebSocket  The websocket manager
-     * @param      {Client}     Client  The current Client
-     * @param      {Object}     settings   Overriden settings
+     * @param      {WebsocketManager}   WebsocketManager    The websocket manager
+     * @param      {Client}             Client              The current Client
+     * @param      {Object}             settings            Overridden settings
      *
      * @exports    roomManager
      * @see        module:room
@@ -37,13 +37,13 @@ define([
      * @constructor
      * @alias      module:roomManager
      */
-    var RoomManager = function (WebSocket, Client, settings) {
-        this.settings     = $.extend(true, {}, this.settings, module.config(), settings);
-        this.websocket    = WebSocket;
-        this.client       = Client;
-        this.notification = new Notification();
-        this.mouseInRoom  = [];
-        this.rooms        = {};
+    var RoomManager = function (WebsocketManager, Client, settings) {
+        this.settings         = $.extend(true, {}, this.settings, module.config(), settings);
+        this.websocketManager = WebsocketManager;
+        this.client           = Client;
+        this.notification     = new Notification();
+        this.mouseInRoom      = [];
+        this.rooms            = {};
 
         this.initEvents();
     };
@@ -93,7 +93,7 @@ define([
          * @method     getAll
          */
         getAll: function () {
-            this.websocket.send(JSON.stringify({
+            this.websocketManager.send(JSON.stringify({
                 "service": [this.settings.serviceName],
                 "action" : "getAll"
             }));
@@ -108,10 +108,10 @@ define([
          * @param      {String}  password   The room password
          */
         connect: function (pseudonym, roomId, password) {
-            this.websocket.send(JSON.stringify({
+            this.websocketManager.send(JSON.stringify({
                 "service"  : [this.settings.serviceName],
                 "action"   : "connect",
-                "pseudonym": pseudonym || this.websocket.user.getPseudonym(),
+                "pseudonym": pseudonym || this.client.getUser().getPseudonym(),
                 "roomId"   : roomId,
                 "password" : password || ''
             }));
@@ -139,7 +139,7 @@ define([
          * Add all rooms to the rooms collection
          *
          * @method     getAllCallback
-         * @param      {Object}  data    The server JSON reponse
+         * @param      {Object}  data    The server JSON response
          */
         getAllCallback: function (data) {
             _.map(data.rooms, _.bind(this.addRoom, this));
@@ -149,7 +149,7 @@ define([
          * Insert the room in DOM if it is not already in and add clients to the room
          *
          * @method     connectCallback
-         * @param      {Object}  data    The server JSON reponse
+         * @param      {Object}  data    The server JSON response
          *
          * @todo Add roomBan collection from server ?
          */
@@ -173,7 +173,7 @@ define([
          * Add a client in the room
          *
          * @method     updateClientsCallback
-         * @param      {Object}  data    The server JSON reponse
+         * @param      {Object}  data    The server JSON response
          */
         addClientInRoomCallback: function (data) {
             var client = new Client(data.client);
@@ -186,7 +186,7 @@ define([
          * Callback after updated a user room right
          *
          * @method     updateUserRightCallback
-         * @param      {Object}  data    The server JSON reponse
+         * @param      {Object}  data    The server JSON response
          */
         updateUserRightCallback: function (data) {
             this.notification.add(data.text);
@@ -196,7 +196,7 @@ define([
          * Change a user right in the admin panel
          *
          * @method     changeUserRightCallback
-         * @param      {Object}  data    The server JSON reponse
+         * @param      {Object}  data    The server JSON response
          */
         changeUserRightCallback: function (data) {
             console.log("changeUserRightCallback", data);

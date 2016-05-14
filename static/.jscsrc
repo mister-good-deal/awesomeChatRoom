@@ -15,10 +15,6 @@
         "position": "above",
         "allExcept": ["@todo", "todo"]
     },
-    "validateIndentation": {
-        "value": 4,
-        "allExcept": ["comments"]
-    },
     "disallowMixedSpacesAndTabs": "smart",
     "disallowMultipleLineBreaks": true,
     "disallowPaddingNewLinesBeforeLineComments": true,

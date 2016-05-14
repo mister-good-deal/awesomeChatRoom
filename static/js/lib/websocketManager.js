@@ -13,14 +13,14 @@ define([
      * WebsocketManager module
      *
      * @param       {User}    User     The current User
-     * @param       {Object}  settings Overriden settings
+     * @param       {Object}  settings Overridden settings
      *
      * @exports     websocketManager
      *
      * @property   {Object}     settings    The websocketManager global settings
-     * @property   {User}       User        The curent user
-     * @property   {WebSocket}  socket      The websocket ressource
-     * @property   {Object}     callbacks   Callbacks method to process data recieved from the WebSocket server
+     * @property   {User}       User        The current user
+     * @property   {WebSocket}  socket      The websocket resource
+     * @property   {Object}     callbacks   Callbacks method to process data received from the WebSocket server
      *
      * @constructor
      * @alias       module:websocketManager
@@ -103,10 +103,10 @@ define([
         },
 
         /**
-         * Treat data recieved from the WebSocket server
+         * Treat data received from the WebSocket server
          *
          * @method     treatData
-         * @param      {String}  data    The text data recieved from the WebSocket server
+         * @param      {String}  data    The text data received from the WebSocket server
          */
         treatData: function (data) {
             data = JSON.parse(data);
@@ -123,7 +123,7 @@ define([
         },
 
         /**
-         * Add a callback to process data recieved from the WebSocket server
+         * Add a callback to process data received from the WebSocket server
          *
          * @method     addCallback
          * @param      {String}    serviceName  The callback service name
@@ -185,7 +185,7 @@ define([
          * Parse the WebSocket server response to retrieve the services list
          *
          * @method     listServiceCallback
-         * @param      {Object}  data    JSON encoded data recieved from the WebSocket server
+         * @param      {Object}  data    JSON encoded data received from the WebSocket server
          */
         listServiceCallback: function (data) {
             console.log(data.services);

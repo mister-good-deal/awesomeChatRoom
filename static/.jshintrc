@@ -54,7 +54,7 @@
     "maxcomplexity" : 10,       // Lets you control cyclomatic complexity throughout your code
     "maxdepth"      : 5,        // Lets you control how nested do you want your blocks to be
     "maxerr"        : 20,       // Set the maximum amount of warnings JSHint will produce before giving up. Default is 50.
-    "maxparams"     : 5,        // Set the max number of formal parameters allowed per function
+    "maxparams"     : 10,        // Set the max number of formal parameters allowed per function
     "maxstatements" : 50,       // Set the max number of statements allowed per function:
     "noarg"         : true,     // Prohibit use of `arguments.caller` and `arguments.callee`.
     "nocomma"       : true,     // Prohibits the use of the comma operator.

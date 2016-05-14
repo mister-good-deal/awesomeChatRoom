@@ -4,6 +4,7 @@ php/conf.ini
 php/.sonar
 php/composer.lock
 php/.phpintel
+php/composer.phar
 static/dist
 static/js/lib/vendor
 static/.bowerDependencies

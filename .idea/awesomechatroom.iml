@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/jms/metadata/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/jms/metadata/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/doctrine/annotations/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/doctrine/lexer/lib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/doctrine/annotations/lib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/doctrine/instantiator/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/cilex/cilex/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/phpdocumentor/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/cilex/console-service-provider/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/cilex/cilex/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/doctrine/instantiator/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpcollection/phpcollection/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpcollection/phpcollection/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/psr/log" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/seld/jsonlint/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/container-interop/container-interop/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/justinrainbow/json-schema/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/justinrainbow/json-schema/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpoption/phpoption/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpoption/phpoption/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/kherge/version/src/lib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/kherge/version/src/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/symfony/validator/Tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/herrera-io/json/src/lib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/herrera-io/json/src/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/herrera-io/phar-update/src/lib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/herrera-io/phar-update/src/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/jms/parser-lib/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/jms/serializer/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/jms/serializer/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/elasticsearch/elasticsearch/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/elasticsearch/elasticsearch/benchmarks" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/elasticsearch/elasticsearch/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/geoip2/geoip2/src" isTestSource="false" packagePrefix="GeoIp2" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/geoip2/geoip2/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/nikic/php-parser/lib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/nikic/php-parser/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-stdlib/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/phpdocumentor/tests/unit" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/fileset/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/fileset/tests/unit" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/reflection/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/reflection/tests/unit" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/reflection/tests/mocks" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/reflection-docblock/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/reflection-docblock/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/graphviz/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/monolog/monolog/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/monolog/monolog/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-filter/test/_files" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/icicleio/icicle/src" isTestSource="false" packagePrefix="Icicle" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/icicleio" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/daverandom" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/daverandom/libdns/src" isTestSource="false" packagePrefix="LibDNS" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/maxmind/web-service-common/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/maxmind/web-service-common/src" isTestSource="false" packagePrefix="MaxMind" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/maxmind-db/reader/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/maxmind-db/reader/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/php/vendor/pimple/pimple/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/static" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/php/.phpDoc" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/cilex/cilex" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/cilex/console-service-provider" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/container-interop/container-interop" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/daverandom/libdns" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/doctrine/annotations" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/doctrine/instantiator" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/doctrine/lexer" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/elasticsearch/elasticsearch" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/erusev/parsedown" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/geoip2/geoip2" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/guzzlehttp/ringphp" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/guzzlehttp/streams" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/herrera-io/json" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/herrera-io/phar-update" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/icicleio/dns" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/icicleio/http" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/icicleio/icicle" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/icicleio/log" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/icicleio/socket" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/icicleio/stream" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/icicleio/websocket" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/jms/metadata" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/jms/parser-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/jms/serializer" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/justinrainbow/json-schema" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/kherge/version" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/maxmind-db/reader" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/maxmind/web-service-common" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/monolog/monolog" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/nikic/php-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/paragonie/random_compat" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/pdepend/pdepend" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/phpcollection/phpcollection" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/fileset" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/graphviz" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/phpdocumentor" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/reflection" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/phpdocumentor/reflection-docblock" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/phpmailer/phpmailer" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/phpmd/phpmd" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/phpoption/phpoption" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/pimple/pimple" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/psr/log" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/react/promise" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/seld/jsonlint" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/squizlabs/php_codesniffer" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/symfony/config" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/symfony/console" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/symfony/dependency-injection" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/symfony/event-dispatcher" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/symfony/filesystem" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/symfony/finder" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/symfony/polyfill-mbstring" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/symfony/process" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/symfony/stopwatch" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/symfony/translation" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/symfony/validator" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/twig/twig" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-cache" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-config" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-eventmanager" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-filter" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-hydrator" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-i18n" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-json" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-math" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-serializer" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-servicemanager" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zendframework/zend-stdlib" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zetacomponents/base" />
+      <excludeFolder url="file://$MODULE_DIR$/php/vendor/zetacomponents/document" />
+      <excludeFolder url="file://$MODULE_DIR$/static/dist" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="PHARS">
+        <CLASSES>
+          <root url="phar://$MODULE_DIR$/php/vendor/symfony/dependency-injection/Tests/Fixtures/includes/ProjectWithXsdExtensionInPhar.phar/" />
+          <root url="phar://$MODULE_DIR$/php/vendor/phpdocumentor/fileset/tests/data/test.phar/" />
+          <root url="phar://$MODULE_DIR$/php/composer.phar/" />
+          <root url="phar://$MODULE_DIR$/php/vendor/phpdocumentor/phpdocumentor/tests/data/test.phar/" />
+          <root url="phar://$MODULE_DIR$/php/vendor/zendframework/zend-i18n/test/Translator/_files/translations.phar/" />
+        </CLASSES>
+        <SOURCES>
+          <root url="phar://$MODULE_DIR$/php/vendor/symfony/dependency-injection/Tests/Fixtures/includes/ProjectWithXsdExtensionInPhar.phar/" />
+          <root url="phar://$MODULE_DIR$/php/vendor/phpdocumentor/fileset/tests/data/test.phar/" />
+          <root url="phar://$MODULE_DIR$/php/composer.phar/" />
+          <root url="phar://$MODULE_DIR$/php/vendor/phpdocumentor/phpdocumentor/tests/data/test.phar/" />
+          <root url="phar://$MODULE_DIR$/php/vendor/zendframework/zend-i18n/test/Translator/_files/translations.phar/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="PHP">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/php/vendor/cilex/cilex" />
+          <root url="file://$MODULE_DIR$/php/vendor/cilex/console-service-provider" />
+          <root url="file://$MODULE_DIR$/php/vendor/composer" />
+          <root url="file://$MODULE_DIR$/php/vendor/container-interop/container-interop" />
+          <root url="file://$MODULE_DIR$/php/vendor/daverandom/libdns" />
+          <root url="file://$MODULE_DIR$/php/vendor/doctrine/annotations" />
+          <root url="file://$MODULE_DIR$/php/vendor/doctrine/instantiator" />
+          <root url="file://$MODULE_DIR$/php/vendor/doctrine/lexer" />
+          <root url="file://$MODULE_DIR$/php/vendor/elasticsearch/elasticsearch" />
+          <root url="file://$MODULE_DIR$/php/vendor/erusev/parsedown" />
+          <root url="file://$MODULE_DIR$/php/vendor/geoip2/geoip2" />
+          <root url="file://$MODULE_DIR$/php/vendor/guzzlehttp/ringphp" />
+          <root url="file://$MODULE_DIR$/php/vendor/guzzlehttp/streams" />
+          <root url="file://$MODULE_DIR$/php/vendor/herrera-io/json" />
+          <root url="file://$MODULE_DIR$/php/vendor/herrera-io/phar-update" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/dns" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/http" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/icicle" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/log" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/socket" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/stream" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/websocket" />
+          <root url="file://$MODULE_DIR$/php/vendor/jms/metadata" />
+          <root url="file://$MODULE_DIR$/php/vendor/jms/parser-lib" />
+          <root url="file://$MODULE_DIR$/php/vendor/jms/serializer" />
+          <root url="file://$MODULE_DIR$/php/vendor/justinrainbow/json-schema" />
+          <root url="file://$MODULE_DIR$/php/vendor/kherge/version" />
+          <root url="file://$MODULE_DIR$/php/vendor/maxmind-db/reader" />
+          <root url="file://$MODULE_DIR$/php/vendor/maxmind/web-service-common" />
+          <root url="file://$MODULE_DIR$/php/vendor/monolog/monolog" />
+          <root url="file://$MODULE_DIR$/php/vendor/nikic/php-parser" />
+          <root url="file://$MODULE_DIR$/php/vendor/paragonie/random_compat" />
+          <root url="file://$MODULE_DIR$/php/vendor/pdepend/pdepend" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpcollection/phpcollection" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpdocumentor/fileset" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpdocumentor/graphviz" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpdocumentor/phpdocumentor" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpdocumentor/reflection" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpdocumentor/reflection-docblock" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpmailer/phpmailer" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpmd/phpmd" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpoption/phpoption" />
+          <root url="file://$MODULE_DIR$/php/vendor/pimple/pimple" />
+          <root url="file://$MODULE_DIR$/php/vendor/psr/log" />
+          <root url="file://$MODULE_DIR$/php/vendor/react/promise" />
+          <root url="file://$MODULE_DIR$/php/vendor/seld/jsonlint" />
+          <root url="file://$MODULE_DIR$/php/vendor/squizlabs/php_codesniffer" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/config" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/console" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/dependency-injection" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/event-dispatcher" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/filesystem" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/finder" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/polyfill-mbstring" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/process" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/stopwatch" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/translation" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/validator" />
+          <root url="file://$MODULE_DIR$/php/vendor/twig/twig" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-cache" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-config" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-eventmanager" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-filter" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-hydrator" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-i18n" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-json" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-math" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-serializer" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-servicemanager" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-stdlib" />
+          <root url="file://$MODULE_DIR$/php/vendor/zetacomponents/base" />
+          <root url="file://$MODULE_DIR$/php/vendor/zetacomponents/document" />
+        </CLASSES>
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/php/vendor/cilex/cilex" />
+          <root url="file://$MODULE_DIR$/php/vendor/cilex/console-service-provider" />
+          <root url="file://$MODULE_DIR$/php/vendor/composer" />
+          <root url="file://$MODULE_DIR$/php/vendor/container-interop/container-interop" />
+          <root url="file://$MODULE_DIR$/php/vendor/daverandom/libdns" />
+          <root url="file://$MODULE_DIR$/php/vendor/doctrine/annotations" />
+          <root url="file://$MODULE_DIR$/php/vendor/doctrine/instantiator" />
+          <root url="file://$MODULE_DIR$/php/vendor/doctrine/lexer" />
+          <root url="file://$MODULE_DIR$/php/vendor/elasticsearch/elasticsearch" />
+          <root url="file://$MODULE_DIR$/php/vendor/erusev/parsedown" />
+          <root url="file://$MODULE_DIR$/php/vendor/geoip2/geoip2" />
+          <root url="file://$MODULE_DIR$/php/vendor/guzzlehttp/ringphp" />
+          <root url="file://$MODULE_DIR$/php/vendor/guzzlehttp/streams" />
+          <root url="file://$MODULE_DIR$/php/vendor/herrera-io/json" />
+          <root url="file://$MODULE_DIR$/php/vendor/herrera-io/phar-update" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/dns" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/http" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/icicle" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/log" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/socket" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/stream" />
+          <root url="file://$MODULE_DIR$/php/vendor/icicleio/websocket" />
+          <root url="file://$MODULE_DIR$/php/vendor/jms/metadata" />
+          <root url="file://$MODULE_DIR$/php/vendor/jms/parser-lib" />
+          <root url="file://$MODULE_DIR$/php/vendor/jms/serializer" />
+          <root url="file://$MODULE_DIR$/php/vendor/justinrainbow/json-schema" />
+          <root url="file://$MODULE_DIR$/php/vendor/kherge/version" />
+          <root url="file://$MODULE_DIR$/php/vendor/maxmind-db/reader" />
+          <root url="file://$MODULE_DIR$/php/vendor/maxmind/web-service-common" />
+          <root url="file://$MODULE_DIR$/php/vendor/monolog/monolog" />
+          <root url="file://$MODULE_DIR$/php/vendor/nikic/php-parser" />
+          <root url="file://$MODULE_DIR$/php/vendor/paragonie/random_compat" />
+          <root url="file://$MODULE_DIR$/php/vendor/pdepend/pdepend" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpcollection/phpcollection" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpdocumentor/fileset" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpdocumentor/graphviz" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpdocumentor/phpdocumentor" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpdocumentor/reflection" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpdocumentor/reflection-docblock" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpmailer/phpmailer" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpmd/phpmd" />
+          <root url="file://$MODULE_DIR$/php/vendor/phpoption/phpoption" />
+          <root url="file://$MODULE_DIR$/php/vendor/pimple/pimple" />
+          <root url="file://$MODULE_DIR$/php/vendor/psr/log" />
+          <root url="file://$MODULE_DIR$/php/vendor/react/promise" />
+          <root url="file://$MODULE_DIR$/php/vendor/seld/jsonlint" />
+          <root url="file://$MODULE_DIR$/php/vendor/squizlabs/php_codesniffer" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/config" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/console" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/dependency-injection" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/event-dispatcher" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/filesystem" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/finder" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/polyfill-mbstring" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/process" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/stopwatch" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/translation" />
+          <root url="file://$MODULE_DIR$/php/vendor/symfony/validator" />
+          <root url="file://$MODULE_DIR$/php/vendor/twig/twig" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-cache" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-config" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-eventmanager" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-filter" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-hydrator" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-i18n" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-json" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-math" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-serializer" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-servicemanager" />
+          <root url="file://$MODULE_DIR$/php/vendor/zendframework/zend-stdlib" />
+          <root url="file://$MODULE_DIR$/php/vendor/zetacomponents/base" />
+          <root url="file://$MODULE_DIR$/php/vendor/zetacomponents/document" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+  <component name="sonarModuleSettings">
+    <option name="localAnalysisScripName" value="&lt;PROJECT&gt;" />
+    <option name="serverName" value="&lt;PROJECT&gt;" />
+  </component>
+</module>
