@@ -58,7 +58,42 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/php/classes/AssertionErrorManager.php">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/php/classes/DataBase.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/php/classes/ExceptionManager.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/php/classes/IniManager.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/php/classes/LoggerManager.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/php/classes/PDOStatementCustom.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/php/classes/ThrowableManager.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/php/classes/WebContentInclude.php">
           <value>
             <set />
           </value>
@@ -173,6 +208,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/php/classes/websocket/Client.php">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/php/classes/websocket/ClientCollection.php">
           <value>
             <set />
@@ -209,6 +249,26 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/php/controllers/UserController.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/php/interfaces/FileManagerInterface.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/php/traits/DateTrait.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/php/traits/EchoTrait.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/php/traits/FiltersTrait.php">
           <value>
             <set />
           </value>

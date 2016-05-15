@@ -13,11 +13,12 @@ use classes\entities\Room as Room;
 use classes\entities\RoomBan as RoomBan;
 use classes\entitiesCollection\RoomBanCollection as RoomBanCollection;
 use classes\DataBase as DB;
+use traits\ShortcutsTrait as ShortcutsTrait;
 
 /**
  * Performed database action relative to the chat room ban entity class
  *
- * @property   Room               $entity             The Room entity
+ * @property   RoomBan            $entity             The Room entity
  * @property   RoomBanCollection  $entityCollection   The RoomBanCollection collection
  *
  * @method Room getEntity() {
@@ -34,7 +35,7 @@ use classes\DataBase as DB;
  */
 class RoomBanEntityManager extends EntityManager
 {
-    use \traits\ShortcutsTrait;
+    use ShortcutsTrait;
 
     /**
      * Constructor that can take a RoomBan entity as first parameter and a RoomBanCollection as second parameter
@@ -56,7 +57,7 @@ class RoomBanEntityManager extends EntityManager
      */
     public function isIpBanned(string $ip): bool
     {
-        return static::inSubArray($ip, $this->entity->entityCollection, 'ip');
+        return static::inSubArray($ip, $this->entityCollection, 'ip');
     }
 
     /**

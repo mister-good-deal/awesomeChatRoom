@@ -12,14 +12,16 @@ use interfaces\FileManagerInterface as FileManager;
 use classes\fileManager\FtpFileManager as FtpFileManager;
 use classes\fileManager\SftpFileManager as SftpFileManager;
 use classes\IniManager as Ini;
+use \traits\EchoTrait as EchoTrait;
+use \traits\DateTrait as DateTrait;
 
 /**
  * Deployment class to deploy the application on a server using several protocol
  */
 class Deployment extends Console
 {
-    use \traits\EchoTrait;
-    use \traits\DateTrait;
+    use EchoTrait;
+    use DateTrait;
 
     /**
      * @var        string[]  $SELF_COMMANDS     List of all commands with their description

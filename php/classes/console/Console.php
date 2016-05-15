@@ -9,15 +9,18 @@
 namespace classes\console;
 
 use classes\IniManager as Ini;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
+use traits\FiltersTrait as FiltersTrait;
+use traits\EchoTrait as EchoTrait;
 
 /**
  * Console mode basic interface
  */
 class Console
 {
-    use \traits\PrettyOutputTrait;
-    use \traits\FiltersTrait;
-    use \traits\EchoTrait;
+    use PrettyOutputTrait;
+    use FiltersTrait;
+    use EchoTrait;
 
     const WELCOME = <<<'WELCOME'
                                             `

@@ -9,6 +9,7 @@
 namespace abstracts;
 
 use classes\ExceptionManager as Exception;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
 
 /**
  * Abstract Collection pattern to use with Entity pattern
@@ -21,7 +22,7 @@ use classes\ExceptionManager as Exception;
  */
 abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, \SeekableIterator
 {
-    use \traits\PrettyOutputTrait;
+    use PrettyOutputTrait;
 
     /**
      * @var        Entity[]  $collection    An array of entity object

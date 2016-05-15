@@ -437,8 +437,7 @@ class Orm extends Console
             'firstName' => 'Admin',
             'lastName'  => 'God',
             'pseudonym' => 'admin',
-            'password'  => '$6$rounds=5000$xd8u1gm9aw8d2npq$VlV1nxc0CNsVhgtnKXPcvT.1Mzt.8ZjNQZYWeK7NOFNBy4M.3EEg9Kt4'
-                           . 'WHFEogUA7xtH89UKDfp4UXHVYlIY00'
+            'password'  => crypt('123', Ini::getParam('User', 'passwordCryptSalt'))
         ]);
 
         $admin->setRight(new UserRight(['idUser' => 1, 'webSocket' => 1, 'chatAdmin' => 1, 'kibana' => 1]));
@@ -453,8 +452,7 @@ class Orm extends Console
                 'firstName' => 'User ' . $i,
                 'lastName'  => 'Normal',
                 'pseudonym' => 'User ' . $i,
-                'password'  => '$6$rounds=5000$xd8u1gm9aw8d2npq$VlV1nxc0CNsVhgtnKXPcvT.1Mzt.8ZjNQZYWeK7NOFNBy4M.3EEg9Kt'
-                               . '4WHFEogUA7xtH89UKDfp4UXHVYlIY00'
+                'password'  => crypt('123', Ini::getParam('User', 'passwordCryptSalt'))
             ]);
 
             $users->add($user);
@@ -565,7 +563,7 @@ class Orm extends Console
      */
     private static function prettySqlResult(string $tableName, array $data): string
     {
-        $columns       = static::filterFecthAllByColumn($data);
+        $columns       = static::filterFetchAllByColumn($data);
         $columnsNumber = count($columns);
         $rowsNumber    = ($columnsNumber > 0) ? count($columns[key($columns)]) : 0;
         $columnsName   = [];

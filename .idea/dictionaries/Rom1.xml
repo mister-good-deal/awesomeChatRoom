@@ -1,20 +1,27 @@
 <component name="ProjectDictionaryState">
   <dictionary name="Rom1">
     <words>
+      <w>addr</w>
       <w>autoloader</w>
       <w>awaitable</w>
+      <w>awesomechatroom</w>
       <w>bowerrc</w>
       <w>coroutine</w>
+      <w>cors</w>
       <w>elasticsearch</w>
       <w>gitattributes</w>
       <w>gitignore</w>
       <w>googleapis</w>
+      <w>htmlentities</w>
+      <w>iframe</w>
       <w>jscsrc</w>
       <w>jshintrc</w>
       <w>kibana</w>
       <w>lodash</w>
+      <w>microtime</w>
       <w>mkdir</w>
       <w>mtime</w>
+      <w>smtp</w>
       <w>sprintf</w>
       <w>stdin</w>
       <w>strlen</w>

@@ -10,13 +10,14 @@ namespace classes\websocket;
 
 use classes\entities\User as User;
 use Icicle\WebSocket\Connection as Connection;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
 
 /**
  * Client class to handle websocket client session
  */
 class Client
 {
-    use \traits\PrettyOutputTrait;
+    use PrettyOutputTrait;
 
     /**
      * @var        Connection  $connection  An Icicle Connection

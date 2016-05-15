@@ -10,13 +10,14 @@ namespace classes\fileManager;
 
 use interfaces\FileManagerInterface as FileManagerInterface;
 use classes\IniManager as Ini;
+use traits\EchoTrait as EchoTrait;
 
 /**
  * FtpFileManager class to manipulate files with FTP protocol
  */
 class FtpFileManager implements FileManagerInterface
 {
-    use \traits\EchoTrait;
+    use EchoTrait;
 
     /**
      * @var        array  $params   Connection parameters

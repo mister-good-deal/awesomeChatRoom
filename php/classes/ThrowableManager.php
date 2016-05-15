@@ -26,7 +26,7 @@ class ThrowableManager
     =====================================*/
 
     /**
-     * Constructor that instanciate a new logger
+     * Constructor that instantiate a new logger
      */
     public function __construct()
     {

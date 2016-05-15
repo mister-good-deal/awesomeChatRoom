@@ -54,7 +54,7 @@ class FileLogger extends AbstractLogger
      */
     public function log($level, string $message, array $context = array())
     {
-        $this->writeInFile($message, $context);
+        $this->writeInFile($message);
     }
 
     /*-----  End of Public methods  ------*/
@@ -67,11 +67,10 @@ class FileLogger extends AbstractLogger
      * Utility methods to format and write the log in a file
      *
      * @param      string  $message  The error message to write
-     * @param      array   $context  The Exception context
      *
      * @todo       Use the context
      */
-    private function writeInFile(string $message, array $context)
+    private function writeInFile(string $message)
     {
         $string = date('Y-m-d H:i:s')
             . "\t\t"

@@ -10,7 +10,6 @@ namespace traits;
 
 use \classes\IniManager as Ini;
 use \classes\console\ConsoleColors as ConsoleColors;
-use \vendors\ChromePhp as Console;
 
 /**
  * Utility methods to use echo with pre-encoding for console or format for html
@@ -18,7 +17,7 @@ use \vendors\ChromePhp as Console;
 trait EchoTrait
 {
     /**
-     * @var        string  $echoEncoding    The enconding to encode every console output DEFAULT UTF-8
+     * @var        string  $echoEncoding    The encoding to encode every console output DEFAULT UTF-8
      */
     public static $echoEncoding = 'UTF-8';
 
@@ -47,7 +46,8 @@ trait EchoTrait
 
             case 'web':
                 foreach (preg_split('/' . PHP_EOL . '/', ConsoleColors::unsetColor($output)) as $line) {
-                    Console::log($line);
+//                    Console::log($line);
+                    echo $line;
                 }
 
                 break;
@@ -102,10 +102,10 @@ trait EchoTrait
      */
     public static function execWithPrintInLive(string $cmd)
     {
-        $proc = popen($cmd, 'r');
+        $process = popen($cmd, 'r');
 
-        while (!feof($proc)) {
-            static::out(fread($proc, 4096));
+        while (!feof($process)) {
+            static::out(fread($process, 4096));
         }
     }
 
@@ -113,12 +113,12 @@ trait EchoTrait
      * Convert a console output to a HTML output
      *
      * @param      string  $output  The console formatted output
-     * @return     string  The HTML formated output
+     * @return     string  The HTML formatted output
      *
      * @static
      */
-    private static function convertConsoleToHtml(string $output): string
-    {
-        return preg_replace('/' . PHP_EOL . '/', '<br>', $output);
-    }
+//    private static function convertConsoleToHtml(string $output): string
+//    {
+//        return preg_replace('/' . PHP_EOL . '/', '<br>', $output);
+//    }
 }

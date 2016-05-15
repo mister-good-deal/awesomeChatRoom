@@ -11,14 +11,16 @@ namespace classes\logger;
 use classes\console\ConsoleColors as ConsoleColors;
 use classes\IniManager as Ini;
 use abstracts\AbstractLogger as AbstractLogger;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
+use traits\EchoTrait as EchoTrait;
 
 /**
  * A logger which writes the log in the console
  */
 class ConsoleLogger extends AbstractLogger
 {
-    use \traits\PrettyOutputTrait;
-    use \traits\EchoTrait;
+    use PrettyOutputTrait;
+    use EchoTrait;
 
     /**
      * @var        array  $LEVELS   Logger level based on LogLevel class

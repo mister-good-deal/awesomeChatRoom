@@ -64,7 +64,7 @@ abstract class API
         416 => 'Requested range unsatisfiable',
         417 => 'Expectation failed',
         418 => 'I\'m a teapot',
-        422 => 'Unprocessable entity',
+        422 => 'Unprocessed entity',
         423 => 'Locked',
         424 => 'Method failure',
         425 => 'Unordered Collection',
@@ -83,7 +83,7 @@ abstract class API
         503 => 'Service Unavailable',
         504 => 'Gateway Time-out',
         505 => 'HTTP Version not supported',
-        506 => 'Variant also negociate',
+        506 => 'Variant also negotiate',
         507 => 'Insufficient storage',
         508 => 'Loop detected',
         509 => 'Bandwidth Limit Exceeded',
@@ -118,11 +118,13 @@ abstract class API
     /**
      * Constructor, allow for CORS, assemble and pre-process the data
      *
+     * @throws  Exception   If the header cannot be parsed
+     *
      * @param      array  $request  The request to treat
      */
     public function __construct(array $request)
     {
-        header('Access-Control-Allow-Orgin: *');
+        header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: *');
         header('Content-Type: application/json');
 
@@ -183,10 +185,10 @@ abstract class API
     /**
      * Format the response in a JSON format
      *
-     * @param      int     $status  The HTTP repsonse code DEFAULT 200
-     * @param      array   $data    The respsonse data to parse DEFAULT array()
+     * @param      int     $status  The HTTP response code DEFAULT 200
+     * @param      array   $data    The response data to parse DEFAULT array()
      *
-     * @return     string  The repsonse in a JSON format as a string
+     * @return     string  The response in a JSON format as a string
      */
     private function response(int $status = 200, array $data = array()): string
     {

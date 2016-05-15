@@ -8,9 +8,11 @@
 
 namespace abstracts;
 
-use \classes\ExceptionManager as Exception;
-use \classes\IniManager as Ini;
-use \classes\DataBase as DB;
+use classes\ExceptionManager as Exception;
+use classes\IniManager as Ini;
+use classes\DataBase as DB;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
+use traits\ShortcutsTrait as ShortcutsTrait;
 
 /**
  * Abstract Entity pattern
@@ -19,8 +21,8 @@ use \classes\DataBase as DB;
  */
 abstract class Entity implements \ArrayAccess
 {
-    use \traits\PrettyOutputTrait;
-    use \traits\ShortcutsTrait;
+    use PrettyOutputTrait;
+    use ShortcutsTrait;
 
     /**
      * @const ENTITIES_CONF_PATH The path where the entities ini conf file are stored

@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait to use usefull filter to parse an output
+ * Trait to use useful filter to parse an output
  *
  * @package    Trait
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -20,7 +20,7 @@ trait FiltersTrait
      * @param      string  $keyName    The key name of the future array (?P<keyName>expression)
      * @param      string  $valueName  The value name of the future array (?P<valueName>expression)
      *
-     * @return     array   The filterd array with $keyName = $keyValue
+     * @return     array   The filtered array with $keyName = $keyValue
      */
     public static function filterPregMatchAllWithFlags(array $matches, string $keyName, string $valueName): array
     {
@@ -44,7 +44,7 @@ trait FiltersTrait
      *
      * @return     array  The filtered array by columns
      */
-    public static function filterFecthAllByColumn(array $data): array
+    public static function filterFetchAllByColumn(array $data): array
     {
         $columnsArray = array();
 

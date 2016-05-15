@@ -11,6 +11,7 @@ namespace classes;
 
 use classes\ExceptionManager as Exception;
 use classes\IniManager as Ini;
+use traits\EchoTrait as EchoTrait;
 // WARNING if you change the path below, change it in the initialize method in the setAttribute call
 
 /**
@@ -102,7 +103,7 @@ use classes\IniManager as Ini;
  */
 class DataBase
 {
-    use \traits\EchoTrait;
+    use EchoTrait;
 
     /**
      * @var        \PDO  $PDO   A PDO object DEFAULT null

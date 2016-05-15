@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait to set beautifull indent on multiple array values
+ * Trait to set beautiful indent on multiple array values
  *
  * @package    Trait
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -32,7 +32,7 @@ trait PrettyOutputTrait
      *
      * @return     string            The formatted value with extra spaces
      *
-     * @todo refacto this shit
+     * @todo refactoring this shit
      */
     public static function smartAlign(string $value, array $arrays, int $extraSize = 0, int $position = STR_PAD_RIGHT): string
     {

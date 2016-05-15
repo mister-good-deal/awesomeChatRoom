@@ -16,6 +16,7 @@ use classes\IniManager as Ini;
 use classes\LoggerManager as Logger;
 use classes\logger\LogLevel as LogLevel;
 use classes\WebContentInclude as WebContentInclude;
+use traits\FiltersTrait as FiltersTrait;
 
 /**
  * Performed database action relative to the User entity class
@@ -37,7 +38,7 @@ use classes\WebContentInclude as WebContentInclude;
  */
 class UserEntityManager extends EntityManager
 {
-    use \traits\FiltersTrait;
+    use FiltersTrait;
 
     /**
      * @var        array  $params   An array containing User params in conf.ini
@@ -152,7 +153,7 @@ class UserEntityManager extends EntityManager
      * @param      string[]  $inputs  Inputs array containing array('login' => 'login', 'password' => 'password')
      *
      * @return     array  The occurred errors or success in a array
-     * @todo       refacto make it shorter...
+     * @todo       refactoring make it shorter...
      */
     public function connect(array $inputs): array
     {
@@ -417,13 +418,13 @@ class UserEntityManager extends EntityManager
      *
      * @return     bool    True if the pseudonym exists else false
      */
-    private function isPseudonymExist(string $pseudonym): bool
-    {
-        $sqlMarks = 'SELECT count(*) FROM %s WHERE pseudonym = %s';
-        $sql      = static::sqlFormat($sqlMarks, (new User())->getTableName(), DB::quote($pseudonym));
-
-        return (int) DB::query($sql)->fetchColumn() > 0;
-    }
+//    private function isPseudonymExist(string $pseudonym): bool
+//    {
+//        $sqlMarks = 'SELECT count(*) FROM %s WHERE pseudonym = %s';
+//        $sql      = static::sqlFormat($sqlMarks, (new User())->getTableName(), DB::quote($pseudonym));
+//
+//        return (int) DB::query($sql)->fetchColumn() > 0;
+//    }
 
     /**
      * Check all the must defined fields and fill an errors array if not

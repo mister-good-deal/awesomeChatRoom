@@ -12,6 +12,7 @@ use abstracts\Entity as Entity;
 use classes\websocket\Client as Client;
 use classes\entitiesCollection\RoomBanCollection as RoomBanCollection;
 use classes\websocket\ClientCollection as ClientCollection;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
 
 /**
  * Room entity that extends the Entity abstract class
@@ -29,7 +30,7 @@ use classes\websocket\ClientCollection as ClientCollection;
  */
 class Room extends Entity
 {
-    use \traits\PrettyOutputTrait;
+    use PrettyOutputTrait;
 
     /**
      * @var        RoomBanCollection  $roomBanCollection    Collection of banned users

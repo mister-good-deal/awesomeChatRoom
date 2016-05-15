@@ -52,8 +52,8 @@ class WebContentInclude
      * @param      string  $template  The HTML template
      * @param      array   $vars      An array with ['varName' => 'varValue', ...]
      *
-     * @return     string  The formated template
-     * @todo       htmlentities fails to encode multiple backslashes \\
+     * @return     string  The formatted template
+     * @todo       `htmlentities` fails to encode multiple backslashes \\
      */
     public static function formatTemplate(string $template, array $vars): string
     {

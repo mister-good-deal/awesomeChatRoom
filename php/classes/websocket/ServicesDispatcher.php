@@ -20,13 +20,14 @@ use classes\websocket\services\RoomService as RoomService;
 use classes\websocket\services\ClientService as ClientService;
 use classes\LoggerManager as Logger;
 use classes\logger\LogLevel as LogLevel;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
 
 /**
  * Services dispatcher class to handle client requests and root them to the right websocket service handler
  */
 class ServicesDispatcher implements Application
 {
-    use \traits\PrettyOutputTrait;
+    use PrettyOutputTrait;
 
     /**
      * @var        array  $services     The different services

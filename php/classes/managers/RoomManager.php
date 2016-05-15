@@ -18,13 +18,14 @@ use classes\entitiesManager\RoomRightEntityManager as RoomRightEntityManager;
 use classes\entitiesManager\RoomBanEntityManager as RoomBanEntityManager;
 use classes\websocket\Client as Client;
 use classes\ExceptionManager as Exception;
+use traits\ShortcutsTrait as ShortcutsTrait;
 
 /**
  * Perform action relative to the Room and RoomBan entities classes
  */
 class RoomManager extends Manager
 {
-    use \traits\ShortcutsTrait;
+    use ShortcutsTrait;
 
     /**
      * @var        Room  $room  A Room entity to work with
@@ -106,7 +107,7 @@ class RoomManager extends Manager
         if ($success) {
             $this->room->getClients()->remove($client);
         }
-        
+
         return $success;
     }
 

@@ -11,13 +11,14 @@ namespace classes\fileManager;
 use interfaces\FileManagerInterface as FileManagerInterface;
 use classes\ExceptionManager as Exception;
 use classes\IniManager as Ini;
+use traits\EchoTrait as EchoTrait;
 
 /**
  * SftpFileManager class to manipulate files with SFTP protocol
  */
 class SftpFileManager implements FileManagerInterface
 {
-    use \traits\EchoTrait;
+    use EchoTrait;
 
     /**
      * @var        array  $params   Connection parameters
