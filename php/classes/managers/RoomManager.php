@@ -10,10 +10,12 @@ namespace classes\managers;
 
 use abstracts\Manager as Manager;
 use classes\entities\Room as Room;
+use classes\entities\RoomBan;
 use classes\entities\RoomRight as RoomRight;
 use classes\entitiesCollection\RoomCollection as RoomCollection;
 use classes\entitiesManager\RoomEntityManager as RoomEntityManager;
 use classes\entitiesManager\RoomRightEntityManager as RoomRightEntityManager;
+use classes\entitiesManager\RoomBanEntityManager as RoomBanEntityManager;
 use classes\websocket\Client as Client;
 use classes\ExceptionManager as Exception;
 
@@ -75,6 +77,37 @@ class RoomManager extends Manager
     {
         $this->room->getClients()->add($client);
         $this->room->addPseudonym($client->getId(), $pseudonym);
+    }
+
+    /**
+     * Ban a client from a room
+     *
+     * @param   Client  $client The client to ban
+     * @param   Client  $admin  The admin who banned the client
+     * @param   string  $reason The reason why the client got banned DEFAULT ''
+     *
+     * @return  bool    True if the client got banned, false otherwise
+     */
+    public function banClient(Client $client, Client $admin, string $reason = '')
+    {
+        $roomBan = new RoomBan([
+            'idRoom'    => $this->room->id,
+            'ip'        => $client->getConnection()->getRemoteAddress(),
+            'pseudonym' => $this->room->getClientPseudonym($client),
+            'admin'     => $admin->getUser()->id,
+            'reason'    => $reason,
+            'date'      => new \DateTime()
+        ]);
+
+        $roomBanEntityManager = new RoomBanEntityManager($roomBan);
+
+        $success = $roomBanEntityManager->saveEntity();
+
+        if ($success) {
+            $this->room->getClients()->remove($client);
+        }
+        
+        return $success;
     }
 
     /**
@@ -226,6 +259,34 @@ class RoomManager extends Manager
         $userManager = new UserManager($client->getUser());
 
         return $userManager->hasRoomGrantRight($this->room);
+    }
+
+    /**
+     * Determine if the client has room kick right
+     *
+     * @param      Client  $client  The client to check the right on
+     *
+     * @return     bool    True if the client has room kick right, false otherwise
+     */
+    public function hasKickRight(Client $client): bool
+    {
+        $userManager = new UserManager($client->getUser());
+
+        return $userManager->hasRoomKickRight($this->room);
+    }
+
+    /**
+     * Determine if the client has room ban right
+     *
+     * @param      Client  $client  The client to check the right on
+     *
+     * @return     bool    True if the client has room ban right, false otherwise
+     */
+    public function hasBanRight(Client $client): bool
+    {
+        $userManager = new UserManager($client->getUser());
+
+        return $userManager->hasRoomBanRight($this->room);
     }
 
     /**
