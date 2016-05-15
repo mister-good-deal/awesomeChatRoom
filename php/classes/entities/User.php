@@ -8,28 +8,25 @@
 
 namespace classes\entities;
 
-use \abstracts\Entity as Entity;
-use \classes\ExceptionManager as Exception;
-use \classes\IniManager as Ini;
-use \classes\entities\UserRight as UserRight;
-use \classes\entitiesCollection\RoomRightCollection as RoomRightCollection;
+use abstracts\Entity as Entity;
+use classes\entitiesCollection\RoomRightCollection as RoomRightCollection;
 
 /**
- * User entity that extends the Entity abstact class
+ * User entity that extends the Entity abstract class
  *
- * @property   int     $id                     The user id
- * @property   string  $firstName              The user first name
- * @property   string  $lastName               The user last name
- * @property   string  $pseudonym              The user pseudonym
- * @property   string  $email                  The user email
- * @property   string  $password               The user password
- * @property   string  $securityToken          The user security token
- * @property   string  $securityTokenExpires   The user security token expired date
- * @property   int     $connectionAttempt      The user number of failed connection attempt
- * @property   int     $ipAttempt              The user last ip connection attempt
- * @property   int     $ip                     The user last ip connection
- * @property   string  $lastConnectionAttempt  The user last time connection attempt
- * @property   string  $lastConnection         The user last time connection
+ * @property   int        $id                     The user id
+ * @property   string     $firstName              The user first name
+ * @property   string     $lastName               The user last name
+ * @property   string     $pseudonym              The user pseudonym
+ * @property   string     $email                  The user email
+ * @property   string     $password               The user password
+ * @property   string     $securityToken          The user security token
+ * @property   string     $securityTokenExpires   The user security token expired date
+ * @property   int        $connectionAttempt      The user number of failed connection attempt
+ * @property   int        $ipAttempt              The user last ip connection attempt
+ * @property   int        $ip                     The user last ip connection
+ * @property   \DateTime  $lastConnectionAttempt  The user last time connection attempt
+ * @property   \DateTime  $lastConnection         The user last time connection
  *
  * @todo Remove null values on right and chatRight
  * @todo PHP7 defines object return OR null with method(...): ?Class
@@ -39,7 +36,7 @@ use \classes\entitiesCollection\RoomRightCollection as RoomRightCollection;
 class User extends Entity
 {
     /**
-     * @var        string[]  $mustDefinedFields     Fields that must be defined when instanciate the User object
+     * @var        string[]  $mustDefinedFields     Fields that must be defined when instantiate the User object
      */
     public static $mustDefinedFields = array('firstName', 'lastName', 'email', 'password');
     /**
@@ -47,7 +44,7 @@ class User extends Entity
      */
     public static $pseudoBlackList = array('admin', 'all', 'SERVER');
     /**
-     * @var        string[]  $forbidenPseudoCharacters  List of forbidden pseudonym characters
+     * @var        string[]  $forbiddenPseudoCharacters  List of forbidden pseudonym characters
      */
     public static $forbiddenPseudoCharacters = array(',', "'");
 

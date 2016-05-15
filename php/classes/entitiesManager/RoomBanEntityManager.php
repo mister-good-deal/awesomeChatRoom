@@ -8,11 +8,11 @@
 
 namespace classes\entitiesManager;
 
-use \abstracts\EntityManager as EntityManager;
-use \classes\entities\Room as Room;
-use \classes\entities\RoomBan as RoomBan;
-use \classes\entitiesCollection\RoomBanCollection as RoomBanCollection;
-use \classes\DataBase as DB;
+use abstracts\EntityManager as EntityManager;
+use classes\entities\Room as Room;
+use classes\entities\RoomBan as RoomBan;
+use classes\entitiesCollection\RoomBanCollection as RoomBanCollection;
+use classes\DataBase as DB;
 
 /**
  * Performed database action relative to the chat room ban entity class
@@ -56,7 +56,7 @@ class RoomBanEntityManager extends EntityManager
      */
     public function isIpBanned(string $ip): bool
     {
-        return static::inSubArray($ip, $this->entity->entityCollection(), 'ip');
+        return static::inSubArray($ip, $this->entity->entityCollection, 'ip');
     }
 
     /**
@@ -66,7 +66,7 @@ class RoomBanEntityManager extends EntityManager
     {
         $roomBanCollection = new RoomBanCollection();
         $sqlMarks          = 'SELECT * FROM %s WHERE `idRoom` = %d';
-        $sql               = static::sqlFormater(
+        $sql               = static::sqlFormat(
             $sqlMarks,
             $this->entity->getTableName(),
             $this->entity->idRoom

@@ -3,8 +3,24 @@
     <words>
       <w>autoloader</w>
       <w>awaitable</w>
+      <w>bowerrc</w>
       <w>coroutine</w>
+      <w>elasticsearch</w>
+      <w>gitattributes</w>
+      <w>gitignore</w>
+      <w>googleapis</w>
+      <w>jscsrc</w>
+      <w>jshintrc</w>
+      <w>kibana</w>
       <w>lodash</w>
+      <w>mkdir</w>
+      <w>mtime</w>
+      <w>sprintf</w>
+      <w>stdin</w>
+      <w>strlen</w>
+      <w>strtoupper</w>
+      <w>unformat</w>
+      <w>unformated</w>
       <w>websocket</w>
     </words>
   </dictionary>

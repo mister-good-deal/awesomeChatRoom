@@ -14,7 +14,7 @@ use classes\entitiesCollection\RoomBanCollection as RoomBanCollection;
 use classes\websocket\ClientCollection as ClientCollection;
 
 /**
- * Room entity that extends the Entity abstact class
+ * Room entity that extends the Entity abstract class
  *
  * @property   int     $id            The room ID
  * @property   string  $name          The room name
@@ -100,7 +100,7 @@ class Room extends Entity
     ======================================*/
 
     /**
-     * Get the uers banned collection
+     * Get the users banned collection
      *
      * @return     RoomBanCollection  The users banned collection
      */
@@ -110,7 +110,7 @@ class Room extends Entity
     }
 
     /**
-     * Set the uers banned collection
+     * Set the users banned collection
      *
      * @param      RoomBanCollection  $roomBanCollection  The users banned collection
      */

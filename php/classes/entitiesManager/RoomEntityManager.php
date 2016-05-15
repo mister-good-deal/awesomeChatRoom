@@ -48,7 +48,7 @@ class RoomEntityManager extends EntityManager
     {
         $rooms    = new RoomCollection();
         $sqlMarks = 'SELECT * FROM %s';
-        $sql      = static::sqlFormater($sqlMarks, (new Room)->getTableName());
+        $sql      = static::sqlFormat($sqlMarks, (new Room)->getTableName());
 
         foreach (DB::query($sql)->fetchAll() as $roomAttributes) {
             $rooms->add(new Room($roomAttributes));
@@ -86,9 +86,9 @@ class RoomEntityManager extends EntityManager
         }
 
         $sqlMarks = 'SELECT COUNT(id) FROM %s WHERE name = %s';
-        $sql      = static::sqlFormater($sqlMarks, (new Room)->getTableName(), DB::quote($roomName));
+        $sql      = static::sqlFormat($sqlMarks, (new Room)->getTableName(), DB::quote($roomName));
 
-        if ((int) DB::query($query)->fetchColumn() > 0) {
+        if ((int) DB::query($sql)->fetchColumn() > 0) {
             throw new Exception(_('This room name already exists'), LogLevel::PARAMETER);
         }
 

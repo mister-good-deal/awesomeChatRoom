@@ -8,8 +8,7 @@
 
 namespace classes\console;
 
-use \classes\IniManager as Ini;
-use \classes\console\ConsoleColors as ConsoleColors;
+use classes\IniManager as Ini;
 
 /**
  * Console mode basic interface
@@ -30,7 +29,7 @@ class Console
                                             `
 WELCOME;
 
-    const GODDBYE = <<<'GODDBYE'
+    const GOODBYE = <<<'GOODBYE'
 
    ____                 _ _                 `
   / ___| ___   ___   __| | |__  _   _  ___  `
@@ -39,7 +38,7 @@ WELCOME;
   \____|\___/ \___/ \__,_|_.__/ \__, |\___| `
                                 |___/       `
                                             `
-GODDBYE;
+GOODBYE;
 
     const ACTION_CANCEL = 'Canceled';
     const ACTION_DONE   = 'Done';
@@ -138,7 +137,7 @@ GODDBYE;
                     $exit = true;
                     static::out(
                         ConsoleColors::getColoredString(
-                            static::GODDBYE,
+                            static::GOODBYE,
                             ConsoleColors::LIGHT_RED_F,
                             ConsoleColors::GREEN
                         )
@@ -155,7 +154,7 @@ GODDBYE;
                     break;
 
                 case 'help':
-                    static::out('List of all command' . PHP_EOL . static::tableAssociativPrettyPrint(static::$COMMANDS));
+                    static::out('List of all command' . PHP_EOL . static::tableAssociativePrettyPrint(static::$COMMANDS));
                     break;
 
                 default:
@@ -258,7 +257,7 @@ GODDBYE;
      *
      * @todo       Move to prettyOutput trait
      */
-    protected static function tableAssociativPrettyPrint(array $table): string
+    protected static function tableAssociativePrettyPrint(array $table): string
     {
         $keys =  array_keys($table);
 

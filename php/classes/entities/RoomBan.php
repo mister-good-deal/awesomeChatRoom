@@ -8,10 +8,10 @@
 
 namespace classes\entities;
 
-use \abstracts\Entity as Entity;
+use abstracts\Entity as Entity;
 
 /**
- * RoomBan entity that extends the Entity abstact class
+ * RoomBan entity that extends the Entity abstract class
  *
  * @property   int     $idRoom     The room ID
  * @property   string  $ip         The user banned ip

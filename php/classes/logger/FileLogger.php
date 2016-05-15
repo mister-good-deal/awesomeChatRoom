@@ -8,10 +8,8 @@
 
 namespace classes\logger;
 
-use \classes\logger\LogLevel as LogLevel;
-use \classes\IniManager as Ini;
-use \interfaces\LoggerInterface as LoggerInterface;
-use \abstracts\AbstractLogger as AbstractLogger;
+use classes\IniManager as Ini;
+use abstracts\AbstractLogger as AbstractLogger;
 
 /**
  * File logger to log  exceptions in a file
@@ -28,7 +26,7 @@ class FileLogger extends AbstractLogger
     =====================================*/
 
     /**
-     * Constructor taht take the file path as a first parameter, if ommited it loads the file path defined in the ini
+     * Constructor that take the file path as a first parameter, if omitted it loads the file path defined in the ini
      *
      * @param      string  $filePath  OPTIONAL the file path
      */

@@ -8,11 +8,8 @@
 
 namespace abstracts;
 
-use \classes\ExceptionManager as Exception;
-use \abstracts\Entity as Entity;
-use \abstracts\Collection as Collection;
-use \classes\DataBase as DB;
-use \classes\IniManager as Ini;
+use classes\ExceptionManager as Exception;
+use classes\DataBase as DB;
 
 /**
  * Abstract EntityManager pattern
@@ -41,8 +38,8 @@ abstract class EntityManager
     /**
      * Constructor that can take an Entity as first parameter and a Collection as second parameter
      *
-     * @param      Entity      $entity            An entity object DEFAULT null
-     * @param      Collection  $entityCollection  A EntityCollection object DEFAULT null
+     * @param      Entity            $entity            An entity object DEFAULT null
+     * @param      EntityCollection  $entityCollection  A EntityCollection object DEFAULT null
      */
     public function __construct($entity = null, $entityCollection = null)
     {
@@ -74,7 +71,7 @@ abstract class EntityManager
     /**
      * Set the entity object
      *
-     * @param      Entity  $entity  The new entity oject
+     * @param      Entity  $entity  The new entity object
      */
     public function setEntity(Entity $entity)
     {
@@ -134,15 +131,13 @@ abstract class EntityManager
             $this->setEntity($entity);
         }
 
-        $sucess = true;
-
         if ($this->entityAlreadyExists()) {
-            $sucess = $this->updateInDatabase() === 1;
+            $success = $this->updateInDatabase() === 1;
         } else {
-            $sucess = $this->saveInDatabase();
+            $success = $this->saveInDatabase();
         }
 
-        return $sucess;
+        return $success;
     }
 
     /**
@@ -188,11 +183,11 @@ abstract class EntityManager
     /**
      * Delete an entity in the database
      *
-     * @return     bool  True if the entity has beed deleted else false
+     * @return     bool  True if the entity has been deleted else false
      */
     public function deleteEntity(): bool
     {
-        return $this->deleteInDatabse();
+        return $this->deleteInDatabase();
     }
 
     /**
@@ -220,15 +215,15 @@ abstract class EntityManager
     }
 
     /**
-     * Format a sql query with sprintf function First arg must be the sql string with markers (%s, %d, ...) Others args
+     * Format a sql query with `sprintf` function First arg must be the sql string with markers (%s, %d, ...) Others args
      * should be the values for the markers
      *
      * @param      string  $sql    The SQL string with markers (%s, %d, %f, ...)
-     * @param      ...     $args   The markers values
+     * @param      mixed   $args   The markers values
      *
-     * @return     string  The SQL formated string
+     * @return     string  The SQL formatted string
      */
-    public static function sqlFormater(string $sql, ... $args): string
+    public static function sqlFormat(string $sql, ... $args): string
     {
         return vsprintf($sql, $args);
     }
@@ -242,14 +237,14 @@ abstract class EntityManager
     /**
      * Load an entity by its id in the database
      *
-     * @return     bool  True if an entity was retrieved from the database elese false
+     * @return     bool  True if an entity was retrieved from the database, false otherwise
      */
     private function loadEntityInDatabase(): bool
     {
         $success  = false;
         $sqlMarks = " SELECT *\n FROM %s\n WHERE %s";
 
-        $sql = static::sqlFormater(
+        $sql = static::sqlFormat(
             $sqlMarks,
             $this->entity->getTableName(),
             $this->getEntityPrimaryKeysWhereClause()
@@ -274,7 +269,7 @@ abstract class EntityManager
     {
         $sqlMarks = " SELECT COUNT(*)\n FROM %s\n WHERE %s";
 
-        $sql = static::sqlFormater(
+        $sql = static::sqlFormat(
             $sqlMarks,
             $this->entity->getTableName(),
             $this->getEntityPrimaryKeysWhereClause()
@@ -286,23 +281,23 @@ abstract class EntityManager
     /**
      * Save the entity in the database
      *
-     * @return     bool  True if the entity has beed saved else false
+     * @return     bool  True if the entity has been saved else false
      */
     private function saveInDatabase(): bool
     {
         $sqlMarks = " INSERT INTO %s\n VALUES %s";
 
-        $sql = static::sqlFormater(
+        $sql = static::sqlFormat(
             $sqlMarks,
             $this->entity->getTableName(),
-            $this->getEntityAttributesMarks($this->entity)
+            $this->getEntityAttributesMarks()
         );
 
         return DB::prepare($sql)->execute($this->entity->getColumnsValueSQL());
     }
 
     /**
-     * Uddape the entity in the database
+     * Update the entity in the database
      *
      * @return     int   The number of rows updated
      */
@@ -310,7 +305,7 @@ abstract class EntityManager
     {
         $sqlMarks = " UPDATE %s\n SET %s\n WHERE %s";
 
-        $sql = static::sqlFormater(
+        $sql = static::sqlFormat(
             $sqlMarks,
             $this->entity->getTableName(),
             $this->getEntityUpdateMarksValue(),
@@ -323,13 +318,13 @@ abstract class EntityManager
     /**
      * Delete the entity from the database
      *
-     * @return     bool  True if the entity has beed deleted else false
+     * @return     bool  True if the entity has been deleted else false
      */
-    private function deleteInDatabse(): bool
+    private function deleteInDatabase(): bool
     {
         $sqlMarks = " DELETE FROM %s\n WHERE %s";
 
-        $sql = static::sqlFormater(
+        $sql = static::sqlFormat(
             $sqlMarks,
             $this->entity->getTableName(),
             $this->getEntityPrimaryKeysWhereClause()

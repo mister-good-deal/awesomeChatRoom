@@ -8,10 +8,10 @@
 
 namespace classes\entities;
 
-use \abstracts\Entity as Entity;
+use abstracts\Entity as Entity;
 
 /**
- * UserRoomRight entity that extends the Entity abstact class
+ * UserRoomRight entity that extends the Entity abstract class
  *
  * @property   int   $idUser  The user ID
  * @property   int   $idRoom  The room ID

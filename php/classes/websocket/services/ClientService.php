@@ -12,9 +12,8 @@ use classes\IniManager as Ini;
 use classes\websocket\Client as Client;
 use classes\entities\User as User;
 use classes\entities\UserRight as UserRight;
-use classes\entities\UserChatRight as UserChatRight;
-use classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
-use Icicle\WebSocket\Connection as Connection;
+use classes\entities\RoomRight as RoomRight;
+use classes\entitiesCollection\RoomRightCollection as RoomRightCollection ;
 
 /**
  * Chat services to manage a chat with a WebSocket server
@@ -32,8 +31,6 @@ class ClientService
 
     /**
      * Constructor that loads chat parameters
-     *
-     * @param      Log   $log    Logger object
      */
     public function __construct()
     {
@@ -59,7 +56,7 @@ class ClientService
     }
 
     /**
-     * Method to recieves data from the WebSocket server and process it
+     * Method to receives data from the WebSocket server and process it
      *
      * @param      array       $data    JSON decoded client data
      * @param      Client      $client  The client object
@@ -116,14 +113,14 @@ class ClientService
         $client->setUser(new User($data['user']));
         $client->getUser()->setRight(new UserRight($data['user']['right']));
 
-        if (count($data['user']['chatRight']) > 0) {
-            $userChatRightCollection = new UserChatRightCollection();
+        if (count($data['user']['roomRight']) > 0) {
+            $roomRightCollection = new RoomRightCollection();
 
-            foreach ($data['user']['chatRight'] as $userChatRightInfo) {
-                $userChatRightCollection->add(new UserChatRight($userChatRightInfo));
+            foreach ($data['user']['roomRight'] as $userChatRightInfo) {
+                $roomRightCollection->add(new RoomRight($userChatRightInfo));
             }
 
-            $client->getUser()->setChatRight($userChatRightCollection);
+            $client->getUser()->setChatRight($roomRightCollection);
         }
     }
 

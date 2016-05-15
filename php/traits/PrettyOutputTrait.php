@@ -8,17 +8,15 @@
 
 namespace traits;
 
-use \classes\ExceptionManager as Exception;
-
 /**
  * Utility methods to smart align values
  */
 trait PrettyOutputTrait
 {
     /**
-     * @var        array  $beautifullIndentMaxSize  Array containing the max size of each array
+     * @var        array  $beautifulIndentMaxSize  Array containing the max size of each array
      */
-    public static $beautifullIndentMaxSize = array();
+    public static $beautifulIndentMaxSize = array();
 
     /*======================================
     =            Public methods            =
@@ -49,11 +47,11 @@ trait PrettyOutputTrait
         foreach ($arrays as $array) {
             $arrayHash = static::md5Array($array);
 
-            if (!isset(static::$beautifullIndentMaxSize[$arrayHash])) {
+            if (!isset(static::$beautifulIndentMaxSize[$arrayHash])) {
                 static::setMaxSize($array, 0, $arrayHash);
             }
 
-            $max += static::$beautifullIndentMaxSize[$arrayHash];
+            $max += static::$beautifulIndentMaxSize[$arrayHash];
         }
 
         return str_pad($value, $max + $extraSize, ' ', $position);
@@ -178,11 +176,11 @@ trait PrettyOutputTrait
     {
         $arrayHash = static::md5Array($array);
 
-        if (!isset(static::$beautifullIndentMaxSize[$arrayHash])) {
+        if (!isset(static::$beautifulIndentMaxSize[$arrayHash])) {
             static::setMaxSize($array, 0, $arrayHash);
         }
 
-        return static::$beautifullIndentMaxSize[$arrayHash];
+        return static::$beautifulIndentMaxSize[$arrayHash];
     }
 
     /**
@@ -211,10 +209,10 @@ trait PrettyOutputTrait
     /**
      * Process the max value size of an array
      *
-     * If the array is processed and the array didn't change, the array is not reprocessed
+     * If the array is processed and the array did not change, the array is not reprocessed
      *
      * @param      array    $array      The array to calculate max size of
-     * @param      integer  $minSize    OPTIONAL The minium size DEFAULT 0
+     * @param      integer  $minSize    OPTIONAL The minimum size DEFAULT 0
      * @param      string   $arrayHash  OPTIONAL The already calculated array hash DEFAULT null
      */
     private static function setMaxSize(array $array, int $minSize = 0, string $arrayHash = null)
@@ -237,7 +235,7 @@ trait PrettyOutputTrait
             }
         }
 
-        static::$beautifullIndentMaxSize[$arrayHash] = max($max, $minSize);
+        static::$beautifulIndentMaxSize[$arrayHash] = max($max, $minSize);
     }
 
     /*-----  End of Private methods  ------*/

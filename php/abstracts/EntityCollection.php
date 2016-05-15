@@ -1,6 +1,6 @@
 <?php
 /**
- * Abstarct Collection entity pattern
+ * Abstract Collection entity pattern
  *
  * @package    Abstract
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -8,8 +8,7 @@
 
 namespace abstracts;
 
-use \classes\ExceptionManager as Exception;
-use \abstracts\Entity as Entity;
+use classes\ExceptionManager as Exception;
 
 /**
  * Abstract Collection pattern to use with Entity pattern
@@ -38,7 +37,7 @@ abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, 
     protected $current = 0;
 
     /*=====================================
-    =            Magic mathods            =
+    =            Magic methods            =
     =====================================*/
 
     /**
@@ -82,7 +81,7 @@ abstract class EntityCollection implements \Iterator, \ArrayAccess, \Countable, 
         return $string;
     }
 
-    /*-----  End of Magic mathods  ------*/
+    /*-----  End of Magic methods  ------*/
 
     /*======================================
     =            Public methods            =

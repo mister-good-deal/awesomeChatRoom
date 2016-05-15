@@ -8,7 +8,7 @@
 
 namespace abstracts;
 
-use \classes\ExceptionManager as Exception;
+use classes\ExceptionManager as Exception;
 
 /**
  * Abstract API pattern
@@ -141,7 +141,7 @@ abstract class API
             } elseif ($_SERVER['HTTP_X_HTTP_METHOD'] === 'PUT') {
                 $this->method = 'PUT';
             } else {
-                throw new Exception('Unexpected Header', Exception::PARAMETER);
+                throw new Exception('Unexpected Header', Exception::$PARAMETER);
             }
         }
 

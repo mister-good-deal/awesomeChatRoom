@@ -19,7 +19,7 @@ use classes\entities\RoomBan as RoomBan;
  *      Add a room ban entity at the end of the collection
  * }
  *
- * @method RoomBan getEntityById([$roomId, $ip]) {
+ * @method RoomBan getEntityById(array $primaryKey) {
  *      Get a room ban entity by the room ID and the ip
  *
  *      @return RoomBan The room ban entity

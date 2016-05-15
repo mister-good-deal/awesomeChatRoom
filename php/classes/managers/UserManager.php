@@ -264,8 +264,8 @@ class UserManager extends Manager
         return (
             $this->userEntityManager->checkSecurityToken() && (
                 $this->userEntity->getRight()->chatAdmin || (
-                    $this->userEntity->getRoomRight()->getEntityById($roomId) !== null &&
-                    $this->userEntity->getRoomRight()->getEntityById($roomId)->edit
+                    $this->userEntity->getRoomRight()->getEntityById($room->id) !== null &&
+                    $this->userEntity->getRoomRight()->getEntityById($room->id)->edit
                 )
             )
         );

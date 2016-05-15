@@ -8,11 +8,9 @@
 
 namespace classes\logger;
 
-use \classes\logger\LogLevel as LogLevel;
-use \classes\console\ConsoleColors as ConsoleColors;
-use \classes\IniManager as Ini;
-use \interfaces\LoggerInterface as LoggerInterface;
-use \abstracts\AbstractLogger as AbstractLogger;
+use classes\console\ConsoleColors as ConsoleColors;
+use classes\IniManager as Ini;
+use abstracts\AbstractLogger as AbstractLogger;
 
 /**
  * A logger which writes the log in the console
@@ -41,7 +39,7 @@ class ConsoleLogger extends AbstractLogger
     =====================================*/
 
     /**
-     * Constructor that instanciates a ConsoleColors
+     * Constructor that instantiates a ConsoleColors
      */
     public function __construct()
     {
@@ -196,7 +194,7 @@ class ConsoleLogger extends AbstractLogger
     }
 
     /**
-     * Informations détaillées de débogage.
+     * Detailed debug information.
      *
      * @param      string  $message
      * @param      array   $context
@@ -306,7 +304,7 @@ class ConsoleLogger extends AbstractLogger
         string $fgColor2 = ConsoleColors::YELLOW,
         string $bgColor2 = ConsoleColors::BLACK
     ): string {
-        $formatedString = '';
+        $formattedString = '';
 
         if (isset($context[$type])) {
             if ($type === 'args') {
@@ -315,14 +313,14 @@ class ConsoleLogger extends AbstractLogger
                 $contextString = $context[$type];
             }
 
-            $formatedString = "\t"
+            $formattedString = "\t"
                 . ConsoleColors::getColoredString($description, $fgColor1, $bgColor1)
                 . "\t"
                 . ConsoleColors::getColoredString($contextString, $fgColor2, $bgColor2)
                 . PHP_EOL;
         }
 
-        return $formatedString;
+        return $formattedString;
     }
 
     /*-----  End of Private methods  ------*/

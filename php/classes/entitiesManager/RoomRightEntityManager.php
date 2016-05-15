@@ -8,10 +8,10 @@
 
 namespace classes\entitiesManager;
 
-use \abstracts\EntityManager as EntityManager;
-use \classes\entities\RoomRight as RoomRight;
-use \classes\entitiesCollection\RoomRightCollection as RoomRightCollection;
-use \classes\DataBase as DB;
+use abstracts\EntityManager as EntityManager;
+use classes\entities\RoomRight as RoomRight;
+use classes\entitiesCollection\RoomRightCollection as RoomRightCollection;
+use classes\DataBase as DB;
 
 /**
  * Performed database action relative to the room right entity class
@@ -82,8 +82,8 @@ class RoomRightEntityManager extends EntityManager
     public function loadRoomsRight(int $userId)
     {
         $sqlMarks   = 'SELECT * FROM %s WHERE idUser = %d';
-        $sql        = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $userId);
-        $chatRights = DB::query($sql)->fetchAll();
+        $sql        = static::sqlFormat($sqlMarks, $this->entity->getTableName(), $userId);
+        $roomsRight = DB::query($sql)->fetchAll();
 
         foreach ($roomsRight as $roomRightInfo) {
             $this->entityCollection->add(new RoomRight($roomRightInfo));

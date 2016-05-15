@@ -1,6 +1,6 @@
 <?php
 /**
- * Abstarct Collection pattern
+ * Abstract Collection pattern
  *
  * @package    Abstract
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -35,7 +35,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     protected $current = 0;
 
     /*=====================================
-    =            Magic mathods            =
+    =            Magic methods            =
     =====================================*/
 
     /**
@@ -63,7 +63,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
         return $string;
     }
 
-    /*-----  End of Magic mathods  ------*/
+    /*-----  End of Magic methods  ------*/
 
     /*======================================
     =            Public methods            =
@@ -93,7 +93,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
 
         if (array_key_exists($id, $this->indexId)) {
             throw new Exception(
-                'This object id(' . $this->formatVariable($id) .') is already in the collection ' . $this,
+                'This object is already in the collection ' . $this,
                 Exception::$WARNING
             );
         } else {
@@ -114,7 +114,7 @@ abstract class Collection implements \Iterator, \ArrayAccess, \Countable, \Seeka
     {
         if (!array_key_exists($id, $this->indexId)) {
             throw new Exception(
-                'This object id(' . $this->formatVariable($id) .') is not already in the collection ' . $this,
+                'This object ID is not already in the collection ' . $this,
                 Exception::$WARNING
             );
         } else {

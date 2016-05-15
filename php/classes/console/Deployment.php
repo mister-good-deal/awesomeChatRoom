@@ -8,11 +8,10 @@
 
 namespace classes\console;
 
-use \classes\console\Console as Console;
-use \classes\fileManager\FileManagerInterface as FileManager;
-use \classes\fileManager\FtpFileManager as FtpFileManager;
-use \classes\fileManager\SftpFileManager as SftpFileManager;
-use \classes\IniManager as Ini;
+use interfaces\FileManagerInterface as FileManager;
+use classes\fileManager\FtpFileManager as FtpFileManager;
+use classes\fileManager\SftpFileManager as SftpFileManager;
+use classes\IniManager as Ini;
 
 /**
  * Deployment class to deploy the application on a server using several protocol
@@ -139,7 +138,7 @@ class Deployment extends Console
      * Process the command entered by the user and output the result in the console
      *
      * @param      string  $command   The command passed by the user
-     * @param      bool    $executed  DEFAULT false, true if the command is already executed, else false
+     * @param      bool    $executed  True if the command is already executed, false otherwise DEFAULT false
      */
     protected function processCommand(string $command, bool $executed = false)
     {
@@ -194,7 +193,7 @@ class Deployment extends Console
     }
 
     /**
-     * Launch the deployement of the website or the websocket server or both
+     * Launch the deployment of the website or the websocket server or both
      *
      * @param      string  $command  The command passed with its arguments
      */
@@ -218,7 +217,7 @@ class Deployment extends Console
     }
 
     /**
-     * Diplay or set deployment configuraton parameters
+     * Display or set deployment configuration parameters
      *
      * @param      string  $command  The command passed with its arguments
      */
@@ -257,12 +256,12 @@ class Deployment extends Console
     /**
      * Deploy the php server on the remote server
      *
-     * @param      boolean  $skipGulp  True to skip gulp process else false DEFAULT false
+     * @param      bool  $skipGulp  True to skip gulp process else false DEFAULT false
      */
-    private function deployPhp($skipGulp = false)
+    private function deployPhp(bool $skipGulp = false)
     {
         if (!$skipGulp) {
-            $this->gulpPreprocessingPhp();
+            $this->gulpPreProcessingPhp();
         }
 
         $directoriesTree = static::$PROJECT_MAIN_STRUCTURE;
@@ -279,12 +278,12 @@ class Deployment extends Console
     /**
      * Deploy the static repo (js and css) on the remote server
      *
-     * @param      boolean  $skipGulp  True to skip gulp process else false DEFAULT false
+     * @param      bool  $skipGulp  True to skip gulp process else false DEFAULT false
      */
-    private function deployStatic($skipGulp = false)
+    private function deployStatic(bool $skipGulp = false)
     {
         if (!$skipGulp) {
-            $this->gulpPreprocessingStatic();
+            $this->gulpPreProcessingStatic();
         }
 
         $directoriesTree = static::$PROJECT_MAIN_STRUCTURE;
@@ -304,7 +303,8 @@ class Deployment extends Console
      */
     private function deploy(array $directoriesTree)
     {
-        $skip = false;
+        $skip        = false;
+        $fileManager = null;
 
         switch ($this->deploymentConfiguration['protocol']) {
             case 'FTP':
@@ -363,10 +363,10 @@ class Deployment extends Console
     ) {
         $fileManager->changeDir($workingDirectory);
 
-        foreach ($arrayDepth[$workingDirectory] as $directoryName => $subdir) {
+        foreach ($arrayDepth[$workingDirectory] as $directoryName => $subDir) {
             $fileManager->makeDirIfNotExists($directoryName);
 
-            if (is_array($subdir)) {
+            if (is_array($subDir)) {
                 $this->createMainProjectStructureRecursive($fileManager, $directoryName, $arrayDepth[$workingDirectory]);
             }
         }
@@ -380,7 +380,7 @@ class Deployment extends Console
      * @param      FileManager  $fileManager            A FileManager class that implements FileManagerInterface
      * @param      string       $workingDirectory       The directory to create the current depth structure
      * @param      array        $arrayDepth             The tree of the current depth structure
-     * @param      string       $localWorkingDirectory  The curent local working directory
+     * @param      string       $localWorkingDirectory  The current local working directory
      */
     private function uploadFilesRecursive(
         $fileManager,
@@ -423,7 +423,7 @@ class Deployment extends Console
      */
     private function printDeploymentInformation()
     {
-        static::out($this->tableAssociativPrettyPrint($this->deploymentConfiguration) . PHP_EOL);
+        static::out($this->tableAssociativePrettyPrint($this->deploymentConfiguration) . PHP_EOL);
     }
 
     /**
@@ -444,7 +444,7 @@ class Deployment extends Console
     }
 
     /**
-     * Install composer depedencies on the remote server with --no-dev
+     * Install composer dependencies on the remote server with --no-dev
      */
     private function composerInstall()
     {
@@ -456,18 +456,18 @@ class Deployment extends Console
     }
 
     /**
-     * Preprocessing js/less files before deployment and generate doc
+     * Pre-processing js/less files before deployment and generate doc
      */
-    private function gulpPreprocessingStatic()
+    private function gulpPreProcessingStatic()
     {
         static::out(PHP_EOL . 'Prepare the static deployment, running gulp tasks ...' . PHP_EOL . PHP_EOL);
         static::execWithPrintInLive('cd ../static & gulp deploy_static');
     }
 
     /**
-     * Preprocessing php files before deployment and generate doc
+     * Pre-processing php files before deployment and generate doc
      */
-    private function gulpPreprocessingPhp()
+    private function gulpPreProcessingPhp()
     {
         static::out(PHP_EOL . 'Prepare the PHP deployment, running gulp tasks ...' . PHP_EOL . PHP_EOL);
         static::execWithPrintInLive('cd ../static & gulp deploy_php');
