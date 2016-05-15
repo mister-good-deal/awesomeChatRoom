@@ -14,6 +14,12 @@ use classes\ExceptionManager as Exception;
 /**
  * A collection of Client that extends the Collection pattern
  *
+ * @method Client current() {
+ *      Returns the current client
+ *
+ *      @return Client The current client
+ *}
+ *
  * @method Client getObjectById($id) {
  *      Get a client by the room ID
  *

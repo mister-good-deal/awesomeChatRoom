@@ -173,12 +173,22 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/php/classes/websocket/ClientCollection.php">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/php/classes/websocket/ServerRequestHandler.php">
           <value>
             <set />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/php/classes/websocket/ServicesDispatcher.php">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/php/classes/websocket/services/ChatService.php">
           <value>
             <set />
           </value>

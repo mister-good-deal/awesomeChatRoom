@@ -11,26 +11,24 @@ namespace classes\websocket\services;
 use classes\IniManager as Ini;
 use classes\websocket\Client as Client;
 use classes\websocket\ClientCollection as ClientCollection;
-use classes\entities\User as User;
+use classes\entitiesCollection\RoomCollection as RoomCollection;
 use classes\entities\Room as Room;
-use classes\entities\ChatRoomBan as ChatRoomBan;
 use classes\managers\RoomManager as RoomManager;
-use classes\managers\UserManager as UserManager;
-use classes\managers\ChatManager as ChatManager;
-use classes\ExceptionManager as Exception;
 use classes\LoggerManager as Logger;
 use classes\logger\LogLevel as LogLevel;
-use Icicle\WebSocket\Connection as Connection;
+use Elasticsearch\ClientBuilder as EsClientBuilder;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
+use traits\FiltersTrait as FiltersTrait;
+use traits\DateTrait as DateTrait;
 
 /**
  * Chat services to manage a chat with a WebSocket server
  */
 class ChatService
 {
-    use \traits\ShortcutsTrait;
-    use \traits\PrettyOutputTrait;
-    use \traits\FiltersTrait;
-    use \traits\DateTrait;
+    use PrettyOutputTrait;
+    use FiltersTrait;
+    use DateTrait;
 
     /**
      * @var        string  $serviceName     The chat service name
@@ -73,7 +71,7 @@ class ChatService
     ======================================*/
 
     /**
-     * Method to recieves data from the WebSocket server and process it
+     * Method to receives data from the WebSocket server and process it
      *
      * @param      array           $data    JSON decoded client data
      * @param      Client          $client  The client object
@@ -90,7 +88,7 @@ class ChatService
                 break;
 
             case 'getHistoric':
-                yield $this->getHistoric($data, $client, $rooms);
+                yield $this->getHistoric($data, $client);
 
                 break;
 
@@ -100,26 +98,6 @@ class ChatService
                     'success' => false,
                     'text'    => _('Unknown action')
                 ]));
-        }
-    }
-
-    /**
-     * Disconnet a user from all the chat rooms he was connected to
-     *
-     * @param      array       $client  The client information [Connection, User] array pair
-     *
-     * @return     \Generator
-     *
-     * @todo       to refacto
-     */
-    public function disconnectUser($client)
-    {
-        $userHash = $this->getConnectionHash($client['Connection']);
-
-        foreach ($this->rooms as $roomInfo) {
-            if (array_key_exists($userHash, $roomInfo['users'])) {
-                yield $this->disconnectUserFromRoomAction($userHash, $roomInfo['room']->id);
-            }
         }
     }
 
@@ -147,10 +125,10 @@ class ChatService
     private function sendMessage(array $data, Client $client, RoomCollection $rooms)
     {
         $success     = false;
-        $message     = _('An error occured');
         $text        = trim($data['message']) ?? '';
         $roomManager = new RoomManager(null, $rooms);
-        $recievers   = new ClientCollection();
+        $receivers   = new ClientCollection();
+        $type        = 'public';
         $room        = null;
 
         if (!is_numeric(($data['roomId'] ?? null)) && !$roomManager->isRoomExist((int) $data['roomId'])) {
@@ -164,24 +142,23 @@ class ChatService
             } elseif (!$roomManager->isPasswordCorrect(($data['password'] ?? ''))) {
                 $message = _('Room password is incorrect');
             } else {
-                if ($data['recievers'] === 'all') {
-                    $recievers = $room->getClients();
-                    $type      = 'public';
+                if ($data['receivers'] === 'all') {
+                    $receivers = $room->getClients();
                 } else {
-                    foreach (($data['recievers'] ?? []) as $clientId) {
-                        $reciever = $room->getClients()->getObjectById($clientId);
+                    foreach (($data['receivers'] ?? []) as $clientId) {
+                        $receiver = $room->getClients()->getObjectById($clientId);
                         $type     = 'private';
 
-                        if ($reciever !== null) {
-                            $recievers->add($reciever);
+                        if ($receiver !== null) {
+                            $receivers->add($receiver);
                         }
                     }
 
                     // Self send the message
-                    $recievers->add($client);
+                    $receivers->add($client);
                 }
 
-                yield $this->sendMessageToGroup($client, $recievers, $room, $text, $type);
+                yield $this->sendMessageToGroup($client, $receivers, $room, $text, $type);
 
                 $message = _('Message successfully sent !');
                 $success = true;
@@ -201,22 +178,23 @@ class ChatService
      *
      * @param      array             $data     JSON decoded client data
      * @param      Client            $client   The client object
-     * @param      ClientCollection  $clients  The clients collection
      *
      * @return     \Generator
+     *
+     * @todo To test
      */
     private function getHistoric(array $data, Client $client)
     {
         $success     = false;
         $message     = _('Historic successfully loaded !');
-        $chatManager = new ChatManager();
+        $roomManager = new RoomManager();
 
-        if ($chatManager->loadChatRoom((int) $data['roomId']) === false) {
+        if (!is_numeric(($data['roomId'] ?? null)) && !$roomManager->isRoomExist((int) $data['roomId'])) {
             $message = _('This room does not exist');
         } else {
-            $room = $chatManager->getChatRoomEntity();
+            $room = $roomManager->getRoom();
 
-            if (!$this->checkPrivateRoomPassword($room, $data['password'] ?? '')) {
+            if (!$roomManager->isPasswordCorrect(($data['password'] ?? ''))) {
                 $message = _('Room password is incorrect');
             } else {
                 $success  = true;
@@ -229,7 +207,7 @@ class ChatService
             'action'   => 'getHistoric',
             'success'  => $success,
             'text'     => $message,
-            'historic' => $historic ?? null,
+            'historic' => $historic ?? [],
             'roomId'   => $data['roomId']
         ]));
     }
@@ -272,7 +250,7 @@ class ChatService
 
         yield $clientTo->getConnection()->send(json_encode([
             'service'   => $this->serviceName,
-            'action'    => 'recieveMessage',
+            'action'    => 'receiveMessage',
             'pseudonym' => $pseudonym,
             'date'      => $date,
             'roomId'    => $room->id,
@@ -285,7 +263,7 @@ class ChatService
             $clientsTo = new ClientCollection();
             $clientsTo->add($clientTo);
 
-            yield $this->indexMessage($clientFrom, $clientsTo, $room, $message, $type, $date);
+            $this->indexMessage($clientFrom, $clientsTo, $room, $message, $type, $date);
         }
     }
 
@@ -312,11 +290,11 @@ class ChatService
         $date = ($date !== null ? $date : static::microtimeAsInt());
 
         foreach ($clientsTo as $clientTo) {
-            yield $this->sendMessageToUser($clientFrom, $clientTo, $room, $message, $type, $date, true);
+            yield $this->sendMessageToClient($clientFrom, $clientTo, $room, $message, $type, $date, true);
         }
 
         // Insert elasticSearch record
-        yield $this->indexMessage($clientFrom, $clientsTo, $room, $message, $type, $date);
+        $this->indexMessage($clientFrom, $clientsTo, $room, $message, $type, $date);
     }
 
     /**
@@ -328,8 +306,6 @@ class ChatService
      * @param      string            $message     The text message
      * @param      string            $type        The message type ('public' || 'private')
      * @param      string            $date        The server micro timestamp at the moment the message was sent
-     *
-     * @return     \Generator
      */
     private function indexMessage(
         Client $clientFrom,
@@ -341,7 +317,7 @@ class ChatService
     ) {
         if ($clientFrom->getConnection()->getRemoteAddress() !== '127.0.0.1') {
             foreach ($clientsTo as $clientTo) {
-                $es = \Elasticsearch\ClientBuilder::create()->build();
+                $es = EsClientBuilder::create()->build();
                 $params = [
                     'index' => $this->esIndex . '_write',
                     'type'  => 'message',
@@ -349,7 +325,7 @@ class ChatService
                         'message'   => $message,
                         'type'      => $type,
                         'date'      => $date,
-                        'room'      => $roomId,
+                        'room'      => $room->id,
                         'userFrom'  => [
                             'id'        => $clientFrom->isRegistered() ? $clientFrom->getUser()->id : -1,
                             'ip'        => $clientFrom->getConnection()->getRemoteAddress(),
@@ -366,7 +342,7 @@ class ChatService
                 ];
 
                 try {
-                    $result = $es->index($params);
+                    $es->index($params);
                 } catch (\Exception $e) {
                     $this->logger->log(
                         LogLevel::ERROR,
@@ -382,13 +358,13 @@ class ChatService
      *
      * @param      int     $roomId  The room ID to search messages in
      * @param      Client  $client  The client who asked the historic
-     * @param      string  $from    The maximum message published date in UNIX microtimestamp (string) DEFAULT null
+     * @param      string  $from    The maximum message published date in UNIX micro timestamp (string) DEFAULT null
      *
      * @return     array  The list of messages found
      */
-    private function getRoomHistoric(int $roomId, array $client, string $from = null)
+    private function getRoomHistoric(int $roomId, Client $client, string $from = null)
     {
-        $es     = \Elasticsearch\ClientBuilder::create()->build();
+        $es     = EsClientBuilder::create()->build();
         $from   = $from ?? static::microtimeAsInt();
         $userIp = $client->getConnection()->getRemoteAddress();
         $userId = -1;
@@ -397,7 +373,7 @@ class ChatService
             $userId  = $client->getUser()->id;
         }
 
-        return $this->filterEsHitsByArray($es->search([
+        return static::filterEsHitsByArray($es->search([
             'index'  => $this->esIndex . '_read',
             'type'   => 'message',
             'sort'   => 'date:desc',
@@ -422,7 +398,7 @@ class ChatService
                                             'room' => $roomId
                                         ]
                                     ],
-                                    // Must be a public message or private one destinating to the user
+                                    // Must be a public message or private one to the user identifies by his ID or IP
                                     [
                                         'bool' => [
                                             'should' => [
@@ -457,161 +433,6 @@ class ChatService
                 ]
             ]
         ]));
-    }
-
-    /**
-     * Add a user to a room
-     *
-     * @param      array     $client     The client information [Connection, User] array pair
-     * @param      ChatRoom  $room       The chat room
-     * @param      string    $pseudonym  The user pseudonym DEFAULT ''
-     * @param      array     $location   The user location ['lat' => latitude, 'lon' => longitude]
-     *
-     * @return     array  Result as an array of values (success, pseudonym, message)
-     */
-    private function addUserToTheRoom(array $client, ChatRoom $room, string $pseudonym = '', array $location = [])
-    {
-        $response = ['success' => false];
-        $userHash = $this->getConnectionHash($client['Connection']);
-
-        if ($client['User'] !== null) {
-            // Authenticated user
-            $userManager           = new UserManager($client['User']);
-            $response['success']   = true;
-            $response['pseudonym'] = $userManager->getPseudonymForChat();
-            $response['user']      = $userManager->getUser()->__toArray();
-        } elseif ($pseudonym !== '') {
-            // Guest user
-            if ($this->isPseudonymUsabled($pseudonym, $room->id)) {
-                $response['pseudonym'] = $pseudonym;
-                $response['success']   = true;
-            } else {
-                $response['text'] = sprintf(_('The pseudonym "%s" is already used'), $pseudonym);
-            }
-        } else {
-            $response['text'] = _('The pseudonym can\'t be empty');
-        }
-
-        if ($response['success']) {
-            // Add user to the room
-            $this->rooms[$room->id]['users'][$userHash]              = $client;
-            $this->rooms[$room->id]['users'][$userHash]['pseudonym'] = $response['pseudonym'];
-            $this->rooms[$room->id]['users'][$userHash]['location']  = $location;
-            $response['usersRights']                                 = $this->getRoomUsersRight($room->id);
-
-            // Send a message to all users in chat and warn them a new user is connected
-            $message = sprintf(_("%s joins the room"), $response['pseudonym']);
-
-            foreach ($this->rooms[$room->id]['users'] as $userInfo) {
-                yield $this->sendMessageToUser([], $userInfo, $message, $room->id, 'private');
-                yield $this->updateRoomUsers($userInfo, $room->id);
-            }
-
-            $this->logger->log(
-                Log::INFO,
-                _('[chatService] New user "%s" added in the room "%s" (%d)'),
-                $response['pseudonym'],
-                $room->name,
-                $room->id
-            );
-        }
-
-        return $response;
-    }
-
-    /**
-     * Disconnet a user from a room he was connected to
-     *
-     * @param      array       $client  The client information [Connection, User] array pair
-     * @param      array       $data    JSON decoded client data
-     *
-     * @return     \Generator
-     */
-    private function disconnectUserFromRoom(array $client, array $data)
-    {
-        $success  = false;
-        $roomId   = $data['roomId'] ?? null;
-        $userHash = $this->getConnectionHash($client['Connection']);
-
-        if ($roomId === null) {
-            $message = sprintf(_('This room does not exist'));
-        } elseif (!array_key_exists($userHash, $this->rooms[$roomId]['users'])) {
-            $message = sprintf(_('You are not connected to the room %s'), $this->rooms[$roomId]['room']->name);
-        } else {
-            $message = sprintf(_('You are disconnected from the room %s'), $this->rooms[$roomId]['room']->name);
-            $success = true;
-            yield $this->disconnectUserFromRoomAction($userHash, $roomId, 'leftRoom');
-        }
-
-        yield $client['Connection']->send(json_encode([
-            'service' => $this->serviceName,
-            'action'  => 'disconnectFromRoom',
-            'success' => $success,
-            'text'    => $message,
-            'roomId'  => $roomId
-        ]));
-    }
-
-    /**
-     * Disconnect a user from a room
-     *
-     * @param      string      $userHash  The user hash
-     * @param      int         $roomId    The room ID
-     * @param      string      $cause     The event that caused the disconnection DEFAULT 'browserClosed'
-     * @param      array       $info      Additional information about the disconnection
-     *
-     * @return     \Generator
-     *
-     * @todo rename this method with disconnectUserFromRoom
-     */
-    private function disconnectUserFromRoomAction(
-        string $userHash,
-        int $roomId,
-        string $cause = 'browserClosed',
-        array $info = []
-    ) {
-        $pseudonym = $this->rooms[$roomId]['users'][$userHash]['pseudonym'];
-
-        unset($this->rooms[$roomId]['users'][$userHash]);
-
-        // Close the chat room if noone is in
-        if (count($this->rooms[$roomId]['users']) === 0) {
-            unset($this->rooms[$roomId]);
-        } else {
-            foreach ($this->rooms[$roomId]['users'] as $userInfo) {
-                yield $this->updateRoomUsers($userInfo, $roomId);
-
-                switch ($cause) {
-                    case 'browserClosed':
-                        $message = sprintf(_('User `%s` was disconnected from the room'), $pseudonym);
-                        break;
-
-                    case 'leftRoom':
-                        $message = sprintf(_('User `%s` left the room'), $pseudonym);
-                        break;
-
-                    case 'kicked':
-                        $message = sprintf(
-                            _('User `%s` was kicked from the room by `%s` %s'),
-                            $pseudonym,
-                            $info['admin'],
-                            ($info['reason'] !== '' ? _("\nReason: ") . $info['reason'] : '')
-                        );
-                        break;
-
-                    case 'banned':
-                        $message = sprintf(
-                            _('User `%s` was banned from the room by `%s` %s'),
-                            $pseudonym,
-                            $info['admin'],
-                            ($info['reason'] !== '' ? _("\nReason: ") . $info['reason'] : '')
-                        );
-                        break;
-                }
-
-                yield $this->sendMessageToUser([], $userInfo, $message, $this->rooms[$roomId]['room']->id, 'public');
-            }
-        }
     }
 
     /*=====  End of Helper methods  ======*/

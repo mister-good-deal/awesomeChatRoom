@@ -19,6 +19,11 @@ use classes\entities\Room as Room;
 use classes\entitiesCollection\UserCollection as UserCollection;
 use classes\entitiesCollection\RoomCollection as RoomCollection;
 use abstracts\Entity as Entity;
+use Elasticsearch\ClientBuilder as EsClientBuilder;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
+use traits\FiltersTrait as FiltersTrait;
+use traits\EchoTrait as EchoTrait;
+use traits\DateTrait as DateTrait;
 
 /**
  * ORM in a console mode with simple command syntax to manage the database
@@ -27,10 +32,10 @@ use abstracts\Entity as Entity;
  */
 class Orm extends Console
 {
-    use \traits\PrettyOutputTrait;
-    use \traits\FiltersTrait;
-    use \traits\EchoTrait;
-    use \traits\DateTrait;
+    use PrettyOutputTrait;
+    use FiltersTrait;
+    use EchoTrait;
+    use DateTrait;
 
     /**
      * @var        string[]  $SELF_COMMANDS     List of all commands with their description
@@ -657,7 +662,7 @@ class Orm extends Console
      */
     private function createElasticsearchIndex(string $index, int $version, int $numberOfShards, int $numberOfReplicas)
     {
-        $client = \Elasticsearch\ClientBuilder::create()->build();
+        $client = EsClientBuilder::create()->build();
         $index  = $index . '_v' . $version;
 
         try {
@@ -691,7 +696,7 @@ class Orm extends Console
      */
     private function createElasticsearchMapping(string $index, int $version, string $type, array $mapping)
     {
-        $client = \Elasticsearch\ClientBuilder::create()->build();
+        $client = EsClientBuilder::create()->build();
 
         try {
             $client->indices()->putMapping([
@@ -718,7 +723,7 @@ class Orm extends Console
      */
     private function bindAliasesToIndex(string $index, string $alias, bool $read = true, bool $write = true)
     {
-        $client = \Elasticsearch\ClientBuilder::create()->build();
+        $client = EsClientBuilder::create()->build();
 
         try {
             if ($read) {
@@ -748,14 +753,14 @@ class Orm extends Console
      *
      * @todo
      */
-    private function reindex(string $index, int $oldVersion, int $newVersion, string $type, array $newMapping)
-    {
-        // - create the new index
-        // - bind write alias on the new index
-        // - copy data from old to new index with SCROLL and BULK
-        // - bind read alias on the new index
-        // - delete old index
-    }
+//    private function reindex(string $index, int $oldVersion, int $newVersion, string $type, array $newMapping)
+//    {
+//        // - create the new index
+//        // - bind write alias on the new index
+//        // - copy data from old to new index with SCROLL and BULK
+//        // - bind read alias on the new index
+//        // - delete old index
+//    }
 
     /**
      * Generate data by inserting message in the given index
@@ -765,7 +770,7 @@ class Orm extends Console
      */
     private function generateEsData(string $index = 'chat', int $number = 1000)
     {
-        $client = \Elasticsearch\ClientBuilder::create()->build();
+        $client = EsClientBuilder::create()->build();
         $params = ['body' => []];
         $ip     = [
             '118.240.12.136',
