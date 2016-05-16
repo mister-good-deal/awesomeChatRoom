@@ -21,7 +21,7 @@ use classes\ExceptionManager as Exception;
  *}
  *
  * @method Client getObjectById($id) {
- *      Get a client by the room ID
+ *      Get a client by his ID
  *
  *      @return Client The client
  * }
@@ -108,6 +108,18 @@ class ClientCollection extends Collection
         $index = $this->indexId[$id];
         unset($this->indexId[$id]);
         unset($this->collection[$index]);
+    }
+
+    /**
+     * Determine if a client exists in the collection
+     *
+     * @param      Client  $client  The client to test
+     *
+     * @return     bool    True if the client exists in the collection, false otherwise
+     */
+    public function isClientExist(Client $client): bool
+    {
+        return array_key_exists($client->getId(), $this->indexId);
     }
 
     /*=====  End of Public methods  ======*/

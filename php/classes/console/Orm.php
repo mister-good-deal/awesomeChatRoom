@@ -42,7 +42,7 @@ class Orm extends Console
      */
     private static $SELF_COMMANDS = [
         'tables'                                                => 'Get all the current tables name',
-        'entities --table|--info|--create|--data'               => 'Perform action on entities table',
+        'entities --table|--info|--create|--data|--drop'        => 'Perform action on entities table',
         'entity -n entityName --clean|drop|show|desc|create'    => 'Perform action on entity table',
         'clean -t tableName'                                    => 'Delete all the row of the given table name',
         'drop -t tableName'                                     => 'Drop the given table name',
@@ -271,6 +271,22 @@ class Orm extends Console
         } elseif (isset($args['data'])) {
             $this->insertUserData();
             $this->insertRoomData();
+        } elseif (isset($args['drop'])) {
+            if ($this->confirmAction('DROP the all entities table ? (Y/N)') === 'Y') {
+                foreach (DB::getAllEntities() as $entityName) {
+                    /** @var Entity $entity */
+                    $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $entityName;
+                    $entity               = new $entityClassNamespace();
+                    Ini::setIniFileName(Ini::INI_CONF_FILE);
+                    if (DB::dropTable($entity->getTableName())) {
+                        static::ok(static::ACTION_DONE . PHP_EOL);
+                    } else {
+                        static::fail(static::ACTION_FAIL . PHP_EOL . static::tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
+                    }
+                }
+            } else {
+                static::out(static::ACTION_CANCEL . PHP_EOL);
+            }
         }
     }
 
@@ -427,6 +443,7 @@ class Orm extends Console
     {
         $users       = new UserCollection();
         $userManager = new UserManager(null, $users);
+        $password    = crypt('123', Ini::getParam('User', 'passwordCryptSalt'));
 
         static::out('Create user data' . PHP_EOL);
 
@@ -437,7 +454,7 @@ class Orm extends Console
             'firstName' => 'Admin',
             'lastName'  => 'God',
             'pseudonym' => 'admin',
-            'password'  => crypt('123', Ini::getParam('User', 'passwordCryptSalt'))
+            'password'  => $password
         ]);
 
         $admin->setRight(new UserRight(['idUser' => 1, 'webSocket' => 1, 'chatAdmin' => 1, 'kibana' => 1]));
@@ -452,7 +469,7 @@ class Orm extends Console
                 'firstName' => 'User ' . $i,
                 'lastName'  => 'Normal',
                 'pseudonym' => 'User ' . $i,
-                'password'  => crypt('123', Ini::getParam('User', 'passwordCryptSalt'))
+                'password'  => $password
             ]);
 
             $users->add($user);

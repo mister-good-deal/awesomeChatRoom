@@ -73,6 +73,7 @@ define([
                 this.settings.selectors.roomConnect.div + ' ' + this.settings.selectors.roomConnect.connect,
                 $.proxy(this.connectEvent, this)
             );
+            /*
             // Display a room
             // @todo
             $('body').on(
@@ -146,6 +147,7 @@ define([
                 this.settings.selectors.roomConnect.div + ' ' + this.settings.selectors.roomConnect.name,
                 $.proxy(this.selectRoomEvent, this)
             );
+            */
         },
 
         /**

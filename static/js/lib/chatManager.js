@@ -199,7 +199,7 @@ define([
          * @param      {String}  receivers  The message receiver ('all' || userPseudonym)
          */
         sendMessage: function (roomId, message, receivers) {
-            this.websocket.send({
+            this.websocketManager.send({
                 "service"  : [this.settings.serviceName],
                 "action"   : "sendMessage",
                 "roomId"   : roomId,
@@ -215,7 +215,7 @@ define([
          * @param      {Number}  roomId The room ID
          */
         getHistoric: function (roomId) {
-            this.websocket.send({
+            this.websocketManager.send({
                 "service"        : [this.settings.serviceName],
                 "action"         : "getHistoric",
                 "roomId"         : roomId,
@@ -253,6 +253,10 @@ define([
 
                 case 'getHistoric':
                     this.getHistoricCallback(data);
+                    break;
+
+                case 'connect':
+                    this.connectCallback(data);
                     break;
 
                 default:
@@ -320,6 +324,19 @@ define([
             }
 
             this.notification.add(data.text);
+        },
+
+        /**
+         * Callback after a user got connected to a room
+         *
+         * @method     connectCallback
+         * @param      {Object}  data           The server JSON response
+         * @param      {Number}  data.roomId    The room ID
+         */
+        connectCallback: function (data) {
+            this.messagesCurrent[data.roomId]        = [];
+            this.messagesHistory[data.roomId]        = [];
+            this.messagesHistoryPointer[data.roomId] = [];
         },
 
         /*=====  End of Callbacks after WebSocket server responses  ======*/

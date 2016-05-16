@@ -9,9 +9,16 @@
 namespace classes\entitiesCollection;
 
 use abstracts\EntityCollection as EntityCollection;
+use classes\entities\User as User;
 
 /**
  * A collection of User entity that extends the EntityCollection pattern
+ *
+ * @method User current() {
+ *      Returns the current user
+ *
+ *      @return User The current user
+ * }
  */
 class UserCollection extends EntityCollection
 {

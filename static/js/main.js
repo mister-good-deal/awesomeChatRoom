@@ -7,7 +7,7 @@ require([
     'userManager',
     'clientManager',
     'roomManager',
-    'chat',
+    'chatManager',
     'notification',
     'iframeManager',
     'navigation',

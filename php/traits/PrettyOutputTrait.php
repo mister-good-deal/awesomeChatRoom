@@ -134,7 +134,15 @@ trait PrettyOutputTrait
                 break;
 
             case 'object':
-                $argumentFormatted = 'object(' . get_class($variable) . ')::' . PHP_EOL . $variable;
+                $toString = '';
+
+                if ($variable instanceof \DateTime) {
+                    $toString = $variable->format('Y-m-d H:i:s');
+                } elseif (method_exists($variable, '__toString')) {
+                    $toString = $variable->__toString();
+                }
+                
+                $argumentFormatted = 'object(' . get_class($variable) . ')::' . $toString;
                 break;
 
             case 'resource':

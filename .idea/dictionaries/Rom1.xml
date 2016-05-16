@@ -8,12 +8,14 @@
       <w>bowerrc</w>
       <w>coroutine</w>
       <w>cors</w>
+      <w>deps</w>
       <w>elasticsearch</w>
       <w>gitattributes</w>
       <w>gitignore</w>
       <w>googleapis</w>
       <w>htmlentities</w>
       <w>iframe</w>
+      <w>jasny</w>
       <w>jscsrc</w>
       <w>jshintrc</w>
       <w>keydown</w>

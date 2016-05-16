@@ -37,9 +37,10 @@ class RoomService
     public function __construct()
     {
         Ini::setIniFileName(Ini::INI_CONF_FILE);
-        $conf               = Ini::getSectionParams('Room service');
-        $this->serviceName  = $conf['serviceName'];
-        $this->logger       = new Logger([Logger::CONSOLE]);
+        $conf                   = Ini::getSectionParams('Room service');
+        $this->serviceName      = $conf['serviceName'];
+        $this->chatServiceName  = Ini::getParam('Chat service', 'serviceName');
+        $this->logger           = new Logger([Logger::CONSOLE]);
     }
 
     /*=====  End of Magic methods  ======*/
@@ -202,9 +203,9 @@ class RoomService
 
             if (!$client->isRegistered()) {
                 $message = _('You are not registered so you cannot update the room information');
-            } elseif (!$roomManager->isPasswordCorrect(($data['password'] ?? ''))) {
-                $message = _('Room password is incorrect');
-            } elseif (!$roomManager->hasEditRight($client)) {
+            } elseif (!$roomManager->isClientInTheRoom($client)) {
+                $message = _('You are not logged in this room');
+            }  elseif (!$roomManager->hasEditRight($client)) {
                     $message = _('You do not have the right to edit the room\'s information');
             } else {
                 try {
@@ -268,11 +269,17 @@ class RoomService
             } else {
                 // Insert the client in the room
                 try {
+                    $success = true;
                     $roomManager->addClient($client, $pseudonym);
                     // Inform room's clients to add the new one
                     yield $this->addClientInRoom($room, $client);
                     $message = sprintf(_('You are connected to the room `%s`'), $room->name);
-                    $success = true;
+                    // Chat service connect initialisation
+                    yield $client->getConnection()->send(json_encode([
+                        'service'=> $this->chatServiceName,
+                        'action' => 'connect',
+                        'roomId' => $data['roomId']
+                    ]));
                 } catch (Exception $e) {
                     $message = $e->getMessage();
                 }
@@ -315,8 +322,8 @@ class RoomService
 
             if (!$client->isRegistered()) {
                 $message = _('You are not registered so you cannot kick a user from the room');
-            } elseif (!$roomManager->isPasswordCorrect(($data['password'] ?? ''))) {
-                $message = _('Room password is incorrect');
+            } elseif (!$roomManager->isClientInTheRoom($client)) {
+                $message = _('You are not logged in this room');
             } elseif (!$roomManager->hasKickRight($client)) {
                 $message = _('You do not have the right to kick a user from this room');
             } else {
@@ -371,8 +378,8 @@ class RoomService
 
             if (!$client->isRegistered()) {
                 $message = _('You are not registered so you cannot kick a user from the room');
-            } elseif (!$roomManager->isPasswordCorrect(($data['password'] ?? ''))) {
-                $message = _('Room password is incorrect');
+            } elseif (!$roomManager->isClientInTheRoom($client)) {
+                $message = _('You are not logged in this room');
             } elseif (!$roomManager->hasBanRight($client)) {
                 $message = _('You do not have the right to ban a user from this room');
             } else {
@@ -432,8 +439,8 @@ class RoomService
 
             if (!$client->isRegistered()) {
                 $message = _('You are not registered so you cannot update the room information');
-            } elseif (!$roomManager->isPasswordCorrect(($data['password'] ?? ''))) {
-                $message = _('Room password is incorrect');
+            } elseif (!$roomManager->isClientInTheRoom($client)) {
+                $message = _('You are not logged in this room');
             } elseif (!$roomManager->hasGrantRight($client)) {
                 $message = _('You do not have the right to grant a user right in this room');
             } elseif ($room->getClients()->getObjectById(($data['clientId'] ?? -1)) === null) {

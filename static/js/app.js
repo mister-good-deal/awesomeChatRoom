@@ -9,7 +9,7 @@ requirejs.config({
         "loading-overlay" : "lib/vendor/loading-overlay",
         "lodash"          : "lib/vendor/lodash",
         "require"         : "lib/vendor/require",
-        "chat"            : "lib/chat",
+        "chatManager"     : "lib/chatManager",
         "room"            : "lib/room",
         "roomManager"     : "lib/roomManager",
         "user"            : "lib/user",
@@ -49,7 +49,7 @@ requirejs.config({
                 "currentPage": ".current-page"
             }
         },
-        "iframe"          : {
+        "iframeManager"   : {
             "resizeInterval": 2000,
             "selectors"     : {
                 "kibanaIframe"         : "#kibana-iframe",
@@ -87,7 +87,7 @@ requirejs.config({
                     "roomHeader"    : ".header",
                     "roomClose"     : ".close-room",
                     "roomMinimize"  : ".minimize",
-                    "roomFullscreen": ".fullscreen"
+                    "roomFullScreen": ".fullScreen"
                 },
                 "roomConnect"        : {
                     "div"         : ".connect-room",
@@ -138,7 +138,7 @@ requirejs.config({
                 }
             }
         },
-        "chat"            : {
+        "chatManager"     : {
             "serviceName"  : "chatService",
             "maxUsers"     : 15,
             "animationTime": 500,

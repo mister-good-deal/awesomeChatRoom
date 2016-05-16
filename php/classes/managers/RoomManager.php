@@ -351,6 +351,18 @@ class RoomManager extends Manager
     }
 
     /**
+     * Determine if a client is in the room
+     *
+     * @param      Client  $client  The client to test
+     *
+     * @return     bool    True if the client is in the room, false otherwise
+     */
+    public function isClientInTheRoom(Client $client): bool
+    {
+        return $this->room->getClients()->isClientExist($client) !== null;
+    }
+
+    /**
      * Determine if a pseudonym is already used in the room
      *
      * @param      string  $pseudonym  The pseudonym to check

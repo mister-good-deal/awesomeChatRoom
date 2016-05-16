@@ -139,8 +139,8 @@ class ChatService
 
             if ($text === '') {
                 $message = _('The message cannot be empty');
-            } elseif (!$roomManager->isPasswordCorrect(($data['password'] ?? ''))) {
-                $message = _('Room password is incorrect');
+            } elseif (!$roomManager->isClientInTheRoom($client)) {
+                $message = _('You are not logged in this room');
             } else {
                 if ($data['receivers'] === 'all') {
                     $receivers = $room->getClients();
@@ -192,13 +192,11 @@ class ChatService
         if (!is_numeric(($data['roomId'] ?? null)) && !$roomManager->isRoomExist((int) $data['roomId'])) {
             $message = _('This room does not exist');
         } else {
-            $room = $roomManager->getRoom();
-
-            if (!$roomManager->isPasswordCorrect(($data['password'] ?? ''))) {
-                $message = _('Room password is incorrect');
+            if (!$roomManager->isClientInTheRoom($client)) {
+                $message = _('You are not logged in this room');
             } else {
                 $success  = true;
-                $historic = $this->getRoomHistoric($room->id, $client, $data['lastMessageDate']);
+                $historic = $this->getRoomHistoric($roomManager->getRoom()->id, $client, $data['lastMessageDate']);
             }
         }
 
