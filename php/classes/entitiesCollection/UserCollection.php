@@ -2,18 +2,25 @@
 /**
  * User Collection
  *
- * @package    Collection
+ * @package    EntityCollection
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
  */
 
 namespace classes\entitiesCollection;
 
-use \abstracts\Collection as Collection;
+use abstracts\EntityCollection as EntityCollection;
+use classes\entities\User as User;
 
 /**
- * A collection of User entity that extends the Collection pattern
+ * A collection of User entity that extends the EntityCollection pattern
+ *
+ * @method User current() {
+ *      Returns the current user
+ *
+ *      @return User The current user
+ * }
  */
-class UserCollection extends Collection
+class UserCollection extends EntityCollection
 {
     /*=====================================
     =            Magic methods            =

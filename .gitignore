@@ -4,6 +4,7 @@ php/conf.ini
 php/.sonar
 php/composer.lock
 php/.phpintel
+php/composer.phar
 static/dist
 static/js/lib/vendor
 static/.bowerDependencies
@@ -11,5 +12,6 @@ static/node_modules
 static/less/vendor
 !static/less/vendor/variables.less
 .gitconfig
+sftp-config.json
 error.log
 **/*.dmp

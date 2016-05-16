@@ -49,7 +49,7 @@ class IniManager
     =====================================*/
 
     /**
-     * constructor nevers called (see initialize below)
+     * constructor never called (see initialize below)
      */
     public function __construct()
     {
@@ -117,7 +117,7 @@ class IniManager
                 return $params[$param];
             } else {
                 throw new Exception(
-                    'ERROR::The section ' . $section . ' doesn\'t contain the parameter ' . $param,
+                    'ERROR::The section ' . $section . ' does not contain the parameter ' . $param,
                     Exception::$WARNING
                 );
             }
@@ -146,7 +146,7 @@ class IniManager
                         $return[$sectionLevel] = static::$iniValues[$sectionLevel];
                     } else {
                         throw new Exception(
-                            'ERROR::The section ' . $sectionLevel . ' doesn\'t exist in the ini conf file',
+                            'ERROR::The section ' . $sectionLevel . ' does not exist in the ini conf file',
                             Exception::$WARNING
                         );
                     }
@@ -161,9 +161,9 @@ class IniManager
             if (static::sectionExists($section)) {
                 $return[$section] = static::$iniValues[$section];
             } else {
-                echo 'ERROR::The section ' . $section . ' doesn\'t exist in the ini conf file' . PHP_EOL;
+                echo 'ERROR::The section ' . $section . ' does not exist in the ini conf file' . PHP_EOL;
                 throw new Exception(
-                    'ERROR::The section ' . $section . ' doesn\'t exist in the ini conf file',
+                    'ERROR::The section ' . $section . ' does not exist in the ini conf file',
                     Exception::$WARNING
                 );
             }
@@ -180,7 +180,7 @@ class IniManager
     }
 
     /**
-     * Get all parmameters of the ini file
+     * Get all parameters of the ini file
      *
      * @return array Multi dimensional array
      */
@@ -216,7 +216,7 @@ class IniManager
     }
 
     /**
-     * Get all the setions comment
+     * Get all the sections comment
      *
      * @return array One dimensional array
      */
@@ -328,7 +328,7 @@ class IniManager
      *
      * @param string $section The section name
      * @param string $param   The param name
-     * @param mixed  $value   The param value (can be any type except mutli dimensional array)
+     * @param mixed  $value   The param value (can be any type except multi dimensional array)
      */
     private static function addParam($section, $param, $value)
     {
@@ -382,8 +382,8 @@ class IniManager
     /**
      * Helper format a commentary
      *
-     * @param  string $comment The litteral comment (can contain line break PHP_EOL)
-     * @return string          The formated comment (each line start with a ; followed by a space)
+     * @param  string $comment The literal comment (can contain line break PHP_EOL)
+     * @return string          The formatted comment (each line start with a ; followed by a space)
      */
     private static function formatComment($comment)
     {
@@ -393,13 +393,12 @@ class IniManager
     /**
      * Get the max characters length parameters name
      *
-     * @param  array $attributes Parameters as associativ array
+     * @param  array $attributes Parameters as associative array
      * @return integer               The max length parameter name
      */
     private static function getMaxLength($attributes)
     {
-        $max    = 0;
-        $length = 0;
+        $max = 0;
 
         foreach ($attributes as $name => $value) {
             $length = strlen($name);
@@ -488,7 +487,7 @@ class IniManager
     /**
      * Helper to parse an ini conf file and get all the sections comments into an array
      *
-     * @return array One dimensional array containg all the sections comments
+     * @return array One dimensional array containing all the sections comments
      */
     private static function parseSectionsComments()
     {
@@ -511,7 +510,7 @@ class IniManager
     /**
      * Helper to parse an ini conf file and get all the params comments into an array
      *
-     * @return array Multi dimensional array containg all the params comments
+     * @return array Multi dimensional array containing all the params comments
      * @todo   debug
      */
     private static function parseParamsComments()

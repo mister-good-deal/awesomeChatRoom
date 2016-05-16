@@ -8,8 +8,9 @@
 
 namespace classes\entitiesManager;
 
-use \abstracts\EntityManager as EntityManager;
-use \classes\entities\UserRight as UserRight;
+use abstracts\EntityManager as EntityManager;
+use abstracts\EntityCollection as Collection;
+use classes\entities\UserRight as UserRight;
 
 /**
  * Performed database action relative to the UserRight entity class
@@ -28,7 +29,7 @@ class UserRightEntityManager extends EntityManager
      * Constructor that can take a UserRight entity as first parameter and a Collection as second parameter
      *
      * @param      UserRight   $entity      A UserRight entity object DEFAULT null
-     * @param      Collection  $collection  A colection oject DEFAULT null
+     * @param      Collection  $collection  A collection object DEFAULT null
      */
     public function __construct(UserRight $entity = null, Collection $collection = null)
     {

@@ -1,46 +1,49 @@
 
 require([
     'jquery',
-    'forms',
-    'websocket',
-    'user',
-    'chat',
-    'message',
-    'iframe',
+    'lodash',
+    'formManager',
+    'websocketManager',
+    'userManager',
+    'clientManager',
+    'roomManager',
+    'chatManager',
+    'notification',
+    'iframeManager',
     'navigation',
     'bootstrap',
     'jasny-bootstrap',
     'domReady!'
-], function ($, FormsManager, WebsocketManager, User, ChatManager, Message, Iframe, Navigation) {
+], function ($, _, Forms, Websocket, UserManager, ClientManager, RoomManager, ChatManager, Notification, Iframe, Navigation) {
         'use strict';
 
-        var forms          = new FormsManager(),
-            messageManager = new Message(),
+        var forms          = new Forms(),
+            notification   = new Notification(),
             navigation     = new Navigation(),
             kibanaIframe   = new Iframe(navigation),
-            user           = new User(forms),
-            websocket      = new WebsocketManager(user);
-        // Bind WebSocket server callbacks
-        websocket.addCallback(
-            messageManager.settings.serviceName, messageManager.parseWebsocketData, messageManager
-        );
-
-        user.connectSuccessCallback = function () {
-            websocket.send(JSON.stringify({
-                "action" : "register",
-                "service": ["server"],
-                "user"   : this.attributes
-            }));
-        };
-
-        new ChatManager(websocket, user, forms);
+            userManager    = new UserManager(forms),
+            websocket      = new Websocket(userManager.getCurrent()),
+            clientManager  = new ClientManager(websocket, userManager.getCurrent()),
+            roomManager    = new RoomManager(websocket, clientManager.getCurrent()),
+            chatManager    = new ChatManager(websocket, userManager.getCurrent(), roomManager.rooms, forms);
+        // Bind WebSocket server callbacks on different services
+        websocket.addCallback(notification.settings.serviceName, notification.parseWebsocketData, notification);
+        websocket.addCallback(chatManager.settings.serviceName, chatManager.wsCallbackDispatcher, chatManager);
+        websocket.addCallback(roomManager.settings.serviceName, roomManager.wsCallbackDispatcher, roomManager);
+        websocket.addCallback(clientManager.settings.serviceName, clientManager.wsCallbackDispatcher, clientManager);
+        // Update the client user object on the WebSocket server after the client connection
+        userManager.connectSuccessCallback = _.bind(clientManager.updateUser, clientManager);
         // Auto show the menu on page on desktop
         if ($(window).outerWidth() > 768) {
             $('#navbar-menu-left').offcanvas('show');
         }
+        // Init events
+        chatManager.initEvents();
         // Add navigation specific callbacks
         navigation.addCallback('kibana', kibanaIframe.loadKibanaIframe, kibanaIframe);
         // Load the landing page configured in app.js => config => navigation => landingPage
         navigation.loadLandingPage();
+        // Load all the rooms
+        roomManager.getAll();
     }
 );

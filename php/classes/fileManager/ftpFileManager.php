@@ -8,33 +8,34 @@
 
 namespace classes\fileManager;
 
-use \interfaces\FileManagerInterface as FileManagerInterface;
-use \classes\IniManager as Ini;
+use interfaces\FileManagerInterface as FileManagerInterface;
+use classes\IniManager as Ini;
+use traits\EchoTrait as EchoTrait;
 
 /**
  * FtpFileManager class to manipulate files with FTP protocol
  */
 class FtpFileManager implements FileManagerInterface
 {
-    use \traits\EchoTrait;
+    use EchoTrait;
 
     /**
      * @var        array  $params   Connection parameters
      */
     private $params;
     /**
-     * @var        ressource  $ressource    The connection ressource
+     * @var        resource  $resource    The connection resource
      */
-    private $ressource;
+    private $resource;
     /**
      * @var        bool  $output    True if the output should be printed else false
      */
     private $verbose;
 
     /**
-     * Constructor that loads connection paramaters
+     * Constructor that loads connection parameters
      *
-     * @param      string[]  $parameters  OPTIONAL connection paramaters
+     * @param      string[]  $parameters  OPTIONAL connection parameters
      * @param      bool      $verbose     OPTIONAL true if output should be print, false if not and null will load the
      *                                    ini value
      */
@@ -42,7 +43,7 @@ class FtpFileManager implements FileManagerInterface
     {
         $this->params    = ($parameters !== null ? $parameters : Ini::getSectionParams('Deployment'));
         $this->verbose   =  (int) Ini::getParam('Deployment', 'verbose');
-        $this->ressource = null;
+        $this->resource = null;
     }
 
     /**
@@ -50,9 +51,29 @@ class FtpFileManager implements FileManagerInterface
      */
     public function __destruct()
     {
-        if (is_resource($this->ressource)) {
+        if (is_resource($this->resource)) {
             $this->close();
         }
+    }
+
+    /**
+     * Get the directories / files list on the current working directory
+     *
+     * @throws \Exception If files cannot be listed
+     *
+     * @return array|\string[] The list of directories / files contained in the current working directory
+     */
+    public function listFiles(): array
+    {
+        ftp_pasv($this->resource, true);
+
+        $list = @ftp_nlist($this->resource, ".");
+
+        if ($list === false) {
+            throw new \Exception('Cannot list files from "' . ftp_pwd($this->resource) . '"');
+        }
+
+        return $list;
     }
 
     /**
@@ -62,14 +83,14 @@ class FtpFileManager implements FileManagerInterface
      */
     public function connect()
     {
-        $this->ressource = @ftp_connect($this->params['url'], (int) $this->params['port']);
+        $this->resource = @ftp_connect($this->params['url'], (int) $this->params['port']);
 
-        if ($this->ressource === false) {
+        if ($this->resource === false) {
             throw new \Exception('Cannot connect to FTP ' . $this->params['url'] . ':' . $this->params['port']);
         }
 
         if ($this->verbose > 0) {
-            static::ok('Successfuly connected to ' . $this->params['url'] . ':' . $this->params['port'] . PHP_EOL);
+            static::ok('Successfully connected to ' . $this->params['url'] . ':' . $this->params['port'] . PHP_EOL);
         }
     }
 
@@ -80,12 +101,12 @@ class FtpFileManager implements FileManagerInterface
      */
     public function login()
     {
-        if (@ftp_login($this->ressource, $this->params['login'], $this->params['password']) === false) {
+        if (@ftp_login($this->resource, $this->params['login'], $this->params['password']) === false) {
             throw new \Exception('Login or password incorrect');
         }
 
         if ($this->verbose > 0) {
-            static::ok('Successfuly login with the username ' . $this->params['login'] . PHP_EOL);
+            static::ok('Successfully login with the username ' . $this->params['login'] . PHP_EOL);
         }
     }
 
@@ -98,12 +119,12 @@ class FtpFileManager implements FileManagerInterface
      */
     public function changeDir(string $path)
     {
-        if (@ftp_chdir($this->ressource, $path) === false) {
-            throw new \Exception('wrong path, cannot access to "' . ftp_pwd($this->ressource) . '/' . $path . '"');
+        if (@ftp_chdir($this->resource, $path) === false) {
+            throw new \Exception('wrong path, cannot access to "' . ftp_pwd($this->resource) . '/' . $path . '"');
         }
 
         if ($this->verbose > 1) {
-            static::out('Current directory is now "' . ftp_pwd($this->ressource) . '"' . PHP_EOL);
+            static::out('Current directory is now "' . ftp_pwd($this->resource) . '"' . PHP_EOL);
         }
     }
 
@@ -116,13 +137,13 @@ class FtpFileManager implements FileManagerInterface
      */
     public function makeDir(string $dirName)
     {
-        if (@ftp_mkdir($this->ressource, $dirName) === false) {
-            throw new \Exception('Fail to create directory <' . $dirName . '> in "' . ftp_pwd($this->ressource) . '"');
+        if (@ftp_mkdir($this->resource, $dirName) === false) {
+            throw new \Exception('Fail to create directory <' . $dirName . '> in "' . ftp_pwd($this->resource) . '"');
         }
 
         if ($this->verbose > 0) {
             static::ok(
-                'New directory <' . $dirName . '> successfuly created in "' . ftp_pwd($this->ressource) . '"' . PHP_EOL
+                'New directory <' . $dirName . '> successfully created in "' . ftp_pwd($this->resource) . '"' . PHP_EOL
             );
         }
     }
@@ -142,24 +163,6 @@ class FtpFileManager implements FileManagerInterface
     }
 
     /**
-     * Get the directories / files list on the current working directory
-     *
-     * @return     string[]  The list of directories / files contained in the current working directory
-     */
-    public function listFiles(): array
-    {
-        ftp_pasv($this->ressource, true);
-
-        $list = @ftp_nlist($this->ressource, ".");
-
-        if ($list === false) {
-            throw new \Exception('Cannot list files from "' . ftp_pwd($this->ressource) . '"');
-        }
-
-        return $list;
-    }
-
-    /**
      * Upload a file on the server
      *
      * @param      string     $remoteFilePath  The remote file path on the server
@@ -169,7 +172,7 @@ class FtpFileManager implements FileManagerInterface
      */
     public function upload(string $remoteFilePath, string $localFilePath)
     {
-        ftp_pasv($this->ressource, true);
+        ftp_pasv($this->resource, true);
 
         $fileName = basename($remoteFilePath);
         $pathFile = dirname($remoteFilePath);
@@ -179,17 +182,17 @@ class FtpFileManager implements FileManagerInterface
         }
 
         if (is_resource($localFilePath)) {
-            if (!@ftp_fput($this->ressource, $fileName, $localFilePath, FTP_ASCII)) {
+            if (!@ftp_fput($this->resource, $fileName, $localFilePath, FTP_ASCII)) {
                 throw new \Exception('Fail to upload "' . $fileName);
             }
         } else {
-            if (!@ftp_put($this->ressource, $fileName, $localFilePath, FTP_BINARY)) {
+            if (!@ftp_put($this->resource, $fileName, $localFilePath, FTP_BINARY)) {
                 throw new \Exception('Fail to upload "' . $fileName);
             }
         }
 
         if ($this->verbose > 0) {
-            static::ok('File "' . $localFilePath . '" successfuly uploaded'. PHP_EOL);
+            static::ok('File "' . $localFilePath . '" successfully uploaded'. PHP_EOL);
         }
     }
 
@@ -203,7 +206,7 @@ class FtpFileManager implements FileManagerInterface
      */
     public function chmod(int $value, string $path)
     {
-        if (@ftp_chmod($this->ressource, $value, $path) === false) {
+        if (@ftp_chmod($this->resource, $value, $path) === false) {
             throw new \Exception('Fail to change rights on directory / file "'. $path . '"');
         }
 
@@ -221,7 +224,7 @@ class FtpFileManager implements FileManagerInterface
      */
     public function lastModified(string $path): int
     {
-        return ftp_mdtm($this->ressource, $path);
+        return ftp_mdtm($this->resource, $path);
     }
 
     /**
@@ -231,12 +234,12 @@ class FtpFileManager implements FileManagerInterface
      */
     public function close(): bool
     {
-        $success         = @ftp_close($this->ressource);
-        $this->ressource = null;
+        $success         = @ftp_close($this->resource);
+        $this->resource = null;
 
         if ($this->verbose > 0) {
             if ($success) {
-                static::ok('Connection closed successfuly' . PHP_EOL);
+                static::ok('Connection closed successfully' . PHP_EOL);
             } else {
                 static::fail('Fail to close the connection' . PHP_EOL);
             }

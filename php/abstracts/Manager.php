@@ -8,10 +8,6 @@
 
 namespace abstracts;
 
-use \abstracts\Entity as Entity;
-use \abstracts\EntityManager as EntityManager;
-use \abstracts\Collection as Collection;
-
 /**
  * Abstract Manager pattern
  *

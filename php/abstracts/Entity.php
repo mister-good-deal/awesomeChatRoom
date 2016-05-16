@@ -8,10 +8,11 @@
 
 namespace abstracts;
 
-use \classes\ExceptionManager as Exception;
-use \classes\IniManager as Ini;
-use \classes\DataBase as DB;
-use \abstracts\EntityManager as EntityManager;
+use classes\ExceptionManager as Exception;
+use classes\IniManager as Ini;
+use classes\DataBase as DB;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
+use traits\ShortcutsTrait as ShortcutsTrait;
 
 /**
  * Abstract Entity pattern
@@ -20,8 +21,8 @@ use \abstracts\EntityManager as EntityManager;
  */
 abstract class Entity implements \ArrayAccess
 {
-    use \traits\PrettyOutputTrait;
-    use \traits\ShortcutsTrait;
+    use PrettyOutputTrait;
+    use ShortcutsTrait;
 
     /**
      * @const ENTITIES_CONF_PATH The path where the entities ini conf file are stored
@@ -98,7 +99,7 @@ abstract class Entity implements \ArrayAccess
      *
      * @param      string  $columnName  The column name
      *
-     * @return     bool    True if the column name exists else fale
+     * @return     bool    True if the column name exist, false otherwise
      */
     public function __isset(string $columnName): bool
     {
@@ -147,13 +148,13 @@ abstract class Entity implements \ArrayAccess
      */
     public function __toString(): string
     {
-        $string = '['  . $this->entityName . ']' . PHP_EOL;
+        $string = $this->entityName . ' ::' . PHP_EOL;
         $keys   = array_keys($this->columnsValue);
 
         foreach ($this->columnsValue as $columnName => $columnValue) {
             $string .=
-                '  ' . $this->smartAlign($columnName, $keys)
-                . '  ' . $this->smartAlign(
+                static::smartAlign($columnName, $keys)
+                . '  ' . static::smartAlign(
                     $this->columnsAttributes[$columnName]['type'] .
                     (isset($this->columnsAttributes[$columnName]['size']) ?
                         '('. $this->columnsAttributes[$columnName]['size'] . ')' : ''
@@ -164,7 +165,7 @@ abstract class Entity implements \ArrayAccess
                     ),
                     2
                 )
-                . '  = ' . $this->formatVariable($columnValue) . PHP_EOL;
+                . '  = ' . static::formatVariable($columnValue) . PHP_EOL;
         }
 
         return $string;
@@ -182,8 +183,8 @@ abstract class Entity implements \ArrayAccess
 
         foreach ($columnsName as $columnName) {
             $string .=
-                '  ' . $this->smartAlign($columnName, $columnsName)
-                . '  ' . $this->smartAlign(
+                '  ' . static::smartAlign($columnName, $columnsName)
+                . '  ' . static::smartAlign(
                     $this->columnsAttributes[$columnName]['type'] .
                     (isset($this->columnsAttributes[$columnName]['size']) ?
                         '('. $this->columnsAttributes[$columnName]['size'] . ')' : ''
@@ -304,7 +305,7 @@ abstract class Entity implements \ArrayAccess
     {
         if (!is_array($value) && count($this->idKey) > 1) {
             throw new Exception(
-                'The id is on several columns you must passed an assosiative array with keys (' .
+                'The id is on several columns you must passed an associative array with keys (' .
                 implode(', ', $this->idKey) . ')',
                 Exception::$PARAMETER
             );
@@ -314,7 +315,7 @@ abstract class Entity implements \ArrayAccess
             foreach ($value as $key => $val) {
                 if (!array_key_exists($key, $this->columnsValue)) {
                     throw new Exception(
-                        'The keys of the assosiative array must be one of these : ' . implode(', ', $this->idKey),
+                        'The keys of the associative array must be one of these : ' . implode(', ', $this->idKey),
                         Exception::$PARAMETER
                     );
                 }
@@ -485,7 +486,7 @@ abstract class Entity implements \ArrayAccess
 
         if (strpos($this->constraints['unique'], $columnName) !== false) {
             $sqlMarks = 'SELECT count(*) FROM %s WHERE %s = ' . DB::quote($value);
-            $sql      = EntityManager::sqlFormater($sqlMarks, $this->tableName, $columnName);
+            $sql      = EntityManager::sqlFormat($sqlMarks, $this->tableName, $columnName);
 
             $alreadyInDatabase = ((int) DB::query($sql)->fetchColumn() > 0);
         }
@@ -549,8 +550,9 @@ abstract class Entity implements \ArrayAccess
      */
     private function parseConf()
     {
-        $columnsValue = array();
-        $constraints  = array();
+        $columnsValue      = [];
+        $columnsAttributes = [];
+        $constraints       = [];
 
         foreach ($this->conf as $columnName => $columnAttributes) {
             if ($columnName !== 'table') {
@@ -600,7 +602,7 @@ abstract class Entity implements \ArrayAccess
         if (isset($constraints['primary'])) {
             $this->idKey = explode(', ', str_replace('`', '', $constraints['primary']['columns']));
         } else {
-            $this->idKey = array();
+            $this->idKey = [];
         }
 
         $this->columnsValue      = $columnsValue;

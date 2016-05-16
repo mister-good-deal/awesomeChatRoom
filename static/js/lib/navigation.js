@@ -1,12 +1,12 @@
 /**
  * Navigation module
  *
- * @module               lib/navigation
- *
  * Handle the current page attributes such as the page title or the page parameters.
  * It loads pages by hide / show pages DOM classes elements to use a Single Page Web pattern and avoiding browser
  * page reloading to keep the WebSocket connection alive.
  * It load pages on hashchange event and detect the page to load by parsing the hash.
+ *
+ * @module               lib/navigation
  */
 
 define([
@@ -22,6 +22,8 @@ define([
      * @constructor
      * @alias       module:lib/navigation
      * @param       {Object}       settings Overriden settings
+     *
+     * @todo update jsDoc
      */
     var Navigation = function (settings) {
         this.settings = $.extend(true, {}, this.settings, module.config(), settings);

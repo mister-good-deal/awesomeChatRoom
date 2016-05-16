@@ -8,6 +8,8 @@
 
 namespace classes;
 
+use traits\EchoTrait as EchoTrait;
+
 /**
  * PDOStatement custom class to print sql query on demand
  *
@@ -15,7 +17,7 @@ namespace classes;
  */
 class PDOStatementCustom extends \PDOStatement
 {
-    use \traits\EchoTrait;
+    use EchoTrait;
 
     /**
      * @var        \PDO  $pdo   PDO object instance

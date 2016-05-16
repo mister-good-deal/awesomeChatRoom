@@ -8,17 +8,19 @@
 
 namespace classes\console;
 
-use \classes\IniManager as Ini;
-use \classes\console\ConsoleColors as ConsoleColors;
+use classes\IniManager as Ini;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
+use traits\FiltersTrait as FiltersTrait;
+use traits\EchoTrait as EchoTrait;
 
 /**
  * Console mode basic interface
  */
 class Console
 {
-    use \traits\PrettyOutputTrait;
-    use \traits\FiltersTrait;
-    use \traits\EchoTrait;
+    use PrettyOutputTrait;
+    use FiltersTrait;
+    use EchoTrait;
 
     const WELCOME = <<<'WELCOME'
                                             `
@@ -30,7 +32,7 @@ class Console
                                             `
 WELCOME;
 
-    const GODDBYE = <<<'GODDBYE'
+    const GOODBYE = <<<'GOODBYE'
 
    ____                 _ _                 `
   / ___| ___   ___   __| | |__  _   _  ___  `
@@ -39,7 +41,7 @@ WELCOME;
   \____|\___/ \___/ \__,_|_.__/ \__, |\___| `
                                 |___/       `
                                             `
-GODDBYE;
+GOODBYE;
 
     const ACTION_CANCEL = 'Canceled';
     const ACTION_DONE   = 'Done';
@@ -138,7 +140,7 @@ GODDBYE;
                     $exit = true;
                     static::out(
                         ConsoleColors::getColoredString(
-                            static::GODDBYE,
+                            static::GOODBYE,
                             ConsoleColors::LIGHT_RED_F,
                             ConsoleColors::GREEN
                         )
@@ -151,11 +153,11 @@ GODDBYE;
                     break;
 
                 case 'all cmd':
-                    static::out('Commands historic:' . $this->tablePrettyPrint($this->commandsHistoric) . PHP_EOL);
+                    static::out('Commands historic:' . static::tablePrettyPrint($this->commandsHistoric) . PHP_EOL);
                     break;
 
                 case 'help':
-                    static::out('List of all command' . PHP_EOL . $this->tableAssociativPrettyPrint(static::$COMMANDS));
+                    static::out('List of all command' . PHP_EOL . static::tableAssociativePrettyPrint(static::$COMMANDS));
                     break;
 
                 default:
@@ -229,8 +231,8 @@ GODDBYE;
         // --argument
         preg_match_all('/\-\-(?P<argKey>[a-zA-Z\-]+)(?P<argValue>[^ \-\-]*)/', $command, $matches2);
 
-        $args1 = $this->filterPregMatchAllWithFlags($matches1, 'argKey', 'argValue');
-        $args2 = $this->filterPregMatchAllWithFlags($matches2, 'argKey', 'argValue');
+        $args1 = static::filterPregMatchAllWithFlags($matches1, 'argKey', 'argValue');
+        $args2 = static::filterPregMatchAllWithFlags($matches2, 'argKey', 'argValue');
 
         return $args1 + $args2;
     }
@@ -241,8 +243,10 @@ GODDBYE;
      * @param      array   $table  The table to print
      *
      * @return     string  The pretty output table data
+     *
+     * @todo       Move to prettyOutput trait
      */
-    protected function tablePrettyPrint(array $table): string
+    protected static function tablePrettyPrint(array $table): string
     {
         return PHP_EOL . '- ' . implode(PHP_EOL . '- ', $table);
     }
@@ -253,15 +257,17 @@ GODDBYE;
      * @param      array   $table  The associative array to print
      *
      * @return     string  The pretty output table data
+     *
+     * @todo       Move to prettyOutput trait
      */
-    protected function tableAssociativPrettyPrint(array $table): string
+    protected static function tableAssociativePrettyPrint(array $table): string
     {
         $keys =  array_keys($table);
 
         $string = '';
 
         foreach ($table as $key => $value) {
-            $string .= $this->smartAlign($key, $keys) . ' : ' . $value . PHP_EOL;
+            $string .= static::smartAlign($key, $keys) . ' : ' . $value . PHP_EOL;
         }
 
         return PHP_EOL . $string;

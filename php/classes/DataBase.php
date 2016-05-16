@@ -9,93 +9,93 @@
 
 namespace classes;
 
-use \classes\ExceptionManager as Exception;
-use \classes\IniManager as Ini;
+use classes\ExceptionManager as Exception;
+use classes\IniManager as Ini;
+use traits\EchoTrait as EchoTrait;
 // WARNING if you change the path below, change it in the initialize method in the setAttribute call
-use \classes\PDOStatementCustom as PDOStatementCustom;
 
 /**
  * Singleton pattern style to handle DB connection using PDO
  *
  * PDO methods that can be called directly with the __callStatic magic method
  *
- * @method bool beginTransaction() {
+ * @method static bool beginTransaction() {
  *      Initiates a transaction
  *
  *      @return bool
  * }
  *
- * @method bool commit() {
+ * @method static bool commit() {
  *      Commits a transaction
  *
  *      @return bool
  * }
  *
- * @method mixed errorCode() {
+ * @method static mixed errorCode() {
  *      Fetch the SQLSTATE associated with the last operation on the database handle
  * }
  *
- * @method array errorInfo() {
+ * @method static array errorInfo() {
  *      Fetch extended error information associated with the last operation on the database handle
  *
  *      @return array
  * }
  *
- * @method int exec(string $statement) {
+ * @method static int exec(string $statement) {
  *      Execute an SQL statement and return the number of affected rows
  *
  *      @return int|bool
  * }
  *
- * @method mixed getAttribute(int $attribute) {
+ * @method static mixed getAttribute(int $attribute) {
  *      Retrieve a database connection attribute
  *
  *      @return string|null
  * }
  *
- * @method array getAvailableDrivers() {
+ * @method static array getAvailableDrivers() {
  *      Return an array of available PDO drivers
  *
  *      @return array
  * }
  *
- * @method bool inTransaction() {
+ * @method static bool inTransaction() {
  *      Checks if inside a transaction
  *
  *      @return bool
  * }
  *
- * @method string lastInsertId(string $name = NULL) {
+ * @method static string lastInsertId(string $name = NULL) {
  *      Returns the ID of the last inserted row or sequence value
  *
  *      @return string
  * }
  *
- * @method PDOStatementCustom prepare(string $statement, array $driver_options = array()) {
+ * @method static PDOStatementCustom prepare(string $statement, array $driver_options = array()) {
  *      Prepares a statement for execution and returns a statement object
  *
  *      @return PDOStatementCustom|bool
  * }
  *
- * @method PDOStatementCustom query(string $statement) {
+ * @method static PDOStatementCustom query(string $statement) {
  *      Executes an SQL statement, returning a result set as a PDOStatementCustom object
  *
  *      @return PDOStatementCustom|bool
  * }
  *
- * @method string quote(string $string, int $parameter_type = PDO::PARAM_STR) {
+ * @method static string quote(string $string, int $parameter_type = \PDO::PARAM_STR) {
  *      Quotes a string for use in a query
  *
  *      @return string|bool
  * }
  *
- * @method bool rollBack() {
+ * @method static bool rollBack() {
  *      Rolls back a transaction
  *
  *      @return bool
  * }
  *
- * @method bool setAttribute(int $attribute , mixed $value) {
+ * @method static bool setAttribute(int $attribute , mixed $value) {
  *      Set an attribute
  *
  *      @return bool
@@ -103,7 +103,7 @@ use \classes\PDOStatementCustom as PDOStatementCustom;
  */
 class DataBase
 {
-    use \traits\EchoTrait;
+    use EchoTrait;
 
     /**
      * @var        \PDO  $PDO   A PDO object DEFAULT null
@@ -149,8 +149,10 @@ class DataBase
      * @param      array      $arguments  Enumerated array containing the parameters passed to the method called
      * @throws     Exception  If the method called is not a PDO method
      *
+     * @return mixed
+     *
      * @static
-     * @note                  This is so powerfull, we can call non static methods with a static call
+     * @note                  This is so powerful, we can call non static methods with a static call
      */
     public static function __callStatic(string $name, array $arguments = array())
     {
@@ -309,7 +311,7 @@ class DataBase
      *
      * @static
      */
-    public static function getAllEntites(): array
+    public static function getAllEntities(): array
     {
         $entities         = [];
         $currentDirectory = new \DirectoryIterator(
@@ -328,15 +330,16 @@ class DataBase
     /**
      * Get all the table name of he current database
      *
-     * @return     string[]  The table name as a string array
+     * @return     string[]  The table name as a string array converted in uppercase
      *
+     * @todo       MySQL 5.5 create tables with case sensitive and MySQL 5.7 convert to lower case...
      * @static
      */
     public static function getAllTables(): array
     {
         static::initialize();
 
-        return static::$PDO->query('SHOW TABLES')->fetchAll(\PDO::FETCH_COLUMN);
+        return array_map('strtoupper', static::$PDO->query('SHOW TABLES')->fetchAll(\PDO::FETCH_COLUMN));
     }
 
     /**

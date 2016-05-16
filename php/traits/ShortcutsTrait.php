@@ -16,18 +16,18 @@ trait ShortcutsTrait
     /**
      * Perform an in_array research for each specified sub-array
      *
-     * @param      mixed   $needle    The value to research
-     * @param      array   $haystack  The array to perform the research
-     * @param      string  $key       The sub-array key
+     * @param      mixed                $needle     The value to research
+     * @param      array|\ArrayAccess   $haystack   The array to perform the research
+     * @param      string               $key        The sub-array key
      *
      * @return     bool    True if the value is found else false
      */
-    public function inSubArray($needle, array $haystack, string $key): bool
+    public static function inSubArray($needle, $haystack, string $key): bool
     {
         $found = false;
 
-        foreach ($haystack as $subarray) {
-            if ($subarray[$key] === $needle) {
+        foreach ($haystack as $subArray) {
+            if ($subArray[$key] === $needle) {
                 $found = true;
                 break;
             }

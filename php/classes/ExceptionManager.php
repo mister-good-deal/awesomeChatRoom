@@ -8,9 +8,9 @@
 
 namespace classes;
 
-use \classes\LoggerManager as Logger;
-use \classes\logger\LogLevel as LogLevel;
-use \classes\IniManager as Ini;
+use classes\LoggerManager as Logger;
+use classes\logger\LogLevel as LogLevel;
+use classes\IniManager as Ini;
 
 /**
  * Add a logger process to the class exception throw
@@ -66,9 +66,9 @@ class ExceptionManager extends \Exception
     /**
      * Constructor that called the parent \Exception constructor
      *
-     * @param      string                  $message   Error message
-     * @param      int                     $code      Error level
-     * @param      \Exception|\Error|null  $previous  Previous \Exception or \Error
+     * @param      string                $message  Error message
+     * @param      int                   $code     Error level
+     * @param      \Exception|null       $previous Previous \Exception or \Error
      */
     public function __construct(string $message, int $code = 0, $previous = null)
     {

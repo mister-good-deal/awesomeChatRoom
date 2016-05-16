@@ -1,91 +1,72 @@
 /**
  * User module
  *
- * @module lib/user
+ * @module user
  */
 
 define([
     'jquery',
     'lodash',
-    'module',
-    'message',
-    'bootstrap',
-    'loading-overlay'
-], function ($, _, module, Message) {
+    'module'
+], function ($, _, module) {
     'use strict';
 
     /**
-     * UserManager object
+     * User module
+     *
+     * @param      {Object}  attributes  JSON data representing the user attributes
+     * @param      {Object}  settings    Overriden settings
+     *
+     * @exports    user
+     *
+     * @property   {Object}   settings              The user global settings
+     * @property   {Boolean}  connected             True if the user is connected, false otherwise
+     * @property   {Object}   attributes            The user attributes
+     * @property   {String}   attributes.firstName  The user first name
+     * @property   {String}   attributes.lastName   The user last name
+     * @property   {String}   attributes.pseudonym  The user pseudonym
+     * @property   {String}   attributes.email      The user email
+     * @property   {String}   attributes.password   The user password
+     * @property   {Object}   attributes.right      The user right
+     * @property   {Object}   attributes.chatRight  The user chatRight
      *
      * @constructor
-     * @alias       module:lib/user
-     * @param       {FormsManager} Forms    A FormsManager to handle form XHR ajax calls or jsCallbacks
-     * @param       {Object}       settings Overriden settings
+     * @alias      module:user
      */
-    var UserManager = function (Forms, settings) {
-            this.settings = $.extend(true, {}, this.settings, module.config(), settings);
-            // Bind forms ajax callback
-            Forms.addOnSuccessCallback('user/connect', this.connectSuccess, this);
-            Forms.addOnFailCallback('user/connect', this.connectFail, this);
-            Forms.addOnRequestFailCallback('user/connect', this.connectRequestFail, this);
-            Forms.addBeforeRequestCallback('user/register', this.beforeRegister, this);
-            Forms.addOnSuccessCallback('user/register', this.registerSuccess, this);
-            Forms.addOnFailCallback('user/register', this.registerFail, this);
-            Forms.addOnRequestFailCallback('user/register', this.registerRequestFail, this);
+    var User = function (attributes, settings) {
+        this.settings   = $.extend(true, {}, this.settings, module.config(), settings);
+        this.attributes = {};
+        this.connected  = false;
 
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(
-                    _.bind(this.setLocation, this),
-                    _.bind(this.setLocationWithGeoip, this),
-                    {
-                        "maximumAge"        : 60000,
-                        "timeout"           : 3000,
-                        "enableHighAccuracy": true
-                    }
-                );
-            }
+        if (!_.isEmpty(attributes)) {
+            this.setAttributes(attributes);
+        }
+    };
 
-            _.delay(_.bind(this.setLocationWithGeoip, this), 5000);
+    User.prototype = {
+        /*=========================================
+        =            Getters / setters            =
+        =========================================*/
+
+        /**
+         * Get the User attributes
+         *
+         * @method     getAttributes
+         * @return     {Object}  The User attributes
+         */
+        getAttributes: function () {
+            return this.attributes;
         },
-        messageManager = new Message();
 
-    UserManager.prototype = {
         /**
-         * Default settings
+         * Set the User object with a JSON parameter
+         *
+         * @method     setAttributes
+         * @param      {Object}  data    JSON data
          */
-        "settings" : {},
-        /**
-         * User attributes
-         */
-        "attributes": {
-            "id"                   : "",
-            "firstName"            : "",
-            "lastName"             : "",
-            "pseudonym"            : "",
-            "email"                : "",
-            "password"             : "",
-            "securityToken"        : "",
-            "securityTokenExpires" : "",
-            "connectionAttempt"    : "",
-            "ipAttempt"            : "",
-            "ip"                   : "",
-            "lastConnection"       : "",
-            "lastConnectionAttempt": "",
-            "right"                : {},
-            "chatRight"            : {}
+        setAttributes: function (data) {
+            this.attributes = $.extend(true, {}, this.attributes, data.user, data.right, data.chatRight);
         },
-        /**
-         * The user location in {"lat": "latitude", "lon": "longitude"} format
-         */
-        "location": {},
-        /**
-         * If the user is connected
-         */
-        "connected": false,
-        /**
-         * Callback when the user is successfully connected
-         */
-        "connectSuccessCallback": null,
 
         /**
          * Get first name
@@ -175,151 +156,27 @@ define([
         },
 
         /**
-         * Get the user location
+         * Set the connected state
          *
-         * @method     getLocation
-         * @return     {Object}  The location in {"lat": "latitude", "lon": "longitude"} format
+         * @method     setConnected
+         * @param      {Boolean}  connected  True if the user is connected, false otherwise
          */
-        getLocation: function () {
-            return this.location;
+        setConnected: function (connected) {
+            this.connected = connected;
         },
 
+        /*=====  End of Getters / setters  ======*/
+
         /**
-         * Tells if the user is connected
+         * Determine if the user is connected.
          *
          * @method     isConnected
-         * @return     {Boolean}  True if teh user is connected else false
+         * @return     {Boolean}  True if the user is connected, false otherwise
          */
         isConnected: function () {
-            return this.connected === true;
-        },
-
-        /**
-         * Set the User object with a JSON parameter
-         *
-         * @method     setAttributes
-         * @param      {Object}  data    JSON data
-         */
-        setAttributes: function (data) {
-            this.attributes = $.extend(true, {}, this.attributes, data.user, data.right, data.chatRight);
-        },
-
-        /**
-         * Set the location based on navigator.geolocation.getCurrentPosition returned object
-         *
-         * @method     setLocation
-         * @param      {Object}  coordinates  The navigator.geolocation.getCurrentPosition returned object
-         */
-        setLocation: function (coordinates) {
-            this.location = {
-                'lat': coordinates.coords.latitude,
-                'lon': coordinates.coords.longitude
-            };
-        },
-
-        /**
-         * Set location based on MaxMind geoip database and the user IP address
-         *
-         * @method     setLocationWithGeoip
-         */
-        setLocationWithGeoip: function () {
-            if (_.isEmpty(this.location)) {
-                $.getJSON('GeoIp/getLocation', function (location) {
-                    this.location = location;
-                });
-            }
-        },
-
-        /**
-         * Callback when the user connection attempt succeed
-         *
-         * @method     connectSuccess
-         * @param      {Object}  form    The jQuery DOM form element
-         * @param      {Object}  data    The server JSON reponse
-         */
-        connectSuccess: function (form, data) {
-            this.setAttributes(data);
-            this.connected = true;
-
-            $(this.settings.selectors.modals.connect).modal('hide');
-            messageManager.add('Connect success !');
-
-            if (typeof this.connectSuccessCallback === 'function') {
-                this.connectSuccessCallback.call(this);
-            }
-        },
-
-        /**
-         * Callback when the user connection attempt failed
-         *
-         * @method     connectFail
-         * @param      {Object}  form    The jQuery DOM form element
-         * @param      {Object}  data    The server JSON reponse
-         */
-        connectFail: function (form, data) {
-            console.log('Fail !', data);
-        },
-
-        /**
-         * Callback when the user connection request failed
-         *
-         * @method     connectRequestFail
-         * @param      {Object}  form    The jQuery DOM form element
-         * @param      {Object}  jqXHR   The jQuery jqXHR object
-         */
-        connectRequestFail: function (form, jqXHR) {
-            console.log(jqXHR);
-        },
-
-        /**
-         * Callback before the register form has been sent
-         *
-         * @method     beforeRegister
-         * @param      {Object}  form    The jQuery DOM form element
-         */
-        beforeRegister: function (form) {
-            form.loadingOverlay();
-        },
-
-        /**
-         * Callback when the user connection attempt succeed
-         *
-         * @method     registerSuccess
-         * @param      {Object}  form    The jQuery DOM form element
-         * @param      {Object}  data    The server JSON reponse
-         */
-        registerSuccess: function (form, data) {
-            form.loadingOverlay('remove');
-            this.setAttributes(data);
-            this.connected = true;
-            messageManager.add('Register success !');
-            // @todo close the modal
-        },
-
-        /**
-         * Callback when the user connection attempt failed
-         *
-         * @method     registerFail
-         * @param      {Object}  form    The jQuery DOM form element
-         * @param      {Object}  data    The server JSON reponse
-         */
-        registerFail: function (form, data) {
-            form.loadingOverlay('remove');
-            console.log('Fail !', data);
-        },
-
-        /**
-         * Callback when the user connection request failed
-         *
-         * @method     registerRequestFail
-         * @param      {Object}  form    The jQuery DOM form element
-         * @param      {Object}  jqXHR   The jQuery jqXHR object
-         */
-        registerRequestFail: function (form, jqXHR) {
-            form.loadingOverlay('remove');
-            console.log(jqXHR);
+            return this.connected;
         }
     };
 
-    return UserManager;
+    return User;
 });

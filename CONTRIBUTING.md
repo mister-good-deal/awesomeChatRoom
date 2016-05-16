@@ -142,7 +142,7 @@ In [apache folder]/conf/httpd.conf check those lines
 
 In php.ini, check thoses values
 
-- `short_open_tag = On`
+##### Extensions
 
 - `extension_dir = "ext"`
 
@@ -163,6 +163,10 @@ In php.ini, check thoses values
 - `extension=php_sockets.dll`
 
 - `extension=php_shmop.dll`
+
+##### Directives
+
+- `short_open_tag = On`
 
 - `date.timezone = "Europe/London"` (for deployment date diff)
 

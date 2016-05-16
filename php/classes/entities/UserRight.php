@@ -11,7 +11,7 @@ namespace classes\entities;
 use \abstracts\Entity as Entity;
 
 /**
- * UserRight entity that extends the Entity abstact class
+ * UserRight entity that extends the Entity abstract class
  *
  * @property   int   $idUser     The user id
  * @property   bool  $webSocket  The user webSocket right

@@ -8,8 +8,8 @@
 
 namespace classes;
 
-use \classes\logger\ConsoleLogger as ConsoleLogger;
-use \classes\logger\FileLogger as FileLogger;
+use classes\logger\ConsoleLogger as ConsoleLogger;
+use classes\logger\FileLogger as FileLogger;
 
 /**
  * Factory to manage the different kind of logger to implement and shortcut methods call
@@ -21,7 +21,7 @@ class LoggerManager
 {
     /**
      * @const FILE    The file logger descriptor @const CONSOLE The console logger descriptor
-     * @notice        If you add a Logger in const there, add it in globalConstDefine method aswell
+     * @notice        If you add a Logger in const there, add it in globalConstDefine method as well
      */
     const FILE    = 1;
     const CONSOLE = 2;
@@ -30,7 +30,7 @@ class LoggerManager
      * @var        int[]  $implementedLoggers   An array containing all the implemented loggers
      *                                          (represented by their descriptors)
      */
-    private $implementedLoggers = array();
+    private $implementedLoggers = [];
 
     /*=====================================
     =            Magic methods            =
@@ -41,7 +41,7 @@ class LoggerManager
      *
      * @param      int[]  $loggerTypes  Loggers type to implement DEFAULT FILE
      */
-    public function __construct(array $loggerTypes = array(self::FILE))
+    public function __construct(array $loggerTypes = [self::FILE])
     {
         if (is_array($loggerTypes)) {
             foreach ($loggerTypes as $loggerType) {
@@ -57,13 +57,15 @@ class LoggerManager
     ======================================*/
 
     /**
-     * Logs avec un niveau arbitraire.
+     * Logs with an arbitrary level.
      *
      * @param      mixed   $level
      * @param      string  $message
      * @param      array   $context
+     *
+     * @todo fix warning
      */
-    public function log($level, string $message, array $context = array())
+    public function log($level, string $message, array $context = [])
     {
         foreach ($this->implementedLoggers as $logger) {
             $logger->log($level, $message, $context);

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source name="MySQL - awesomechatroom@localhost" uuid="96bba47e-9931-48ee-bbee-044aedc96d7d">
+    <database-info product="MySQL" version="5.7.10-log" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
+      <extra-name-characters>#@</extra-name-characters>
+      <identifier-quote-string>`</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower"/>
+    <database-model serializer="dbm" rdbms="MYSQL" format-version="2.5">
+      <schema id="1" name="awesomechatroom"/>
+      <table id="2" parent="1" name="chatroom">
+        <comment>AUTO GENERATED THE 2016-04-19 22:40:41</comment>
+      </table>
+      <table id="3" parent="1" name="chatroomban">
+        <comment>AUTO GENERATED THE 2016-04-19 22:40:41</comment>
+      </table>
+      <table id="4" parent="1" name="user">
+        <comment>AUTO GENERATED THE 2016-04-19 22:40:41</comment>
+      </table>
+      <table id="5" parent="1" name="userchatright">
+        <comment>AUTO GENERATED THE 2016-04-28 20:06:51</comment>
+      </table>
+      <table id="6" parent="1" name="userright">
+        <comment>AUTO GENERATED THE 2016-04-19 22:40:41</comment>
+      </table>
+      <table id="7" parent="1" name="userstatistic">
+        <comment>AUTO GENERATED THE 2016-04-19 22:40:41</comment>
+      </table>
+      <column id="8" parent="2" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(6)</data-type>
+      </column>
+      <column id="9" parent="2" name="name">
+        <mandatory>1</mandatory>
+        <data-type>varchar(32)</data-type>
+      </column>
+      <column id="10" parent="2" name="creator">
+        <mandatory>1</mandatory>
+        <data-type>int(6)</data-type>
+      </column>
+      <column id="11" parent="2" name="password">
+        <data-type>varchar(32)</data-type>
+      </column>
+      <column id="12" parent="2" name="creationDate">
+        <data-type>timestamp</data-type>
+      </column>
+      <column id="13" parent="2" name="maxUsers">
+        <mandatory>1</mandatory>
+        <data-type>int(3)</data-type>
+        <default-expression>&apos;20&apos;</default-expression>
+      </column>
+      <index id="14" parent="2" name="ChatRoom_unique_constraint">
+        <columns>name</columns>
+        <desc-columns></desc-columns>
+        <unique>1</unique>
+      </index>
+      <index id="15" parent="2" name="idCreatorFk">
+        <columns>creator</columns>
+        <desc-columns></desc-columns>
+      </index>
+      <key id="16" parent="2" name="ChatRoom_unique_constraint">
+        <columns>name</columns>
+        <underlying-index>ChatRoom_unique_constraint</underlying-index>
+      </key>
+      <key id="17" parent="2" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <foreign-key id="18" parent="2" name="idCreatorFk">
+        <columns>creator</columns>
+        <ref-key>~.user.PRIMARY</ref-key>
+        <cascade-update-rule>restrict</cascade-update-rule>
+        <cascade-delete-rule>restrict</cascade-delete-rule>
+      </foreign-key>
+      <column id="19" parent="3" name="idChatRoom">
+        <mandatory>1</mandatory>
+        <data-type>int(6)</data-type>
+      </column>
+      <column id="20" parent="3" name="ip">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="21" parent="3" name="pseudonym">
+        <mandatory>1</mandatory>
+        <data-type>varchar(32)</data-type>
+      </column>
+      <column id="22" parent="3" name="admin">
+        <mandatory>1</mandatory>
+        <data-type>int(6)</data-type>
+      </column>
+      <column id="23" parent="3" name="reason">
+        <data-type>varchar(256)</data-type>
+      </column>
+      <column id="24" parent="3" name="date">
+        <mandatory>1</mandatory>
+        <data-type>timestamp</data-type>
+        <default-expression>&apos;CURRENT_TIMESTAMP&apos;</default-expression>
+      </column>
+      <index id="25" parent="3" name="idAdminFk">
+        <columns>admin</columns>
+        <desc-columns></desc-columns>
+      </index>
+      <key id="26" parent="3" name="PRIMARY">
+        <columns>idChatRoom
+ip</columns>
+        <primary>1</primary>
+      </key>
+      <foreign-key id="27" parent="3" name="idAdminFk">
+        <columns>admin</columns>
+        <ref-key>~.user.PRIMARY</ref-key>
+        <cascade-update-rule>restrict</cascade-update-rule>
+        <cascade-delete-rule>restrict</cascade-delete-rule>
+      </foreign-key>
+      <foreign-key id="28" parent="3" name="idChatRoomFk">
+        <columns>idChatRoom</columns>
+        <ref-key>~.chatroom.PRIMARY</ref-key>
+        <cascade-update-rule>restrict</cascade-update-rule>
+        <cascade-delete-rule>restrict</cascade-delete-rule>
+      </foreign-key>
+      <column id="29" parent="4" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(6)</data-type>
+      </column>
+      <column id="30" parent="4" name="firstName">
+        <mandatory>1</mandatory>
+        <data-type>varchar(64)</data-type>
+      </column>
+      <column id="31" parent="4" name="lastName">
+        <mandatory>1</mandatory>
+        <data-type>varchar(64)</data-type>
+      </column>
+      <column id="32" parent="4" name="pseudonym">
+        <data-type>varchar(32)</data-type>
+      </column>
+      <column id="33" parent="4" name="email">
+        <mandatory>1</mandatory>
+        <data-type>varchar(128)</data-type>
+      </column>
+      <column id="34" parent="4" name="password">
+        <mandatory>1</mandatory>
+        <data-type>varchar(128)</data-type>
+      </column>
+      <column id="35" parent="4" name="securityToken">
+        <data-type>varchar(64)</data-type>
+      </column>
+      <column id="36" parent="4" name="securityTokenExpires">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="37" parent="4" name="connectionAttempt">
+        <mandatory>1</mandatory>
+        <data-type>int(2)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="38" parent="4" name="ipAttempt">
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="39" parent="4" name="ip">
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="40" parent="4" name="lastConnectionAttempt">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="41" parent="4" name="lastConnection">
+        <data-type>timestamp</data-type>
+      </column>
+      <index id="42" parent="4" name="User_unique_constraint">
+        <columns>email
+pseudonym</columns>
+        <desc-columns></desc-columns>
+        <unique>1</unique>
+      </index>
+      <key id="43" parent="4" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <key id="44" parent="4" name="User_unique_constraint">
+        <columns>email
+pseudonym</columns>
+        <underlying-index>User_unique_constraint</underlying-index>
+      </key>
+      <column id="45" parent="5" name="idUser">
+        <mandatory>1</mandatory>
+        <data-type>int(6)</data-type>
+      </column>
+      <column id="46" parent="5" name="idRoom">
+        <mandatory>1</mandatory>
+        <data-type>int(6)</data-type>
+      </column>
+      <column id="47" parent="5" name="kick">
+        <mandatory>1</mandatory>
+        <data-type>int(1)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="48" parent="5" name="ban">
+        <mandatory>1</mandatory>
+        <data-type>int(1)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="49" parent="5" name="grant">
+        <mandatory>1</mandatory>
+        <data-type>int(1)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="50" parent="5" name="edit">
+        <mandatory>1</mandatory>
+        <data-type>int(1)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <index id="51" parent="5" name="idChatRoomChatRightFk">
+        <columns>idRoom</columns>
+        <desc-columns></desc-columns>
+      </index>
+      <key id="52" parent="5" name="PRIMARY">
+        <columns>idUser
+idRoom</columns>
+        <primary>1</primary>
+      </key>
+      <foreign-key id="53" parent="5" name="idChatRoomChatRightFk">
+        <columns>idRoom</columns>
+        <ref-key>~.chatroom.PRIMARY</ref-key>
+        <cascade-update-rule>restrict</cascade-update-rule>
+        <cascade-delete-rule>restrict</cascade-delete-rule>
+      </foreign-key>
+      <foreign-key id="54" parent="5" name="idUserChatRightFk">
+        <columns>idUser</columns>
+        <ref-key>~.user.PRIMARY</ref-key>
+        <cascade-update-rule>restrict</cascade-update-rule>
+        <cascade-delete-rule>restrict</cascade-delete-rule>
+      </foreign-key>
+      <column id="55" parent="6" name="idUser">
+        <mandatory>1</mandatory>
+        <data-type>int(6)</data-type>
+      </column>
+      <column id="56" parent="6" name="webSocket">
+        <mandatory>1</mandatory>
+        <data-type>int(1)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="57" parent="6" name="chatAdmin">
+        <mandatory>1</mandatory>
+        <data-type>int(1)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="58" parent="6" name="kibana">
+        <mandatory>1</mandatory>
+        <data-type>int(1)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <key id="59" parent="6" name="PRIMARY">
+        <columns>idUser</columns>
+        <primary>1</primary>
+      </key>
+      <foreign-key id="60" parent="6" name="idUserRightFk">
+        <columns>idUser</columns>
+        <ref-key>~.user.PRIMARY</ref-key>
+        <cascade-update-rule>restrict</cascade-update-rule>
+        <cascade-delete-rule>restrict</cascade-delete-rule>
+      </foreign-key>
+      <column id="61" parent="7" name="idUser">
+        <mandatory>1</mandatory>
+        <data-type>int(6)</data-type>
+      </column>
+      <column id="62" parent="7" name="lastIp">
+        <data-type>varchar(64)</data-type>
+      </column>
+      <key id="63" parent="7" name="PRIMARY">
+        <columns>idUser</columns>
+        <primary>1</primary>
+      </key>
+      <foreign-key id="64" parent="7" name="idUserStatistic">
+        <columns>idUser</columns>
+        <ref-key>~.user.PRIMARY</ref-key>
+        <cascade-update-rule>restrict</cascade-update-rule>
+        <cascade-delete-rule>restrict</cascade-delete-rule>
+      </foreign-key>
+    </database-model>
+  </data-source>
+</component>

@@ -29,7 +29,7 @@ class GeoIpController extends Controller
         } catch (\Exception $e) {
             $location = [];
         } finally {
-            $this->JSONresponse($location);
+            $this->JsonResponse($location);
         }
     }
 }

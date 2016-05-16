@@ -34,7 +34,6 @@ class AssertionErrorManager extends \AssertionError
      */
     public function __construct(string $message, int $code = 0, \AssertionError $previous = null)
     {
-        parent::__construct($message, $code, $previous);
         Ini::setIniFileName('conf.ini');
 
         $this->logger = new Logger(Ini::getParam('Assertion', 'implementedLogger'));

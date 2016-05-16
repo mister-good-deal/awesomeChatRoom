@@ -1,6 +1,6 @@
 <?php
 /**
- * Manager for he entity User
+ * Manager for the entities User, UserRight and RoomRight
  *
  * @package    Manager
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -8,39 +8,30 @@
 
 namespace classes\managers;
 
-use \abstracts\Manager as Manager;
-use \classes\entities\User as User;
-use \classes\entities\UserChatRight as UserChatRight;
-use \classes\entitiesManager\UserEntityManager as UserEntityManager;
-use \classes\entitiesManager\UserRightEntityManager as UserRightEntityManager;
-use \classes\entitiesManager\UserChatRightEntityManager as UserChatRightEntityManager;
-use \classes\entitiesCollection\UserCollection as UserCollection;
-use \classes\entitiesCollection\UserChatRightCollection as UserChatRightCollection;
-use \classes\LoggerManager as Logger;
+use abstracts\Manager as Manager;
+use classes\entities\User as User;
+use classes\entities\Room as Room;
+use classes\entitiesManager\UserEntityManager as UserEntityManager;
+use classes\entitiesManager\UserRightEntityManager as UserRightEntityManager;
+use classes\entitiesManager\RoomRightEntityManager as RoomRightEntityManager;
+use classes\entitiesCollection\UserCollection as UserCollection;
+use classes\LoggerManager as Logger;
 
 /**
- * Perform action relative to the User, UserRight and UserChatRight entities classes
+ * Perform action relative to the User, UserRight and RoomRight entities classes
  *
- * @todo remove getRight and getChatRight null check
+ * @todo refactoring like RoomManager...
  */
 class UserManager extends Manager
 {
     /**
-     * @var        User  $userEntity    A user entity
+     * @var        User  $user    A user entity to work with
      */
-    private $userEntity;
+    private $user;
     /**
-     * @var        UserEntityManager  $userEntityManager    A user entity manager
+     * @var        UserCollection  $userCollection  A user collection to work with
      */
-    private $userEntityManager;
-    /**
-     * @var        UserRightEntityManager  $userRightEntityManager  A user right entity manager
-     */
-    private $userRightEntityManager;
-    /**
-     * @var        UserChatRightEntityManager  $userChatRightEntityManager  A user chat right entity manager
-     */
-    private $userChatRightEntityManager;
+    private $userCollection;
 
     /*=====================================
     =            Magic Methods            =
@@ -49,20 +40,15 @@ class UserManager extends Manager
     /**
      * Constructor that can take a User entity as first parameter and a Collection as second parameter
      *
-     * @param      User|null            $entity      A user entity object DEFAULT null
-     * @param      UserCollection|null  $collection  A users collection oject DEFAULT null
+     * @param      User            $user            A user entity object DEFAULT null
+     * @param      UserCollection  $userCollection  A users collection object DEFAULT null
      */
-    public function __construct($entity = null, $collection = null)
+    public function __construct(User $user = null, UserCollection $userCollection = null)
     {
         parent::__construct();
-        $this->userEntityManager          = new UserEntityManager($entity, $collection);
-        $this->userEntity                 = $this->userEntityManager->getEntity();
-        $this->userRightEntityManager     = new UserRightEntityManager($this->userEntity->getRight());
-        $this->userChatRightEntityManager = new UserChatRightEntityManager(null, $this->userEntity->getChatRight());
 
-        if ($entity !== null) {
-            $this->loadUserRights();
-        }
+        $this->user           = $user;
+        $this->userCollection = $userCollection;
     }
 
     /*=====  End of Magic Methods  ======*/
@@ -78,20 +64,7 @@ class UserManager extends Manager
      */
     public function getUser(): User
     {
-        return $this->userEntity;
-    }
-
-    /**
-     * Set the current user
-     *
-     * @param      User  $user   A user entity
-     */
-    public function setUser(User $user)
-    {
-        $this->userEntity = $user;
-        $this->userEntityManager->setEntity($user);
-        $this->userRightEntityManager->setEntity($user->getRight());
-        $this->userChatRightEntityManager->setEntityCollection($user->getChatRight());
+        return $this->user;
     }
 
     /**
@@ -103,7 +76,9 @@ class UserManager extends Manager
      */
     public function getUserIdByPseudonym(string $pseudonym): int
     {
-        return $this->userEntityManager->getUserIdByPseudonym($pseudonym);
+        $userEntityManager = new UserEntityManager();
+
+        return $userEntityManager->getUserIdByPseudonym($pseudonym);
     }
 
     /**
@@ -115,37 +90,53 @@ class UserManager extends Manager
      */
     public function getUserPseudonymById(int $id): string
     {
-        return $this->userEntityManager->getUserPseudonymById($id);
+        $userEntityManager = new UserEntityManager();
+
+        return $userEntityManager->getUserPseudonymById($id);
     }
 
     /**
-     * Register a user and return errors if errors occured
+     * Get a user pseudonym
+     *
+     * @return     string  The user pseudonym (first name + last name if not defined)
+     */
+    public function getPseudonymForChat(): string
+    {
+        $userEntityManager = new UserEntityManager();
+
+        return $userEntityManager->getPseudonymForChat();
+    }
+
+    /**
+     * Register a user and return errors if errors occurred
      *
      * @param      array  $inputs  The user inputs in an array($columnName => $value) pairs to set the object
      *
-     * @return     array  The occured errors or success in a array
+     * @return     array  The occurred errors or success in a array
      */
     public function register(array $inputs): array
     {
-        return $this->userEntityManager->register($inputs);
+        $userEntityManager = new UserEntityManager();
+
+        return $userEntityManager->register($inputs);
     }
 
     /**
-     * Connect a user with his login / password combinaison
+     * Connect a user with his login / password combination
      *
      * @param      string[]  $inputs  Inputs array containing array('login' => 'login', 'password' => 'password')
      *
-     * @return     array  The occured errors or success in a array
+     * @return     array  The occurred errors or success in a array
      */
     public function connect(array $inputs): array
     {
-        $response = $this->userEntityManager->connect($inputs);
+        $userEntityManager = new UserEntityManager();
+        $response          = $userEntityManager->connect($inputs);
 
         if ($response['success']) {
-            $this->userEntity = $this->userEntityManager->getEntity();
-            $this->loadUserRights();
-            $response['user'] = $this->userEntity->__toArray();
-            $_SESSION['user'] = serialize($this->userEntity);
+            $this->user       = $userEntityManager->getEntity();
+            $response['user'] = $this->user->__toArray();
+            $_SESSION['user'] = serialize($this->user);
         }
 
         return $response;
@@ -159,197 +150,151 @@ class UserManager extends Manager
      */
     public function sendEmail(string $subject, string $content)
     {
+        $userEntityManager = new UserEntityManager($this->user, $this->userCollection);
+
         try {
-            $this->userEntityManager->sendEmail($subject, $content);
+            $userEntityManager->sendEmail($subject, $content);
         } catch (\Exception $e) {
             (new Logger())->log($e->getCode(), $e->getMessage());
         }
     }
 
     /**
-     * Check if a user have the admin access to the WebSocker server
+     * Check if a user have the admin access to the WebSocket server
      *
      * @return     bool  True if the User has the right else false
      */
     public function hasWebSocketServerRight(): bool
     {
+        $userEntityManager = new UserEntityManager($this->user, $this->userCollection);
+
         return (
-            $this->userEntityManager->checkSecurityToken() &&
-            $this->userEntity->getRight() !== null &&
-            $this->userEntity->getRight()->webSocket
+            $userEntityManager->checkSecurityToken() &&
+            $this->user->getRight() !== null &&
+            $this->user->getRight()->webSocket
         );
     }
 
     /**
-     * Check if a user have the admin access to the WebSocker server
+     * Check if a user have the admin access to the WebSocket server
      *
      * @return     bool  True if the User has the right else false
      */
     public function hasKibanaRight(): bool
     {
+        $userEntityManager = new UserEntityManager($this->user, $this->userCollection);
+
         return (
-            $this->userEntityManager->checkSecurityToken() &&
-            $this->userEntity->getRight() !== null &&
-            $this->userEntity->getRight()->kibana
+            $userEntityManager->checkSecurityToken() &&
+            $this->user->getRight() !== null &&
+            $this->user->getRight()->kibana
         );
     }
 
     /**
-     * Check if a user has the right to kick a user
+     * Determine if the user has room kick right
      *
-     * @param      int   $roomId  The room ID
+     * @param      Room  $room   The room to check in
      *
-     * @return     bool  True if a user has the right to kick a user from a room else false
+     * @return     bool  True if the user has room kick right, false otherwise.
      */
-    public function hasChatKickRight(int $roomId): bool
+    public function hasRoomKickRight(Room $room): bool
     {
+        $userEntityManager = new UserEntityManager($this->user, $this->userCollection);
+
         return (
-            $this->userEntityManager->checkSecurityToken() &&
-            $this->userEntity->getRight() !== null && (
-                $this->userEntity->getRight()->chatAdmin || (
-                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
-                    $this->userEntity->getChatRight()->getEntityById($roomId)->kick
+            $userEntityManager->checkSecurityToken() && (
+                $this->user->getRight()->chatAdmin || (
+                    $this->user->getRoomRight()->getEntityById($room->id) !== null &&
+                    $this->user->getRoomRight()->getEntityById($room->id)->kick
                 )
             )
         );
     }
 
     /**
-     * Check if a user has the right to ban a user
+     * Determine if the user has room ban right
      *
-     * @param      int   $roomId  The room ID
+     * @param      Room  $room   The room to check in
      *
-     * @return     bool  True if a user has the right to ban a user from a room else false
+     * @return     bool  True if the user has room ban right, false otherwise
      */
-    public function hasChatBanRight(int $roomId): bool
+    public function hasRoomBanRight(Room $room): bool
     {
+        $userEntityManager = new UserEntityManager($this->user, $this->userCollection);
+
         return (
-            $this->userEntityManager->checkSecurityToken() &&
-            $this->userEntity->getRight() !== null && (
-                $this->userEntity->getRight()->chatAdmin || (
-                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
-                    $this->userEntity->getChatRight()->getEntityById($roomId)->ban
+            $userEntityManager->checkSecurityToken() && (
+                $this->user->getRight()->chatAdmin || (
+                    $this->user->getRoomRight()->getEntityById($room->id) !== null &&
+                    $this->user->getRoomRight()->getEntityById($room->id)->ban
                 )
             )
         );
     }
 
     /**
-     * Check if a user has the right to grant a user right in the room
+     * Determine if the user has room grant right
      *
-     * @param      int   $roomId  The room ID
+     * @param      Room  $room   The room to check in
      *
-     * @return     bool  True if a user has the right to grant a user right in the room else false
+     * @return     bool  True if the user has room grant right, false otherwise
      */
-    public function hasChatGrantRight(int $roomId): bool
+    public function hasRoomGrantRight(Room $room): bool
     {
+        $userEntityManager = new UserEntityManager($this->user, $this->userCollection);
+
         return (
-            $this->userEntityManager->checkSecurityToken() &&
-            $this->userEntity->getRight() !== null && (
-                $this->userEntity->getRight()->chatAdmin || (
-                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
-                    $this->userEntity->getChatRight()->getEntityById($roomId)->grant
+            $userEntityManager->checkSecurityToken() && (
+                $this->user->getRight()->chatAdmin || (
+                    $this->user->getRoomRight()->getEntityById($room->id) !== null &&
+                    $this->user->getRoomRight()->getEntityById($room->id)->grant
                 )
             )
         );
     }
 
     /**
-     * Check if a user has the right to edit the room's information
+     * Determine if the user has room edit right
      *
-     * @param      int   $roomId  The room ID
+     * @param      Room  $room   The room to check in
      *
-     * @return     bool  True if a user has the right to edit the room's information else false
+     * @return     bool  True if the user has room edit right, false otherwise
      */
-    public function hasChatEditRight(int $roomId): bool
+    public function hasRoomEditRight(Room $room): bool
     {
+        $userEntityManager = new UserEntityManager($this->user, $this->userCollection);
+
         return (
-            $this->userEntityManager->checkSecurityToken() &&
-            $this->userEntity->getRight() !== null && (
-                $this->userEntity->getRight()->chatAdmin || (
-                    $this->userEntity->getChatRight()->getEntityById($roomId) !== null &&
-                    $this->userEntity->getChatRight()->getEntityById($roomId)->edit
+            $userEntityManager->checkSecurityToken() && (
+                $this->user->getRight()->chatAdmin || (
+                    $this->user->getRoomRight()->getEntityById($room->id) !== null &&
+                    $this->user->getRoomRight()->getEntityById($room->id)->edit
                 )
             )
         );
-    }
-
-    /**
-     * Get a user pseudonym
-     *
-     * @return     string  The user pseudonym (first name + last name if not defined)
-     */
-    public function getPseudonymForChat(): string
-    {
-        return $this->userEntityManager->getPseudonymForChat();
-    }
-
-    /**
-     * Add a user global chat right
-     *
-     * @param      UserChatRight  $userChatRight  The user chat right entity
-     * @param      bool           $grantAll       If all the user chat right should be granted DEFAULT false
-     *
-     * @return     bool           True if the add succeed else false
-     */
-    public function addUserGlobalChatRight(UserChatRight $userChatRight, bool $grantAll = false): bool
-    {
-        $this->userChatRightEntityManager->setEntity($userChatRight);
-
-        if ($grantAll) {
-            $this->userChatRightEntityManager->grantAll();
-        }
-
-        $success = $this->userChatRightEntityManager->saveEntity();
-
-        if ($success) {
-            $this->userEntity->getChatRight()->add($userChatRight);
-        }
-
-        return $success;
-    }
-
-    /**
-     * Set one user chat right
-     *
-     * @param      UserChatRight  $chatRight  The user chat right to set
-     *
-     * @return     bool           True if the operation succeed else false
-     */
-    public function setUserChatRight(UserChatRight $chatRight): bool
-    {
-        $success = true;
-
-        try {
-            $success = $this->userChatRightEntityManager->saveEntity($chatRight);
-        } catch (Exception $e) {
-            $success = false;
-        } finally {
-            return $success;
-        }
     }
 
     /**
      * Save the current user collection
      *
-     * @param      UserCollection  $collection  A user collection to save
-     *
-     * @return     bool            True if the user collection has been saved else false
-     *
-     * @todo Can't update a User entity
+     * @return     bool  True if the user collection has been saved, false otherwise
      */
-    public function saveUserCollection($collection): bool
+    public function saveUserCollection(): bool
     {
-        $success = $this->userEntityManager->saveCollection($collection);
+        $userEntityManager      = new UserEntityManager();
+        $userRightEntityManager = new UserRightEntityManager();
+        $roomRightEntityManager = new RoomRightEntityManager();
+        $success                = $userEntityManager->saveCollection($this->userCollection);
 
-        foreach ($this->userEntityManager->getEntityCollection() as $user) {
-            if ($success && $user->getRight() !== null) {
-                $success = $this->userRightEntityManager->saveEntity($user->getRight());
-            }
+        if ($success) {
+            foreach ($this->userCollection as $user) {
+                if ($success && $user->getRight() !== null) {
+                    $success = $userRightEntityManager->saveEntity($user->getRight());
+                }
 
-            if ($success && $user->getChatRight() !== null) {
-                foreach ($user->getChatRight() as $chatRight) {
-                    $success = $this->userChatRightEntityManager->saveEntity($chatRight);
+                if ($success && $user->getRoomRight() !== null) {
+                    $success = $roomRightEntityManager->saveCollection($user->getRoomRight());
                 }
             }
         }
@@ -358,26 +303,4 @@ class UserManager extends Manager
     }
 
     /*=====  End of Public methods  ======*/
-
-    /*=======================================
-    =            Private methods            =
-    =======================================*/
-
-    /**
-     * Load the user chat right and user right entities manager and put them in the user entity
-     */
-    private function loadUserRights()
-    {
-        if ($this->userEntity->getRight() === null) {
-            $this->userRightEntityManager->loadEntity($this->userEntity->id);
-            $this->userEntity->setRight($this->userRightEntityManager->getEntity());
-        }
-
-        if ($this->userEntity->getChatRight() === null) {
-            $this->userChatRightEntityManager->loadUserChatRight((int) $this->userEntity->id);
-            $this->userEntity->setChatRight($this->userChatRightEntityManager->getEntityCollection());
-        }
-    }
-
-    /*=====  End of Private methods  ======*/
 }

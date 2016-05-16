@@ -8,18 +8,22 @@
 
 namespace classes\console;
 
-use \classes\console\Console as Console;
-use \classes\DataBase as DB;
-use \classes\IniManager as Ini;
-use \classes\entitiesManager\GlobalEntityManager as EntityManager;
-use \classes\managers\UserManager as UserManager;
-use \classes\managers\ChatManager as ChatManager;
-use \classes\entities\User as User;
-use \classes\entities\UserRight as UserRight;
-use \classes\entities\ChatRoom as ChatRoom;
-use \classes\entitiesCollection\UserCollection as UserCollection;
-use \classes\entitiesCollection\ChatRoomCollection as ChatRoomCollection;
-use \abstracts\designPatterns\Entity as Entity;
+use classes\DataBase as DB;
+use classes\IniManager as Ini;
+use classes\entitiesManager\GlobalEntityManager as EntityManager;
+use classes\managers\UserManager as UserManager;
+use classes\managers\RoomManager as RoomManager;
+use classes\entities\User as User;
+use classes\entities\UserRight as UserRight;
+use classes\entities\Room as Room;
+use classes\entitiesCollection\UserCollection as UserCollection;
+use classes\entitiesCollection\RoomCollection as RoomCollection;
+use abstracts\Entity as Entity;
+use Elasticsearch\ClientBuilder as EsClientBuilder;
+use traits\PrettyOutputTrait as PrettyOutputTrait;
+use traits\FiltersTrait as FiltersTrait;
+use traits\EchoTrait as EchoTrait;
+use traits\DateTrait as DateTrait;
 
 /**
  * ORM in a console mode with simple command syntax to manage the database
@@ -28,27 +32,27 @@ use \abstracts\designPatterns\Entity as Entity;
  */
 class Orm extends Console
 {
-    use \traits\PrettyOutputTrait;
-    use \traits\FiltersTrait;
-    use \traits\EchoTrait;
-    use \traits\DateTrait;
+    use PrettyOutputTrait;
+    use FiltersTrait;
+    use EchoTrait;
+    use DateTrait;
 
     /**
      * @var        string[]  $SELF_COMMANDS     List of all commands with their description
      */
     private static $SELF_COMMANDS = [
         'tables'                                                => 'Get all the current tables name',
-        'entities --table|--info|--create|--data'               => 'Perform action on entities table',
+        'entities --table|--info|--create|--data|--drop'        => 'Perform action on entities table',
         'entity -n entityName --clean|drop|show|desc|create'    => 'Perform action on entity table',
         'clean -t tableName'                                    => 'Delete all the row of the given table name',
         'drop -t tableName'                                     => 'Drop the given table name',
         'show -t tableName [-s startIndex -e endIndex]'         => 'Show table data between startIndex and endIndex',
         'desc -t tableName'                                     => 'Show table structure',
-        'es -i index -v sersion -s shards -r -replicas --index' => 'Create elasticsearch index',
+        'es -i index -v version -s shards -r -replicas --index' => 'Create elasticsearch index',
         'es -i index -v version -t type -m mapping --mapping'   => 'Create elasticsearch mapping',
         'es -i index -a alias --aliases [--no-read --no-write]' => 'Create elasticsearch aliases',
         'es -i index -n number --generate-data'                 => 'Generate `number (1000)` data in `index (chat)`',
-        'es --init'                                             => 'Init ES with indexn mapping and aliases',
+        'es --init'                                             => 'Init ES with index mapping and aliases',
         'init --es --sql --all'                                 => 'Initialize mysql, ES or both with --all option'
     ];
 
@@ -60,10 +64,6 @@ class Orm extends Console
             'enabled' => false
         ],
         'properties' => [
-            'pseudonym' => [
-                'type'  => 'string',
-                'index' => 'not_analyzed'
-            ],
             'message' => [
                 'type' => 'string'
             ],
@@ -89,6 +89,10 @@ class Orm extends Console
                     'location' => [
                         'type'    => 'geo_point',
                         'lat_lon' => true
+                    ],
+                    'pseudonym' => [
+                        'type'  => 'string',
+                        'index' => 'not_analyzed'
                     ]
                 ]
             ],
@@ -103,6 +107,10 @@ class Orm extends Console
                     'location' => [
                         'type'    => 'geo_point',
                         'lat_lon' => true
+                    ],
+                    'pseudonym' => [
+                        'type'  => 'string',
+                        'index' => 'not_analyzed'
                     ]
                 ]
             ]
@@ -135,7 +143,7 @@ class Orm extends Console
 
         switch (rtrim($commandName[0])) {
             case 'tables':
-                static::out('Tables name: ' . PHP_EOL . $this->tablePrettyPrint(DB::getAllTables()) . PHP_EOL);
+                static::out('Tables name: ' . PHP_EOL . static::tablePrettyPrint(DB::getAllTables()) . PHP_EOL);
                 break;
 
             case 'entities':
@@ -190,7 +198,7 @@ class Orm extends Console
         if (isset($args['sql']) || isset($args['all'])) {
             $this->createAllTables();
             $this->insertUserData();
-            $this->insertChatData();
+            $this->insertRoomData();
         }
 
         if (isset($args['es']) || isset($args['all'])) {
@@ -209,8 +217,9 @@ class Orm extends Console
 
         if ($this->checkEntityName($args)) {
             $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $args['n'];
-            $entity         = new $entityClassNamespace;
-            $command       .= ' -t ' . strtolower($entity->getTableName()); // todo bug SQL table name with uppercase
+            $entity               = new $entityClassNamespace;
+            /** @var Entity $entity */
+            $command .= ' -t ' . strtolower($entity->getTableName()); // todo bug SQL table name with uppercase
 
             if (isset($args['clean'])) {
                 $this->cleanTable($command);
@@ -241,23 +250,43 @@ class Orm extends Console
         if (isset($args['table'])) {
             $tables = [['ENTITY', 'TABLE']];
 
-            foreach (DB::getAllEntites() as $entityName) {
+            foreach (DB::getAllEntities() as $entityName) {
+                /** @var Entity $entity */
                 $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $entityName;
-                $tables[] = [$entityName, (new $entityClassNamespace)->getTableName()];
+                $entity               = new $entityClassNamespace();
+                $tables[]             = [$entityName, $entity->getTableName()];
                 Ini::setIniFileName(Ini::INI_CONF_FILE);
             }
 
-            static::out($this->prettyTwoDimensionalArray($tables) . PHP_EOL);
+            static::out(static::prettyTwoDimensionalArray($tables) . PHP_EOL);
         } elseif (isset($args['info'])) {
-            foreach (DB::getAllEntites() as $entityName) {
+            foreach (DB::getAllEntities() as $entityName) {
+                /** @var Entity $entity */
                 $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $entityName;
-                static::out((new $entityClassNamespace)->__toInfo() . PHP_EOL);
+                $entity               = new $entityClassNamespace();
+                static::out($entity->__toInfo() . PHP_EOL);
             }
         } elseif (isset($args['create'])) {
             $this->createAllTables();
         } elseif (isset($args['data'])) {
             $this->insertUserData();
-            $this->insertChatData();
+            $this->insertRoomData();
+        } elseif (isset($args['drop'])) {
+            if ($this->confirmAction('DROP the all entities table ? (Y/N)') === 'Y') {
+                foreach (DB::getAllEntities() as $entityName) {
+                    /** @var Entity $entity */
+                    $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $entityName;
+                    $entity               = new $entityClassNamespace();
+                    Ini::setIniFileName(Ini::INI_CONF_FILE);
+                    if (DB::dropTable($entity->getTableName())) {
+                        static::ok(static::ACTION_DONE . PHP_EOL);
+                    } else {
+                        static::fail(static::ACTION_FAIL . PHP_EOL . static::tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
+                    }
+                }
+            } else {
+                static::out(static::ACTION_CANCEL . PHP_EOL);
+            }
         }
     }
 
@@ -309,7 +338,7 @@ class Orm extends Console
                 if (DB::cleanTable($args['t'])) {
                     static::ok(static::ACTION_DONE . PHP_EOL);
                 } else {
-                    static::fail(static::ACTION_FAIL . PHP_EOL . $this->tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
+                    static::fail(static::ACTION_FAIL . PHP_EOL . static::tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
                 }
             } else {
                 static::out(static::ACTION_CANCEL . PHP_EOL);
@@ -331,7 +360,7 @@ class Orm extends Console
                 if (DB::dropTable($args['t'])) {
                     static::ok(static::ACTION_DONE . PHP_EOL);
                 } else {
-                    static::fail(static::ACTION_FAIL . PHP_EOL . $this->tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
+                    static::fail(static::ACTION_FAIL . PHP_EOL . static::tablePrettyPrint(DB::errorInfo()) . PHP_EOL);
                 }
             } else {
                 static::out(static::ACTION_CANCEL . PHP_EOL);
@@ -342,7 +371,7 @@ class Orm extends Console
     /**
      * Display the data of a table
      *
-     * @param      string  $command  The commande passed by the user with its arguments
+     * @param      string  $command  The command passed by the user with its arguments
      */
     private function showTable(string $command)
     {
@@ -358,21 +387,21 @@ class Orm extends Console
         }
 
         if ($data !== null) {
-            static::out($this->prettySqlResult($args['t'], $data) . PHP_EOL);
+            static::out(static::prettySqlResult($args['t'], $data) . PHP_EOL);
         }
     }
 
     /**
      * Display the description of a table
      *
-     * @param      string  $command  The commande passed by the user with its arguments
+     * @param      string  $command  The command passed by the user with its arguments
      */
     private function descTable(string $command)
     {
         $args = $this->getArgs($command);
 
         if ($this->checkTableName($args)) {
-            static::out($this->prettySqlResult($args['t'], DB::descTable($args['t'])) . PHP_EOL);
+            static::out(static::prettySqlResult($args['t'], DB::descTable($args['t'])) . PHP_EOL);
         }
     }
 
@@ -384,14 +413,14 @@ class Orm extends Console
         $entityManager = new EntityManager();
         // @todo Handle table creation order based on constraint
         DB::query('SET FOREIGN_KEY_CHECKS = 0;');
-        foreach (DB::getAllEntites() as $entityName) {
+        foreach (DB::getAllEntities() as $entityName) {
             /**
              * @var        Entity  $entity  An entity
              */
             $entityClassNamespace = Ini::getParam('Entities', 'entitiesClassNamespace') . '\\' . $entityName;
             $entity               = new $entityClassNamespace;
-            // @todo bug SQL table name with uppercase
-            $tableName           = strtolower($entity->getTableName());
+            // @see  DB::getAllTables()
+            $tableName            = strtoupper($entity->getTableName());
 
             if (!in_array($tableName, DB::getAllTables())) {
                 static::out('Create table "' . $tableName . '"' . PHP_EOL);
@@ -414,6 +443,7 @@ class Orm extends Console
     {
         $users       = new UserCollection();
         $userManager = new UserManager(null, $users);
+        $password    = crypt('123', Ini::getParam('User', 'passwordCryptSalt'));
 
         static::out('Create user data' . PHP_EOL);
 
@@ -424,8 +454,7 @@ class Orm extends Console
             'firstName' => 'Admin',
             'lastName'  => 'God',
             'pseudonym' => 'admin',
-            'password'  => '$6$rounds=5000$xd8u1gm9aw8d2npq$VlV1nxc0CNsVhgtnKXPcvT.1Mzt.8ZjNQZYWeK7NOFNBy4M.3EEg9Kt4'
-                           . 'WHFEogUA7xtH89UKDfp4UXHVYlIY00'
+            'password'  => $password
         ]);
 
         $admin->setRight(new UserRight(['idUser' => 1, 'webSocket' => 1, 'chatAdmin' => 1, 'kibana' => 1]));
@@ -440,36 +469,35 @@ class Orm extends Console
                 'firstName' => 'User ' . $i,
                 'lastName'  => 'Normal',
                 'pseudonym' => 'User ' . $i,
-                'password'  => '$6$rounds=5000$xd8u1gm9aw8d2npq$VlV1nxc0CNsVhgtnKXPcvT.1Mzt.8ZjNQZYWeK7NOFNBy4M.3EEg9Kt'
-                               . '4WHFEogUA7xtH89UKDfp4UXHVYlIY00'
+                'password'  => $password
             ]);
 
             $users->add($user);
         }
 
-        if ($userManager->saveUserCollection($users)) {
+        if ($userManager->saveUserCollection()) {
             static::ok(sprintf('The followings users are inserted %s' . PHP_EOL, $users));
         } else {
-            static::fail('An error occured on user collection save' . PHP_EOL);
+            static::fail('An error occurred on user collection save' . PHP_EOL);
         }
     }
 
     /**
-     * Insert chat data in database
+     * Insert room data in database
      */
-    private function insertChatData()
+    private function insertRoomData()
     {
-        $rooms       = new ChatRoomCollection();
-        $chatManager = new ChatManager();
+        $rooms       = new RoomCollection();
+        $roomManager = new RoomManager(null, $rooms);
 
-        static::out('Create chat data' . PHP_EOL);
+        static::out('Create room data' . PHP_EOL);
 
         // Create a default chat room
-        $default = new ChatRoom([
+        $default = new Room([
             'id'           => 1,
             'name'         => 'Default',
             'creator'      => 1,
-            'creationDate' => date('Y-m-d H:i:s'),
+            'creationDate' => new \DateTime(),
             'maxUsers'     => 50
         ]);
 
@@ -477,22 +505,22 @@ class Orm extends Console
 
         // Create some rooms some public and some with password 123
         for ($i = 1; $i < 11; $i++) {
-            $room = new ChatRoom([
+            $room = new Room([
                 'id'           => ($i + 1),
                 'name'         => 'Room ' . $i,
                 'creator'      => 1,
                 'password'     => (mt_rand(0, 1) ? null : '123'),
-                'creationDate' => date('Y-m-d H:i:s'),
+                'creationDate' => new \DateTime(),
                 'maxUsers'     => 20
             ]);
 
             $rooms->add($room);
         }
 
-        if ($chatManager->saveChatRoomCollection($rooms)) {
+        if ($roomManager->saveRoomCollection()) {
             static::ok(sprintf('The followings chat rooms are inserted %s' . PHP_EOL, $rooms));
         } else {
-            static::fail('An error occured on chat rooms collection save' . PHP_EOL);
+            static::fail('An error occurred on chat rooms collection save' . PHP_EOL);
         }
     }
 
@@ -532,7 +560,7 @@ class Orm extends Console
         if (!isset($args['n'])) {
             static::fail('You need to specify an entity name with -n parameter' . PHP_EOL);
             $check = false;
-        } elseif (!in_array($args['n'], DB::getAllEntites())) {
+        } elseif (!in_array($args['n'], DB::getAllEntities())) {
             static::fail('The entity "' . $args['n'] . '" does not exist' . PHP_EOL);
             $check = false;
         }
@@ -548,33 +576,33 @@ class Orm extends Console
      *
      * @return     string  The pretty output
      *
-     * @todo move to PrettyOutputTrait
+     * @todo       Move to PrettyOutputTrait
      */
-    private function prettySqlResult(string $tableName, array $data): string
+    private static function prettySqlResult(string $tableName, array $data): string
     {
-        $columns       = $this->filterFecthAllByColumn($data);
-        $colmunsNumber = count($columns);
-        $rowsNumber    = ($colmunsNumber > 0) ? count($columns[key($columns)]) : 0;
+        $columns       = static::filterFetchAllByColumn($data);
+        $columnsNumber = count($columns);
+        $rowsNumber    = ($columnsNumber > 0) ? count($columns[key($columns)]) : 0;
         $columnsName   = [];
         $maxLength     = 0;
 
         foreach ($columns as $columnName => $column) {
             $columnsName[] = $columnName;
-            $this->setMaxSize($column, strlen($columnName));
+            static::setMaxSize($column, strlen($columnName));
             // 3 because 2 spaces and 1 | are added between name
-            $maxLength += ($this->getMaxSize($column) + 3);
+            $maxLength += (static::getMaxSize($column) + 3);
         }
 
         // don't touch it's magic ;p
         $maxLength      -= 1;
 
-        if ($maxLength > $this->maxLength) {
-            return 'The console width is to small to print the output (console max-width = ' . $this->maxLength
-                . ' and content output width = ' . $maxLength . ')' . PHP_EOL;
-        }
+//        if ($maxLength > static::$maxLength) {
+//            return 'The console width is to small to print the output (console max-width = ' . static::$maxLength
+//                . ' and content output width = ' . $maxLength . ')' . PHP_EOL;
+//        }
 
         if ($maxLength <= 0) {
-            // 9 beacause strlen('No data') = 7 + 2 spaces
+            // 9 because strlen('No data') = 7 + 2 spaces
             $maxLength = max(strlen($tableName) + 2, 9);
         }
 
@@ -583,20 +611,20 @@ class Orm extends Console
         $prettyString   .= '|' . str_pad($tableName, $maxLength, ' ', STR_PAD_BOTH) . '|' . PHP_EOL ;
         $prettyString   .= $separationLine;
 
-        for ($i = 0; $i < $colmunsNumber; $i++) {
-            $prettyString .= '| ' . $this->smartAlign($columnsName[$i], $columns[$columnsName[$i]], 0, STR_PAD_BOTH)
+        for ($i = 0; $i < $columnsNumber; $i++) {
+            $prettyString .= '| ' . static::smartAlign($columnsName[$i], $columns[$columnsName[$i]], 0, STR_PAD_BOTH)
                 . ' ';
         }
 
-        if ($colmunsNumber > 0) {
+        if ($columnsNumber > 0) {
             $prettyString .= '|' . PHP_EOL . $separationLine;
         }
 
 
         for ($i = 0; $i < $rowsNumber; $i++) {
-            for ($j = 0; $j < $colmunsNumber; $j++) {
+            for ($j = 0; $j < $columnsNumber; $j++) {
                 $prettyString .= '| ' .
-                    $this->smartAlign($columns[$columnsName[$j]][$i], $columns[$columnsName[$j]]) . ' ';
+                    static::smartAlign($columns[$columnsName[$j]][$i], $columns[$columnsName[$j]]) . ' ';
             }
 
             $prettyString .= '|' . PHP_EOL;
@@ -645,11 +673,11 @@ class Orm extends Console
      * @param      string  $index             The index name (without prefix or suffix)
      * @param      int     $version           The index version
      * @param      int     $numberOfShards    The number of shards
-     * @param      int     $numberOfReplicas  The numbre of replicas
+     * @param      int     $numberOfReplicas  The number of replicas
      */
     private function createElasticsearchIndex(string $index, int $version, int $numberOfShards, int $numberOfReplicas)
     {
-        $client = \Elasticsearch\ClientBuilder::create()->build();
+        $client = EsClientBuilder::create()->build();
         $index  = $index . '_v' . $version;
 
         try {
@@ -683,7 +711,7 @@ class Orm extends Console
      */
     private function createElasticsearchMapping(string $index, int $version, string $type, array $mapping)
     {
-        $client = \Elasticsearch\ClientBuilder::create()->build();
+        $client = EsClientBuilder::create()->build();
 
         try {
             $client->indices()->putMapping([
@@ -704,27 +732,27 @@ class Orm extends Console
      * Bind aliases read and/or write to an index
      *
      * @param      string  $index  The index to bind the aliases to
-     * @param      string  $alias  The alisases name (automatic _read and _write suffix will be added)
+     * @param      string  $alias  The aliases name (automatic _read and _write suffix will be added)
      * @param      bool    $read   True to bind the read alias else false DEFAULT true
      * @param      bool    $write  True to bind the write alias else false DEFAULT true
      */
     private function bindAliasesToIndex(string $index, string $alias, bool $read = true, bool $write = true)
     {
-        $client = \Elasticsearch\ClientBuilder::create()->build();
+        $client = EsClientBuilder::create()->build();
 
         try {
             if ($read) {
                 $client->indices()->putAlias(['index' => $index, 'name' => $alias . '_read']);
-                static::ok('ES alias ' . $alias . '_read binded to ' . $index . PHP_EOL);
+                static::ok('ES alias ' . $alias . '_read bind to ' . $index . PHP_EOL);
             }
 
             if ($write) {
                 $client->indices()->putAlias(['index' => $index, 'name' => $alias . '_write']);
-                static::ok('ES alias ' . $alias . '_write binded to ' . $index . PHP_EOL);
+                static::ok('ES alias ' . $alias . '_write bind to ' . $index . PHP_EOL);
             }
         } catch (\Exception $e) {
             static::fail(
-                'ES alias ' . $index . ' not binded to ' . $index . PHP_EOL . $e->getMessage() . PHP_EOL
+                'ES alias ' . $index . ' not bind to ' . $index . PHP_EOL . $e->getMessage() . PHP_EOL
             );
         }
     }
@@ -740,14 +768,14 @@ class Orm extends Console
      *
      * @todo
      */
-    private function reindex(string $index, int $oldVersion, int $newVersion, string $type, array $newMapping)
-    {
-        // - create the new index
-        // - bind write alias on the new index
-        // - copy data from old to new index with SCROLL and BULK
-        // - bind read alias on the new index
-        // - delete old index
-    }
+//    private function reindex(string $index, int $oldVersion, int $newVersion, string $type, array $newMapping)
+//    {
+//        // - create the new index
+//        // - bind write alias on the new index
+//        // - copy data from old to new index with SCROLL and BULK
+//        // - bind read alias on the new index
+//        // - delete old index
+//    }
 
     /**
      * Generate data by inserting message in the given index
@@ -757,7 +785,7 @@ class Orm extends Console
      */
     private function generateEsData(string $index = 'chat', int $number = 1000)
     {
-        $client = \Elasticsearch\ClientBuilder::create()->build();
+        $client = EsClientBuilder::create()->build();
         $params = ['body' => []];
         $ip     = [
             '118.240.12.136',

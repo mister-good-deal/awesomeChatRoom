@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait to set beautifull indent on multiple array values
+ * Trait to set beautiful indent on multiple array values
  *
  * @package    Trait
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>
@@ -8,17 +8,15 @@
 
 namespace traits;
 
-use \classes\ExceptionManager as Exception;
-
 /**
  * Utility methods to smart align values
  */
 trait PrettyOutputTrait
 {
     /**
-     * @var        array  $beautifullIndentMaxSize  Array containing the max size of each array
+     * @var        array  $beautifulIndentMaxSize  Array containing the max size of each array
      */
-    public static $beautifullIndentMaxSize = array();
+    public static $beautifulIndentMaxSize = array();
 
     /*======================================
     =            Public methods            =
@@ -34,9 +32,9 @@ trait PrettyOutputTrait
      *
      * @return     string            The formatted value with extra spaces
      *
-     * @todo refacto this shit
+     * @todo refactoring this shit
      */
-    public function smartAlign(string $value, array $arrays, int $extraSize = 0, int $position = STR_PAD_RIGHT): string
+    public static function smartAlign(string $value, array $arrays, int $extraSize = 0, int $position = STR_PAD_RIGHT): string
     {
         // if The array passed is a simple strings array we transform it into an array of one strings array
         if (!is_array($arrays[0])) {
@@ -47,13 +45,13 @@ trait PrettyOutputTrait
         $max = 0;
 
         foreach ($arrays as $array) {
-            $arrayHash = $this->md5Array($array);
+            $arrayHash = static::md5Array($array);
 
-            if (!isset(static::$beautifullIndentMaxSize[$arrayHash])) {
-                $this->setMaxSize($array, 0, $arrayHash);
+            if (!isset(static::$beautifulIndentMaxSize[$arrayHash])) {
+                static::setMaxSize($array, 0, $arrayHash);
             }
 
-            $max += static::$beautifullIndentMaxSize[$arrayHash];
+            $max += static::$beautifulIndentMaxSize[$arrayHash];
         }
 
         return str_pad($value, $max + $extraSize, ' ', $position);
@@ -67,7 +65,7 @@ trait PrettyOutputTrait
      *
      * @return     string  The array as a pretty string
      */
-    public function prettyArray(array $array, int $depth = 1): string
+    public static function prettyArray(array $array, int $depth = 1): string
     {
         $arrayFormatted = array();
         $arrayIndent    = implode(array_fill(0, $depth - 1, "\t"));
@@ -75,8 +73,8 @@ trait PrettyOutputTrait
         $keys           = array_keys($array);
 
         foreach ($array as $key => $value) {
-            $alignKey         = $valuesIndent . $this->smartAlign($key, $keys) . ' => ';
-            $arrayFormatted[] = $alignKey . $this->formatVariable($value, $depth + 1);
+            $alignKey         = $valuesIndent . static::smartAlign($key, $keys) . ' => ';
+            $arrayFormatted[] = $alignKey . static::formatVariable($value, $depth + 1);
         }
 
         return '[' . PHP_EOL . implode(',' . PHP_EOL, $arrayFormatted) . PHP_EOL . $arrayIndent . ']';
@@ -89,9 +87,9 @@ trait PrettyOutputTrait
      *
      * @return     string  The array as a pretty string
      */
-    public function prettyTwoDimensionalArray(array $arrays): string
+    public static function prettyTwoDimensionalArray(array $arrays): string
     {
-        $maxLength      = $this->getMaxSize($arrays);
+        $maxLength      = static::getMaxSize($arrays);
         $separationLine = '+' . str_pad('', 2 * ($maxLength + 2) + 1, '-', STR_PAD_BOTH) . '+';
         $headers        = array_shift($arrays);
         $arrayFormatted = [$separationLine];
@@ -128,15 +126,23 @@ trait PrettyOutputTrait
      *
      * @return     string  The variable in a formatted string
      */
-    public function formatVariable($variable, int $depth = 1): string
+    public static function formatVariable($variable, int $depth = 1): string
     {
         switch (gettype($variable)) {
             case 'array':
-                $argumentFormatted = $this->prettyArray($variable, $depth);
+                $argumentFormatted = static::prettyArray($variable, $depth);
                 break;
 
             case 'object':
-                $argumentFormatted = 'object::' . get_class($variable);
+                $toString = '';
+
+                if ($variable instanceof \DateTime) {
+                    $toString = $variable->format('Y-m-d H:i:s');
+                } elseif (method_exists($variable, '__toString')) {
+                    $toString = $variable->__toString();
+                }
+                
+                $argumentFormatted = 'object(' . get_class($variable) . ')::' . $toString;
                 break;
 
             case 'resource':
@@ -174,15 +180,15 @@ trait PrettyOutputTrait
      *
      * @return     int    The max size
      */
-    public function getMaxSize(array $array): int
+    public static function getMaxSize(array $array): int
     {
-        $arrayHash = $this->md5Array($array);
+        $arrayHash = static::md5Array($array);
 
-        if (!isset(static::$beautifullIndentMaxSize[$arrayHash])) {
-            $this->setMaxSize($array, 0, $arrayHash);
+        if (!isset(static::$beautifulIndentMaxSize[$arrayHash])) {
+            static::setMaxSize($array, 0, $arrayHash);
         }
 
-        return static::$beautifullIndentMaxSize[$arrayHash];
+        return static::$beautifulIndentMaxSize[$arrayHash];
     }
 
     /**
@@ -193,7 +199,7 @@ trait PrettyOutputTrait
      *
      * @return     string  The md5 hash
      */
-    public function md5Array(array $array, bool $sort = true): string
+    public static function md5Array(array $array, bool $sort = true): string
     {
         if ($sort) {
             array_multisort($array);
@@ -211,23 +217,23 @@ trait PrettyOutputTrait
     /**
      * Process the max value size of an array
      *
-     * If the array is processed and the array didn't change, the array is not reprocessed
+     * If the array is processed and the array did not change, the array is not reprocessed
      *
      * @param      array    $array      The array to calculate max size of
-     * @param      integer  $minSize    OPTIONAL The minium size DEFAULT 0
+     * @param      integer  $minSize    OPTIONAL The minimum size DEFAULT 0
      * @param      string   $arrayHash  OPTIONAL The already calculated array hash DEFAULT null
      */
-    private function setMaxSize(array $array, int $minSize = 0, string $arrayHash = null)
+    private static function setMaxSize(array $array, int $minSize = 0, string $arrayHash = null)
     {
         if ($arrayHash === null) {
-            $arrayHash = $this->md5Array($array);
+            $arrayHash = static::md5Array($array);
         }
 
         $max = 0;
 
         foreach ($array as $value) {
             if (is_array($value)) {
-                $size = $this->getMaxSize($value);
+                $size = static::getMaxSize($value);
             } else {
                 $size = strlen((string) $value);
             }
@@ -237,7 +243,7 @@ trait PrettyOutputTrait
             }
         }
 
-        static::$beautifullIndentMaxSize[$arrayHash] = max($max, $minSize);
+        static::$beautifulIndentMaxSize[$arrayHash] = max($max, $minSize);
     }
 
     /*-----  End of Private methods  ------*/

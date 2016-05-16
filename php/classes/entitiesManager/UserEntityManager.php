@@ -8,14 +8,15 @@
 
 namespace classes\entitiesManager;
 
-use \abstracts\EntityManager as EntityManager;
-use \classes\entities\User as User;
-use \classes\entitiesCollection\UserCollection as UserCollection;
-use \classes\DataBase as DB;
-use \classes\IniManager as Ini;
-use \classes\LoggerManager as Logger;
-use \classes\logger\LogLevel as LogLevel;
-use \classes\WebContentInclude as WebContentInclude;
+use abstracts\EntityManager as EntityManager;
+use classes\entities\User as User;
+use classes\entitiesCollection\UserCollection as UserCollection;
+use classes\DataBase as DB;
+use classes\IniManager as Ini;
+use classes\LoggerManager as Logger;
+use classes\logger\LogLevel as LogLevel;
+use classes\WebContentInclude as WebContentInclude;
+use traits\FiltersTrait as FiltersTrait;
 
 /**
  * Performed database action relative to the User entity class
@@ -37,14 +38,14 @@ use \classes\WebContentInclude as WebContentInclude;
  */
 class UserEntityManager extends EntityManager
 {
-    use \traits\FiltersTrait;
+    use FiltersTrait;
 
     /**
      * @var        array  $params   An array containing User params in conf.ini
      */
     private $params;
     /**
-     * @var        array  $errors   An array containing the occured errors when fields are set
+     * @var        array  $errors   An array containing the occurred errors when fields are set
      */
     private $errors = array();
 
@@ -55,16 +56,12 @@ class UserEntityManager extends EntityManager
     /**
      * Constructor that can take a User entity as first parameter and a UserCollection as second parameter
      *
-     * @param      User            $entity            A user entity object DEFAULT null
-     * @param      UserCollection  $entityCollection  A users collection oject DEFAULT null
+     * @param      User            $user            A user entity object DEFAULT null
+     * @param      UserCollection  $userCollection  A users collection object DEFAULT null
      */
-    public function __construct(User $entity = null, UserCollection $entityCollection = null)
+    public function __construct(User $user = null, UserCollection $userCollection = null)
     {
-        parent::__construct($entity, $entityCollection);
-
-        if ($entity === null) {
-            $this->entity = new User();
-        }
+        parent::__construct($user, $userCollection);
 
         Ini::setIniFileName('conf.ini');
         $this->params = Ini::getSectionParams('User');
@@ -86,7 +83,7 @@ class UserEntityManager extends EntityManager
     public function getUserIdByPseudonym(string $pseudonym): int
     {
         $sqlMarks = 'SELECT id FROM %s WHERE pseudonym = %s';
-        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($pseudonym));
+        $sql      = static::sqlFormat($sqlMarks, (new User())->getTableName(), DB::quote($pseudonym));
 
         return (int) DB::query($sql)->fetchColumn();
     }
@@ -101,7 +98,7 @@ class UserEntityManager extends EntityManager
     public function getUserPseudonymById(int $id): string
     {
         $sqlMarks = 'SELECT pseudonym, firstName, lastName FROM %s WHERE id = %d';
-        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $id);
+        $sql      = static::sqlFormat($sqlMarks, (new User())->getTableName(), $id);
         $result   = DB::query($sql)->fetch();
 
         return (
@@ -110,11 +107,11 @@ class UserEntityManager extends EntityManager
     }
 
     /**
-     * Register a user and return errors if errors occured
+     * Register a user and return errors if errors occurred
      *
      * @param      array  $inputs  The user inputs in an array($columnName => $value) pairs to set the object
      *
-     * @return     array  The occured errors or success in a array
+     * @return     array  The occurred errors or success in a array
      */
     public function register(array $inputs): array
     {
@@ -123,8 +120,8 @@ class UserEntityManager extends EntityManager
 
         try {
             if (count($errors['SERVER']) === 0) {
-                $query            = 'SELECT MAX(id) FROM ' . $this->entity->getTableName();
-                $this->entity->id = DB::query($query)->fetchColumn() + 1;
+                $query            = 'SELECT MAX(id) FROM ' . (new User())->getTableName();
+                $this->entity->id = (int) DB::query($query)->fetchColumn() + 1;
 
                 $this->bindInputs($inputs);
                 $errors = $this->errors;
@@ -151,12 +148,12 @@ class UserEntityManager extends EntityManager
     }
 
     /**
-     * Connect a user with his login / password combinaison
+     * Connect a user with his login / password combination
      *
      * @param      string[]  $inputs  Inputs array containing array('login' => 'login', 'password' => 'password')
      *
-     * @return     array  The occured errors or success in a array
-     * @todo       refacto make it shorter...
+     * @return     array  The occurred errors or success in a array
+     * @todo       refactoring make it shorter...
      */
     public function connect(array $inputs): array
     {
@@ -177,7 +174,7 @@ class UserEntityManager extends EntityManager
 
         if (count($errors) === 0) {
             $sqlMarks   = 'SELECT * FROM %s WHERE email = %s OR pseudonym = %s';
-            $sql        = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $login, $login);
+            $sql        = static::sqlFormat($sqlMarks, (new User())->getTableName(), $login, $login);
             $userParams = DB::query($sql)->fetch();
             $now        = new \DateTime();
             $continue   = true;
@@ -186,8 +183,8 @@ class UserEntityManager extends EntityManager
                 $this->entity->setAttributes($userParams);
 
                 if ((int) $this->entity->connectionAttempt === -1) {
-                    $intervalInSec         = $this->dateIntervalToSec($now->diff($this->entity->lastConnectionAttempt));
-                    $minInterval           = (int) $this->params['minTimeAttempt'];
+                    $intervalInSec = static::dateIntervalToSec($now->diff($this->entity->lastConnectionAttempt));
+                    $minInterval   = (int) $this->params['minTimeAttempt'];
 
                     if ($intervalInSec < $minInterval) {
                         $continue         = false;
@@ -295,7 +292,7 @@ class UserEntityManager extends EntityManager
     public function checkSecurityToken(): bool
     {
         $sqlMarks = 'SELECT securityToken, securityTokenExpires FROM %s WHERE id = %d';
-        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), $this->entity->id);
+        $sql      = static::sqlFormat($sqlMarks, (new User())->getTableName(), $this->entity->id);
         $results  = DB::query($sql)->fetch();
 
         return (
@@ -345,7 +342,7 @@ class UserEntityManager extends EntityManager
         $maxLength                 = $this->entity->getColumnMaxSize($columnName);
         $name                      = _(strtolower(preg_replace('/([A-Z])/', ' $0', $columnName)));
 
-        if (in_array($columnName, $this->entity::$mustDefinedFields) && $length === 0) {
+        if (in_array($columnName, User::$mustDefinedFields) && $length === 0) {
             $this->errors[$columnName][] = _('The ' . $name . ' can\'t be empty');
         } elseif ($length > $maxLength) {
             $this->errors[$columnName][] = _('The ' . $name . ' size can\'t exceed ' . $maxLength . ' characters');
@@ -369,11 +366,11 @@ class UserEntityManager extends EntityManager
                 break;
 
             case 'pseudonym':
-                if (in_array(strtolower($value), $this->entity::$pseudoBlackList)) {
+                if (in_array(strtolower($value), User::$pseudoBlackList)) {
                     $this->errors[$columnName][] = _('The pseudonym "' . $value . '" is not accepted');
                 }
 
-                foreach ($this->entity::$forbiddenPseudoCharacters as $forbiddenPseudoCharacter) {
+                foreach (User::$forbiddenPseudoCharacters as $forbiddenPseudoCharacter) {
                     if (strpos($value, $forbiddenPseudoCharacter) !== false) {
                         $this->errors[$columnName][] = _(
                             'The character "' . $forbiddenPseudoCharacter . '" is not accepted in pseudonyms'
@@ -421,13 +418,13 @@ class UserEntityManager extends EntityManager
      *
      * @return     bool    True if the pseudonym exists else false
      */
-    private function isPseudonymExist(string $pseudonym): bool
-    {
-        $sqlMarks = 'SELECT count(*) FROM %s WHERE pseudonym = %s';
-        $sql      = static::sqlFormater($sqlMarks, $this->entity->getTableName(), DB::quote($pseudonym));
-
-        return (int) DB::query($sql)->fetchColumn() > 0;
-    }
+//    private function isPseudonymExist(string $pseudonym): bool
+//    {
+//        $sqlMarks = 'SELECT count(*) FROM %s WHERE pseudonym = %s';
+//        $sql      = static::sqlFormat($sqlMarks, (new User())->getTableName(), DB::quote($pseudonym));
+//
+//        return (int) DB::query($sql)->fetchColumn() > 0;
+//    }
 
     /**
      * Check all the must defined fields and fill an errors array if not
@@ -441,7 +438,7 @@ class UserEntityManager extends EntityManager
         $errors           = array();
         $errors['SERVER'] = array();
 
-        foreach ($this->entity::$mustDefinedFields as $field) {
+        foreach (User::$mustDefinedFields as $field) {
             if (!in_array($field, $fields)) {
                 $errors['SERVER'][] = _($field . ' must be defined');
             }

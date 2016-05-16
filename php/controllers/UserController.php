@@ -25,7 +25,7 @@ class UserController extends Controller
         try {
             $userManager = new UserManager();
 
-            $this->JSONresponse($userManager->register($_POST));
+            $this->JsonResponse($userManager->register($_POST));
             unset($_POST);
         } catch (Exception $e) {
         }
@@ -39,7 +39,7 @@ class UserController extends Controller
         try {
             $userManager = new UserManager();
 
-            $this->JSONresponse($userManager->connect($_POST));
+            $this->JsonResponse($userManager->connect($_POST));
             unset($_POST);
         } catch (Exception $e) {
         }

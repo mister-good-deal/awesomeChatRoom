@@ -17,11 +17,11 @@ use \classes\IniManager as Ini;
 abstract class AbstractController
 {
     /**
-     * Output a JSON reponse from a data array passed in parameter
+     * Output a JSON response from a data array passed in parameter
      *
      * @param      array  $data   The data to output
      */
-    public function JSONresponse(array $data)
+    public function JsonResponse(array $data)
     {
         Ini::setIniFileName(Ini::INI_CONF_FILE);
 

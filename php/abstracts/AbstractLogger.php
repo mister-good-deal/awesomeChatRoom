@@ -1,6 +1,6 @@
 <?php
 /**
- * Abstact logger class
+ * Abstracts logger class
  *
  * @package    Abstract
  * @author     Romain Laneuville <romain.laneuville@hotmail.fr>

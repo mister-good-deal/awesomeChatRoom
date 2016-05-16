@@ -1,21 +1,26 @@
 requirejs.config({
     "paths" : {
-        "bootstrap"             : "lib/vendor/bootstrap",
-        "bootstrap-select"      : "lib/vendor/bootstrap-select",
-        "bootstrap-switch"      : "lib/vendor/bootstrap-switch",
-        "jasny-bootstrap"       : "lib/vendor/jasny-bootstrap",
-        "domReady"              : "lib/vendor/domReady",
-        "jquery"                : "lib/vendor/jquery",
-        "loading-overlay"       : "lib/vendor/loading-overlay",
-        "lodash"                : "lib/vendor/lodash",
-        "require"               : "lib/vendor/require",
-        "chat"                  : "lib/chat",
-        "forms"                 : "lib/forms",
-        "message"               : "lib/message",
-        "user"                  : "lib/user",
-        "websocket"             : "lib/websocket",
-        "iframe"                : "lib/iframe",
-        "navigation"            : "lib/navigation"
+        "bootstrap"       : "lib/vendor/bootstrap",
+        "bootstrap-select": "lib/vendor/bootstrap-select",
+        "bootstrap-switch": "lib/vendor/bootstrap-switch",
+        "jasny-bootstrap" : "lib/vendor/jasny-bootstrap",
+        "domReady"        : "lib/vendor/domReady",
+        "jquery"          : "lib/vendor/jquery",
+        "loading-overlay" : "lib/vendor/loading-overlay",
+        "lodash"          : "lib/vendor/lodash",
+        "require"         : "lib/vendor/require",
+        "chatManager"     : "lib/chatManager",
+        "room"            : "lib/room",
+        "roomManager"     : "lib/roomManager",
+        "user"            : "lib/user",
+        "userManager"     : "lib/userManager",
+        "client"          : "lib/client",
+        "clientManager"   : "lib/clientManager",
+        "formManager"     : "lib/formManager",
+        "websocketManager": "lib/websocketManager",
+        "iframeManager"   : "lib/iframeManager",
+        "notification"    : "lib/notification",
+        "navigation"      : "lib/navigation"
     },
     "shim"  : {
         "bootstrap"        : {
@@ -35,7 +40,7 @@ requirejs.config({
         }
     },
     "config": {
-        "navigation": {
+        "navigation"      : {
             "landingPage" : "chat",
             "urlPrefix"   : "#!",
             "selectors"   : {
@@ -44,7 +49,7 @@ requirejs.config({
                 "currentPage": ".current-page"
             }
         },
-        "iframe"    : {
+        "iframeManager"   : {
             "resizeInterval": 2000,
             "selectors"     : {
                 "kibanaIframe"         : "#kibana-iframe",
@@ -52,35 +57,37 @@ requirejs.config({
                 "iframeHeightContainer": ".content"
             }
         },
-        "websocket" : {
+        "websocketManager": {
             "serverUrl"   : "ws://127.0.0.1:5000",
             "serviceName" : "websocketService",
             "waitInterval": 1000
         },
-        "user"      : {
+        "userManager"     : {
             "selectors": {
                 "modals": {
                     "connect": "#connectUserModal"
                 }
             }
         },
-        "chat"      : {
-            "serviceName"  : "chatService",
-            "maxUsers"     : 15,
-            "animationTime": 500,
-            "selectors"    : {
+        "clientManager"   : {
+            "serviceName"            : "clientService",
+            "locationRefreshInterval": 15000,
+            "locationTimeout"        : 30000
+        },
+        "roomManager"     : {
+            "serviceName": "roomService",
+            "selectors"  : {
                 "global"             : {
-                    "chat"              : "#chat",
-                    "room"              : ".room",
-                    "roomName"          : ".room-name",
-                    "roomContents"      : ".room-contents",
-                    "roomChat"          : ".chat",
-                    "roomSample"        : "#room-sample",
-                    "roomHeader"        : ".header",
-                    "roomClose"         : ".close-room",
-                    "roomMinimize"      : ".minimize",
-                    "roomFullscreen"    : ".fullscreen",
-                    "roomMessagesUnread": ".messages-unread"
+                    "rooms"         : "#rooms",
+                    "room"          : ".room",
+                    "roomName"      : ".room-name",
+                    "roomContents"  : ".room-contents",
+                    "roomChat"      : ".chat",
+                    "roomSample"    : "#room-sample",
+                    "roomHeader"    : ".header",
+                    "roomClose"     : ".close-room",
+                    "roomMinimize"  : ".minimize",
+                    "roomFullScreen": ".fullScreen"
                 },
                 "roomConnect"        : {
                     "div"         : ".connect-room",
@@ -99,24 +106,11 @@ requirejs.config({
                     "maxUsers": ".room-max-users",
                     "create"  : ".create"
                 },
-                "roomSend"           : {
-                    "div"      : ".send-action",
-                    "message"  : ".message",
-                    "recievers": ".recievers",
-                    "usersList": ".users-list",
-                    "send"     : ".send"
-                },
                 "roomAction"         : {
                     "loadHistoric"  : ".load-historic",
                     "kickUser"      : ".kick-user",
                     "showUsers"     : ".users",
                     "administration": ".admin"
-                },
-                "chat"               : {
-                    "message"  : ".message",
-                    "pseudonym": ".pseudonym",
-                    "date"     : ".date",
-                    "text"     : ".text"
                 },
                 "administrationPanel": {
                     "modal"            : ".chat-admin",
@@ -142,27 +136,57 @@ requirejs.config({
                     "div"   : "#alert-input-choice",
                     "submit": ".send"
                 }
-            },
-            "commands"     : {
-                "kick": /^\/kick '([^']*)'? ?(.*)/,
-                "pm"  : /^\/pm '([^']*)' (.*)/
             }
         },
-        "message"   : {
+        "chatManager"     : {
+            "serviceName"  : "chatService",
+            "maxUsers"     : 15,
+            "animationTime": 500,
+            "selectors"    : {
+                "global"             : {
+                    "room"          : ".room",
+                    "chat"          : ".chat",
+                    "messagesUnread": ".messages-unread"
+                },
+                "chatSend"           : {
+                    "div"      : ".send-action",
+                    "message"  : ".message",
+                    "receivers": ".receivers",
+                    "usersList": ".users-list",
+                    "send"     : ".send"
+                },
+                "chatAction"         : {
+                    "loadHistoric"  : ".load-historic"
+                },
+                "chatText"           : {
+                    "message"  : ".message",
+                    "pseudonym": ".pseudonym",
+                    "date"     : ".date",
+                    "text"     : ".text"
+                }
+            },
+            "commands"     : {
+                "pm": /^\/pm '([^']*)' (.*)/
+            }
+        },
+        "notification"    : {
             "alert"       : {
                 "divId"          : "#alert-container",
                 "dismissClass"   : ".dismiss",
-                "defaultDuration": 2
+                "defaultDuration": 2,
+                "queue"          : []
             },
             "popup"       : {
                 "divId"          : "#popup-container",
                 "dismissClass"   : ".dismiss",
-                "defaultDuration": 6
+                "defaultDuration": 6,
+                "queue"          : []
             },
             "notification": {
                 "divId"          : "#notification-container",
                 "dismissClass"   : ".dismiss",
-                "defaultDuration": 4
+                "defaultDuration": 4,
+                "queue"          : []
             },
             "serviceName" : "notificationService",
             "defaultType" : "alert",

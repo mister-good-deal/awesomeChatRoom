@@ -11,7 +11,7 @@ use \classes\ExceptionManager as Exception;
 
 /**
  * FileManagerInterface defines a way to interact with files manipulation with basic functions to let several protocol
- * implented this interface
+ * implemented this interface
  */
 interface FileManagerInterface
 {
@@ -59,7 +59,7 @@ interface FileManagerInterface
     /**
      * Get the directories / files list on the current working directory
      *
-     * @return     string[]  The list of directories / files conatained in the current working directory
+     * @return     string[]  The list of directories / files contained in the current working directory
      */
     public function listFiles(): array;
 

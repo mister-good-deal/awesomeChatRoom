@@ -33,7 +33,7 @@ trait DateTrait
     /**
      * Get microtime as an int but casted in a string
      *
-     * @return     string  The current micotime as string
+     * @return     string  The current microtime as string
      */
     public static function microtimeAsInt(): string
     {

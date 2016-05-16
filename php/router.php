@@ -50,9 +50,9 @@ function route($route)
         ob_start();
     }
 
-    $controllerPath    = 'controllers\\' . $controller;
-    $controllerIntance = new $controllerPath();
-    $controllerIntance->$method();
+    $controllerPath     = 'controllers\\' . $controller;
+    $controllerInstance = new $controllerPath();
+    $controllerInstance->$method();
 }
 
 if (isset($_GET['action'])) {
