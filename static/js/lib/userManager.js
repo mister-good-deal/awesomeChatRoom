@@ -18,12 +18,12 @@ define([
     /**
      * UserManager module
      *
-     * @param      {FormsManager}  Forms     A FormsManager to handle form XHR ajax calls or jsCallbacks
-     * @param      {Object}        settings  Overriden settings
+     * @param      {FormManager}   Forms     A FormsManager to handle form XHR ajax calls or jsCallbacks
+     * @param      {Object}        settings  Overridden settings
      *
      * @exports    userManager
      * @see        module:user
-     * @see        module:form
+     * @see        module:formManager
      *
      * @property   {Object}         settings                The userManager global settings
      * @property   {Notification}   notification            The Notification module

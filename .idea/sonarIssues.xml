@@ -278,6 +278,26 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/static/js/app.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/static/js/lib/chatManager.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/static/js/lib/roomManager.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/static/js/lib/userManager.js">
+          <value>
+            <set />
+          </value>
+        </entry>
       </map>
     </option>
   </component>
