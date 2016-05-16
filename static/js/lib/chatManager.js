@@ -233,7 +233,13 @@ define([
          * Handle the WebSocket server response and process action with the right callback
          *
          * @method     wsCallbackDispatcher
-         * @param      {Object}  data    The server JSON response
+         * @param      {Object}         data            The server JSON response
+         * @param      {String}         data.action     The callback to call
+         * @param      {Number}         data.roomId     The room ID
+         * @param      {Array}          data.historic   The list of messages found
+         * @param      {String}         data.text       The message to display
+         * @param      {Boolean}        data.success    True if the action was successfully done, false otherwise
+         * @param      {Object|String}  data.messages   The message(s) to display in the chat
          */
         wsCallbackDispatcher: function (data) {
             switch (data.action) {
@@ -258,7 +264,9 @@ define([
          * Callback after a user received a message
          *
          * @method     receiveMessageCallback
-         * @param      {Object}  data    The server JSON response
+         * @param      {Object}         data            The server JSON response
+         * @param      {Number}         data.roomId     The room ID
+         * @param      {Object|String}  data.messages   The message(s) to display in the chat
          */
         receiveMessageCallback: function (data) {
             var room                = $(this.settings.selectors.global.room + '[data-id="' + data.roomId + '"]'),
@@ -284,7 +292,9 @@ define([
          * Callback after a user sent a message
          *
          * @method     sendMessageCallback
-         * @param      {Object}  data    The server JSON response
+         * @param      {Object}  data           The server JSON response
+         * @param      {String}  data.text      The message to display
+         * @param      {Boolean} data.success   True if the action was successfully done, false otherwise
          */
         sendMessageCallback: function (data) {
             if (!data.success) {
@@ -342,7 +352,8 @@ define([
          * Format a user message in a html div
          *
          * @method     formatUserMessage
-         * @param      {Object}  data    The server JSON response
+         * @param      {Object}         data            The server JSON response
+         * @param      {Object|String}  data.messages   The message(s) to display in the chat
          * @return     {Array}   Array of jQuery html div(s) object containing the user message(s)
          */
         formatUserMessage: function (data) {

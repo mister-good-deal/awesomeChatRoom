@@ -127,11 +127,11 @@ define([
          * Add a notification in a specific queue to display it
          *
          * @method     add
-         * @param      {String}  text        The notification text to display
-         * @param      {String}  [type]      The notification type ("alert", "popup", "notification")
-         * @param      {String}  [level]     The notification level ("danger", "warning", "info", "success")
-         * @param      {String}  [title]     The notification title
-         * @param      {Number}  [duration]  The notification maximum duration in second before dismiss (-1 for infinite)
+         * @param      {String}  text           The notification text to display
+         * @param      {String}  [type=alert]   The notification type ("alert", "popup", "notification")
+         * @param      {String}  [level=info]   The notification level ("danger", "warning", "info", "success")
+         * @param      {String}  [title='']     The notification title
+         * @param      {Number}  [duration=2]   The notification maximum duration in second before dismiss (-1 for infinite)
          */
         add: function (text, type, level, title, duration) {
             if (!type) {
