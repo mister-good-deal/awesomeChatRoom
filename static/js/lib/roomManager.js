@@ -34,6 +34,7 @@ define([
      * @property   {Notification}       notification    The Notification module
      * @property   {Array}              mouseInRoom     Array of rooms ID that tells if the mouse is in a room DOM area
      * @property   {Object}             rooms           Collection of room module
+     * @property   {Object}             promises        Global promises handler
      *
      * @constructor
      * @alias      module:roomManager
@@ -45,6 +46,12 @@ define([
         this.notification     = new Notification();
         this.mouseInRoom      = [];
         this.rooms            = {};
+        this.promises         = {
+            "setReason": $.Deferred()
+        };
+        // Add forms callback
+        // Forms.addJsCallback('setReasonCallbackEvent', this.setReasonCallbackEvent, this);
+        // Forms.addJsCallback('setRoomInfoCallbackEvent', this.setRoomInfoCallbackEvent, this);
 
         this.initEvents();
     };

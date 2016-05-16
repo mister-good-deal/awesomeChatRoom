@@ -78,17 +78,16 @@ requirejs.config({
             "serviceName": "roomService",
             "selectors"  : {
                 "global"             : {
-                    "rooms"             : "#rooms",
-                    "room"              : ".room",
-                    "roomName"          : ".room-name",
-                    "roomContents"      : ".room-contents",
-                    "roomChat"          : ".chat",
-                    "roomSample"        : "#room-sample",
-                    "roomHeader"        : ".header",
-                    "roomClose"         : ".close-room",
-                    "roomMinimize"      : ".minimize",
-                    "roomFullscreen"    : ".fullscreen",
-                    "roomMessagesUnread": ".messages-unread"
+                    "rooms"         : "#rooms",
+                    "room"          : ".room",
+                    "roomName"      : ".room-name",
+                    "roomContents"  : ".room-contents",
+                    "roomChat"      : ".chat",
+                    "roomSample"    : "#room-sample",
+                    "roomHeader"    : ".header",
+                    "roomClose"     : ".close-room",
+                    "roomMinimize"  : ".minimize",
+                    "roomFullscreen": ".fullscreen"
                 },
                 "roomConnect"        : {
                     "div"         : ".connect-room",
@@ -145,7 +144,9 @@ requirejs.config({
             "animationTime": 500,
             "selectors"    : {
                 "global"             : {
-                    "room": ".room"
+                    "room"          : ".room",
+                    "chat"          : ".chat",
+                    "messagesUnread": ".messages-unread"
                 },
                 "chatSend"           : {
                     "div"      : ".send-action",
@@ -165,8 +166,7 @@ requirejs.config({
                 }
             },
             "commands"     : {
-                "kick": /^\/kick '([^']*)'? ?(.*)/,
-                "pm"  : /^\/pm '([^']*)' (.*)/
+                "pm": /^\/pm '([^']*)' (.*)/
             }
         },
         "notification"    : {

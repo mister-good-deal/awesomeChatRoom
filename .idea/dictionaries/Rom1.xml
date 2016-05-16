@@ -16,6 +16,8 @@
       <w>iframe</w>
       <w>jscsrc</w>
       <w>jshintrc</w>
+      <w>keydown</w>
+      <w>keypress</w>
       <w>kibana</w>
       <w>lodash</w>
       <w>microtime</w>

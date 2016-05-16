@@ -288,12 +288,27 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/static/js/lib/notification.js">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/static/js/lib/roomManager.js">
           <value>
             <set />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/static/js/lib/userManager.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/static/js/lib/websocketManager.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/static/js/main.js">
           <value>
             <set />
           </value>

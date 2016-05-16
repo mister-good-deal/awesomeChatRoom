@@ -25,7 +25,7 @@ require([
             websocket      = new Websocket(userManager.getCurrent()),
             clientManager  = new ClientManager(websocket, userManager.getCurrent()),
             roomManager    = new RoomManager(websocket, clientManager.getCurrent()),
-            chatManager    = new ChatManager(websocket, userManager.getCurrent(), forms);
+            chatManager    = new ChatManager(websocket, userManager.getCurrent(), roomManager.rooms, forms);
         // Bind WebSocket server callbacks on different services
         websocket.addCallback(notification.settings.serviceName, notification.parseWebsocketData, notification);
         websocket.addCallback(chatManager.settings.serviceName, chatManager.wsCallbackDispatcher, chatManager);
@@ -37,6 +37,8 @@ require([
         if ($(window).outerWidth() > 768) {
             $('#navbar-menu-left').offcanvas('show');
         }
+        // Init events
+        chatManager.initEvents();
         // Add navigation specific callbacks
         navigation.addCallback('kibana', kibanaIframe.loadKibanaIframe, kibanaIframe);
         // Load the landing page configured in app.js => config => navigation => landingPage

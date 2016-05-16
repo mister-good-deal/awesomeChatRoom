@@ -77,7 +77,7 @@ define([
          * Shorthand method to send data to the WebSocket server or delay until the websocket is ready
          *
          * @method     send
-         * @param      {String}  data    Data to send to the WebSocket server
+         * @param      {Object}  data    Data to send to the WebSocket server
          */
         send: function (data) {
             var self = this;

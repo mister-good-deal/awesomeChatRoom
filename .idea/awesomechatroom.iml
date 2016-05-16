@@ -310,6 +310,8 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="library" name="jQuery-2.0.0" level="application" />
+    <orderEntry type="library" name="famous-DefinitelyTyped" level="application" />
   </component>
   <component name="sonarModuleSettings">
     <option name="localAnalysisScripName" value="&lt;PROJECT&gt;" />
